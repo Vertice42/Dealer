@@ -1,0 +1,16 @@
+
+{
+    "files": [
+      "src/services/**/*.ts"
+    ],
+    "tests":
+      ["src/test/*.ts"],
+
+    "env": {
+      "type": "node"
+    },
+    "runMode": "onsave",
+    "runAllTestsInAffectedTestFile": true
+
+
+}
