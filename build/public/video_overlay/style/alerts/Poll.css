@@ -1,0 +1,131 @@
+@keyframes ShowAnimationPoll {
+    0% {
+        transform: rotate(50deg) scale(0, 0.1) translate(0px, -250px);
+    }
+    40% {
+        transform: rotate(40deg) scale(1, 0.5) translate(-250px, -100px);
+    }
+    50% {
+        transform: rotate(40deg) scale(1, 1) translate(-125px, -50px);
+    }
+    60% {
+        transform: rotate(0deg) scale(1, 1) translate(100px, 0px);
+    }
+    100% {
+        transform: translate(0px, 0px);
+    }
+}
+
+@keyframes HideAnimationPoll {
+    20% {
+        transform: translate(-200px, -100px) rotate(25deg) scale(0.7, 1);
+    }
+    60% {
+        transform: translate(1000px, 0px);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(1000px, 0px);
+        opacity: 0;
+    }
+}
+
+#PollDiv {
+    background-image: url(../../images/table.png);
+}
+
+.Enable#PollDiv {
+    animation: ShowAnimationPoll 1s forwards cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.Disable#PollDiv {
+    animation: HideAnimationPoll 1s forwards cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+
+.ParticipatePollButton {
+    display: table;
+    z-index: 1;
+    font: 20pt fantasy;
+    color: white;
+    width: fit-content;
+    height: 40px;
+    margin: 0px auto 20px;
+    margin-top: 0px;
+    text-transform: uppercase;
+    background: rgb(255, 136, 0);
+}
+
+.ParticipatePollButton:hover {
+    background: rgb(247, 111, 49);
+}
+
+.ParticipatePollButton::selection {
+    height: 70px;
+}
+
+.AddBetValueDiv {
+    display: block;
+    height: fit-content;
+}
+
+.AddBetValueDiv h2 {
+    width: fit-content;
+    margin: 25px auto;
+    color: white;
+    font: 10pt Heroes;
+    text-transform: uppercase;
+}
+
+.AddBetValueDiv input[type=number] {
+    margin-left: 10px;
+    background: rgba(255, 255, 255, 0.089);
+    border: solid 2px rgba(255, 255, 255, 0);
+    width: 60px;
+    height: 20px;
+    text-align: center;
+    font: 10pt Heroes;
+}
+
+#SetBetValueButton {
+    margin: auto;
+}
+
+.ButtonsDiv {
+    display: flow-root;
+    width: fit-content;
+    height: 100%;
+    margin: -40px auto auto;
+}
+
+.PollButton {
+    box-shadow: 5px 5px 3px rgba(0, 0, 0, 0.164);
+    min-width: 40px;
+    height: 100%;
+    margin-left: 10px;
+    transition: all 100ms;
+}
+
+.PollButton h4 {
+    display: initial;
+    margin: 10px;
+    font-family: Heroes;
+    color: white;
+}
+
+.PollButton:hover {
+    transform: scale(1.2);
+    box-shadow: 10x 10px 10px rgba(0, 0, 0, 0.164);
+}
+
+@keyframes brilliance {
+    from {
+        filter: brightness(100%);
+    }
+    to {
+        filter: brightness(150%);
+    }
+}
+
+.Selected {
+    animation: brilliance 0.5s alternate infinite;
+}

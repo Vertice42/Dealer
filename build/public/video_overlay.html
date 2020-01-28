@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html class="FullScren">
+
+<head>
+  <title>Viewer Page</title>
+  <link rel="stylesheet" href="video_overlay/style/Main.css" />
+
+</head>
+
+<body class="FullScren">
+
+  <div class="WalletDiv" id="WalletDiv">
+    <div id="CoinsDiv" ></div>
+    <h3 id="CoinsOfUserView"> </h3>
+  </div>
+
+  <div id="AlertsDiv">
+
+    <div class="Disable Hidden" id="PollAlert">
+      <h2>Votação em andamento</h2>
+      <button class="ParticipatePollButton" id="ParticipatePollButton">Participar</button>
+    </div>
+
+    <div class="Disable Hidden" id="PollDiv">
+      <div class="AddBetValueDiv">
+        <h2>Aposta <input id="BetAmountInput" value="2" min="2" step="2" type="number"></h2>
+      </div>
+      <div class="ButtonsDiv" id="ButtonsDiv"></div>
+    </div>
+
+    <div class="Disable Hidden" id="StopAlert">
+      <h2>Aquarde o &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspResultado</h2>
+    </div>
+
+    <div class="Disable Hidden" id="AlertOfWinner">
+      <h2>Parabéns</h2>
+      <h3>Você ganhou &nbsp<span id='EarningsView'></span> </h3>
+      </h2>
+    </div>
+
+    <div class="Disable Hidden" id='AlertOfLoser'>
+      <h2>Que Pena</h2>
+      <h3>Você Perdeu &nbsp <span id="LossView"></span> </h3>
+    </div>
+  </div>
+  
+  <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
+  <script src="./video_overlay/bundle.js"></script>
+
+</body>
+
+</html>

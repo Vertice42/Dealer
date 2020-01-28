@@ -1,0 +1,13 @@
+@import url(./alerts/main.css);
+@import url(./wallet/main.css);
+
+@font-face {
+    font-family: Heroes;
+    src: url(../fonts/Heroes\ Legend.ttf);
+}
+
+.FullScren {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}

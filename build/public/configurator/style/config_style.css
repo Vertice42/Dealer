@@ -1,0 +1,251 @@
+body {
+    background: rgb(54, 54, 73);
+}
+
+.SettingDiv {
+    display: table;
+    background: white;
+    margin: auto;
+    margin-bottom: 1%;
+    padding: 1%;
+}
+
+#MineIcon {
+    height: inherit;
+}
+
+.MineDiv {
+    display: flex;
+    height: 100px;
+}
+
+.MineDiv h2 {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 200%;
+    text-transform: uppercase;
+    margin: auto;
+}
+
+#HourlyRewardInput {
+    text-align: center;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-size: 30pt;
+    width: 100px;
+    height: 50px;
+    margin: auto;
+}
+
+.PollItem {
+    background: rgb(255, 255, 255);
+    font-family: sans-serif;
+    margin: 10px;
+    filter: blur(0px);
+    transition: filter 500ms;
+}
+
+.PollItemInChoose {
+    filter: blur(4px);
+}
+
+.PollDiv {
+    background: rgb(39, 44, 75);
+    transition: opacity 100ms;
+    margin-bottom: 10%;
+}
+
+.Hidden {
+    display: none;
+}
+
+.ButtonHide {
+    display: none;
+}
+
+.ButtonDisable {
+    opacity: 0.5;
+}
+
+.ButtonDisable:active {}
+
+.ButtonEnable {}
+
+.ButtonEnable:active {
+    filter: brightness(50%);
+}
+
+.PollButtonsDiv {
+    display: flex;
+    margin: auto;
+    width: fit-content;
+}
+
+.DeletePollItemButton {
+    width: 100px;
+    margin: -1px;
+    border: none;
+    background-image: url(../images/X_mark.png);
+    background-size: 40% 80%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgb(247, 63, 63);
+}
+
+#AddPollItemButton {
+    width: 60px;
+    height: 50px;
+    background-color: rgb(36, 192, 145);
+    margin: 0% 0% 0% 90%;
+}
+
+.VoteManagementButton {
+    margin: 2% auto;
+    border: none;
+    font-size: 20pt;
+    font-family: fantasy;
+    color: rgb(49, 49, 49);
+    text-transform: uppercase;
+    box-shadow: 5px 5px #0000002a;
+    transition: all 100ms;
+    width: 250px;
+    height: 90px;
+    margin: 1%;
+}
+
+#CreatePollButton {
+    margin: auto;
+    background-color: white;
+    font-size: 50px;
+}
+
+#DistributeEarningsButton {
+    background: rgb(97, 152, 224);
+}
+
+.Sample {
+    display: block;
+}
+
+.CreatePollButton::before {
+    content: "Criar Votação";
+}
+
+#DeletePollButton {
+    display: inline-block;
+    margin-bottom: 5%;
+    width: 100px;
+    height: 100px;
+    background-image: url(../images/delete_icon.png);
+    background-size: 80% 80%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgb(236, 60, 60)
+}
+
+.StartPollButtonEnable {}
+
+.StartPollButtonEnable::before {
+    content: 'Iniciar Votação';
+}
+
+.EnablePollRestartButton::before {
+    content: 'Reiniciar Votação';
+}
+
+.StopPollButton {
+    background-color: rgb(255, 255, 0);
+}
+
+.StopPollButton::before {
+    content: "Parar Votação";
+}
+
+#ApplyChangesButton {}
+
+#DistributeButton.ButtonEnable {}
+
+#DistributeButton.ButtonDisable {
+    opacity: 0.5;
+}
+
+.selected {
+    opacity: 0.7;
+}
+
+.DivOfChooseButton {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+input[type='color'] {
+    background: none;
+    min-width: 50px;
+    min-height: 50px;
+    margin: auto 0px;
+    border: none;
+}
+
+input[type='text'] {
+    font-size: 25pt;
+    font-family: sans-serif;
+    max-width: 200px;
+    height: 40px;
+    margin: auto 0%;
+}
+
+h3 {
+    display: flex;
+    text-align: center;
+    min-width: fit-content;
+    font-size: 20pt;
+    margin: auto 10px auto 10px;
+}
+
+.VoteNumerator {
+    color: rgb(122, 122, 122);
+    margin: auto;
+}
+
+.LayoutToChoose {
+    position: absolute;
+    width: 98%;
+    margin-left: 10px;
+    margin-right: 1000px;
+    height: 50px;
+    z-index: 1;
+    background: rgba(214, 224, 224, 0.377);
+}
+
+.LayoutToChooseHidden {
+    display: none;
+}
+
+.ChooseButton {
+    display: block;
+    width: 210px;
+    height: 80%;
+    margin: auto auto;
+    background: rgb(80, 47, 170);
+    color: white;
+    font-size: 17pt;
+}
+
+.ChooseButton::before {
+    content: 'Declarar vencedor';
+}
+
+.ChooseButton:hover {
+    width: 220px;
+    height: 90%;
+}
+
+#DistributionDiv {
+    background: white;
+    text-align: center;
+}
+
+#DistributionDiv h2 {
+    color: black;
+    font-size: 20pt;
+    text-transform: uppercase;
+}

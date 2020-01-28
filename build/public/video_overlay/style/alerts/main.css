@@ -1,0 +1,37 @@
+@import url(PollAlert.css);
+@import url(Poll.css);
+@import url(StopAlert.css);
+@import url(AlertOfWinner.css);
+@import url(AlertOfLoser.css);
+
+
+:focus {
+    outline: 1px solid blanchedalmond;
+}
+
+button {
+    border: none;
+}
+
+#AlertsDiv {
+    position: absolute;
+    top: 50%;
+    left: 25%;
+}
+
+.Alert {
+    display: grid;
+    bottom: 10%;
+    margin: auto;
+    width: 300px;
+    height: 150px;
+    color: rgba(0, 0, 0, 0.349);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    filter: drop-shadow(30px 10px 4px rgba(0, 0, 0, 0.295));
+}
+
+.Hidden {
+    display: none;
+}
+

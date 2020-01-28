@@ -1,0 +1,86 @@
+@keyframes ShowAnimationStopAlert {
+    0% {
+        clip-path: inset(0px 0px 1000px 0px);
+        transform: scale(0.9) translate(0px, 500px);
+    }
+    40% {
+        clip-path: inset(0px 0px 0px 0px);
+        transform: scale(0.9) translate(0px, 0px);
+    }
+    41% {
+        clip-path: none;
+    }
+    50% {
+        transform: scale(0.9);
+        filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.295));
+    }
+    100% {
+        transform: scale(1);
+        filter: drop-shadow(30px 10px 4px rgba(0, 0, 0, 0.295));
+    }
+}
+
+@keyframes HideAnimationStopAlert {
+    from {
+        transform: scale(1, 1);
+    }
+    to {
+        transform: scale(0, 1);
+    }
+}
+
+@keyframes rool {
+    to {
+        background-position-y: 500%;
+    }
+}
+
+#StopAlert {
+    filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.295));
+}
+
+.Enable#StopAlert {
+    animation: ShowAnimationStopAlert 1s forwards;
+}
+
+.Disable#StopAlert {
+    animation: HideAnimationStopAlert 0.2s forwards;
+}
+
+#StopAlert h2 {
+    width: min-content;
+    margin: auto auto;
+    font-family: Heroes;
+    color: white;
+    font-size: 15pt;
+}
+
+#StopAlert::before {
+    content: '';
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background-image: linear-gradient(rgb(255, 230, 0), rgb(255, 153, 0), rgb(255, 230, 0));
+    background-size: 100% 500%;
+    background-repeat: repeat;
+    animation: rool 10s linear infinite;
+}
+
+@keyframes scale {
+    to {
+        transform: scale(1, 1);
+    }
+}
+
+#StopAlert::after {
+    content: '';
+    top: 70%;
+    margin: auto;
+    width: 200px;
+    height: 100px;
+    background-image: url(https://media.tenor.com/images/d7e948ac2de44cf9bf318c5e328b3088/tenor.gif);
+    background-size: 100% 100%;
+    transform: scale(0, 1);
+    animation: scale 0.5s 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
