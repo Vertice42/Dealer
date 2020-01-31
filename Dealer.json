@@ -1,7 +1,7 @@
 {
   "allowHttpBackend": false,
-  "backendCommand": "node build/services/index.js",
-  "backendFolderName": "C:\\Users\\ADM\\OneDrive\\Projetos\\Dealer",
+  "backendCommand": "node index.js",
+  "backendFolderName": "build\\services",
   "certificateExceptions": [],
   "extensionViews": [
     {

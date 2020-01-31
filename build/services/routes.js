@@ -197,6 +197,3 @@ app.get(links_1.default.GetWallet, function (req, res) {
         res.status(200).send(wallet);
     });
 });
-app.get('/T', function (req, res) {
-    res.status(200).send('??????????????????');
-});

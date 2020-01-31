@@ -212,9 +212,4 @@ app.get(links.GetWallet, function (req: express.Request, res: express.Response) 
         })
 });
 
-app.get('/T', function (req: express.Request, res: express.Response) {
-            res.status(200).send('??????????????????');
-      
-});
-
 export { app };
