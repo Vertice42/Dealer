@@ -45,9 +45,7 @@ twitch.onContext((context) => {
 twitch.onAuthorized((auth) => __awaiter(void 0, void 0, void 0, function* () {
     token = auth.token;
     StreamerID = auth.channelId.toLowerCase();
-    console.log('jud');
     let Poll = yield BackendConnections.getCurrentPoll(StreamerID);
-    console.log(Poll);
     ViewPoll = new ViewConfig.ViewPollManeger(Poll);
     let watchPoll;
     ViewPoll.PollStatus = Poll.PollStatus;
@@ -100,7 +98,6 @@ twitch.onAuthorized((auth) => __awaiter(void 0, void 0, void 0, function* () {
     };
     const VIEW_SETTINGS = new ViewConfig.ViewSettings();
     let minerSettings = yield BackendConnections.GetMiner(StreamerID);
-    console.log(minerSettings);
     VIEW_SETTINGS.HourlyRewardInput.value = (minerSettings.RewardPerMinute * 60).toString();
     VIEW_SETTINGS.HourlyRewardInput.onchange = () => {
         BackendConnections.SendToMinerManager(StreamerID, new MinerSettings_1.MinerSettings(Number(VIEW_SETTINGS.HourlyRewardInput.value) / 60));

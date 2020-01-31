@@ -45,7 +45,6 @@
     background-size: 100% 100%;
 }
 
-
 .WalletDiv.InWithdrawal::before {
     content: '';
     z-index: 2;

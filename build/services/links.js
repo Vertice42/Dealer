@@ -12,5 +12,9 @@ exports.default = {
         return '/Miner/' + StreamerID;
     },
     GetSettings: '/Miner/:StreamerID',
-    MinerCoin: '/MinerCoin'
+    MinerCoin: '/MinerCoin',
+    GetWallet: '/Wallet/:StreamerID/:TwitchUserID',
+    getWallet: (StreamerID, TwitchUserID) => {
+        return '/Wallet/' + StreamerID + '/' + TwitchUserID;
+    }
 };

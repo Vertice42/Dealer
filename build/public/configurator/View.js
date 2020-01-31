@@ -9,6 +9,175 @@ function GenerateColor() {
     }
     return color;
 }
+class PollItemViewer {
+}
+class PollItemDesktopViewer extends PollItemViewer {
+    constructor(ID, ViewPoll) {
+        super();
+        this.NameInput = class {
+            constructor() {
+                let name_input_div = document.createElement("div");
+                name_input_div.style.display = 'flex';
+                let text_name = document.createElement("h3");
+                text_name.innerText = "NOME |";
+                name_input_div.appendChild(text_name);
+                // name to indicate input function
+                this.HTMLNameInput = document.createElement("input");
+                this.HTMLNameInput.type = "text";
+                this.HTMLNameInput.onchange = () => { this.onChange(); };
+                name_input_div.appendChild(this.HTMLNameInput);
+                this.HTMLElement = name_input_div;
+            }
+            getValue() {
+                return this.HTMLNameInput.value;
+            }
+            setValue(v) {
+                this.HTMLNameInput.value = v;
+            }
+        };
+        this.ColorInput = class {
+            constructor() {
+                let color_input_div = document.createElement("div");
+                color_input_div.style.display = 'flex';
+                let text_color = document.createElement("h3");
+                text_color.innerText = "COR |";
+                color_input_div.appendChild(text_color);
+                // name to indicate input function
+                this.HTMLColorInput = document.createElement("input");
+                this.HTMLColorInput.type = "color";
+                this.HTMLColorInput.onchange = () => { this.onChange(); };
+                color_input_div.appendChild(this.HTMLColorInput);
+                this.HTMLElement = color_input_div;
+            }
+            getValue() {
+                return this.HTMLColorInput.value;
+            }
+            setValue(v) {
+                this.HTMLColorInput.value = v;
+            }
+        };
+        this.VoteCounterOutput = class {
+            constructor() {
+                let vote_output_div = document.createElement('div');
+                vote_output_div.style.display = 'contents';
+                vote_output_div.style.width = 'max-content';
+                //vote_output_div.classList.add('');
+                let text_Vote = document.createElement("h3");
+                text_Vote.innerText = "VOTOS |";
+                vote_output_div.appendChild(text_Vote);
+                //name to indicate output function
+                this.HTMLVoteOutput = document.createElement("h3");
+                this.HTMLVoteOutput.classList.add("VoteNumerator");
+                this.HTMLVoteOutput.innerText = "0";
+                vote_output_div.appendChild(this.HTMLVoteOutput);
+                this.HTMLElement = vote_output_div;
+            }
+            getValue() {
+                return Number(this.HTMLVoteOutput.innerText);
+            }
+            setValue(value) {
+                this.HTMLVoteOutput.innerText = value.toString();
+            }
+        };
+        this.DeleteButton = class {
+            constructor(ViewPoll, PollItemDesktopViewer) {
+                let delete_button = document.createElement("button");
+                delete_button.classList.add("DeletePollItemButton");
+                delete_button.onclick = function () {
+                    ViewPoll.removeItem(PollItemDesktopViewer);
+                };
+                //button to delete this item
+                this.HTMLElement = delete_button;
+            }
+        };
+        this.PickWinnerButton = class {
+            constructor() {
+                let pick_winner_div = document.createElement("div");
+                pick_winner_div.classList.add("LayoutToChooseHidden");
+                let glass_div = document.createElement("div");
+                let pick_winner_button_div = document.createElement("div");
+                pick_winner_button_div.classList.add("DivOfChooseButton");
+                this.PickWinnerButton = document.createElement("button");
+                this.PickWinnerButton.classList.add("VoteManagementButton");
+                this.PickWinnerButton.classList.add("ChooseButton");
+                this.PickWinnerButton.value = "false";
+                let pick_button = this;
+                this.PickWinnerButton.onclick = () => {
+                    if (pick_button.IsSelected())
+                        pick_button.Unelected();
+                    else
+                        pick_button.Selected();
+                    this.onChange();
+                };
+                pick_winner_button_div.appendChild(this.PickWinnerButton);
+                glass_div.appendChild(pick_winner_button_div);
+                pick_winner_div.appendChild(pick_winner_button_div);
+                pick_winner_div.appendChild(glass_div);
+                this.HTMLElement = pick_winner_div;
+            }
+            IsSelected() {
+                return this.PickWinnerButton.classList.contains("selected");
+            }
+            Selected() {
+                this.PickWinnerButton.classList.add("selected");
+            }
+            Unelected() {
+                this.PickWinnerButton.classList.remove("selected");
+            }
+            Show() {
+                this.HTMLElement.classList.remove('LayoutToChooseHidden');
+                this.HTMLElement.classList.add('LayoutToChoose');
+            }
+            Hide() {
+                this.HTMLElement.classList.remove('LayoutToChoose');
+                this.HTMLElement.classList.add('LayoutToChooseHidden');
+            }
+        };
+        this.ID = ID;
+        this.ViewPoll = ViewPoll;
+        let view_vote_item_div = document.createElement("div");
+        view_vote_item_div.classList.add("PollItem");
+        let background_div = document.createElement("div");
+        background_div.style.display = 'flex';
+        let NameInput = new this.NameInput();
+        NameInput.onChange = () => this.onChange();
+        this.getNameInputValue = () => NameInput.getValue();
+        this.setNameInputValue = (v) => NameInput.setValue(v);
+        let ColorInput = new this.ColorInput();
+        ColorInput.onChange = () => this.onChange();
+        this.getColorInputValue = () => ColorInput.getValue();
+        this.setColorInputValue = (v) => ColorInput.setValue(v);
+        let VoteCounterOutput = new this.VoteCounterOutput();
+        this.getVoteCounterOutputValue = () => VoteCounterOutput.getValue();
+        this.setVoteCounterOutputValue = (v) => VoteCounterOutput.setValue(v);
+        background_div.appendChild(NameInput.HTMLElement);
+        background_div.appendChild(ColorInput.HTMLElement);
+        background_div.appendChild(VoteCounterOutput.HTMLElement);
+        background_div.appendChild(new this.DeleteButton(ViewPoll, this).HTMLElement);
+        let PickWinnerButton = new this.PickWinnerButton();
+        PickWinnerButton.onChange = () => this.onWinnersButtonsChange();
+        this.setWinner = () => PickWinnerButton.Selected();
+        this.ShowWinnerPick = () => {
+            this.Enable(background_div);
+            PickWinnerButton.Show();
+        };
+        this.HideWinnerPick = () => {
+            this.Disable(background_div);
+            PickWinnerButton.Hide();
+        };
+        this.IsWinner = () => PickWinnerButton.IsSelected();
+        view_vote_item_div.appendChild(background_div);
+        view_vote_item_div.appendChild(PickWinnerButton.HTMLElement);
+        view_vote_item_div.appendChild(background_div);
+        this.HTMLElement = view_vote_item_div;
+    }
+    Enable(background_div) {
+        background_div.classList.add('PollItemInChoose'); // TODO RENAME CSS
+    }
+    Disable(background_div) {
+        background_div.classList.remove('PollItemInChoose');
+    }
+}
 class ViewPollManeger {
     constructor(Poll) {
         this.PollStatus = null;
@@ -277,175 +446,6 @@ class ViewPollManeger {
     }
 }
 exports.ViewPollManeger = ViewPollManeger;
-class PollItemViewer {
-}
-class PollItemDesktopViewer extends PollItemViewer {
-    constructor(ID, ViewPoll) {
-        super();
-        this.NameInput = class {
-            constructor() {
-                let name_input_div = document.createElement("div");
-                name_input_div.style.display = 'flex';
-                let text_name = document.createElement("h3");
-                text_name.innerText = "NOME |";
-                name_input_div.appendChild(text_name);
-                // name to indicate input function
-                this.HTMLNameInput = document.createElement("input");
-                this.HTMLNameInput.type = "text";
-                this.HTMLNameInput.onchange = () => { this.onChange(); };
-                name_input_div.appendChild(this.HTMLNameInput);
-                this.HTMLElement = name_input_div;
-            }
-            getValue() {
-                return this.HTMLNameInput.value;
-            }
-            setValue(v) {
-                this.HTMLNameInput.value = v;
-            }
-        };
-        this.ColorInput = class {
-            constructor() {
-                let color_input_div = document.createElement("div");
-                color_input_div.style.display = 'flex';
-                let text_color = document.createElement("h3");
-                text_color.innerText = "COR |";
-                color_input_div.appendChild(text_color);
-                // name to indicate input function
-                this.HTMLColorInput = document.createElement("input");
-                this.HTMLColorInput.type = "color";
-                this.HTMLColorInput.onchange = () => { this.onChange(); };
-                color_input_div.appendChild(this.HTMLColorInput);
-                this.HTMLElement = color_input_div;
-            }
-            getValue() {
-                return this.HTMLColorInput.value;
-            }
-            setValue(v) {
-                this.HTMLColorInput.value = v;
-            }
-        };
-        this.VoteCounterOutput = class {
-            constructor() {
-                let vote_output_div = document.createElement('div');
-                vote_output_div.style.display = 'contents';
-                vote_output_div.style.width = 'max-content';
-                //vote_output_div.classList.add('');
-                let text_Vote = document.createElement("h3");
-                text_Vote.innerText = "VOTOS |";
-                vote_output_div.appendChild(text_Vote);
-                //name to indicate output function
-                this.HTMLVoteOutput = document.createElement("h3");
-                this.HTMLVoteOutput.classList.add("VoteNumerator");
-                this.HTMLVoteOutput.innerText = "0";
-                vote_output_div.appendChild(this.HTMLVoteOutput);
-                this.HTMLElement = vote_output_div;
-            }
-            getValue() {
-                return Number(this.HTMLVoteOutput.innerText);
-            }
-            setValue(value) {
-                this.HTMLVoteOutput.innerText = value.toString();
-            }
-        };
-        this.DeleteButton = class {
-            constructor(ViewPoll, PollItemDesktopViewer) {
-                let delete_button = document.createElement("button");
-                delete_button.classList.add("DeletePollItemButton");
-                delete_button.onclick = function () {
-                    ViewPoll.removeItem(PollItemDesktopViewer);
-                };
-                //button to delete this item
-                this.HTMLElement = delete_button;
-            }
-        };
-        this.PickWinnerButton = class {
-            constructor() {
-                let pick_winner_div = document.createElement("div");
-                pick_winner_div.classList.add("LayoutToChooseHidden");
-                let glass_div = document.createElement("div");
-                let pick_winner_button_div = document.createElement("div");
-                pick_winner_button_div.classList.add("DivOfChooseButton");
-                this.PickWinnerButton = document.createElement("button");
-                this.PickWinnerButton.classList.add("VoteManagementButton");
-                this.PickWinnerButton.classList.add("ChooseButton");
-                this.PickWinnerButton.value = "false";
-                let pick_button = this;
-                this.PickWinnerButton.onclick = () => {
-                    if (pick_button.IsSelected())
-                        pick_button.Unelected();
-                    else
-                        pick_button.Selected();
-                    this.onChange();
-                };
-                pick_winner_button_div.appendChild(this.PickWinnerButton);
-                glass_div.appendChild(pick_winner_button_div);
-                pick_winner_div.appendChild(pick_winner_button_div);
-                pick_winner_div.appendChild(glass_div);
-                this.HTMLElement = pick_winner_div;
-            }
-            IsSelected() {
-                return this.PickWinnerButton.classList.contains("selected");
-            }
-            Selected() {
-                this.PickWinnerButton.classList.add("selected");
-            }
-            Unelected() {
-                this.PickWinnerButton.classList.remove("selected");
-            }
-            Show() {
-                this.HTMLElement.classList.remove('LayoutToChooseHidden');
-                this.HTMLElement.classList.add('LayoutToChoose');
-            }
-            Hide() {
-                this.HTMLElement.classList.remove('LayoutToChoose');
-                this.HTMLElement.classList.add('LayoutToChooseHidden');
-            }
-        };
-        this.ID = ID;
-        this.ViewPoll = ViewPoll;
-        let view_vote_item_div = document.createElement("div");
-        view_vote_item_div.classList.add("PollItem");
-        let background_div = document.createElement("div");
-        background_div.style.display = 'flex';
-        let NameInput = new this.NameInput();
-        NameInput.onChange = () => this.onChange();
-        this.getNameInputValue = () => NameInput.getValue();
-        this.setNameInputValue = (v) => NameInput.setValue(v);
-        let ColorInput = new this.ColorInput();
-        ColorInput.onChange = () => this.onChange();
-        this.getColorInputValue = () => ColorInput.getValue();
-        this.setColorInputValue = (v) => ColorInput.setValue(v);
-        let VoteCounterOutput = new this.VoteCounterOutput();
-        this.getVoteCounterOutputValue = () => VoteCounterOutput.getValue();
-        this.setVoteCounterOutputValue = (v) => VoteCounterOutput.setValue(v);
-        background_div.appendChild(NameInput.HTMLElement);
-        background_div.appendChild(ColorInput.HTMLElement);
-        background_div.appendChild(VoteCounterOutput.HTMLElement);
-        background_div.appendChild(new this.DeleteButton(ViewPoll, this).HTMLElement);
-        let PickWinnerButton = new this.PickWinnerButton();
-        PickWinnerButton.onChange = () => this.onWinnersButtonsChange();
-        this.setWinner = () => PickWinnerButton.Selected();
-        this.ShowWinnerPick = () => {
-            this.Enable(background_div);
-            PickWinnerButton.Show();
-        };
-        this.HideWinnerPick = () => {
-            this.Disable(background_div);
-            PickWinnerButton.Hide();
-        };
-        this.IsWinner = () => PickWinnerButton.IsSelected();
-        view_vote_item_div.appendChild(background_div);
-        view_vote_item_div.appendChild(PickWinnerButton.HTMLElement);
-        view_vote_item_div.appendChild(background_div);
-        this.HTMLElement = view_vote_item_div;
-    }
-    Enable(background_div) {
-        background_div.classList.add('PollItemInChoose'); // TODO RENAME CSS
-    }
-    Disable(background_div) {
-        background_div.classList.remove('PollItemInChoose');
-    }
-}
 class ViewSettings {
     constructor() {
         this.HourlyRewardInput = document.getElementById('HourlyRewardInput');

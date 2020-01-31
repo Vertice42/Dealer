@@ -16,6 +16,7 @@ const links_1 = require("./links");
 const dbMinerManager_1 = require("./modules/database/miner/dbMinerManager");
 const PollController_1 = require("./controller/PollController");
 const dbStreamerManager_1 = require("./modules/database/dbStreamerManager");
+const dbWalletManager_1 = require("./modules/database/miner/dbWalletManager");
 const app = express();
 exports.app = app;
 app.use(cors());
@@ -189,4 +190,13 @@ app.post(links_1.default.MinerCoin, function (req, res) {
         res.status(500).send(reje);
         console.log(reje);
     });
+});
+app.get(links_1.default.GetWallet, function (req, res) {
+    new dbWalletManager_1.WalletManeger(req.params.StreamerID, req.params.TwitchUserID)
+        .getWallet().then((wallet) => {
+        res.status(200).send(wallet);
+    });
+});
+app.get('/T', function (req, res) {
+    res.status(200).send('??????????????????');
 });

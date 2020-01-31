@@ -12,7 +12,7 @@ const GRADIENT_DARKENING_RATE = 1.5;
 class GameBoard {
     constructor() {
         this.SelectedButtonID = null;
-        this.OnInpustsChange = () => { };
+        this.OnBeatChange = () => { };
         this.CoinsOfUserView = document.getElementById("CoinsOfUserView");
         this.ParticipatePollButton = document.getElementById("ParticipatePollButton");
         this.BetAmountInput = document.getElementById("BetAmountInput");
@@ -73,7 +73,7 @@ class GameBoard {
         this.BetAmountInput.onmouseleave = () => this.EnableRelocatableElemente(this.AlertsDiv);
         this.ParticipatePollButton.onclick = () => this.onclickOfParticipatePollButton();
         this.getBetValue = () => { return Number(this.BetAmountInput.value); };
-        this.BetAmountInput.onchange = () => this.OnInpustsChange();
+        this.BetAmountInput.onchange = () => this.OnBeatChange();
     }
     DepositAnimation(Coin, CoinNumber, onStart, onEnd) {
         Coin.classList.add('Coin');
@@ -253,7 +253,7 @@ class GameBoard {
             buttons.push(button);
             button.onSelected = () => {
                 this.SelectedButtonID = pollButton.ID;
-                this.OnInpustsChange();
+                this.OnBeatChange();
                 buttons.forEach(Button => {
                     Button.Unelect();
                 });
@@ -283,4 +283,4 @@ class GameBoard {
         });
     }
 }
-exports.GameBoard = GameBoard;
+exports.default = new GameBoard;

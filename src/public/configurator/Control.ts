@@ -47,9 +47,7 @@ twitch.onContext((context) => {
 twitch.onAuthorized(async (auth) => {
     token = auth.token;
     StreamerID = auth.channelId.toLowerCase();
-    console.log('jud');
     let Poll = await BackendConnections.getCurrentPoll(StreamerID);
-    console.log(Poll);
 
     ViewPoll = new ViewConfig.ViewPollManeger(Poll);
     let watchPoll: WatchPoll;
@@ -108,8 +106,7 @@ twitch.onAuthorized(async (auth) => {
 
     const VIEW_SETTINGS = new ViewConfig.ViewSettings();
 
-    let minerSettings = await BackendConnections.GetMiner(StreamerID)
-    console.log(minerSettings);
+    let minerSettings = await BackendConnections.GetMiner(StreamerID);
 
     VIEW_SETTINGS.HourlyRewardInput.value = (minerSettings.RewardPerMinute * 60).toString();
 

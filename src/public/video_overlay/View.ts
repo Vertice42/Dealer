@@ -10,9 +10,9 @@ function hexToRgb(hex) {
 }
 const GRADIENT_DARKENING_RATE = 1.5;
 
-export class GameBoard {
+class GameBoard {
     public SelectedButtonID: number = null;
-    public OnInpustsChange = () => { };
+    public OnBeatChange = () => { };
     public getBetValue: () => number;
 
     public CoinsOfUserView = <HTMLElement>document.getElementById("CoinsOfUserView");
@@ -302,7 +302,7 @@ export class GameBoard {
             buttons.push(button);
             button.onSelected = () => {                
                 this.SelectedButtonID = pollButton.ID;
-                this.OnInpustsChange();
+                this.OnBeatChange();
                 buttons.forEach(Button => {
                     Button.Unelect();
                 });
@@ -345,6 +345,8 @@ export class GameBoard {
         this.ParticipatePollButton.onclick = () => this.onclickOfParticipatePollButton();
 
         this.getBetValue = () => { return Number(this.BetAmountInput.value); }
-        this.BetAmountInput.onchange = () => this.OnInpustsChange();
+        this.BetAmountInput.onchange = () => this.OnBeatChange();
     }
 }
+
+export default new GameBoard;

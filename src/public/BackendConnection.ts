@@ -1,5 +1,5 @@
 import { reject, resolve } from 'bluebird';
-import path from '../services/links';
+import link from '../services/links';
 import ServerConfigs from '../services/configs/ServerConfigs';
 import { PollStatus } from '../services/models/poll/PollStatus';
 import { PollButton } from '../services/models/poll/PollButton';
@@ -9,23 +9,23 @@ const host = 'http://localhost:' + (ServerConfigs.Port || process.env.Port);
 
 export async function getCurrentPoll(StreamerID: string) {
   /* Use fetch to communicate to backend and get current voting */
-  return fetch(host + path.getPoll(StreamerID), {
+  return fetch(host + link.getPoll(StreamerID), {
     method: "GET"
-  }).then(function (res) {    
+  }).then(function (res) {
     console.log(res);
-    
+
     if (res.ok) return res.json()
     else return reject(res);
-  }).catch((rej) => {   
+  }).catch((rej) => {
     console.log(rej);
-     
-    return rej.json().then((res)=>{console.error(res)});
+
+    return rej.json().then((res) => { console.error(res) });
   })
 }
 export class WatchPoll {
   public onWatch = null;
-  public onPollChange = null;
 
+  private onPollChange = null;
   private Stop = null;
   private LastUpdate = 0;
   private StreamerID: string
@@ -53,16 +53,22 @@ export class WatchPoll {
       setTimeout(() => {
         if (!this.Stop) this.Watch();
       }, 3000);
-    })
+    });
   }
 
   start() {
     if (this.Stop === null) this.Watch();
 
     this.Stop = false;
+    return this;
   }
   stop() {
     this.Stop = true;
+    return this;
+  }
+  setOnPollChange(onPollChange) {
+    this.onPollChange = onPollChange;
+    return this;
   }
 }
 
@@ -72,7 +78,7 @@ export async function SendToPollManager(StreamerID: String, PollButtons: PollBut
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
-  return fetch(host + path.PollManager, {
+  return fetch(host + link.PollManager, {
     method: "POST",
     headers: H,
     body: JSON.stringify({
@@ -99,7 +105,7 @@ export async function SendToMinerManager(StreamerID: String, Setting: MinerSetti
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
-  return fetch(host + path.MinerManager, {
+  return fetch(host + link.MinerManager, {
     method: "POST",
     headers: H,
     body: JSON.stringify({
@@ -124,7 +130,7 @@ export async function addBet(StreamerID: string, TwitchUserID: string,
   IdOfVote: number, BetAmount: number): Promise<any> {
   let H = new Headers();
   H.append("Content-Type", "application/json");
-  fetch(host + path.addVote, {
+  fetch(host + link.addVote, {
     method: "POST",
     headers: H,
     body: JSON.stringify({
@@ -148,7 +154,7 @@ export async function addBet(StreamerID: string, TwitchUserID: string,
 }
 
 export async function GetMiner(StreamerID: string) {
-  return fetch(host + path.getMiner(StreamerID), {
+  return fetch(host + link.getMiner(StreamerID), {
     method: "GET"
   }).then(function (res) {
     if (res.ok) return resolve(res)
@@ -167,7 +173,7 @@ export async function GetMiner(StreamerID: string) {
 export async function MineCoin(StreamerID: string, TwitchUserID: string) {
   let H = new Headers();
   H.append("Content-Type", "application/json");
-  return fetch(host + path.MinerCoin, {
+  return fetch(host + link.MinerCoin, {
     method: "POST",
     headers: H,
     body: JSON.stringify({
@@ -188,4 +194,16 @@ export async function MineCoin(StreamerID: string, TwitchUserID: string) {
   });
 }
 
+export async function GetWallet(StreamerID: string, TwitchUserID: string) {
+  return fetch(host + link.getWallet(StreamerID, TwitchUserID), {
+    method: "GET"
+  }).then(function (res) {
+    if (res.ok)
+      return resolve(res.json())
+    else
+      return reject(res.json());
+  }).catch((rej) => {
+    console.log(rej);
 
+  })
+}

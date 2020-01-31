@@ -68,9 +68,15 @@ class WatchPoll {
         if (this.Stop === null)
             this.Watch();
         this.Stop = false;
+        return this;
     }
     stop() {
         this.Stop = true;
+        return this;
+    }
+    setOnPollChange(onPollChange) {
+        this.onPollChange = onPollChange;
+        return this;
     }
 }
 exports.WatchPoll = WatchPoll;
@@ -212,3 +218,18 @@ function MineCoin(StreamerID, TwitchUserID) {
     });
 }
 exports.MineCoin = MineCoin;
+function GetWallet(StreamerID, TwitchUserID) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return fetch(host + links_1.default.getWallet(StreamerID, TwitchUserID), {
+            method: "GET"
+        }).then(function (res) {
+            if (res.ok)
+                return bluebird_1.resolve(res.json());
+            else
+                return bluebird_1.reject(res.json());
+        }).catch((rej) => {
+            console.log(rej);
+        });
+    });
+}
+exports.GetWallet = GetWallet;

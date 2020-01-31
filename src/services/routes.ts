@@ -15,6 +15,8 @@ import { PollController } from "./controller/PollController";
 import { MiningResult } from "./models/miner/MiningResult";
 import UpdateButtonGroupResult from "./models/poll/UpdateButtonGroupResult";
 import { dbStreamerManager } from "./modules/database/dbStreamerManager";
+import { dbWallet } from "./models/poll/dbWallet";
+import { WalletManeger } from "./modules/database/miner/dbWalletManager";
 
 const app = express();
 app.use(cors());
@@ -53,7 +55,7 @@ app.post(links.PollManager, async function (req: PollRequest, res: express.Respo
 
     let PoolUpdateResult: { UpdatePollStatusRes: PollStatus, UpdateButtonGroupRes: UpdateButtonGroupResult };
     let DistribuitionResult: { DistributionStarted: Date; };
-    
+
     let AccountData = dbStreamerManager.getAccountData(req.body.StreamerID);
     if (AccountData.CurrentPollStatus.PollWaxed)
         return res.status(200).send(pollController.CreatePoll());
@@ -61,7 +63,7 @@ app.post(links.PollManager, async function (req: PollRequest, res: express.Respo
 
         if (req.body.NewPollStatus) {
             AccountData.CurrentPollStatus = req.body.NewPollStatus;
-            PoolUpdateResult = await pollController.UpdatePoll(req.body.PollButtons);            
+            PoolUpdateResult = await pollController.UpdatePoll(req.body.PollButtons);
 
             if (AccountData.CurrentPollStatus.InDistribution &&
                 !AccountData.CurrentPollStatus.PollWaxed &&
@@ -197,9 +199,22 @@ app.post(links.MinerCoin, function (req: MinerRequest, res: express.Response) {
 
     MinerManeger.MineCoin(req.body.StreamerID, req.body.TwitchUserID)
         .then((resolve: MiningResult) => { res.status(200).send(resolve) })
-        .catch((reje) => { res.status(500).send(reje);console.log(reje);
-         });
+        .catch((reje) => {
+            res.status(500).send(reje); console.log(reje);
+        });
 
+});
+
+app.get(links.GetWallet, function (req: express.Request, res: express.Response) {
+    new WalletManeger(req.params.StreamerID, req.params.TwitchUserID)
+        .getWallet().then((wallet) => {
+            res.status(200).send(wallet);
+        })
+});
+
+app.get('/T', function (req: express.Request, res: express.Response) {
+            res.status(200).send('??????????????????');
+      
 });
 
 export { app };
