@@ -170,7 +170,7 @@ export async function GetMiner(StreamerID: string) {
 export async function MineCoin(StreamerID: string, TwitchUserID: string) {
   let H = new Headers();
   H.append("Content-Type", "application/json");
-  return fetch(host + link.MinerCoin, {
+  return fetch(host + link.MineCoin, {
     method: "POST",
     headers: H,
     body: JSON.stringify({

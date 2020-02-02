@@ -9,7 +9,9 @@ class Miner {
         this.onSuccess = onSuccess;
     }
     onSuccessfullyMined(MiningResponse) {
-        this.onSuccess(MiningResponse);
+        let CoinsAddedOrSubtracted = ~~MiningResponse.CoinsOfUser - this.CoinsOfUser;
+        this.CoinsOfUser = MiningResponse.CoinsOfUser;
+        this.onSuccess(this.CoinsOfUser, CoinsAddedOrSubtracted);
         setTimeout(() => { this.TryToMine(); }, MiningResponse.MinimumTimeToMine);
     }
     TryToMine() {
@@ -18,6 +20,7 @@ class Miner {
             this.onSuccessfullyMined(res);
         })
             .catch((error) => {
+            console.log(error);
             console.log('Error connecting to Mine Service, next attempt in 3s');
             setTimeout(() => {
                 this.TryToMine();

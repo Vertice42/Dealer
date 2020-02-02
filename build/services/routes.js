@@ -12,11 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const BodyParcer = require("body-parser");
 const cors = require("cors");
-const links_1 = require("./links");
 const dbMinerManager_1 = require("./modules/database/miner/dbMinerManager");
 const PollController_1 = require("./controller/PollController");
 const dbStreamerManager_1 = require("./modules/database/dbStreamerManager");
 const dbWalletManager_1 = require("./modules/database/miner/dbWalletManager");
+const links_1 = require("./links");
 const app = express();
 exports.app = app;
 app.use(cors());
@@ -171,7 +171,7 @@ app.get(links_1.default.GetSettings, function (req, res) {
         res.status(500).send(rej);
     });
 });
-app.post(links_1.default.MinerCoin, function (req, res) {
+app.post(links_1.default.MineCoin, function (req, res) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)

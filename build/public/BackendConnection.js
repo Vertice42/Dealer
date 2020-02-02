@@ -193,7 +193,7 @@ function MineCoin(StreamerID, TwitchUserID) {
     return __awaiter(this, void 0, void 0, function* () {
         let H = new Headers();
         H.append("Content-Type", "application/json");
-        return fetch(host + links_1.default.MinerCoin, {
+        return fetch(host + links_1.default.MineCoin, {
             method: "POST",
             headers: H,
             body: JSON.stringify({

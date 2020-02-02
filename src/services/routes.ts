@@ -1,7 +1,6 @@
 import express = require("express");
 import BodyParcer = require("body-parser");
 import cors = require("cors");
-import links from "./links";
 import { PollRequest } from "./models/poll/PollRequest";
 import { PollButton } from "./models/poll/PollButton";
 import { PollStatus } from "./models/poll/PollStatus";
@@ -15,8 +14,8 @@ import { PollController } from "./controller/PollController";
 import { MiningResponse } from "./models/miner/MiningResponse";
 import UpdateButtonGroupResult from "./models/poll/UpdateButtonGroupResult";
 import { dbStreamerManager } from "./modules/database/dbStreamerManager";
-import { dbWallet } from "./models/poll/dbWallet";
 import { WalletManeger } from "./modules/database/miner/dbWalletManager";
+import links from "./links";
 
 const app = express();
 app.use(cors());
@@ -184,7 +183,7 @@ app.get(links.GetSettings, function (req: { params: { StreamerID: string } }, re
         })
 });
 
-app.post(links.MinerCoin, function (req: MinerRequest, res: express.Response) {
+app.post(links.MineCoin, function (req: MinerRequest, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -199,7 +198,7 @@ app.post(links.MinerCoin, function (req: MinerRequest, res: express.Response) {
 
     MinerManeger.MineCoin(req.body.StreamerID, req.body.TwitchUserID)
         .then((resolve: MiningResponse) => { res.status(200).send(resolve) })
-        .catch((reje) => {
+        .catch((reje) => {            
             res.status(500).send(reje); console.log(reje);
         });
 

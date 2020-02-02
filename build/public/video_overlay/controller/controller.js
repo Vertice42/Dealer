@@ -92,18 +92,16 @@ twitch.onAuthorized((auth) => __awaiter(void 0, void 0, void 0, function* () {
     let WalletOfUser = yield BackendConnection_1.GetWallet(StreamerID, TwitchUserID);
     twitch.rig.log(WalletOfUser.Coins.toString());
     gameBoard.CoinsOfUserView.innerText = (~~WalletOfUser.Coins).toString();
-    new Wallet_1.Miner(StreamerID, TwitchUserID, WalletOfUser.Coins, (MiningResponse) => {
-        let diference = ~~MiningResponse.CoinsOfUser - this.CoinsOfUser;
-        if (diference > 0) {
-            gameBoard.startDepositAnimation(~~diference + 1);
+    new Wallet_1.Miner(StreamerID, TwitchUserID, WalletOfUser.Coins, (CurrentCoinsOfUsernulber, CoinsAddedOrSubtracted) => {
+        if (CoinsAddedOrSubtracted > 0) {
+            gameBoard.startDepositAnimation(~~CoinsAddedOrSubtracted + 1);
         }
         else {
-            if (diference <= -1) {
-                gameBoard.startWithdrawalAnimation((~~diference + 1) * -1);
+            if (CoinsAddedOrSubtracted <= -1) {
+                gameBoard.startWithdrawalAnimation((~~CoinsAddedOrSubtracted + 1) * -1);
             }
         }
-        this.CoinsOfUser = MiningResponse.CoinsOfUser;
-        gameBoard.CoinsOfUserView.innerText = (~~this.CoinsOfUser).toString();
+        gameBoard.CoinsOfUserView.innerText = (~~CurrentCoinsOfUsernulber).toString();
         //TODO ADD METODO PARA MUDAR UI}).startMining()
     }).startMining();
 }));

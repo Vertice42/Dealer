@@ -6,16 +6,19 @@ export class Miner {
     StreamerID: string;
     TwitchUserID: string;
     CoinsOfUser: number;
-    onSuccess: (arg0: MiningResponse) => void
+    onSuccess: (arg0: number, arg1: number) => void
 
-    constructor(StreamerID: string, TwitchUserID: string, CoinsOfUser: number, onSuccess:(arg0: MiningResponse) => void) {
+    constructor(StreamerID: string, TwitchUserID: string, CoinsOfUser: number, onSuccess: (arg0: number, arg1: number) => void) {
         this.StreamerID = StreamerID;
         this.TwitchUserID = TwitchUserID;
         this.CoinsOfUser = CoinsOfUser;
         this.onSuccess = onSuccess;
     }
     private onSuccessfullyMined(MiningResponse: MiningResponse) {
-        this.onSuccess(MiningResponse);
+        let CoinsAddedOrSubtracted = ~~MiningResponse.CoinsOfUser - this.CoinsOfUser;
+        this.CoinsOfUser = MiningResponse.CoinsOfUser;
+
+        this.onSuccess(this.CoinsOfUser, CoinsAddedOrSubtracted);
         setTimeout(() => { this.TryToMine() }, MiningResponse.MinimumTimeToMine);
     }
 
@@ -25,6 +28,7 @@ export class Miner {
                 this.onSuccessfullyMined(res);
             })
             .catch((error) => {
+                console.log(error);
                 console.log('Error connecting to Mine Service, next attempt in 3s');
                 setTimeout(() => {
                     this.TryToMine();
