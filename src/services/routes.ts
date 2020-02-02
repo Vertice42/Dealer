@@ -12,7 +12,7 @@ import { MinerManagerRequest } from "./models/miner/MinerManagerRequest";
 import { MinerSettings } from "./models/miner/MinerSettings";
 import { MinerRequest } from "./models/miner/MinerRequest";
 import { PollController } from "./controller/PollController";
-import { MiningResult } from "./models/miner/MiningResult";
+import { MiningResponse } from "./models/miner/MiningResponse";
 import UpdateButtonGroupResult from "./models/poll/UpdateButtonGroupResult";
 import { dbStreamerManager } from "./modules/database/dbStreamerManager";
 import { dbWallet } from "./models/poll/dbWallet";
@@ -198,7 +198,7 @@ app.post(links.MinerCoin, function (req: MinerRequest, res: express.Response) {
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
 
     MinerManeger.MineCoin(req.body.StreamerID, req.body.TwitchUserID)
-        .then((resolve: MiningResult) => { res.status(200).send(resolve) })
+        .then((resolve: MiningResponse) => { res.status(200).send(resolve) })
         .catch((reje) => {
             res.status(500).send(reje); console.log(reje);
         });

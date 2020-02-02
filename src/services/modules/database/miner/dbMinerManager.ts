@@ -2,7 +2,7 @@ import { resolve, } from "bluebird";
 import { Loading } from "../dbLoading";
 import { MinerSettings, MinimunTimeForMining } from "../../../models/miner/MinerSettings";
 import { WalletManeger } from "./dbWalletManager";
-import { MiningResult } from "../../../models/miner/MiningResult";
+import { MiningResponse } from "../../../models/miner/MiningResponse";
 import { dbStreamerManager } from "../dbStreamerManager";
 
 export class MinerManeger {
@@ -50,7 +50,7 @@ export class MinerManeger {
         if (!TimeBetweenAttempts || TimeBetweenAttempts > MinimunTimeForMining)
             await walletManeger.deposit(AccountData.MinerSettings.RewardPerMining)
 
-        return new MiningResult(TimeBetweenAttempts, (await walletManeger.getWallet()).Coins);
+        return new MiningResponse(TimeBetweenAttempts, (await walletManeger.getWallet()).Coins,MinimunTimeForMining);
 
     }
 }

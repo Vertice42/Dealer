@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class MiningResult {
-    constructor(TimeBetweenLastMiningAttemptAndNow, CoinsOfUser) {
+class MiningResponse {
+    constructor(TimeBetweenLastMiningAttemptAndNow, CoinsOfUser, MinimumTimeToMine) {
         this.TimeBetweenLastMiningAttemptAndNow = TimeBetweenLastMiningAttemptAndNow;
         this.CoinsOfUser = CoinsOfUser;
+        this.MinimumTimeToMine = MinimumTimeToMine;
     }
 }
-exports.MiningResult = MiningResult;
+exports.MiningResponse = MiningResponse;

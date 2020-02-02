@@ -19,7 +19,6 @@ function getCurrentPoll(StreamerID) {
         return fetch(host + links_1.default.getPoll(StreamerID), {
             method: "GET"
         }).then(function (res) {
-            console.log(res);
             if (res.ok)
                 return res.json();
             else

@@ -4,7 +4,7 @@ let dir = __dirname.replace("src",'build');
 
 module.exports = {
   watch: true,
-  entry: "./controller/Control",
+  entry: "./controller/controller",
   mode: 'development',
   module: {
     rules: [

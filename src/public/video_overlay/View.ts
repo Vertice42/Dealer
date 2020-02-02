@@ -10,30 +10,30 @@ function hexToRgb(hex) {
 }
 const GRADIENT_DARKENING_RATE = 1.5;
 
-class GameBoard {
+export class GameBoard {
     public SelectedButtonID: number = null;
     public OnBeatChange = () => { };
     public getBetValue: () => number;
 
-    public CoinsOfUserView = <HTMLElement>document.getElementById("CoinsOfUserView");
+    public CoinsOfUserView        = <HTMLElement>document.getElementById("CoinsOfUserView");
 
-    private ParticipatePollButton = document.getElementById("ParticipatePollButton");
-    private BetAmountInput = <HTMLInputElement>document.getElementById("BetAmountInput");
+    private ParticipatePollButton = <HTMLInputElement>document.getElementById("ParticipatePollButton");
+    private BetAmountInput        = <HTMLInputElement>document.getElementById("BetAmountInput");
 
-    private AlertsDiv = <HTMLDivElement>document.getElementById("AlertsDiv");
-    private PollAlert = <HTMLDivElement>document.getElementById("PollAlert");
-    private StopAlert = <HTMLDivElement>document.getElementById("StopAlert");
+    private AlertsDiv             = <HTMLDivElement>document.getElementById("AlertsDiv");
+    private PollAlert             = <HTMLDivElement>document.getElementById("PollAlert");
+    private StopAlert             = <HTMLDivElement>document.getElementById("StopAlert");
 
-    private AlertOfWinner = <HTMLDivElement>document.getElementById("AlertOfWinner");
-    private EarningsView = <HTMLDivElement>document.getElementById("EarningsView");
+    private AlertOfWinner         = <HTMLDivElement>document.getElementById("AlertOfWinner");
+    private EarningsView          = <HTMLDivElement>document.getElementById("EarningsView");
 
-    private AlertOfLoser = <HTMLDivElement>document.getElementById("AlertOfLoser");
-    private LossView = <HTMLDivElement>document.getElementById("LossView");
+    private AlertOfLoser          = <HTMLDivElement>document.getElementById("AlertOfLoser");
+    private LossView              = <HTMLDivElement>document.getElementById("LossView");
 
-    private WalletDiv = <HTMLDivElement>document.getElementById("WalletDiv");
-    private CoinsDiv = <HTMLDivElement>document.getElementById("CoinsDiv");
-    private PollDiv = <HTMLDivElement>document.getElementById("PollDiv");
-    private ButtonsDiv = <HTMLDivElement>document.getElementById("ButtonsDiv");
+    private WalletDiv             = <HTMLDivElement>document.getElementById("WalletDiv");
+    private CoinsDiv              = <HTMLDivElement>document.getElementById("CoinsDiv");
+    private PollDiv               = <HTMLDivElement>document.getElementById("PollDiv");
+    private ButtonsDiv            = <HTMLDivElement>document.getElementById("ButtonsDiv");
 
     DepositAnimation(Coin: HTMLDivElement, CoinNumber: number, onStart: () => void, onEnd: () => void) {
         Coin.classList.add('Coin');
@@ -195,7 +195,7 @@ class GameBoard {
         Element.onmouseup = null;
     }
 
-    private ShowDiv(div: HTMLDivElement) {
+    private ShowAllert(div: HTMLDivElement) {
         div.classList.remove("Disable");
         div.classList.remove("Hidden");
         div.classList.add("Enable");
@@ -203,43 +203,40 @@ class GameBoard {
 
     }
 
-    HideDiv(div: HTMLDivElement, onHide) {
-        if (onHide) {
-            let onEnd = function () {
-                    if (div.classList.contains('Disable')) {
-                        div.classList.remove("Alert");
-                        div.classList.add("Hidden");
-                        onHide();
+    HideAllert(div: HTMLDivElement) {
+        return new Promise((resolve, reject) => {
+            if (div.classList.contains("Disable")) {
+                resolve();
+            } else {
 
-                        div.removeEventListener('animationend', onEnd)
-                    } else onHide();
+                function onEnd() {
+                    div.classList.remove("Alert");
+                    div.classList.add("Hidden");
+
+                    div.onanimationend = null;
+                    div.removeEventListener('animationend', onEnd)
+                    resolve();
                 }
-            div.classList.remove("Enable");
-            setTimeout(() => {
-                if (!div.classList.contains('Disable')) {
-                    div.addEventListener('animationend', onEnd);
-                    div.classList.add("Disable");
-                } else onHide();
+                div.addEventListener('animationend', onEnd);
 
-            }, 10);
-        }
+                div.classList.remove("Enable");
+                div.classList.add("Disable");
+            }
+        })
     }
 
-    HideAll(onAllHide) {
-        this.HideDiv(this.PollAlert, () => {
-            this.HideDiv(this.StopAlert, () => {
-                this.HideDiv(this.AlertOfWinner, () => {
-                    this.HideDiv(this.AlertOfLoser, () => {
-                        this.HideDiv(this.PollDiv, onAllHide);
-                    });
-                });
-            });
-        });
+    async HideAllAlerts() {
+        return Promise.all([
+            this.HideAllert(this.PollAlert),
+            this.HideAllert(this.StopAlert),
+            this.HideAllert(this.AlertOfWinner),
+            this.HideAllert(this.AlertOfLoser),
+            this.HideAllert(this.PollDiv)])
     }
 
-    private onclickOfParticipatePollButton = function () {
-        this.HideAll(() => {
-            this.ShowDiv(this.PollDiv);
+    private onclickOfParticipatePollButton() {
+        this.HideAllAlerts().then(() => {
+            this.ShowAllert(this.PollDiv)
         });
     };
 
@@ -300,7 +297,7 @@ class GameBoard {
         PollButtons.forEach(pollButton => {
             let button = new this.ViewPollButton(pollButton);
             buttons.push(button);
-            button.onSelected = () => {                
+            button.onSelected = () => {
                 this.SelectedButtonID = pollButton.ID;
                 this.OnBeatChange();
                 buttons.forEach(Button => {
@@ -312,26 +309,29 @@ class GameBoard {
     }
 
     setInBetMode(PollButtons: PollButton[]) {
-        this.setButtonsInPollDiv(PollButtons)
-        this.ShowDiv(this.PollAlert)
+        this.HideAllAlerts().then(() => {
+            this.setButtonsInPollDiv(PollButtons);
+            this.ShowAllert(this.PollAlert);
+        })
+
     }
 
     setInStopMode() {
-        this.HideAll(() => {
-            this.ShowDiv(this.StopAlert);
+        this.HideAllAlerts().then(() => {
+            this.ShowAllert(this.StopAlert);
         });
     }
 
     setInWinnerMode(LossDistributorOfPoll) {
-        this.HideAll(() => {
-            this.ShowDiv(this.AlertOfWinner);
+        this.HideAllAlerts().then(() => {
+            this.ShowAllert(this.AlertOfWinner);
             this.EarningsView.innerText = (this.getBetValue() * LossDistributorOfPoll).toString();
         })
     }
 
     setInLoserMode() {
-        this.HideAll(() => {
-            this.ShowDiv(this.AlertOfLoser);
+        this.HideAllAlerts().then(() => {
+            this.ShowAllert(this.AlertOfLoser);
             this.LossView.innerText = this.getBetValue().toString();
         });
     }
@@ -348,5 +348,3 @@ class GameBoard {
         this.BetAmountInput.onchange = () => this.OnBeatChange();
     }
 }
-
-export default new GameBoard;

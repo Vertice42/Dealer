@@ -12,13 +12,10 @@ export async function getCurrentPoll(StreamerID: string) {
   return fetch(host + link.getPoll(StreamerID), {
     method: "GET"
   }).then(function (res) {
-    console.log(res);
-
     if (res.ok) return res.json()
     else return reject(res);
   }).catch((rej) => {
     console.log(rej);
-
     return rej.json().then((res) => { console.error(res) });
   })
 }

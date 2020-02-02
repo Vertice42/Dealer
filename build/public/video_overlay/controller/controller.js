@@ -11,8 +11,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("../../../utils/utils");
 const BackendConnection_1 = require("../../BackendConnection");
-const View_1 = require("../../video_overlay/View");
 const Wallet_1 = require("../modules/Wallet");
+const View_1 = require("../View");
 /*
 function makeid(length) {
   var result = "";
@@ -28,6 +28,7 @@ function makeid(length) {
 var token, StreamerID, TwitchUserID;
 const twitch = window.Twitch.ext;
 var CurrentPollStatus = null;
+var gameBoard = new View_1.GameBoard();
 twitch.onContext((context) => {
     console.log(context);
 });
@@ -49,48 +50,60 @@ twitch.onAuthorized((auth) => __awaiter(void 0, void 0, void 0, function* () {
     token = auth.token;
     StreamerID = auth.channelId.toLowerCase();
     TwitchUserID = auth.userId.toLowerCase();
-    View_1.default.OnBeatChange = () => {
-        if (View_1.default.SelectedButtonID !== undefined)
-            BackendConnection_1.addBet(StreamerID, TwitchUserID, View_1.default.SelectedButtonID, View_1.default.getBetValue());
+    gameBoard.OnBeatChange = () => {
+        if (gameBoard.SelectedButtonID !== undefined)
+            BackendConnection_1.addBet(StreamerID, TwitchUserID, gameBoard.SelectedButtonID, gameBoard.getBetValue());
     };
     new BackendConnection_1.WatchPoll(StreamerID)
-        .setOnPollChange((Poll) => {
+        .setOnPollChange((Poll) => __awaiter(void 0, void 0, void 0, function* () {
         //TODO ADD is bet 
         if (utils_1.isEquivalent(CurrentPollStatus, Poll.PollStatus)) {
-            View_1.default.setButtonsInPollDiv(Poll.PollButtons);
+            gameBoard.setButtonsInPollDiv(Poll.PollButtons);
         }
         else {
             if (Poll.PollStatus.PollWaxed) {
-                View_1.default.HideAll(null);
+                yield gameBoard.HideAllAlerts();
             }
             else {
                 if (Poll.PollStatus.PollStarted) {
                     if (Poll.PollStatus.DistributionCompleted) {
-                        if (!View_1.default.SelectedButtonID) {
-                            View_1.default.HideAll(null);
+                        if (!gameBoard.SelectedButtonID) {
+                            yield gameBoard.HideAllAlerts();
                         }
                         else {
-                            if (IsWinner(Poll.PollButtons, View_1.default.SelectedButtonID))
-                                View_1.default.setInWinnerMode(Poll.LossDistributorOfPoll);
+                            if (IsWinner(Poll.PollButtons, gameBoard.SelectedButtonID))
+                                gameBoard.setInWinnerMode(Poll.LossDistributorOfPoll);
                             else
-                                View_1.default.setInLoserMode();
+                                gameBoard.setInLoserMode();
                         }
                     }
                     else if (Poll.PollStatus.PollStoped) {
-                        View_1.default.setInStopMode();
+                        gameBoard.setInStopMode();
                     }
                     else if (Poll.PollStatus.PollStarted) {
-                        View_1.default.setInBetMode(Poll.PollButtons);
+                        gameBoard.setInBetMode(Poll.PollButtons);
                     }
                 }
             }
             CurrentPollStatus = Poll.PollStatus;
         }
-    })
+    }))
         .start();
-    twitch.rig.log(new Date().toString());
-    let wallet = yield BackendConnection_1.GetWallet(StreamerID, TwitchUserID);
-    twitch.rig.log(wallet.Coins.toString());
-    View_1.default.CoinsOfUserView.innerText = wallet.Coins.toString();
-    new Wallet_1.Miner(StreamerID, TwitchUserID, wallet.Coins).TryToMine();
+    let WalletOfUser = yield BackendConnection_1.GetWallet(StreamerID, TwitchUserID);
+    twitch.rig.log(WalletOfUser.Coins.toString());
+    gameBoard.CoinsOfUserView.innerText = (~~WalletOfUser.Coins).toString();
+    new Wallet_1.Miner(StreamerID, TwitchUserID, WalletOfUser.Coins, (MiningResponse) => {
+        let diference = ~~MiningResponse.CoinsOfUser - this.CoinsOfUser;
+        if (diference > 0) {
+            gameBoard.startDepositAnimation(~~diference + 1);
+        }
+        else {
+            if (diference <= -1) {
+                gameBoard.startWithdrawalAnimation((~~diference + 1) * -1);
+            }
+        }
+        this.CoinsOfUser = MiningResponse.CoinsOfUser;
+        gameBoard.CoinsOfUserView.innerText = (~~this.CoinsOfUser).toString();
+        //TODO ADD METODO PARA MUDAR UI}).startMining()
+    }).startMining();
 }));

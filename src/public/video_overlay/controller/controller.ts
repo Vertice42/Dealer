@@ -2,10 +2,11 @@ import { PollStatus } from "../../../services/models/poll/PollStatus";
 import { PollButton } from "../../../services/models/poll/PollButton";
 import { isEquivalent } from "../../../utils/utils";
 import { WatchPoll, addBet as addBeat, GetWallet } from "../../BackendConnection";
+import { MiningResponse } from "../../../services/models/miner/MiningResponse";
 import { Poll } from "../../../services/models/poll/Poll";
-import GameBoard from "../../video_overlay/View"
 import { Miner } from "../modules/Wallet";
 import { dbWallet } from "../../../services/models/poll/dbWallet";
+import { GameBoard } from "../View";
 /*
 function makeid(length) {
   var result = "";
@@ -23,6 +24,7 @@ var token, StreamerID, TwitchUserID;
 const twitch = window.Twitch.ext;
 
 var CurrentPollStatus: PollStatus = null;
+var gameBoard = new GameBoard()
 twitch.onContext((context) => {
   console.log(context);
 })
@@ -47,39 +49,39 @@ twitch.onAuthorized(async (auth) => {
   StreamerID = auth.channelId.toLowerCase();
   TwitchUserID = auth.userId.toLowerCase();
 
-  GameBoard.OnBeatChange = () => {
-    if (GameBoard.SelectedButtonID !== undefined)
+  gameBoard.OnBeatChange = () => {
+    if (gameBoard.SelectedButtonID !== undefined)
       addBeat(
         StreamerID,
         TwitchUserID,
-        GameBoard.SelectedButtonID,
-        GameBoard.getBetValue());
+        gameBoard.SelectedButtonID,
+        gameBoard.getBetValue());
   }
 
   new WatchPoll(StreamerID)
-    .setOnPollChange((Poll: Poll) => {
+    .setOnPollChange(async (Poll: Poll) => {
       //TODO ADD is bet 
       if (isEquivalent(CurrentPollStatus, Poll.PollStatus)) {
-        GameBoard.setButtonsInPollDiv(Poll.PollButtons);
+        gameBoard.setButtonsInPollDiv(Poll.PollButtons);
 
       } else {
         if (Poll.PollStatus.PollWaxed) {
-          GameBoard.HideAll(null);
+          await gameBoard.HideAllAlerts();
         } else {
           if (Poll.PollStatus.PollStarted) {
             if (Poll.PollStatus.DistributionCompleted) {
-              if (!GameBoard.SelectedButtonID) {
-                GameBoard.HideAll(null);
+              if (!gameBoard.SelectedButtonID) {
+                await gameBoard.HideAllAlerts();
               } else {
-                if (IsWinner(Poll.PollButtons, GameBoard.SelectedButtonID))
-                  GameBoard.setInWinnerMode(Poll.LossDistributorOfPoll);
+                if (IsWinner(Poll.PollButtons, gameBoard.SelectedButtonID))
+                  gameBoard.setInWinnerMode(Poll.LossDistributorOfPoll);
                 else
-                  GameBoard.setInLoserMode();
+                  gameBoard.setInLoserMode();
               }
             } else if (Poll.PollStatus.PollStoped) {
-              GameBoard.setInStopMode();
+              gameBoard.setInStopMode();
             } else if (Poll.PollStatus.PollStarted) {
-              GameBoard.setInBetMode(Poll.PollButtons);
+              gameBoard.setInBetMode(Poll.PollButtons);
             }
           }
         }
@@ -87,11 +89,25 @@ twitch.onAuthorized(async (auth) => {
       }
     })
     .start();
-  twitch.rig.log(new Date().toString())
-  let wallet: dbWallet = await GetWallet(StreamerID, TwitchUserID);
-  twitch.rig.log(wallet.Coins.toString());
 
-  GameBoard.CoinsOfUserView.innerText = wallet.Coins.toString();
-  new Miner(StreamerID, TwitchUserID, wallet.Coins).TryToMine();
+  let WalletOfUser: dbWallet = await GetWallet(StreamerID, TwitchUserID);
+  twitch.rig.log(WalletOfUser.Coins.toString());
+  gameBoard.CoinsOfUserView.innerText = (~~WalletOfUser.Coins).toString();
 
-})
+  new Miner(StreamerID, TwitchUserID, WalletOfUser.Coins,
+    (MiningResponse: MiningResponse) => {
+      let diference = ~~MiningResponse.CoinsOfUser - this.CoinsOfUser;
+
+      if (diference > 0) {
+        gameBoard.startDepositAnimation(~~diference + 1);
+      }
+      else {
+        if (diference <= -1) {
+          gameBoard.startWithdrawalAnimation((~~diference + 1) * -1);
+        }
+      }
+      this.CoinsOfUser = MiningResponse.CoinsOfUser;
+      gameBoard.CoinsOfUserView.innerText = (~~this.CoinsOfUser).toString();
+      //TODO ADD METODO PARA MUDAR UI}).startMining()
+    }).startMining()
+});

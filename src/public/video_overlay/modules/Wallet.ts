@@ -1,39 +1,26 @@
-import { MiningResult } from "../../../services/models/miner/MiningResult";
-import GameBoard from "../../video_overlay/View"
+import { MiningResponse } from "../../../services/models/miner/MiningResponse";
 import { MineCoin } from "../../BackendConnection";
 
 export class Miner {
 
     StreamerID: string;
     TwitchUserID: string;
-    CoinsOfUser:number;
+    CoinsOfUser: number;
+    onSuccess: (arg0: MiningResponse) => void
 
-    constructor(StreamerID: string, TwitchUserID: string, CoinsOfUser) {
+    constructor(StreamerID: string, TwitchUserID: string, CoinsOfUser: number, onSuccess:(arg0: MiningResponse) => void) {
         this.StreamerID = StreamerID;
         this.TwitchUserID = TwitchUserID;
         this.CoinsOfUser = CoinsOfUser;
+        this.onSuccess = onSuccess;
     }
-    private onSuccessfullyMined(MiningResponse: MiningResult) {
-        let diference = ~~MiningResponse.CoinsOfUser - this.CoinsOfUser;
-
-        if (diference > 0) {
-            GameBoard.startDepositAnimation(~~diference + 1);
-        }
-        else {
-            if (diference <= -1) {
-                GameBoard.startWithdrawalAnimation((~~diference + 1) * -1);
-            }
-        }
-        this.CoinsOfUser = MiningResponse.CoinsOfUser;
-        GameBoard.CoinsOfUserView.innerText = (~~this.CoinsOfUser).toString();
-
-        setTimeout(() => {
-            this.TryToMine()
-        }, 1000);
+    private onSuccessfullyMined(MiningResponse: MiningResponse) {
+        this.onSuccess(MiningResponse);
+        setTimeout(() => { this.TryToMine() }, MiningResponse.MinimumTimeToMine);
     }
 
-    async TryToMine() {
-        return MineCoin(this.StreamerID, this.TwitchUserID)
+    private TryToMine() {
+        MineCoin(this.StreamerID, this.TwitchUserID)
             .then((res) => {
                 this.onSuccessfullyMined(res);
             })
@@ -43,5 +30,8 @@ export class Miner {
                     this.TryToMine();
                 }, 3000);
             })
+    }
+    startMining() {
+        this.TryToMine()
     }
 }

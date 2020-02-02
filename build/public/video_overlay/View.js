@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 function hexToRgb(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -27,11 +36,6 @@ class GameBoard {
         this.CoinsDiv = document.getElementById("CoinsDiv");
         this.PollDiv = document.getElementById("PollDiv");
         this.ButtonsDiv = document.getElementById("ButtonsDiv");
-        this.onclickOfParticipatePollButton = function () {
-            this.HideAll(() => {
-                this.ShowDiv(this.PollDiv);
-            });
-        };
         this.ViewPollButton = class {
             constructor(Button) {
                 let ViewButton = document.createElement("button");
@@ -204,46 +208,48 @@ class GameBoard {
         Element.onmouseleave = null;
         Element.onmouseup = null;
     }
-    ShowDiv(div) {
+    ShowAllert(div) {
         div.classList.remove("Disable");
         div.classList.remove("Hidden");
         div.classList.add("Enable");
         div.classList.add("Alert");
     }
-    HideDiv(div, onHide) {
-        if (onHide) {
-            let onEnd = function () {
-                if (div.classList.contains('Disable')) {
+    HideAllert(div) {
+        return new Promise((resolve, reject) => {
+            if (div.classList.contains("Disable")) {
+                resolve();
+            }
+            else {
+                function onEnd() {
                     div.classList.remove("Alert");
                     div.classList.add("Hidden");
-                    onHide();
+                    div.onanimationend = null;
                     div.removeEventListener('animationend', onEnd);
+                    resolve();
                 }
-                else
-                    onHide();
-            };
-            div.classList.remove("Enable");
-            setTimeout(() => {
-                if (!div.classList.contains('Disable')) {
-                    div.addEventListener('animationend', onEnd);
-                    div.classList.add("Disable");
-                }
-                else
-                    onHide();
-            }, 10);
-        }
-    }
-    HideAll(onAllHide) {
-        this.HideDiv(this.PollAlert, () => {
-            this.HideDiv(this.StopAlert, () => {
-                this.HideDiv(this.AlertOfWinner, () => {
-                    this.HideDiv(this.AlertOfLoser, () => {
-                        this.HideDiv(this.PollDiv, onAllHide);
-                    });
-                });
-            });
+                div.addEventListener('animationend', onEnd);
+                div.classList.remove("Enable");
+                div.classList.add("Disable");
+            }
         });
     }
+    HideAllAlerts() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return Promise.all([
+                this.HideAllert(this.PollAlert),
+                this.HideAllert(this.StopAlert),
+                this.HideAllert(this.AlertOfWinner),
+                this.HideAllert(this.AlertOfLoser),
+                this.HideAllert(this.PollDiv)
+            ]);
+        });
+    }
+    onclickOfParticipatePollButton() {
+        this.HideAllAlerts().then(() => {
+            this.ShowAllert(this.PollDiv);
+        });
+    }
+    ;
     setButtonsInPollDiv(PollButtons) {
         this.SelectedButtonID = null;
         this.ButtonsDiv.innerHTML = "";
@@ -262,25 +268,27 @@ class GameBoard {
         });
     }
     setInBetMode(PollButtons) {
-        this.setButtonsInPollDiv(PollButtons);
-        this.ShowDiv(this.PollAlert);
+        this.HideAllAlerts().then(() => {
+            this.setButtonsInPollDiv(PollButtons);
+            this.ShowAllert(this.PollAlert);
+        });
     }
     setInStopMode() {
-        this.HideAll(() => {
-            this.ShowDiv(this.StopAlert);
+        this.HideAllAlerts().then(() => {
+            this.ShowAllert(this.StopAlert);
         });
     }
     setInWinnerMode(LossDistributorOfPoll) {
-        this.HideAll(() => {
-            this.ShowDiv(this.AlertOfWinner);
+        this.HideAllAlerts().then(() => {
+            this.ShowAllert(this.AlertOfWinner);
             this.EarningsView.innerText = (this.getBetValue() * LossDistributorOfPoll).toString();
         });
     }
     setInLoserMode() {
-        this.HideAll(() => {
-            this.ShowDiv(this.AlertOfLoser);
+        this.HideAllAlerts().then(() => {
+            this.ShowAllert(this.AlertOfLoser);
             this.LossView.innerText = this.getBetValue().toString();
         });
     }
 }
-exports.default = new GameBoard;
+exports.GameBoard = GameBoard;

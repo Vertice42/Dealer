@@ -13,7 +13,7 @@ const bluebird_1 = require("bluebird");
 const dbLoading_1 = require("../dbLoading");
 const MinerSettings_1 = require("../../../models/miner/MinerSettings");
 const dbWalletManager_1 = require("./dbWalletManager");
-const MiningResult_1 = require("../../../models/miner/MiningResult");
+const MiningResponse_1 = require("../../../models/miner/MiningResponse");
 const dbStreamerManager_1 = require("../dbStreamerManager");
 class MinerManeger {
     /**
@@ -60,7 +60,7 @@ class MinerManeger {
             let TimeBetweenAttempts = Now - wallet.LastMiningAttemp;
             if (!TimeBetweenAttempts || TimeBetweenAttempts > MinerSettings_1.MinimunTimeForMining)
                 yield walletManeger.deposit(AccountData.MinerSettings.RewardPerMining);
-            return new MiningResult_1.MiningResult(TimeBetweenAttempts, (yield walletManeger.getWallet()).Coins);
+            return new MiningResponse_1.MiningResponse(TimeBetweenAttempts, (yield walletManeger.getWallet()).Coins, MinerSettings_1.MinimunTimeForMining);
         });
     }
 }
