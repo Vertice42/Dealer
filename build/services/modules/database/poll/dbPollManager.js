@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const bluebird_1 = require("bluebird");
 const PollBeat_1 = require("../../../models/poll/PollBeat");
 const dbStreamerManager_1 = require("../dbStreamerManager");
+const utils_1 = require("../../../../utils/utils");
 class dbPollMager {
     constructor(StreamerID) {
         this.StreamerID = StreamerID;
@@ -44,7 +45,16 @@ class dbPollMager {
      * @returns Promise<dbButton[]>
      */
     getAllButtonsOfCurrentPoll() {
-        return dbStreamerManager_1.dbStreamerManager.getAccountData(this.StreamerID).dbCurrentPollButtons.findAll();
+        return __awaiter(this, void 0, void 0, function* () {
+            return dbStreamerManager_1.dbStreamerManager.getAccountData(this.StreamerID).dbCurrentPollButtons.findAll()
+                .catch((rej) => __awaiter(this, void 0, void 0, function* () {
+                if (rej.parent.errno === 1146) {
+                    yield utils_1.sleep(500);
+                    return this.getAllButtonsOfCurrentPoll();
+                    //TODO POSIVEL LOOP INFINITO
+                }
+            }));
+        });
     }
     /**
      *

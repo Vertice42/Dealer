@@ -316,20 +316,20 @@ export class GameBoard {
 
     }
 
-    setInStopMode() {
+    setInStopedMode() {
         this.HideAllAlerts().then(() => {
             this.ShowAllert(this.StopAlert);
         });
     }
 
-    setInWinnerMode(LossDistributorOfPoll) {
+    setInWinnerMode(LossDistributorOfPoll: number) {        
         this.HideAllAlerts().then(() => {
             this.ShowAllert(this.AlertOfWinner);
             this.EarningsView.innerText = (this.getBetValue() * LossDistributorOfPoll).toString();
         })
     }
 
-    setInLoserMode() {
+    setInLoserMode() {        
         this.HideAllAlerts().then(() => {
             this.ShowAllert(this.AlertOfLoser);
             this.LossView.innerText = this.getBetValue().toString();

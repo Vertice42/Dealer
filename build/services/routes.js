@@ -188,7 +188,6 @@ app.post(links_1.default.MineCoin, function (req, res) {
         .then((resolve) => { res.status(200).send(resolve); })
         .catch((reje) => {
         res.status(500).send(reje);
-        console.log(reje);
     });
 });
 app.get(links_1.default.GetWallet, function (req, res) {

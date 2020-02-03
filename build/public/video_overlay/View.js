@@ -273,7 +273,7 @@ class GameBoard {
             this.ShowAllert(this.PollAlert);
         });
     }
-    setInStopMode() {
+    setInStopedMode() {
         this.HideAllAlerts().then(() => {
             this.ShowAllert(this.StopAlert);
         });

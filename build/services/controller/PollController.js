@@ -212,6 +212,7 @@ class PollController {
             let Bets;
             let db_pollMager = new dbPollManager_1.dbPollMager(this.StreamerID);
             if (AccountData.dbCurrentPollButtons) {
+                //TODO erro de sincronia com o id gera server error // iqnorar ????
                 for (const dbButton of yield db_pollMager.getAllButtonsOfCurrentPoll()) {
                     Buttons.push(new PollButton_1.PollButton(dbButton.ID, dbButton.Name, dbButton.Color, dbButton.IsWinner));
                 }

@@ -4,6 +4,7 @@ import { PollButton } from "../../../models/poll/PollButton";
 import { PollBeat } from "../../../models/poll/PollBeat"
 import { dbButton, dbButtonType } from "../../../models/poll/dbButton";
 import { dbStreamerManager } from "../dbStreamerManager";
+import { sleep } from "../../../../utils/utils";
 
 export class dbPollMager {
     StreamerID: string;
@@ -38,8 +39,15 @@ export class dbPollMager {
     /**
      * @returns Promise<dbButton[]>
      */
-    getAllButtonsOfCurrentPoll(): Promise<dbButton[]> {
-        return dbStreamerManager.getAccountData(this.StreamerID).dbCurrentPollButtons.findAll();
+    async getAllButtonsOfCurrentPoll() {
+        return dbStreamerManager.getAccountData(this.StreamerID).dbCurrentPollButtons.findAll()
+            .catch(async (rej) => {
+                if (rej.parent.errno === 1146) {
+                    await sleep(500)
+                    return this.getAllButtonsOfCurrentPoll();
+                    //TODO POSIVEL LOOP INFINITO
+                }
+            })
     }
 
     /**
@@ -62,7 +70,7 @@ export class dbPollMager {
      * LossDistributor:number}
      * 
      */
-    static CalculateDistribution(Bettings: Bettings[], WinningButtons: PollButton[]) {
+    static CalculateDistribution(Bettings: Bettings[], WinningButtons: PollButton[]): any {
         let WageredCoins: number = 0;
         let LostWageredCoins: number = 0;
 

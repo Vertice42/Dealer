@@ -10,10 +10,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const dbStreamerManager_1 = require("../dbStreamerManager");
+const bluebird_1 = require("bluebird");
 function getWallet(StreamerID, TwitchUserID) {
     return __awaiter(this, void 0, void 0, function* () {
-        return (yield dbStreamerManager_1.dbStreamerManager.getAccountData(StreamerID).dbWallets
-            .findOrCreate({ where: { TwitchUserID: TwitchUserID } }))[0];
+        let AccountData = dbStreamerManager_1.dbStreamerManager.getAccountData(StreamerID);
+        if (!AccountData)
+            return bluebird_1.reject({
+                RequestError: 'It was not possible to mine, as the streamer did not initiate an extension'
+            });
+        return (yield AccountData.dbWallets.findOrCreate({ where: { TwitchUserID: TwitchUserID } }))[0];
     });
 }
 exports.getWallet = getWallet;

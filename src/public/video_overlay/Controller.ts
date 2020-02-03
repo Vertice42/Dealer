@@ -1,12 +1,12 @@
-import { PollStatus } from "../../../services/models/poll/PollStatus";
-import { PollButton } from "../../../services/models/poll/PollButton";
-import { isEquivalent } from "../../../utils/utils";
-import { WatchPoll, addBet as addBeat, GetWallet } from "../../BackendConnection";
-import { MiningResponse } from "../../../services/models/miner/MiningResponse";
-import { Poll } from "../../../services/models/poll/Poll";
-import { Miner } from "../modules/Wallet";
-import { dbWallet } from "../../../services/models/poll/dbWallet";
-import { GameBoard } from "../View";
+import { PollStatus } from "../../services/models/poll/PollStatus";
+import { PollButton } from "../../services/models/poll/PollButton";
+import { isEquivalent } from "../../utils/utils";
+import { WatchPoll, addBet as addBeat, GetWallet } from "../BackendConnection";
+import { MiningResponse } from "../../services/models/miner/MiningResponse";
+import { Poll } from "../../services/models/poll/Poll";
+import { Miner } from "./modules/Miner";
+import { dbWallet } from "../../services/models/poll/dbWallet";
+import { GameBoard } from "./View";
 /*
 function makeid(length) {
   var result = "";
@@ -60,7 +60,6 @@ twitch.onAuthorized(async (auth) => {
 
   new WatchPoll(StreamerID)
     .setOnPollChange(async (Poll: Poll) => {
-      //TODO ADD is bet 
       if (isEquivalent(CurrentPollStatus, Poll.PollStatus)) {
         gameBoard.setButtonsInPollDiv(Poll.PollButtons);
 
@@ -70,16 +69,17 @@ twitch.onAuthorized(async (auth) => {
         } else {
           if (Poll.PollStatus.PollStarted) {
             if (Poll.PollStatus.DistributionCompleted) {
-              if (!gameBoard.SelectedButtonID) {
+              if (isNaN(gameBoard.SelectedButtonID)) {
                 await gameBoard.HideAllAlerts();
               } else {
-                if (IsWinner(Poll.PollButtons, gameBoard.SelectedButtonID))
+                if (IsWinner(Poll.PollButtons, gameBoard.SelectedButtonID)) {
                   gameBoard.setInWinnerMode(Poll.LossDistributorOfPoll);
-                else
+                } else {
                   gameBoard.setInLoserMode();
+                }
               }
             } else if (Poll.PollStatus.PollStoped) {
-              gameBoard.setInStopMode();
+              gameBoard.setInStopedMode();
             } else if (Poll.PollStatus.PollStarted) {
               gameBoard.setInBetMode(Poll.PollButtons);
             }

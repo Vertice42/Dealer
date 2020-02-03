@@ -199,7 +199,7 @@ app.post(links.MineCoin, function (req: MinerRequest, res: express.Response) {
     MinerManeger.MineCoin(req.body.StreamerID, req.body.TwitchUserID)
         .then((resolve: MiningResponse) => { res.status(200).send(resolve) })
         .catch((reje) => {            
-            res.status(500).send(reje); console.log(reje);
+            res.status(500).send(reje);
         });
 
 });

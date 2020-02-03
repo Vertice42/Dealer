@@ -1,8 +1,12 @@
 import { dbStreamerManager } from "../dbStreamerManager";
+import { reject } from "bluebird";
 
 export async function getWallet(StreamerID: string, TwitchUserID: string) {
-    return (await dbStreamerManager.getAccountData(StreamerID).dbWallets
-    .findOrCreate({ where: { TwitchUserID: TwitchUserID } }))[0]
+    let AccountData = dbStreamerManager.getAccountData(StreamerID);
+    if (!AccountData) return reject({
+        RequestError: 'It was not possible to mine, as the streamer did not initiate an extension'
+    })
+    return (await AccountData.dbWallets.findOrCreate({ where: { TwitchUserID: TwitchUserID } }))[0];
 }
 
 /**

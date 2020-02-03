@@ -9,10 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const utils_1 = require("../../../utils/utils");
-const BackendConnection_1 = require("../../BackendConnection");
-const Wallet_1 = require("../modules/Wallet");
-const View_1 = require("../View");
+const utils_1 = require("../../utils/utils");
+const BackendConnection_1 = require("../BackendConnection");
+const Wallet_1 = require("./modules/Wallet");
+const View_1 = require("./View");
 /*
 function makeid(length) {
   var result = "";
