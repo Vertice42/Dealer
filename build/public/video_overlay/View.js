@@ -71,10 +71,13 @@ class GameBoard {
                 this.HTMLElement.classList.remove("Selected");
             }
         };
-        this.EnableRelocatableElemente(this.WalletDiv);
-        this.EnableRelocatableElemente(this.AlertsDiv);
+        let display = document.getElementById('display');
+        let X = display.clientWidth;
+        let Y = display.clientHeight;
+        this.EnableRelocatableElemente(this.WalletDiv, 0, 0);
+        this.EnableRelocatableElemente(this.AlertsDiv, X / 2.5, Y / 1.9);
         this.BetAmountInput.onmouseenter = () => this.DisableRelocatableElemente(this.AlertsDiv);
-        this.BetAmountInput.onmouseleave = () => this.EnableRelocatableElemente(this.AlertsDiv);
+        this.BetAmountInput.onmouseleave = () => this.EnableRelocatableElemente(this.AlertsDiv, undefined, undefined);
         this.ParticipatePollButton.onclick = () => this.onclickOfParticipatePollButton();
         this.getBetValue = () => { return Number(this.BetAmountInput.value); };
         this.BetAmountInput.onchange = () => this.OnBeatChange();
@@ -167,14 +170,15 @@ class GameBoard {
     startWithdrawalAnimation(Withdrawal) {
         this.StartCoinsAnimation(true, Withdrawal);
     }
-    EnableRelocatableElemente(Element) {
+    EnableRelocatableElemente(Element, StartingLocationX, StartingLocationY) {
         var moveX = 0;
         var moveY = 0;
-        var X = localStorage[Element.id + 'X'] || 0;
-        var Y = localStorage[Element.id + 'Y'] || 0;
+        var X = localStorage[Element.id + 'X'] || StartingLocationX;
+        var Y = localStorage[Element.id + 'Y'] || StartingLocationY;
         Element.style.left = X + 'px';
         Element.style.top = Y + 'px';
         Element.onmousedown = function (event) {
+            Element.style.cursor = 'grabbing';
             moveX = event.pageX;
             moveY = event.pageY;
             X = Element.offsetLeft;
@@ -200,6 +204,7 @@ class GameBoard {
             Element.onmousemove = null;
         };
         Element.onmouseup = function () {
+            Element.style.cursor = 'default';
             Element.onmousemove = null;
         };
     }

@@ -42,27 +42,6 @@
     animation: HideAnimationPoll 1s forwards cubic-bezier(0.785, 0.135, 0.15, 0.86);
 }
 
-.ParticipatePollButton {
-    display: table;
-    z-index: 1;
-    font: 20pt fantasy;
-    color: white;
-    width: fit-content;
-    height: 40px;
-    margin: 0px auto 20px;
-    margin-top: 0px;
-    text-transform: uppercase;
-    background: rgb(255, 136, 0);
-}
-
-.ParticipatePollButton:hover {
-    background: rgb(247, 111, 49);
-}
-
-.ParticipatePollButton::selection {
-    height: 70px;
-}
-
 .AddBetValueDiv {
     display: block;
     height: fit-content;

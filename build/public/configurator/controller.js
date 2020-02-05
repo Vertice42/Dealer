@@ -15,6 +15,7 @@ const BackendConnection_1 = require("../BackendConnection");
 const PollButton_1 = require("../../services/models/poll/PollButton");
 const PollStatus_1 = require("../../services/models/poll/PollStatus");
 const MinerSettings_1 = require("../../services/models/miner/MinerSettings");
+const utils_1 = require("../../utils/utils");
 const twitch = window.Twitch.ext;
 var token, StreamerID;
 var ViewPoll;
@@ -100,6 +101,14 @@ twitch.onAuthorized((auth) => __awaiter(void 0, void 0, void 0, function* () {
     let minerSettings = yield BackendConnections.GetMiner(StreamerID);
     VIEW_SETTINGS.HourlyRewardInput.value = (~~(minerSettings.RewardPerMinute * 60)).toString();
     VIEW_SETTINGS.HourlyRewardInput.onchange = () => {
-        BackendConnections.SendToMinerManager(StreamerID, new MinerSettings_1.MinerSettings(Number(VIEW_SETTINGS.HourlyRewardInput.value) / 60));
+        VIEW_SETTINGS.setChangedInput();
+        BackendConnections.SendToMinerManager(StreamerID, new MinerSettings_1.MinerSettings(Number(VIEW_SETTINGS.HourlyRewardInput.value) / 60))
+            .then(() => __awaiter(void 0, void 0, void 0, function* () {
+            VIEW_SETTINGS.setInputSentSuccessfully();
+            yield utils_1.sleep(100);
+            VIEW_SETTINGS.setUnchangedInput();
+        })).catch(() => {
+            VIEW_SETTINGS.setInputSentError();
+        });
     };
 }));

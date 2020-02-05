@@ -1,12 +1,35 @@
-@import url(wallet/main.css);
+@import url(./configurator/main.css);
+@import url(./poll_manager/main.css);
+
 
 @font-face {
     font-family: Heroes;
     src: url(../fonts/Heroes\ Legend.ttf);
 }
 
+body {
+    background: rgb(54, 54, 73);
+}
+
 .FullScren {
     width: 100%;
     height: 100%;
     margin: 0;
+}
+
+.Sample {
+    display: block;
+}
+
+
+.Hidden {
+    display: none;
+}
+
+h3 {
+    display: flex;
+    text-align: center;
+    min-width: fit-content;
+    font-size: 3vw;
+    margin: auto 10px auto 10px;
 }

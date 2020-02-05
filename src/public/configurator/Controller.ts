@@ -5,6 +5,7 @@ import { PollButton } from "../../services/models/poll/PollButton";
 import { PollStatus } from "../../services/models/poll/PollStatus";
 import { Poll } from "../../services/models/poll/Poll";
 import { MinerSettings } from "../../services/models/miner/MinerSettings";
+import { sleep } from "../../utils/utils";
 
 const twitch: TwitchExt = window.Twitch.ext;
 var token, StreamerID;
@@ -111,7 +112,15 @@ twitch.onAuthorized(async (auth) => {
     VIEW_SETTINGS.HourlyRewardInput.value = (~~(minerSettings.RewardPerMinute * 60)).toString();
 
     VIEW_SETTINGS.HourlyRewardInput.onchange = () => {
+        VIEW_SETTINGS.setChangedInput();
         BackendConnections.SendToMinerManager(StreamerID,
-            new MinerSettings(Number(VIEW_SETTINGS.HourlyRewardInput.value) / 60));
+            new MinerSettings(Number(VIEW_SETTINGS.HourlyRewardInput.value) / 60))
+            .then(async ()=>{
+                VIEW_SETTINGS.setInputSentSuccessfully();
+                await sleep(100);
+                VIEW_SETTINGS.setUnchangedInput();
+            }).catch(()=>{
+                VIEW_SETTINGS.setInputSentError();
+            })
     }
 });

@@ -6,6 +6,10 @@
     src: url(../fonts/Heroes\ Legend.ttf);
 }
 
+button {
+    border: none;
+}
+
 .FullScren {
     width: 100%;
     height: 100%;

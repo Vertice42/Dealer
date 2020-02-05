@@ -50,7 +50,7 @@
     display: table;
     color: white;
     text-align: center;
-    font: 12pt Heroes;
+    font: 1.5vw Heroes;
     text-transform: uppercase;
 }
 
@@ -71,4 +71,25 @@
 
 .Disable#PollAlert {
     animation: HidePoll 1s forwards;
+}
+
+.ParticipatePollButton {
+    display: table;
+    z-index: 1;
+    font: 2.5vw fantasy;
+    color: white;
+    width: fit-content;
+    height: fit-content;
+    margin: 0px auto 20px;
+    margin-top: 0px;
+    text-transform: uppercase;
+    background: rgb(255, 136, 0);
+}
+
+.ParticipatePollButton:hover {
+    background: rgb(247, 111, 49);
+}
+
+.ParticipatePollButton::selection {
+    height: 70px;
 }

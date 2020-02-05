@@ -15,25 +15,25 @@ export class GameBoard {
     public OnBeatChange = () => { };
     public getBetValue: () => number;
 
-    public CoinsOfUserView        = <HTMLElement>document.getElementById("CoinsOfUserView");
+    public CoinsOfUserView = <HTMLElement>document.getElementById("CoinsOfUserView");
 
     private ParticipatePollButton = <HTMLInputElement>document.getElementById("ParticipatePollButton");
-    private BetAmountInput        = <HTMLInputElement>document.getElementById("BetAmountInput");
+    private BetAmountInput = <HTMLInputElement>document.getElementById("BetAmountInput");
 
-    private AlertsDiv             = <HTMLDivElement>document.getElementById("AlertsDiv");
-    private PollAlert             = <HTMLDivElement>document.getElementById("PollAlert");
-    private StopAlert             = <HTMLDivElement>document.getElementById("StopAlert");
+    private AlertsDiv = <HTMLDivElement>document.getElementById("AlertsDiv");
+    private PollAlert = <HTMLDivElement>document.getElementById("PollAlert");
+    private StopAlert = <HTMLDivElement>document.getElementById("StopAlert");
 
-    private AlertOfWinner         = <HTMLDivElement>document.getElementById("AlertOfWinner");
-    private EarningsView          = <HTMLDivElement>document.getElementById("EarningsView");
+    private AlertOfWinner = <HTMLDivElement>document.getElementById("AlertOfWinner");
+    private EarningsView = <HTMLDivElement>document.getElementById("EarningsView");
 
-    private AlertOfLoser          = <HTMLDivElement>document.getElementById("AlertOfLoser");
-    private LossView              = <HTMLDivElement>document.getElementById("LossView");
+    private AlertOfLoser = <HTMLDivElement>document.getElementById("AlertOfLoser");
+    private LossView = <HTMLDivElement>document.getElementById("LossView");
 
-    private WalletDiv             = <HTMLDivElement>document.getElementById("WalletDiv");
-    private CoinsDiv              = <HTMLDivElement>document.getElementById("CoinsDiv");
-    private PollDiv               = <HTMLDivElement>document.getElementById("PollDiv");
-    private ButtonsDiv            = <HTMLDivElement>document.getElementById("ButtonsDiv");
+    private WalletDiv = <HTMLDivElement>document.getElementById("WalletDiv");
+    private CoinsDiv = <HTMLDivElement>document.getElementById("CoinsDiv");
+    private PollDiv = <HTMLDivElement>document.getElementById("PollDiv");
+    private ButtonsDiv = <HTMLDivElement>document.getElementById("ButtonsDiv");
 
     DepositAnimation(Coin: HTMLDivElement, CoinNumber: number, onStart: () => void, onEnd: () => void) {
         Coin.classList.add('Coin');
@@ -139,17 +139,18 @@ export class GameBoard {
         this.StartCoinsAnimation(true, Withdrawal);
     }
 
-    EnableRelocatableElemente(Element: HTMLDivElement) {
+    EnableRelocatableElemente(Element: HTMLDivElement, StartingLocationX, StartingLocationY) {
         var moveX = 0;
         var moveY = 0;
-
-        var X = localStorage[Element.id + 'X'] || 0;
-        var Y = localStorage[Element.id + 'Y'] || 0;
+        
+        var X = localStorage[Element.id + 'X'] || StartingLocationX;
+        var Y = localStorage[Element.id + 'Y'] || StartingLocationY;
 
         Element.style.left = X + 'px';
         Element.style.top = Y + 'px';
 
         Element.onmousedown = function (event) {
+            Element.style.cursor = 'grabbing';
             moveX = event.pageX;
             moveY = event.pageY;
 
@@ -185,6 +186,7 @@ export class GameBoard {
             Element.onmousemove = null;
         }
         Element.onmouseup = function () {
+            Element.style.cursor = 'default';
             Element.onmousemove = null;
         }
     }
@@ -322,14 +324,14 @@ export class GameBoard {
         });
     }
 
-    setInWinnerMode(LossDistributorOfPoll: number) {        
+    setInWinnerMode(LossDistributorOfPoll: number) {
         this.HideAllAlerts().then(() => {
             this.ShowAllert(this.AlertOfWinner);
             this.EarningsView.innerText = (this.getBetValue() * LossDistributorOfPoll).toString();
         })
     }
 
-    setInLoserMode() {        
+    setInLoserMode() {
         this.HideAllAlerts().then(() => {
             this.ShowAllert(this.AlertOfLoser);
             this.LossView.innerText = this.getBetValue().toString();
@@ -337,10 +339,15 @@ export class GameBoard {
     }
 
     constructor() {
-        this.EnableRelocatableElemente(this.WalletDiv)
-        this.EnableRelocatableElemente(this.AlertsDiv)
+        let display = document.getElementById('display');        
+
+        let X = display.clientWidth;
+        let Y = display.clientHeight;        
+
+        this.EnableRelocatableElemente(this.WalletDiv, 0, 0)
+        this.EnableRelocatableElemente(this.AlertsDiv, X/2.5, Y/1.9)
         this.BetAmountInput.onmouseenter = () => this.DisableRelocatableElemente(this.AlertsDiv);
-        this.BetAmountInput.onmouseleave = () => this.EnableRelocatableElemente(this.AlertsDiv);
+        this.BetAmountInput.onmouseleave = () => this.EnableRelocatableElemente(this.AlertsDiv, undefined, undefined);
 
         this.ParticipatePollButton.onclick = () => this.onclickOfParticipatePollButton();
 

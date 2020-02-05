@@ -1,0 +1,53 @@
+.SettingDiv {
+    display: table;
+    background: white;
+    margin: auto;
+    margin-bottom: 1%;
+    padding: 1%;
+}
+
+#MineIcon {
+    height: inherit;
+}
+
+.MineDiv {
+    display: flex;
+    height: 100px;
+}
+
+.MineDiv h2 {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 200%;
+    text-transform: uppercase;
+    margin: auto;
+}
+
+#HourlyRewardInput {
+    outline: none;
+    text-align: center;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-size: 30pt;
+    width: 100px;
+    height: 50px;
+    margin: auto;
+}
+
+.UnchangedInput {
+    transition: border 1000ms;
+    border: solid 5px lightslategrey;
+}
+
+.ChangedInput {
+    transition: border 100ms;
+    border: solid 5px yellow;
+}
+
+.InputSentSuccessfully {
+    transition: border 100ms;
+    border: solid 5px rgb(71, 255, 15);
+}
+
+.InputSentError {
+    transition: border 100ms;
+    border: solid 5px red;
+}
