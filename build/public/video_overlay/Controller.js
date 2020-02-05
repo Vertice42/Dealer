@@ -51,10 +51,25 @@ twitch.onAuthorized((auth) => __awaiter(void 0, void 0, void 0, function* () {
         else {
             TwitchUserID = makeid(5);
         }
-        gameBoard.OnBeatChange = () => {
-            if (gameBoard.SelectedButtonID !== undefined)
-                BackendConnection_1.addBet(StreamerID, TwitchUserID, gameBoard.SelectedButtonID, gameBoard.getBetValue());
+        let ChangeBeat = () => {
+            if (gameBoard.SelectedButtonID !== null) {
+                gameBoard.BetAmountInput.setChangedInput();
+                BackendConnection_1.addBet(StreamerID, TwitchUserID, gameBoard.SelectedButtonID, gameBoard.getBetValue())
+                    .then(() => __awaiter(void 0, void 0, void 0, function* () {
+                    gameBoard.BetAmountInput.setInputSentSuccessfully();
+                    yield utils_1.sleep(100);
+                    gameBoard.BetAmountInput.setUnchangedInput();
+                }))
+                    .catch(() => {
+                    gameBoard.BetAmountInput.setInputSentError();
+                });
+            }
+            else {
+                gameBoard.BetAmountInput.setInputSentError();
+            }
         };
+        gameBoard.onBeatIDSelected = ChangeBeat;
+        gameBoard.BetAmountInput.HTMLInput.onchange = ChangeBeat;
         new BackendConnection_1.WatchPoll(StreamerID)
             .setOnPollChange((Poll) => __awaiter(void 0, void 0, void 0, function* () {
             if (utils_1.isEquivalent(CurrentPollStatus, Poll.PollStatus)) {

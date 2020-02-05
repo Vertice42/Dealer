@@ -99,16 +99,16 @@ twitch.onAuthorized((auth) => __awaiter(void 0, void 0, void 0, function* () {
     };
     const VIEW_SETTINGS = new ViewConfig.ViewSettings();
     let minerSettings = yield BackendConnections.GetMiner(StreamerID);
-    VIEW_SETTINGS.HourlyRewardInput.value = (~~(minerSettings.RewardPerMinute * 60)).toString();
-    VIEW_SETTINGS.HourlyRewardInput.onchange = () => {
-        VIEW_SETTINGS.setChangedInput();
-        BackendConnections.SendToMinerManager(StreamerID, new MinerSettings_1.MinerSettings(Number(VIEW_SETTINGS.HourlyRewardInput.value) / 60))
+    VIEW_SETTINGS.HourlyRewardInput.HTMLInput.value = (~~(minerSettings.RewardPerMinute * 60)).toString();
+    VIEW_SETTINGS.HourlyRewardInput.HTMLInput.onchange = () => {
+        VIEW_SETTINGS.HourlyRewardInput.setChangedInput();
+        BackendConnections.SendToMinerManager(StreamerID, new MinerSettings_1.MinerSettings(Number(VIEW_SETTINGS.HourlyRewardInput.HTMLInput.value) / 60))
             .then(() => __awaiter(void 0, void 0, void 0, function* () {
-            VIEW_SETTINGS.setInputSentSuccessfully();
+            VIEW_SETTINGS.HourlyRewardInput.setInputSentSuccessfully();
             yield utils_1.sleep(100);
-            VIEW_SETTINGS.setUnchangedInput();
+            VIEW_SETTINGS.HourlyRewardInput.setUnchangedInput();
         })).catch(() => {
-            VIEW_SETTINGS.setInputSentError();
+            VIEW_SETTINGS.HourlyRewardInput.setInputSentError();
         });
     };
 }));

@@ -142,7 +142,7 @@ function addBet(StreamerID, TwitchUserID, IdOfVote, BetAmount) {
     return __awaiter(this, void 0, void 0, function* () {
         let H = new Headers();
         H.append("Content-Type", "application/json");
-        fetch(host + links_1.default.addVote, {
+        return fetch(host + links_1.default.addVote, {
             method: "POST",
             headers: H,
             body: JSON.stringify({
@@ -152,17 +152,12 @@ function addBet(StreamerID, TwitchUserID, IdOfVote, BetAmount) {
                 BetAmount: Number(BetAmount)
             })
         }).then(function (res) {
-            if (res.ok)
-                return bluebird_1.resolve(res);
-            else
-                return bluebird_1.reject(res);
-        }).then((res) => {
-            return res.json();
-        }).catch((rej) => {
-            return rej.json()
-                .then((res) => {
-                console.log(res);
-                return bluebird_1.reject(res);
+            return __awaiter(this, void 0, void 0, function* () {
+                console.log(res.ok);
+                if (res.ok)
+                    return bluebird_1.resolve(yield res.json());
+                else
+                    return bluebird_1.reject(yield res.json());
             });
         });
     });

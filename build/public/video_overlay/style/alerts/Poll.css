@@ -58,11 +58,20 @@
 .AddBetValueDiv input[type=number] {
     margin-left: 10px;
     background: rgba(255, 255, 255, 0.089);
-    border: solid 2px rgba(255, 255, 255, 0);
     width: 60px;
     height: 20px;
     text-align: center;
     font: 10pt Heroes;
+    border-style: solid;
+    border-spacing: 0.1px;
+}
+
+.AddBetValueDiv .UnchangedInput {
+    border-color: white;
+}
+
+.AddBetValueDiv input[type=number]:focus {
+    outline: none;
 }
 
 #SetBetValueButton {

@@ -1,5 +1,6 @@
 import { PollStatus } from "../../services/models/poll/PollStatus";
 import { Poll } from "../../services/models/poll/Poll";
+import { InputNumber } from "../model/Inputs";
 
 function GenerateColor() {
   /**Generate random hex color*/
@@ -588,37 +589,8 @@ export class ViewPollManeger {
 
 }
 export class ViewSettings {
-  public HourlyRewardInput: HTMLInputElement;
-  setChangedInput() {
-    this.HourlyRewardInput.classList.remove('InputSentSuccessfully');
-    this.HourlyRewardInput.classList.remove('UnchangedInput');
-    this.HourlyRewardInput.classList.remove('InputSentError');
-
-    this.HourlyRewardInput.classList.add('ChangedInput');
-  }
-  setUnchangedInput() {
-    this.HourlyRewardInput.classList.remove('InputSentSuccessfully');
-    this.HourlyRewardInput.classList.remove('ChangedInput');
-    this.HourlyRewardInput.classList.remove('InputSentError');
-
-    this.HourlyRewardInput.classList.add('UnchangedInput');
-  }
-  setInputSentSuccessfully() {
-    this.HourlyRewardInput.classList.remove('ChangedInput');
-    this.HourlyRewardInput.classList.remove('UnchangedInput');
-    this.HourlyRewardInput.classList.remove('InputSentError');
-
-
-    this.HourlyRewardInput.classList.add('InputSentSuccessfully');
-  }
-  setInputSentError() {
-    this.HourlyRewardInput.classList.remove('InputSentSuccessfully');
-    this.HourlyRewardInput.classList.remove('ChangedInput');
-    this.HourlyRewardInput.classList.remove('ChangedInput');
-
-    this.HourlyRewardInput.classList.add('InputSentError');
-  }
+  public HourlyRewardInput: InputNumber
   constructor() {
-    this.HourlyRewardInput = <HTMLInputElement>document.getElementById('HourlyRewardInput');
+    this.HourlyRewardInput = new InputNumber(<HTMLInputElement>document.getElementById('HourlyRewardInput'))
   }
 }

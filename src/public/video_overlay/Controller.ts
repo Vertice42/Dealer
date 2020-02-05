@@ -1,6 +1,6 @@
 import { PollStatus } from "../../services/models/poll/PollStatus";
 import { PollButton } from "../../services/models/poll/PollButton";
-import { isEquivalent } from "../../utils/utils";
+import { isEquivalent, sleep } from "../../utils/utils";
 import { WatchPoll, addBet as addBeat, GetWallet } from "../BackendConnection";
 import { MiningResponse } from "../../services/models/miner/MiningResponse";
 import { Poll } from "../../services/models/poll/Poll";
@@ -44,7 +44,7 @@ function IsWinner(PollButtons: PollButton[], ChosenButtonID: number) {
 twitch.onAuthorized(async (auth) => {
   twitch.onContext(async (context) => {
     console.log(context);
-    
+
     var gameBoard = new GameBoard();
     token = auth.token;
     StreamerID = auth.channelId.toLowerCase();
@@ -54,14 +54,25 @@ twitch.onAuthorized(async (auth) => {
       TwitchUserID = makeid(5)
     }
 
-    gameBoard.OnBeatChange = () => {
-      if (gameBoard.SelectedButtonID !== undefined)
-        addBeat(
-          StreamerID,
-          TwitchUserID,
-          gameBoard.SelectedButtonID,
-          gameBoard.getBetValue());
+    let ChangeBeat = () => {
+      if (gameBoard.SelectedButtonID !== null) {
+        gameBoard.BetAmountInput.setChangedInput();
+        addBeat(StreamerID, TwitchUserID, gameBoard.SelectedButtonID, gameBoard.getBetValue())
+          .then(async () => {
+            gameBoard.BetAmountInput.setInputSentSuccessfully();
+            await sleep(100);
+            gameBoard.BetAmountInput.setUnchangedInput();
+          })
+          .catch(() => {
+            gameBoard.BetAmountInput.setInputSentError();
+          })
+      } else {
+        gameBoard.BetAmountInput.setInputSentError();
+      }
     }
+
+    gameBoard.onBeatIDSelected = ChangeBeat;
+    gameBoard.BetAmountInput.HTMLInput.onchange = ChangeBeat;
 
     new WatchPoll(StreamerID)
       .setOnPollChange(async (Poll: Poll) => {

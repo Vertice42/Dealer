@@ -109,18 +109,18 @@ twitch.onAuthorized(async (auth) => {
 
     let minerSettings = await BackendConnections.GetMiner(StreamerID);    
 
-    VIEW_SETTINGS.HourlyRewardInput.value = (~~(minerSettings.RewardPerMinute * 60)).toString();
+    VIEW_SETTINGS.HourlyRewardInput.HTMLInput.value = (~~(minerSettings.RewardPerMinute * 60)).toString();
 
-    VIEW_SETTINGS.HourlyRewardInput.onchange = () => {
-        VIEW_SETTINGS.setChangedInput();
+    VIEW_SETTINGS.HourlyRewardInput.HTMLInput.onchange = () => {
+        VIEW_SETTINGS.HourlyRewardInput.setChangedInput();
         BackendConnections.SendToMinerManager(StreamerID,
-            new MinerSettings(Number(VIEW_SETTINGS.HourlyRewardInput.value) / 60))
+            new MinerSettings(Number(VIEW_SETTINGS.HourlyRewardInput.HTMLInput.value) / 60))
             .then(async ()=>{
-                VIEW_SETTINGS.setInputSentSuccessfully();
+                VIEW_SETTINGS.HourlyRewardInput.setInputSentSuccessfully();
                 await sleep(100);
-                VIEW_SETTINGS.setUnchangedInput();
+                VIEW_SETTINGS.HourlyRewardInput.setUnchangedInput();
             }).catch(()=>{
-                VIEW_SETTINGS.setInputSentError();
+                VIEW_SETTINGS.HourlyRewardInput.setInputSentError();
             })
     }
 });

@@ -127,7 +127,7 @@ export async function addBet(StreamerID: string, TwitchUserID: string,
   IdOfVote: number, BetAmount: number): Promise<any> {
   let H = new Headers();
   H.append("Content-Type", "application/json");
-  fetch(host + link.addVote, {
+  return fetch(host + link.addVote, {
     method: "POST",
     headers: H,
     body: JSON.stringify({
@@ -136,18 +136,11 @@ export async function addBet(StreamerID: string, TwitchUserID: string,
       Vote: IdOfVote,
       BetAmount: Number(BetAmount)
     })
-  }).then(function (res) {
-    if (res.ok) return resolve(res)
-    else return reject(res);
-  }).then((res) => {
-    return res.json();
-  }).catch((rej) => {
-    return rej.json()
-      .then((res) => {
-        console.log(res);
-        return reject(res);
-      })
-  });
+  }).then(async function (res) {
+    console.log(res.ok);
+    if (res.ok) return resolve(await res.json())
+    else return reject(await res.json());
+  })
 }
 
 export async function GetMiner(StreamerID: string) {

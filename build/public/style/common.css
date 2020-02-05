@@ -1,0 +1,18 @@
+.UnchangedInput {
+    transition: border 1000ms;
+}
+
+.ChangedInput {
+    transition: border 100ms;
+    border-color:  yellow;
+}
+
+.InputSentSuccessfully {
+    transition: border 100ms;
+    border-color: rgb(71, 255, 15);
+}
+
+.InputSentError {
+    transition: border 100ms;
+    border-color: red;
+}

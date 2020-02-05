@@ -31,23 +31,3 @@
     height: 50px;
     margin: auto;
 }
-
-.UnchangedInput {
-    transition: border 1000ms;
-    border: solid 5px lightslategrey;
-}
-
-.ChangedInput {
-    transition: border 100ms;
-    border: solid 5px yellow;
-}
-
-.InputSentSuccessfully {
-    transition: border 100ms;
-    border: solid 5px rgb(71, 255, 15);
-}
-
-.InputSentError {
-    transition: border 100ms;
-    border: solid 5px red;
-}

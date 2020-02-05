@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const Inputs_1 = require("../model/Inputs");
 function hexToRgb(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? {
@@ -20,11 +21,11 @@ function hexToRgb(hex) {
 const GRADIENT_DARKENING_RATE = 1.5;
 class GameBoard {
     constructor() {
+        this.onBeatIDSelected = () => { };
         this.SelectedButtonID = null;
-        this.OnBeatChange = () => { };
+        this.BetAmountInput = new Inputs_1.InputNumber(document.getElementById("BetAmountInput"));
         this.CoinsOfUserView = document.getElementById("CoinsOfUserView");
         this.ParticipatePollButton = document.getElementById("ParticipatePollButton");
-        this.BetAmountInput = document.getElementById("BetAmountInput");
         this.AlertsDiv = document.getElementById("AlertsDiv");
         this.PollAlert = document.getElementById("PollAlert");
         this.StopAlert = document.getElementById("StopAlert");
@@ -76,11 +77,10 @@ class GameBoard {
         let Y = display.clientHeight;
         this.EnableRelocatableElemente(this.WalletDiv, 0, 0);
         this.EnableRelocatableElemente(this.AlertsDiv, X / 2.5, Y / 1.9);
-        this.BetAmountInput.onmouseenter = () => this.DisableRelocatableElemente(this.AlertsDiv);
-        this.BetAmountInput.onmouseleave = () => this.EnableRelocatableElemente(this.AlertsDiv, undefined, undefined);
+        this.BetAmountInput.HTMLInput.onmouseenter = () => this.DisableRelocatableElemente(this.AlertsDiv);
+        this.BetAmountInput.HTMLInput.onmouseleave = () => this.EnableRelocatableElemente(this.AlertsDiv, undefined, undefined);
         this.ParticipatePollButton.onclick = () => this.onclickOfParticipatePollButton();
-        this.getBetValue = () => { return Number(this.BetAmountInput.value); };
-        this.BetAmountInput.onchange = () => this.OnBeatChange();
+        this.getBetValue = () => { return Number(this.BetAmountInput.HTMLInput.value); };
     }
     DepositAnimation(Coin, CoinNumber, onStart, onEnd) {
         Coin.classList.add('Coin');
@@ -264,7 +264,7 @@ class GameBoard {
             buttons.push(button);
             button.onSelected = () => {
                 this.SelectedButtonID = pollButton.ID;
-                this.OnBeatChange();
+                this.onBeatIDSelected();
                 buttons.forEach(Button => {
                     Button.Unelect();
                 });

@@ -1,4 +1,5 @@
 import { PollButton } from "../../services/models/poll/PollButton";
+import { InputNumber } from "../model/Inputs";
 
 function hexToRgb(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -11,14 +12,15 @@ function hexToRgb(hex) {
 const GRADIENT_DARKENING_RATE = 1.5;
 
 export class GameBoard {
-    public SelectedButtonID: number = null;
-    public OnBeatChange = () => { };
     public getBetValue: () => number;
+    public onBeatIDSelected = () => {};
+
+    public SelectedButtonID: number = null;
+    public BetAmountInput = new InputNumber(<HTMLInputElement>document.getElementById("BetAmountInput"));
 
     public CoinsOfUserView = <HTMLElement>document.getElementById("CoinsOfUserView");
 
     private ParticipatePollButton = <HTMLInputElement>document.getElementById("ParticipatePollButton");
-    private BetAmountInput = <HTMLInputElement>document.getElementById("BetAmountInput");
 
     private AlertsDiv = <HTMLDivElement>document.getElementById("AlertsDiv");
     private PollAlert = <HTMLDivElement>document.getElementById("PollAlert");
@@ -142,7 +144,7 @@ export class GameBoard {
     EnableRelocatableElemente(Element: HTMLDivElement, StartingLocationX, StartingLocationY) {
         var moveX = 0;
         var moveY = 0;
-        
+
         var X = localStorage[Element.id + 'X'] || StartingLocationX;
         var Y = localStorage[Element.id + 'Y'] || StartingLocationY;
 
@@ -301,7 +303,7 @@ export class GameBoard {
             buttons.push(button);
             button.onSelected = () => {
                 this.SelectedButtonID = pollButton.ID;
-                this.OnBeatChange();
+                this.onBeatIDSelected()
                 buttons.forEach(Button => {
                     Button.Unelect();
                 });
@@ -339,19 +341,18 @@ export class GameBoard {
     }
 
     constructor() {
-        let display = document.getElementById('display');        
+        let display = document.getElementById('display');
 
         let X = display.clientWidth;
-        let Y = display.clientHeight;        
+        let Y = display.clientHeight;
 
-        this.EnableRelocatableElemente(this.WalletDiv, 0, 0)
-        this.EnableRelocatableElemente(this.AlertsDiv, X/2.5, Y/1.9)
-        this.BetAmountInput.onmouseenter = () => this.DisableRelocatableElemente(this.AlertsDiv);
-        this.BetAmountInput.onmouseleave = () => this.EnableRelocatableElemente(this.AlertsDiv, undefined, undefined);
+        this.EnableRelocatableElemente(this.WalletDiv, 0, 0);
+        this.EnableRelocatableElemente(this.AlertsDiv, X / 2.5, Y / 1.9);
+        this.BetAmountInput.HTMLInput.onmouseenter = () => this.DisableRelocatableElemente(this.AlertsDiv);
+        this.BetAmountInput.HTMLInput.onmouseleave = () => this.EnableRelocatableElemente(this.AlertsDiv, undefined, undefined);
 
         this.ParticipatePollButton.onclick = () => this.onclickOfParticipatePollButton();
 
-        this.getBetValue = () => { return Number(this.BetAmountInput.value); }
-        this.BetAmountInput.onchange = () => this.OnBeatChange();
+        this.getBetValue = () => { return Number(this.BetAmountInput.HTMLInput.value); }
     }
 }

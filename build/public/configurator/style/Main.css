@@ -1,5 +1,6 @@
 @import url(./configurator/main.css);
 @import url(./poll_manager/main.css);
+@import url(../../style/common.css);
 
 
 @font-face {

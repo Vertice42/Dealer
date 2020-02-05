@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const Inputs_1 = require("../model/Inputs");
 function GenerateColor() {
     /**Generate random hex color*/
     var hexadecimais = "0123456789ABCDEF";
@@ -448,31 +449,7 @@ class ViewPollManeger {
 exports.ViewPollManeger = ViewPollManeger;
 class ViewSettings {
     constructor() {
-        this.HourlyRewardInput = document.getElementById('HourlyRewardInput');
-    }
-    setChangedInput() {
-        this.HourlyRewardInput.classList.remove('InputSentSuccessfully');
-        this.HourlyRewardInput.classList.remove('UnchangedInput');
-        this.HourlyRewardInput.classList.remove('InputSentError');
-        this.HourlyRewardInput.classList.add('ChangedInput');
-    }
-    setUnchangedInput() {
-        this.HourlyRewardInput.classList.remove('InputSentSuccessfully');
-        this.HourlyRewardInput.classList.remove('ChangedInput');
-        this.HourlyRewardInput.classList.remove('InputSentError');
-        this.HourlyRewardInput.classList.add('UnchangedInput');
-    }
-    setInputSentSuccessfully() {
-        this.HourlyRewardInput.classList.remove('ChangedInput');
-        this.HourlyRewardInput.classList.remove('UnchangedInput');
-        this.HourlyRewardInput.classList.remove('InputSentError');
-        this.HourlyRewardInput.classList.add('InputSentSuccessfully');
-    }
-    setInputSentError() {
-        this.HourlyRewardInput.classList.remove('InputSentSuccessfully');
-        this.HourlyRewardInput.classList.remove('ChangedInput');
-        this.HourlyRewardInput.classList.remove('ChangedInput');
-        this.HourlyRewardInput.classList.add('InputSentError');
+        this.HourlyRewardInput = new Inputs_1.InputNumber(document.getElementById('HourlyRewardInput'));
     }
 }
 exports.ViewSettings = ViewSettings;
