@@ -128,34 +128,6 @@
     height: 100%;
 }
 
-input[type='color'] {
-    border-radius: 100%;
-    height: 4vw;
-    width: 4vw;
-    border: none;
-    outline: none;
-    -webkit-appearance: none;
-
-    margin: auto;
-}
-input::-webkit-color-swatch-wrapper{
-    padding: 0;
-}
-
-input::-webkit-color-swatch {
-    border: none;
-    border-radius: 100%;
-}
-
-input[type='text'] {
-    font-size: 3vw;
-    text-align: center;
-    font-family: sans-serif;
-    max-width: 20vw;
-    height: 3vw;
-    margin: auto 0%;
-}
-
 .VoteNumerator {
     color: rgb(122, 122, 122);
     margin: auto;
