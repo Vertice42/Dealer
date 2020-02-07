@@ -107,7 +107,7 @@ twitch.onAuthorized(async (auth) => {
 
     const VIEW_SETTINGS = new ViewConfig.ViewSettings();
 
-    let minerSettings = await BackendConnections.GetMiner(StreamerID);    
+    let minerSettings = await BackendConnections.GetMinerSettings(StreamerID);    
 
     VIEW_SETTINGS.HourlyRewardInput.HTMLInput.value = (~~(minerSettings.RewardPerMinute * 60)).toString();
 

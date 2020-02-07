@@ -14,13 +14,14 @@ const bluebird_1 = require("bluebird");
 const PollStatus_1 = require("../services/models/poll/PollStatus");
 const PollButton_1 = require("../services/models/poll/PollButton");
 const Poll_1 = require("../services/models/poll/Poll");
-const dbMinerManager_1 = require("../services/modules/database/miner/dbMinerManager");
 const MinerSettings_1 = require("../services/models/miner/MinerSettings");
 const dbWalletManager_1 = require("../services/modules/database/miner/dbWalletManager");
 const PollController_1 = require("../services/controller/PollController");
 const PollBeat_1 = require("../services/models/poll/PollBeat");
 const dbStreamerManager_1 = require("../services/modules/database/dbStreamerManager");
 const dbLoading_1 = require("../services/modules/database/dbLoading");
+const StreamerSettings_1 = require("../services/modules/database/streamer_settings/StreamerSettings");
+const dbMinerManager_1 = require("../services/modules/database/miner/dbMinerManager");
 const UsersIdsForTests = ['jukes', 'lato', 'naruto', 'saske', 'bankai'];
 const IDForManagerPoll = 'amaterasu';
 const DatabaseForUpdateButtons = 'lapis';
@@ -298,26 +299,26 @@ describe('DATABASE_MANAGER', () => {
         }));
         it('Get Miner Settings', function () {
             return __awaiter(this, void 0, void 0, function* () {
-                chai_1.expect(yield dbMinerManager_1.MinerManeger.getMinerSettings(DatabaseForMinig))
+                chai_1.expect(yield StreamerSettings_1.default.getMinerSettings(DatabaseForMinig))
                     .to.deep.equal(new MinerSettings_1.MinerSettings(100)); // defauth value in db
             });
         });
         it('Mining Maneger', function () {
             return __awaiter(this, void 0, void 0, function* () {
                 let minerSettings = new MinerSettings_1.MinerSettings(HourlyRewardForTest);
-                let UpdateMinerResult = yield dbMinerManager_1.MinerManeger.UpdateSettings(DatabaseForMinig, minerSettings);
+                let UpdateMinerResult = yield StreamerSettings_1.default.UpdateMinerSettings(DatabaseForMinig, minerSettings);
                 chai_1.expect(UpdateMinerResult).to.deep.include({ SuccessfullyUpdatedMinerSettings: minerSettings });
-                let MinerSettingsResult = yield dbMinerManager_1.MinerManeger.getMinerSettings(DatabaseForMinig);
+                let MinerSettingsResult = yield StreamerSettings_1.default.getMinerSettings(DatabaseForMinig);
                 chai_1.expect(MinerSettingsResult).to.deep.equal(minerSettings);
             });
         });
         it('Mining Coins', function () {
             return __awaiter(this, void 0, void 0, function* () {
                 this.slow(1500);
-                let result1 = yield dbMinerManager_1.MinerManeger.MineCoin(DatabaseForMinig, UsersIdsForTests[0]);
+                let result1 = yield dbMinerManager_1.default.MineCoin(DatabaseForMinig, UsersIdsForTests[0]);
                 chai_1.expect(result1).to.include({ CoinsOfUser: RewardForTestAttempt });
                 yield sleep(MinerSettings_1.MinimunTimeForMining);
-                let result2 = yield dbMinerManager_1.MinerManeger.MineCoin(DatabaseForMinig, UsersIdsForTests[0]);
+                let result2 = yield dbMinerManager_1.default.MineCoin(DatabaseForMinig, UsersIdsForTests[0]);
                 chai_1.expect(result2).to.include({ CoinsOfUser: RewardForTestAttempt * 2 });
             });
         });

@@ -1,17 +1,22 @@
 import sequelize = require("sequelize");
 import { Model } from "sequelize";
 export class dbSettings extends Model {
-    RewardPerMinute: number
+    SettingName:string;
+    SettingsJson:unknown;
 }
 const SettingsDefiner = {
     name:'settings',
     atributes:{
-        RewardPerMinute: {
-            type: sequelize.DOUBLE,
-            defaultValue: 100
-        }
-    },
-    options:{ timestamps: false }
+        SettingName:{
+            type: sequelize.STRING,
+            primaryKey: true    
+        },
+        SettingsJson:{
+            type: sequelize.JSON
+        },
+    },options:{
+        freezeTableName: true
+    }
 }
 export {SettingsDefiner};
 

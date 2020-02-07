@@ -5,31 +5,7 @@ import { WalletManeger } from "./dbWalletManager";
 import { MiningResponse } from "../../../models/miner/MiningResponse";
 import { dbStreamerManager } from "../dbStreamerManager";
 
-export class MinerManeger {
-
-    /**
-     * 
-     * @param StreamerID 
-     */
-    static async getMinerSettings(StreamerID: string) {
-        let accountData = dbStreamerManager.getAccountData(StreamerID);
-
-        if (!accountData.MinerSettings) return Loading.Settings(StreamerID);
-
-        return resolve(accountData.MinerSettings);
-    }
-    /**
-     * 
-     * @param StreamerID 
-     * @param minerSettings 
-     */
-    static async UpdateSettings(StreamerID: string, minerSettings) {
-        let AccountData = dbStreamerManager.getAccountData(StreamerID);
-        AccountData.MinerSettings = new MinerSettings(minerSettings.RewardPerMinute);
-        return AccountData.dbSettings.update(minerSettings, { where: { ID: 1 } }).then(() => {
-            return resolve({ SuccessfullyUpdatedMinerSettings: AccountData.MinerSettings });
-        });
-    }
+export default class MinerManeger {
     /**
      * For the mining of a coin or fractions thereof, it is necessary that mining attempts 
      * take place in a predetermined period

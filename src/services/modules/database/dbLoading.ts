@@ -6,6 +6,7 @@ import { POLL_WAXED, NOT_IN_STRING, POLL_STARTED, POLL_STOPED, dbStreamerManager
 import { AccountData } from "../../models/AccountData";
 import { getTableName } from "./dbUtil";
 import { dbSettings } from "../../models/poll/dbSettings";
+import { CoinsSettings } from "../../models/CoinsSettings";
 export class Loading {
     /**
      * Loads everything needed for all services to work properly
@@ -13,24 +14,25 @@ export class Loading {
      * */
     static async StreamerDatabase(StreamerID: string) {
         await dbStreamerManager.CreateStreamerDataBase(StreamerID);
-        
-        let accountData:AccountData = dbStreamerManager
-        .setAccountData(new AccountData(StreamerID));
-        
+
+        let accountData: AccountData = dbStreamerManager
+            .setAccountData(new AccountData(StreamerID));
+
         accountData.CurrentPollStatus = new PollStatus();
 
         await Define.Settings(accountData);
         await Define.Wallets(accountData);
+        await Define.Files(accountData);
 
         let tables = await accountData.dbStreamer.query("show tables");
-        if (tables[0].length < 3) {
+        if (tables[0].length < 4) {
             accountData.CurrentPollStatus.waxe();
             return accountData;
         }
         //If there are only 2 tables in the database, no poll has been created yet
 
-        accountData.CurrentPollID = getTableName(tables[0], tables[0].length - 3);
-        accountData.CurrentBettingsID = getTableName(tables[0], tables[0].length - 4);
+        accountData.CurrentPollID = getTableName(tables[0], tables[0].length - 4);
+        accountData.CurrentBettingsID = getTableName(tables[0], tables[0].length - 5);
         /**
          * The wallet and settings table are in the same database and will always be
          * the first and second index, while the most recent Bettings poll tables will 
@@ -48,27 +50,42 @@ export class Loading {
             if (accountData.CurrentBettingsID.indexOf(POLL_STOPED) !== NOT_IN_STRING)
                 accountData.CurrentPollStatus.PollStoped = true;
 
-            await Define.CurrentPoll(accountData);
+            await Define.CurrentPollButtons(accountData);
             await Define.CurrentBettings(accountData);
         }
 
         return accountData;
     }
-    static async Settings(StreamerID: string) {
+    static async MinerSettings(StreamerID: string) {
         let accountData = dbStreamerManager.getAccountData(StreamerID);
         return accountData.dbSettings
-            .findOne({ where: { id: 1 } })
-            .then((res) => {
-                return (res) ? resolve(res) : reject(undefined);
-            })
-            .catch(async (reject) => {
-                if (!reject) {
-                    await accountData.dbSettings.create();
-                    return Loading.Settings(StreamerID);
+            .findOne({ where: { SettingName: MinerSettings.name } })
+            .then(async (dbSettings) => {
+                if (dbSettings) {
+                    return accountData.MinerSettings = <MinerSettings>dbSettings.SettingsJson;
+                } else {
+                    await accountData.dbSettings.create({
+                        SettingName: MinerSettings.name,
+                        SettingsJson: new MinerSettings(100)
+                    });
+                    return Loading.MinerSettings(StreamerID);
                 }
             })
-            .then((setting: dbSettings) => {
-                return accountData.MinerSettings = new MinerSettings(setting.RewardPerMinute);
-            });
+    }
+    static async CoinsSettings(StreamerID: string) {
+        let accountData = dbStreamerManager.getAccountData(StreamerID);
+        return accountData.dbSettings
+            .findOne({ where: { SettingName: CoinsSettings.name } })
+            .then(async (dbSettings) => {
+                if (dbSettings) {
+                    return accountData.CoinsSettings = <CoinsSettings>dbSettings.SettingsJson;
+                } else {
+                    await accountData.dbSettings.create({
+                        SettingName: CoinsSettings.name,
+                        SettingsJson: new CoinsSettings()
+                    });
+                    return Loading.CoinsSettings(StreamerID);
+                }
+            })
     }
 }

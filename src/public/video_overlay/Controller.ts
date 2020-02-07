@@ -2,7 +2,6 @@ import { PollStatus } from "../../services/models/poll/PollStatus";
 import { PollButton } from "../../services/models/poll/PollButton";
 import { isEquivalent, sleep } from "../../utils/utils";
 import { WatchPoll, addBet as addBeat, GetWallet } from "../BackendConnection";
-import { MiningResponse } from "../../services/models/miner/MiningResponse";
 import { Poll } from "../../services/models/poll/Poll";
 import { Miner } from "./modules/Miner";
 import { dbWallet } from "../../services/models/poll/dbWallet";

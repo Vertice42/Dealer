@@ -156,7 +156,7 @@ class PollController {
                 yield dbUtil_1.RenameTable(AccountData.dbStreamer, AccountData.CurrentBettingsID, NewCurrentBettingsID);
                 AccountData.CurrentPollID = NewCurrentPollID;
                 AccountData.CurrentBettingsID = NewCurrentBettingsID;
-                yield dbDefine_1.Define.CurrentPoll(AccountData);
+                yield dbDefine_1.Define.CurrentPollButtons(AccountData);
                 yield dbDefine_1.Define.CurrentBettings(AccountData);
             }
             return bluebird_1.resolve(AccountData.CurrentPollStatus);
@@ -192,7 +192,7 @@ class PollController {
             AccountData.CurrentPollID = ID + dbButton_1.ButtonDefiner.tableName;
             AccountData.CurrentBettingsID = ID + dbBettings_1.BettingsDefiner.TableName;
             AccountData.CurrentPollStatus = new PollStatus_1.PollStatus();
-            yield dbDefine_1.Define.CurrentPoll(AccountData);
+            yield dbDefine_1.Define.CurrentPollButtons(AccountData);
             yield dbDefine_1.Define.CurrentBettings(AccountData);
             AccountData.LastUpdate = new Date().getTime();
             return bluebird_1.resolve({ PollCreated: new Date });

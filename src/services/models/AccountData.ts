@@ -6,19 +6,28 @@ import { dbSettings } from "./poll/dbSettings";
 import { MinerSettings } from "./miner/MinerSettings";
 import { Sequelize } from "sequelize";
 import { dbStreamerManager } from "../modules/database/dbStreamerManager";
+import { CoinsSettings } from "./CoinsSettings";
+import { dbFiles } from "./poll/dbFiles";
 export class AccountData {
-    dbStreamer: Sequelize;
     CurrentPollStatus: PollStatus;
+
     StreamerID: string;
     CurrentPollID: string;
     CurrentBettingsID: string;
+
+    dbStreamer: Sequelize;
     dbCurrentPollButtons: typeof dbButton;
     dbCurrentBettings: typeof dbBettings;
     dbWallets: typeof dbWallet;
     dbSettings: typeof dbSettings;
+    dbFiles: typeof dbFiles;
+
     MinerSettings: MinerSettings;
+    CoinsSettings: CoinsSettings;
+
     LastUpdate: number;
     LossDistributor: number;
+    
     constructor(StreamerID: string) {
         this.StreamerID = StreamerID;
         this.dbStreamer = dbStreamerManager.getStreamerDataBase(StreamerID);

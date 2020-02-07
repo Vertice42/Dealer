@@ -1,5 +1,5 @@
 import { reject, resolve } from 'bluebird';
-import link from '../services/links';
+import link from '../services/Links';
 import ServerConfigs from '../services/configs/ServerConfigs';
 import { PollStatus } from '../services/models/poll/PollStatus';
 import { PollButton } from '../services/models/poll/PollButton';
@@ -123,6 +123,31 @@ export async function SendToMinerManager(StreamerID: String, Setting: MinerSetti
   });
 }
 
+export async function SendToCoinsSettingsManager(StreamerID: String, Setting: MinerSettings) {
+  let H = new Headers();
+  H.append("Content-Type", "application/json");
+
+  return fetch(host + link.CoinsSettingsManager, {
+    method: "POST",
+    headers: H,
+    body: JSON.stringify({
+      StreamerID: StreamerID,
+      Setting: Setting
+    })
+  }).then(function (res) {
+    if (res.ok) return resolve(res)
+    else return reject(res);
+  }).then((res) => {
+    return res.json();
+  }).catch((rej) => {
+    return rej.json()
+      .then((res) => {
+        console.log(res);
+        return reject(res);
+      })
+  });
+}
+
 export async function addBet(StreamerID: string, TwitchUserID: string,
   IdOfVote: number, BetAmount: number): Promise<any> {
   let H = new Headers();
@@ -143,8 +168,25 @@ export async function addBet(StreamerID: string, TwitchUserID: string,
   })
 }
 
-export async function GetMiner(StreamerID: string) {
+export async function GetMinerSettings(StreamerID: string) {
   return fetch(host + link.getMiner(StreamerID), {
+    method: "GET"
+  }).then(function (res) {
+    if (res.ok) return resolve(res)
+    else return reject(res);
+  }).then((res) => {
+    return res.json();
+  }).catch((rej) => {
+    return rej.json()
+      .then((res) => {
+        console.log(res);
+        return reject(res);
+      })
+  });
+}
+
+export async function GetCoinsSettings(StreamerID: string) {//TODO A ESTRURA SE REPETE em get Miner
+  return fetch(host + link.getCoinsSettings(StreamerID), {
     method: "GET"
   }).then(function (res) {
     if (res.ok) return resolve(res)

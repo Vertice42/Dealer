@@ -10,38 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const bluebird_1 = require("bluebird");
-const dbLoading_1 = require("../dbLoading");
 const MinerSettings_1 = require("../../../models/miner/MinerSettings");
 const dbWalletManager_1 = require("./dbWalletManager");
 const MiningResponse_1 = require("../../../models/miner/MiningResponse");
 const dbStreamerManager_1 = require("../dbStreamerManager");
 class MinerManeger {
-    /**
-     *
-     * @param StreamerID
-     */
-    static getMinerSettings(StreamerID) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let accountData = dbStreamerManager_1.dbStreamerManager.getAccountData(StreamerID);
-            if (!accountData.MinerSettings)
-                return dbLoading_1.Loading.Settings(StreamerID);
-            return bluebird_1.resolve(accountData.MinerSettings);
-        });
-    }
-    /**
-     *
-     * @param StreamerID
-     * @param minerSettings
-     */
-    static UpdateSettings(StreamerID, minerSettings) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let AccountData = dbStreamerManager_1.dbStreamerManager.getAccountData(StreamerID);
-            AccountData.MinerSettings = new MinerSettings_1.MinerSettings(minerSettings.RewardPerMinute);
-            return AccountData.dbSettings.update(minerSettings, { where: { ID: 1 } }).then(() => {
-                return bluebird_1.resolve({ SuccessfullyUpdatedMinerSettings: AccountData.MinerSettings });
-            });
-        });
-    }
     /**
      * For the mining of a coin or fractions thereof, it is necessary that mining attempts
      * take place in a predetermined period
@@ -68,4 +41,4 @@ class MinerManeger {
         });
     }
 }
-exports.MinerManeger = MinerManeger;
+exports.default = MinerManeger;

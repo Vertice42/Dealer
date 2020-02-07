@@ -98,7 +98,7 @@ twitch.onAuthorized((auth) => __awaiter(void 0, void 0, void 0, function* () {
         });
     };
     const VIEW_SETTINGS = new ViewConfig.ViewSettings();
-    let minerSettings = yield BackendConnections.GetMiner(StreamerID);
+    let minerSettings = yield BackendConnections.GetMinerSettings(StreamerID);
     VIEW_SETTINGS.HourlyRewardInput.HTMLInput.value = (~~(minerSettings.RewardPerMinute * 60)).toString();
     VIEW_SETTINGS.HourlyRewardInput.HTMLInput.onchange = () => {
         VIEW_SETTINGS.HourlyRewardInput.setChangedInput();

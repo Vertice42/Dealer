@@ -181,7 +181,7 @@ export class PollController {
             AccountData.CurrentPollID = NewCurrentPollID;
             AccountData.CurrentBettingsID = NewCurrentBettingsID;
 
-            await Define.CurrentPoll(AccountData);
+            await Define.CurrentPollButtons(AccountData);
             await Define.CurrentBettings(AccountData);
 
         }
@@ -219,7 +219,7 @@ export class PollController {
         AccountData.CurrentPollID = ID + ButtonDefiner.tableName;
         AccountData.CurrentBettingsID = ID + BettingsDefiner.TableName;
         AccountData.CurrentPollStatus = new PollStatus();
-        await Define.CurrentPoll(AccountData);
+        await Define.CurrentPollButtons(AccountData);
         await Define.CurrentBettings(AccountData);
 
         AccountData.LastUpdate = new Date().getTime();

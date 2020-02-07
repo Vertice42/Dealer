@@ -7,12 +7,17 @@ export default {
     addVote: '/addVote/',
     MinerManager: '/MinerManager',
     getMiner: (StreamerID: string) => {
-        return '/Miner/' + StreamerID;
+        return '/MinerSettings/' + StreamerID;
     },
-    GetSettings: '/Miner/:StreamerID',
+    GetMinerSettings: '/MinerSettings/:StreamerID',
     MineCoin: '/MinerCoin',
     GetWallet: '/Wallet/:StreamerID/:TwitchUserID',
     getWallet: (StreamerID: string, TwitchUserID: string) => {
         return '/Wallet/'+StreamerID+'/'+TwitchUserID
-    }
+    },
+    GetCoinsSettings: '/CoinsSettings/:StreamerID',
+    getCoinsSettings: (StreamerID:String) =>{
+        return '/CoinsSettings/'+StreamerID
+    },
+    CoinsSettingsManager:'/CoinsSettingsManager/'
 }

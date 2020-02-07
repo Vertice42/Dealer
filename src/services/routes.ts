@@ -6,7 +6,6 @@ import { PollButton } from "./models/poll/PollButton";
 import { PollStatus } from "./models/poll/PollStatus";
 import { Poll } from "./models/poll/Poll";
 import { AddBetRequest } from "./models/poll/AddBetRequest";
-import { MinerManeger } from "./modules/database/miner/dbMinerManager";
 import { MinerManagerRequest } from "./models/miner/MinerManagerRequest";
 import { MinerSettings } from "./models/miner/MinerSettings";
 import { MinerRequest } from "./models/miner/MinerRequest";
@@ -15,7 +14,11 @@ import { MiningResponse } from "./models/miner/MiningResponse";
 import UpdateButtonGroupResult from "./models/poll/UpdateButtonGroupResult";
 import { dbStreamerManager } from "./modules/database/dbStreamerManager";
 import { WalletManeger } from "./modules/database/miner/dbWalletManager";
-import links from "./links";
+import links from "./Links";
+import MinerManeger from "./modules/database/miner/dbMinerManager";
+import StreamerSettings from "./modules/database/streamer_settings/StreamerSettings";
+import { CoinsSettingsManagerRequest } from "./models/miner/CoinsSettingsManagerRequest";
+import { CoinsSettings } from "./models/CoinsSettings";
 
 const app = express();
 app.use(cors());
@@ -161,12 +164,12 @@ app.post(links.MinerManager, function (req: MinerManagerRequest, res: express.Re
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
 
-    MinerManeger.UpdateSettings(req.body.StreamerID, req.body.Setting)
+    StreamerSettings.UpdateMinerSettings(req.body.StreamerID, req.body.Setting)
         .then((reso) => { res.status(200).send(reso) })
         .catch((reje) => { res.status(500).send(reje) });
 });
 
-app.get(links.GetSettings, function (req: { params: { StreamerID: string } }, res: express.Response) {
+app.get(links.GetMinerSettings, function (req: { params: { StreamerID: string } }, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.params.StreamerID)
@@ -174,9 +177,44 @@ app.get(links.GetSettings, function (req: { params: { StreamerID: string } }, re
         }
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
-    MinerManeger.getMinerSettings(req.params.StreamerID)
+    StreamerSettings.getMinerSettings(req.params.StreamerID)
         .then((MinerSettings: MinerSettings) => {
             res.status(200).send(MinerSettings);
+        })
+        .catch((rej) => {
+            res.status(500).send(rej);
+        })
+});
+
+app.post(links.CoinsSettingsManager, function (req: CoinsSettingsManagerRequest, res: express.Response) {
+    let ErrorList = CheckRequisition([
+        () => {
+            if (!req.body.StreamerID)
+                return ({ RequestError: "StreamerID is no defined" })
+        },
+        () => {
+            if (!req.body.Setting)
+                return ({ RequestError: "Setting is no defined" })
+        }
+    ])
+    if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
+
+    StreamerSettings.UpdateCoinsSettings(req.body.StreamerID, req.body.Setting)
+        .then((reso) => { res.status(200).send(reso) })
+        .catch((reje) => { res.status(500).send(reje) });
+});
+
+app.get(links.GetCoinsSettings, function (req: { params: { StreamerID: string } }, res: express.Response) {
+    let ErrorList = CheckRequisition([
+        () => {
+            if (!req.params.StreamerID)
+                return ({ RequestError: "StreamerID is no defined" })
+        }
+    ])
+    if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
+    StreamerSettings.getCoinsSettings(req.params.StreamerID)
+        .then((CoinsSettings: CoinsSettings) => {
+            res.status(200).send(CoinsSettings);
         })
         .catch((rej) => {
             res.status(500).send(rej);
@@ -198,7 +236,7 @@ app.post(links.MineCoin, function (req: MinerRequest, res: express.Response) {
 
     MinerManeger.MineCoin(req.body.StreamerID, req.body.TwitchUserID)
         .then((resolve: MiningResponse) => { res.status(200).send(resolve) })
-        .catch((reje) => {            
+        .catch((reje) => {
             res.status(500).send(reje);
         });
 

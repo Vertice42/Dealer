@@ -3,7 +3,6 @@ import { resolve } from "bluebird";
 import { PollStatus } from "../services/models/poll/PollStatus";
 import { PollButton } from "../services/models/poll/PollButton";
 import { Poll } from "../services/models/poll/Poll";
-import { MinerManeger } from "../services/modules/database/miner/dbMinerManager";
 import { MinerSettings, MinimunTimeForMining } from "../services/models/miner/MinerSettings";
 import { getWallet, WalletManeger } from "../services/modules/database/miner/dbWalletManager";
 import { dbWallet } from "../services/models/poll/dbWallet";
@@ -11,6 +10,8 @@ import { PollController } from "../services/controller/PollController";
 import { PollBeat } from "../services/models/poll/PollBeat";
 import { dbStreamerManager } from "../services/modules/database/dbStreamerManager";
 import { Loading } from "../services/modules/database/dbLoading";
+import StreamerSettings from "../services/modules/database/streamer_settings/StreamerSettings";
+import MinerManeger from "../services/modules/database/miner/dbMinerManager";
 
 const UsersIdsForTests = ['jukes', 'lato', 'naruto', 'saske', 'bankai'];
 
@@ -342,19 +343,19 @@ describe('DATABASE_MANAGER', () => {
       await deleteDatabse(DatabaseForMinig)
     })
 
-    it('Get Miner Settings', async function () {
-      expect(await MinerManeger.getMinerSettings(DatabaseForMinig))
+    it('Get Miner Settings', async function () {      
+      expect(await StreamerSettings.getMinerSettings(DatabaseForMinig))
         .to.deep.equal(new MinerSettings(100));// defauth value in db
     })
 
     it('Mining Maneger', async function () {
       let minerSettings = new MinerSettings(HourlyRewardForTest);
 
-      let UpdateMinerResult = await MinerManeger.UpdateSettings(DatabaseForMinig, minerSettings);
+      let UpdateMinerResult = await StreamerSettings.UpdateMinerSettings(DatabaseForMinig, minerSettings);
 
       expect(UpdateMinerResult).to.deep.include({ SuccessfullyUpdatedMinerSettings: minerSettings })
 
-      let MinerSettingsResult = await MinerManeger.getMinerSettings(DatabaseForMinig);
+      let MinerSettingsResult = await StreamerSettings.getMinerSettings(DatabaseForMinig);
       expect(MinerSettingsResult).to.deep.equal(minerSettings);
 
     })

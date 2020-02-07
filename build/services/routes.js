@@ -12,11 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const BodyParcer = require("body-parser");
 const cors = require("cors");
-const dbMinerManager_1 = require("./modules/database/miner/dbMinerManager");
 const PollController_1 = require("./controller/PollController");
 const dbStreamerManager_1 = require("./modules/database/dbStreamerManager");
 const dbWalletManager_1 = require("./modules/database/miner/dbWalletManager");
-const links_1 = require("./links");
+const Links_1 = require("./Links");
+const dbMinerManager_1 = require("./modules/database/miner/dbMinerManager");
+const StreamerSettings_1 = require("./modules/database/streamer_settings/StreamerSettings");
 const app = express();
 exports.app = app;
 app.use(cors());
@@ -37,7 +38,7 @@ function ThereWinningButtonsInArray(PollButtons) {
             return true;
     return false;
 }
-app.post(links_1.default.PollManager, function (req, res) {
+app.post(Links_1.default.PollManager, function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         let ErrorList = CheckRequisition([
             () => {
@@ -74,7 +75,7 @@ app.post(links_1.default.PollManager, function (req, res) {
         return res.status(200).send({ PoolUpdateResult, DistribuitionResult });
     });
 });
-app.get(links_1.default.GetPoll, function (req, res) {
+app.get(Links_1.default.GetPoll, function (req, res) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.params.StreamerID)
@@ -92,7 +93,7 @@ app.get(links_1.default.GetPoll, function (req, res) {
         res.status(500).send(reje);
     });
 });
-app.post(links_1.default.addVote, function (req, res) {
+app.post(Links_1.default.addVote, function (req, res) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -137,7 +138,7 @@ app.post(links_1.default.addVote, function (req, res) {
             res.status(500).send(reject);
     });
 });
-app.post(links_1.default.MinerManager, function (req, res) {
+app.post(Links_1.default.MinerManager, function (req, res) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -150,11 +151,11 @@ app.post(links_1.default.MinerManager, function (req, res) {
     ]);
     if (ErrorList.length > 0)
         return res.status(400).send({ ErrorList: ErrorList });
-    dbMinerManager_1.MinerManeger.UpdateSettings(req.body.StreamerID, req.body.Setting)
+    StreamerSettings_1.default.UpdateMinerSettings(req.body.StreamerID, req.body.Setting)
         .then((reso) => { res.status(200).send(reso); })
         .catch((reje) => { res.status(500).send(reje); });
 });
-app.get(links_1.default.GetSettings, function (req, res) {
+app.get(Links_1.default.GetMinerSettings, function (req, res) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.params.StreamerID)
@@ -163,7 +164,7 @@ app.get(links_1.default.GetSettings, function (req, res) {
     ]);
     if (ErrorList.length > 0)
         return res.status(400).send({ ErrorList: ErrorList });
-    dbMinerManager_1.MinerManeger.getMinerSettings(req.params.StreamerID)
+    StreamerSettings_1.default.getMinerSettings(req.params.StreamerID)
         .then((MinerSettings) => {
         res.status(200).send(MinerSettings);
     })
@@ -171,7 +172,41 @@ app.get(links_1.default.GetSettings, function (req, res) {
         res.status(500).send(rej);
     });
 });
-app.post(links_1.default.MineCoin, function (req, res) {
+app.post(Links_1.default.CoinsSettingsManager, function (req, res) {
+    let ErrorList = CheckRequisition([
+        () => {
+            if (!req.body.StreamerID)
+                return ({ RequestError: "StreamerID is no defined" });
+        },
+        () => {
+            if (!req.body.Setting)
+                return ({ RequestError: "Setting is no defined" });
+        }
+    ]);
+    if (ErrorList.length > 0)
+        return res.status(400).send({ ErrorList: ErrorList });
+    StreamerSettings_1.default.UpdateCoinsSettings(req.body.StreamerID, req.body.Setting)
+        .then((reso) => { res.status(200).send(reso); })
+        .catch((reje) => { res.status(500).send(reje); });
+});
+app.get(Links_1.default.GetCoinsSettings, function (req, res) {
+    let ErrorList = CheckRequisition([
+        () => {
+            if (!req.params.StreamerID)
+                return ({ RequestError: "StreamerID is no defined" });
+        }
+    ]);
+    if (ErrorList.length > 0)
+        return res.status(400).send({ ErrorList: ErrorList });
+    StreamerSettings_1.default.getCoinsSettings(req.params.StreamerID)
+        .then((CoinsSettings) => {
+        res.status(200).send(CoinsSettings);
+    })
+        .catch((rej) => {
+        res.status(500).send(rej);
+    });
+});
+app.post(Links_1.default.MineCoin, function (req, res) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -184,13 +219,13 @@ app.post(links_1.default.MineCoin, function (req, res) {
     ]);
     if (ErrorList.length > 0)
         return res.status(400).send({ ErrorList: ErrorList });
-    dbMinerManager_1.MinerManeger.MineCoin(req.body.StreamerID, req.body.TwitchUserID)
+    dbMinerManager_1.default.MineCoin(req.body.StreamerID, req.body.TwitchUserID)
         .then((resolve) => { res.status(200).send(resolve); })
         .catch((reje) => {
         res.status(500).send(reje);
     });
 });
-app.get(links_1.default.GetWallet, function (req, res) {
+app.get(Links_1.default.GetWallet, function (req, res) {
     new dbWalletManager_1.WalletManeger(req.params.StreamerID, req.params.TwitchUserID)
         .getWallet().then((wallet) => {
         res.status(200).send(wallet);

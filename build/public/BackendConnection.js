@@ -10,13 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const bluebird_1 = require("bluebird");
-const links_1 = require("../services/links");
+const Links_1 = require("../services/Links");
 const ServerConfigs_1 = require("../services/configs/ServerConfigs");
 const host = 'http://localhost:' + (ServerConfigs_1.default.Port || process.env.Port);
 function getCurrentPoll(StreamerID) {
     return __awaiter(this, void 0, void 0, function* () {
         /* Use fetch to communicate to backend and get current voting */
-        return fetch(host + links_1.default.getPoll(StreamerID), {
+        return fetch(host + Links_1.default.getPoll(StreamerID), {
             method: "GET"
         }).then(function (res) {
             if (res.ok)
@@ -84,7 +84,7 @@ function SendToPollManager(StreamerID, PollButtons, NewPollStatus) {
         /*Send current voting with your buttons and current poll status */
         let H = new Headers();
         H.append("Content-Type", "application/json");
-        return fetch(host + links_1.default.PollManager, {
+        return fetch(host + Links_1.default.PollManager, {
             method: "POST",
             headers: H,
             body: JSON.stringify({
@@ -114,7 +114,7 @@ function SendToMinerManager(StreamerID, Setting) {
     return __awaiter(this, void 0, void 0, function* () {
         let H = new Headers();
         H.append("Content-Type", "application/json");
-        return fetch(host + links_1.default.MinerManager, {
+        return fetch(host + Links_1.default.MinerManager, {
             method: "POST",
             headers: H,
             body: JSON.stringify({
@@ -138,11 +138,39 @@ function SendToMinerManager(StreamerID, Setting) {
     });
 }
 exports.SendToMinerManager = SendToMinerManager;
+function SendToCoinsSettingsManager(StreamerID, Setting) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let H = new Headers();
+        H.append("Content-Type", "application/json");
+        return fetch(host + Links_1.default.CoinsSettingsManager, {
+            method: "POST",
+            headers: H,
+            body: JSON.stringify({
+                StreamerID: StreamerID,
+                Setting: Setting
+            })
+        }).then(function (res) {
+            if (res.ok)
+                return bluebird_1.resolve(res);
+            else
+                return bluebird_1.reject(res);
+        }).then((res) => {
+            return res.json();
+        }).catch((rej) => {
+            return rej.json()
+                .then((res) => {
+                console.log(res);
+                return bluebird_1.reject(res);
+            });
+        });
+    });
+}
+exports.SendToCoinsSettingsManager = SendToCoinsSettingsManager;
 function addBet(StreamerID, TwitchUserID, IdOfVote, BetAmount) {
     return __awaiter(this, void 0, void 0, function* () {
         let H = new Headers();
         H.append("Content-Type", "application/json");
-        return fetch(host + links_1.default.addVote, {
+        return fetch(host + Links_1.default.addVote, {
             method: "POST",
             headers: H,
             body: JSON.stringify({
@@ -163,9 +191,9 @@ function addBet(StreamerID, TwitchUserID, IdOfVote, BetAmount) {
     });
 }
 exports.addBet = addBet;
-function GetMiner(StreamerID) {
+function GetMinerSettings(StreamerID) {
     return __awaiter(this, void 0, void 0, function* () {
-        return fetch(host + links_1.default.getMiner(StreamerID), {
+        return fetch(host + Links_1.default.getMiner(StreamerID), {
             method: "GET"
         }).then(function (res) {
             if (res.ok)
@@ -183,12 +211,33 @@ function GetMiner(StreamerID) {
         });
     });
 }
-exports.GetMiner = GetMiner;
+exports.GetMinerSettings = GetMinerSettings;
+function GetCoinsSettings(StreamerID) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return fetch(host + Links_1.default.getCoinsSettings(StreamerID), {
+            method: "GET"
+        }).then(function (res) {
+            if (res.ok)
+                return bluebird_1.resolve(res);
+            else
+                return bluebird_1.reject(res);
+        }).then((res) => {
+            return res.json();
+        }).catch((rej) => {
+            return rej.json()
+                .then((res) => {
+                console.log(res);
+                return bluebird_1.reject(res);
+            });
+        });
+    });
+}
+exports.GetCoinsSettings = GetCoinsSettings;
 function MineCoin(StreamerID, TwitchUserID) {
     return __awaiter(this, void 0, void 0, function* () {
         let H = new Headers();
         H.append("Content-Type", "application/json");
-        return fetch(host + links_1.default.MineCoin, {
+        return fetch(host + Links_1.default.MineCoin, {
             method: "POST",
             headers: H,
             body: JSON.stringify({
@@ -214,7 +263,7 @@ function MineCoin(StreamerID, TwitchUserID) {
 exports.MineCoin = MineCoin;
 function GetWallet(StreamerID, TwitchUserID) {
     return __awaiter(this, void 0, void 0, function* () {
-        return fetch(host + links_1.default.getWallet(StreamerID, TwitchUserID), {
+        return fetch(host + Links_1.default.getWallet(StreamerID, TwitchUserID), {
             method: "GET"
         }).then(function (res) {
             if (res.ok)
