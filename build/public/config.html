@@ -7,49 +7,70 @@
 </head>
 
 <body style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
-  <div class="PollDiv Hidden" id="PollManagerDiv">
+  <div class="Module">
+    <h1>Gereciador de Apostas</h1>
 
-    <div id="PollItensDiv"></div>
-    <button class="VoteManagementButton" id="AddPollItemButton">+</button>
+    <div class="PollDiv Hidden" id="PollManagerDiv">
 
-    <div style="display: flex;">
+      <div id="PollItensDiv"></div>
+      <button class="VoteManagementButton" id="AddPollItemButton">+</button>
 
-      <button class="VoteManagementButton ButtonEnable" id="DeletePollButton"></button>
+      <div style="display: flex;">
 
-      <div class="PollButtonsDiv ">
-        <button class="VoteManagementButton ButtonHide ButtonDisable" id="StartPollButton">Iniciar</button>
-        <button class="VoteManagementButton ButtonHide ButtonDisable" id="StopPollButton">Parar votação</button>
-        <button class="VoteManagementButton ButtonHide ButtonDisable" id="RestartButton">Reiniciar votação</button>
-        <button class="VoteManagementButton ButtonHide ButtonDisable" id="ApplyChangesButton">Aplicar</button>
-        <button class="VoteManagementButton ButtonHide ButtonDisable" id="DistributeButton">Distribuir</button>
+        <button class="VoteManagementButton ButtonEnable" id="DeletePollButton"></button>
+
+        <div class="PollButtonsDiv ">
+          <button class="VoteManagementButton ButtonHide ButtonDisable" id="StartPollButton">Iniciar</button>
+          <button class="VoteManagementButton ButtonHide ButtonDisable" id="StopPollButton">Parar votação</button>
+          <button class="VoteManagementButton ButtonHide ButtonDisable" id="RestartButton">Reiniciar votação</button>
+          <button class="VoteManagementButton ButtonHide ButtonDisable" id="ApplyChangesButton">Aplicar</button>
+          <button class="VoteManagementButton ButtonHide ButtonDisable" id="DistributeButton">Distribuir</button>
+        </div>
       </div>
+    </div>
+
+    <div id="DistributionDiv" class="Hidden">
+      <h2>Distribuindo ganhos e perdas</h2>
+      <img src="https://pixelpapa.com/wp-content/uploads/2018/11/10.gif" alt="">
+      <button class="VoteManagementButton ButtonHide" id="CloseButton">Fexar</button>
+    </div>
+
+    <div style="display: flex; margin-bottom: 5%;">
+      <button class="VoteManagementButton ButtonEnable" id="CreatePollButton">Criar Aposta</button>
     </div>
   </div>
 
-  <div id="DistributionDiv" class="Hidden">
-    <h2>Distribuindo ganhos e perdas</h2>
-    <img src="https://pixelpapa.com/wp-content/uploads/2018/11/10.gif" alt="">
-    <button class="VoteManagementButton ButtonHide" id="CloseButton">Fexar</button>
-  </div>
+  <div class="SettingDiv Module">
+    <h1>Configuraçoes</h1>
 
-  <div style="display: flex; margin-bottom: 5%;">
-    <button class="VoteManagementButton ButtonEnable" id="CreatePollButton">Create</button>
-  </div>
-
-  <div class="SettingDiv">
-
-    <div class="MinerDiv">
-      <img id="MinerIcon" src="https://cdn2.iconfinder.com/data/icons/bitcoin-and-mining/44/pickaxe-512.png">
+    <div class="MinerDiv Setting">
       <h2>Mineração por hora </h2>
       <input id="HourlyRewardInput" type="number" class="UnchangedInput">
     </div>
 
-    <div class="CoinsDiv">
+    <div class="CoinsDiv Setting">
       <h2>Nome da Moeda</h2><input id="CoinNameInput" type="text">
     </div>
 
   </div>
 
+  <div class="StoreDiv Module">
+    <h1>Gerenciador da Loja</h1>
+    <div class="StoreItems">
+
+      <div class="StoreItem">
+        <img id="TypeItemID"
+          src="https://icons.iconarchive.com/icons/igh0zt/ios7-style-metro-ui/512/MetroUI-Other-Sound-icon.png">
+        <input type="text" id="SondName" value="Descrição">
+        <input type="text" value="Preço">
+        <input type="file" id="InputFile" class="inputfile">
+        <label for="InputFile" type="file" id="AddUpdateFileIcon"></label>
+        <button class="DeleteStoreItem" id="DeleteStoreItem+id"></button>
+      </div>
+      <button id="AddStoreItem">
+        <h4>+</h4>
+      </button>
+    </div>
 
   </div>
 

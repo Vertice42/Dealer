@@ -1,7 +1,5 @@
 .PollDiv {
-    background: rgb(39, 44, 75);
-    transition: opacity 100ms;
-    margin-bottom: 10%;
+
 }
 
 .PollItem {
@@ -68,14 +66,20 @@
     width: 25vw;
     height: 10vw;    
     font-size: 4vw;
-
     margin: 1%;
+    transition: transform 500ms;
+}
+
+.VoteManagementButton:hover{
+    transform: scale(1.1);
 }
 
 #CreatePollButton {
     margin: auto;
     background-color: white;
-    font-size: 8vw;
+    font-size: 5vw;
+    width: 40vw;
+    height: 10vw; 
 }
 
 #DistributeEarningsButton {

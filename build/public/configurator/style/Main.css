@@ -1,5 +1,6 @@
-@import url(./configurator/main.css);
+@import url(./streamer_settings/main.css);
 @import url(./poll_manager/main.css);
+@import url(./store_manager/main.css);
 @import url(../../style/common.css);
 
 
@@ -22,11 +23,18 @@ body {
     display: block;
 }
 
-
 .Hidden {
     display: none;
 }
 
+h1{
+    background-color: rgb(255, 255, 255);
+    margin: 1vw auto;
+    padding: 0px 1vw;
+
+    font-family: fantasy;
+    text-transform: uppercase;
+}
 h3 {
     display: flex;
     text-align: center;
@@ -52,11 +60,9 @@ input::-webkit-color-swatch {
     border: none;
     border-radius: 100%;
 }
-input[type='text'] {
-    font-size: 3vw;
-    text-align: center;
-    font-family: sans-serif;
-    max-width: 20vw;
-    height: 3vw;
-    margin: auto 0%;
+
+.Module{
+    display: grid;
+    background-color: rgb(54, 48, 68);
+    margin: 1vw;
 }

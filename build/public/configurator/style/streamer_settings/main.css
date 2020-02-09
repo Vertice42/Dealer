@@ -1,0 +1,39 @@
+.SettingDiv {}
+
+.Setting {
+    display: flex;
+    height: 5vw;
+    background: white;
+    margin: 1vw 15vw;
+    text-transform: uppercase;
+}
+
+.Setting input {
+    font-size: 3vw;
+    width: 100%;
+    text-align: center;
+    margin: 1vw;
+}
+
+.Setting input[type='number']{
+    font-family: fantasy;
+    font-size: 20pt;
+}
+
+.Setting h2{
+    font-size: 3vw;
+    width: 100%;
+    text-align: center;
+    margin: auto;
+    font-family: fantasy;
+}
+
+#MinerIcon {
+    height: 6vw;
+    margin: 1vw;
+}
+
+#CoinNameInput {
+    outline: none;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
