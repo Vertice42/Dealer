@@ -1,11 +1,12 @@
 import ViewConfig = require("./View");
 import BackendConnections = require("../BackendConnection");
-import { WatchPoll, SendToStoreManager } from "../BackendConnection";
+import { WatchPoll, SendToStoreManager, GetStore } from "../BackendConnection";
 import { PollButton } from "../../services/models/poll/PollButton";
 import { PollStatus } from "../../services/models/poll/PollStatus";
 import { Poll } from "../../services/models/poll/Poll";
 import { MinerSettings } from "../../services/models/miner/MinerSettings";
 import { sleep } from "../../utils/utils";
+import StoreItem from "../../services/models/store/StoreItem";
 
 const twitch: TwitchExt = window.Twitch.ext;
 var token, StreamerID;
@@ -125,20 +126,40 @@ twitch.onAuthorized(async (auth) => {
     }
 
     const VIEW_STORE = new ViewConfig.ViewStore();
-    VIEW_STORE.onDescriptionChange = (StoreItem) => {
-        StoreItem.DescriptionInput.setChangedInput();
-        SendToStoreManager(StreamerID,StoreItem)
+
+    let StoreItems:StoreItem[] = await GetStore(StreamerID);
+    StoreItems.forEach(StoreItem => VIEW_STORE.addStoreItem(StoreItem));
+
+    VIEW_STORE.onDescriptionChange = (ViewStoreItem) => {
+        ViewStoreItem.DescriptionInput.setChangedInput();
+        SendToStoreManager(StreamerID,<StoreItem>ViewStoreItem)
         .then(async ()=>{
-            StoreItem.DescriptionInput.setInputSentSuccessfully();
+            ViewStoreItem.DescriptionInput.setInputSentSuccessfully();
             await sleep(500);
-            StoreItem.DescriptionInput.setUnchangedInput();
+            ViewStoreItem.DescriptionInput.setUnchangedInput();
         })
-        .catch(()=>{
-            StoreItem.DescriptionInput.setInputSentError();
+        .catch((rej)=>{
+            console.log(rej);
+            ViewStoreItem.DescriptionInput.setInputSentError();
         })
     }
+
+    VIEW_STORE.onPriceChange = (ViewStoreItem) => {
+        ViewStoreItem.PriceInput.setChangedInput();
+        SendToStoreManager(StreamerID,<StoreItem>ViewStoreItem)
+        .then(async ()=>{
+            ViewStoreItem.PriceInput.setInputSentSuccessfully();
+            await sleep(500);
+            ViewStoreItem.PriceInput.setUnchangedInput();
+        })
+        .catch((rej)=>{
+            console.log(rej);
+            ViewStoreItem.PriceInput.setInputSentError();
+        })
+    }
+
     VIEW_STORE.onAddStoreItemActive = () => {
-        VIEW_STORE.addStoreItem();
+        VIEW_STORE.addStoreItem(null);
     }
 
     VIEW_STORE.onButtonDeleteActive = (StoreItem) => {

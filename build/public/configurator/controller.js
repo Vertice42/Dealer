@@ -112,20 +112,36 @@ twitch.onAuthorized((auth) => __awaiter(void 0, void 0, void 0, function* () {
         });
     };
     const VIEW_STORE = new ViewConfig.ViewStore();
-    VIEW_STORE.onDescriptionChange = (StoreItem) => {
-        StoreItem.DescriptionInput.setChangedInput();
-        BackendConnection_1.SendToStoreManager(StreamerID, StoreItem)
+    let StoreItems = yield BackendConnection_1.GetStore(StreamerID);
+    StoreItems.forEach(StoreItem => VIEW_STORE.addStoreItem(StoreItem));
+    VIEW_STORE.onDescriptionChange = (ViewStoreItem) => {
+        ViewStoreItem.DescriptionInput.setChangedInput();
+        BackendConnection_1.SendToStoreManager(StreamerID, ViewStoreItem)
             .then(() => __awaiter(void 0, void 0, void 0, function* () {
-            StoreItem.DescriptionInput.setInputSentSuccessfully();
+            ViewStoreItem.DescriptionInput.setInputSentSuccessfully();
             yield utils_1.sleep(500);
-            StoreItem.DescriptionInput.setUnchangedInput();
+            ViewStoreItem.DescriptionInput.setUnchangedInput();
         }))
-            .catch(() => {
-            StoreItem.DescriptionInput.setInputSentError();
+            .catch((rej) => {
+            console.log(rej);
+            ViewStoreItem.DescriptionInput.setInputSentError();
+        });
+    };
+    VIEW_STORE.onPriceChange = (ViewStoreItem) => {
+        ViewStoreItem.PriceInput.setChangedInput();
+        BackendConnection_1.SendToStoreManager(StreamerID, ViewStoreItem)
+            .then(() => __awaiter(void 0, void 0, void 0, function* () {
+            ViewStoreItem.PriceInput.setInputSentSuccessfully();
+            yield utils_1.sleep(500);
+            ViewStoreItem.PriceInput.setUnchangedInput();
+        }))
+            .catch((rej) => {
+            console.log(rej);
+            ViewStoreItem.PriceInput.setInputSentError();
         });
     };
     VIEW_STORE.onAddStoreItemActive = () => {
-        VIEW_STORE.addStoreItem();
+        VIEW_STORE.addStoreItem(null);
     };
     VIEW_STORE.onButtonDeleteActive = (StoreItem) => {
         VIEW_STORE.removeStoreItem(StoreItem);

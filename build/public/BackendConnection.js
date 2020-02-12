@@ -277,7 +277,7 @@ function GetWallet(StreamerID, TwitchUserID) {
     });
 }
 exports.GetWallet = GetWallet;
-function GetStore(StreamerID, TwitchUserID) {
+function GetStore(StreamerID) {
     return __awaiter(this, void 0, void 0, function* () {
         return fetch(host + Links_1.default.getStore(StreamerID), {
             method: "GET"
@@ -297,7 +297,7 @@ function SendToStoreManager(StreamerID, StoreItem) {
         /*Send current voting with your buttons and current poll status */
         let H = new Headers();
         H.append("Content-Type", "application/json");
-        return fetch(host + Links_1.default.PollManager, {
+        return fetch(host + Links_1.default.StoreManager, {
             method: "POST",
             headers: H,
             body: JSON.stringify(new StoreManagerRequest_1.default(StreamerID, StoreItem))

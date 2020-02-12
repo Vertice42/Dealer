@@ -242,7 +242,7 @@ export async function GetWallet(StreamerID: string, TwitchUserID: string) {
   })
 }
 
-export async function GetStore(StreamerID: string, TwitchUserID: string) {
+export async function GetStore(StreamerID: string) {
   return fetch(host + link.getStore(StreamerID), {
     method: "GET"
   }).then(function (res) {
@@ -262,7 +262,7 @@ export async function SendToStoreManager(StreamerID: string, StoreItem:StoreItem
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
-  return fetch(host + link.PollManager, {
+  return fetch(host + link.StoreManager, {
     method: "POST",
     headers: H,
     body: JSON.stringify(new StoreManagerRequest(StreamerID,StoreItem))

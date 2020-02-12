@@ -32,13 +32,13 @@ class Loading {
             yield dbDefine_1.Define.Files(accountData);
             yield dbDefine_1.Define.Store(accountData);
             let tables = yield accountData.dbStreamer.query("show tables");
-            if (tables[0].length < 4) {
+            if (tables[0].length < 5) {
                 accountData.CurrentPollStatus.waxe();
                 return accountData;
             }
             //If there are only 2 tables in the database, no poll has been created yet
-            accountData.CurrentPollID = dbUtil_1.getTableName(tables[0], tables[0].length - 4);
-            accountData.CurrentBettingsID = dbUtil_1.getTableName(tables[0], tables[0].length - 5);
+            accountData.CurrentPollID = dbUtil_1.getTableName(tables[0], tables[0].length - 5);
+            accountData.CurrentBettingsID = dbUtil_1.getTableName(tables[0], tables[0].length - 6);
             /**
              * The wallet and settings table are in the same database and will always be
              * the first and second index, while the most recent Bettings poll tables will

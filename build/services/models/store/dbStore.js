@@ -9,14 +9,16 @@ exports.StoreDefiner = {
     name: 'store',
     atributes: {
         Type: {
-            type: sequelize.INTEGER
+            type: sequelize.INTEGER,
+            allowNull: true
         },
         Description: {
             type: sequelize.STRING,
-            allowNull: false
+            allowNull: true
         },
         Price: {
-            type: sequelize.INTEGER
+            type: sequelize.INTEGER,
+            allowNull: true
         }
     }, options: {
         freezeTableName: true

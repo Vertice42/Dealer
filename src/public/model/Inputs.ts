@@ -1,60 +1,54 @@
 export class ResponsiveInput {
-    public HTMLInput: HTMLInputElement;
-    setChangedInput() {
-      this.HTMLInput.classList.remove('InputSentSuccessfully');
-      this.HTMLInput.classList.remove('UnchangedInput');
-      this.HTMLInput.classList.remove('InputSentError');
-  
-      this.HTMLInput.classList.add('ChangedInput');
-    }
-    setUnchangedInput() {
-      this.HTMLInput.classList.remove('InputSentSuccessfully');
-      this.HTMLInput.classList.remove('ChangedInput');
-      this.HTMLInput.classList.remove('InputSentError');
-  
-      this.HTMLInput.classList.add('UnchangedInput');
-    }
-    setInputSentSuccessfully() {
-      this.HTMLInput.classList.remove('ChangedInput');
-      this.HTMLInput.classList.remove('UnchangedInput');
-      this.HTMLInput.classList.remove('InputSentError');
-  
-  
-      this.HTMLInput.classList.add('InputSentSuccessfully');
-    }
-    setInputSentError() {
-      this.HTMLInput.classList.remove('InputSentSuccessfully');
-      this.HTMLInput.classList.remove('ChangedInput');
-      this.HTMLInput.classList.remove('ChangedInput');
-  
-      this.HTMLInput.classList.add('InputSentError');
-    }
-    constructor(HTMLInput: HTMLInputElement){
-        this.HTMLInput = HTMLInput;
-    }
+  public HTMLInput: HTMLInputElement;
+  setChangedInput() {
+    this.HTMLInput.classList.remove('InputSentSuccessfully');
+    this.HTMLInput.classList.remove('UnchangedInput');
+    this.HTMLInput.classList.remove('InputSentError');
+
+    this.HTMLInput.classList.add('ChangedInput');
+  }
+  setUnchangedInput() {
+    this.HTMLInput.classList.remove('InputSentSuccessfully');
+    this.HTMLInput.classList.remove('ChangedInput');
+    this.HTMLInput.classList.remove('InputSentError');
+
+    this.HTMLInput.classList.add('UnchangedInput');
+  }
+  setInputSentSuccessfully() {
+    this.HTMLInput.classList.remove('ChangedInput');
+    this.HTMLInput.classList.remove('UnchangedInput');
+    this.HTMLInput.classList.remove('InputSentError');
+
+
+    this.HTMLInput.classList.add('InputSentSuccessfully');
+  }
+  setInputSentError() {
+    this.HTMLInput.classList.remove('InputSentSuccessfully');
+    this.HTMLInput.classList.remove('ChangedInput');
+    this.HTMLInput.classList.remove('ChangedInput');
+
+    this.HTMLInput.classList.add('InputSentError');
+  }
+  constructor(HTMLInput: HTMLInputElement) {
+    this.HTMLInput = HTMLInput;
+  }
 }
 
-export class OrientedInput implements ResponsiveInput {
-  public HTMLInput: HTMLInputElement;
-  setChangedInput(): void {
-    throw new Error("Method not implemented.");
+export class OrientedInput extends ResponsiveInput {
+  setUsed() {
+    this.HTMLInput.classList.add('InputUsed');
+    this.HTMLInput.classList.remove('InputNotUsed');
   }
-  setUnchangedInput(): void {
-    throw new Error("Method not implemented.");
+  setNotUsed() {
+    this.HTMLInput.classList.add('UnchangedInput');
+    this.HTMLInput.classList.add('InputNotUsed');
   }
-  setInputSentSuccessfully(): void {
-    throw new Error("Method not implemented.");
-  }
-  setInputSentError(): void {
-    throw new Error("Method not implemented.");
-  }
-  constructor(Guidance:string,type:string) {
-    this.HTMLInput = <HTMLInputElement> document.createElement('input');
+  constructor(Guidance: string, type: string) {
+
+    super(<HTMLInputElement>document.createElement('input'));
 
     this.HTMLInput.setAttribute('type', 'text');
-    this.HTMLInput.classList.add('UnchangedInput');
-
-    this.HTMLInput.classList.add('InputNotUsed');
+    this.setNotUsed();
     this.HTMLInput.value = Guidance;//TODO ADD TRALATE
 
     this.HTMLInput.addEventListener('focusout', () => {
@@ -66,10 +60,12 @@ export class OrientedInput implements ResponsiveInput {
       }
     })
     this.HTMLInput.onfocus = () => {
-      this.HTMLInput.setAttribute('type', type);
-      this.HTMLInput.classList.add('InputUsed');
-      this.HTMLInput.classList.remove('InputNotUsed');
-      this.HTMLInput.value = '';
+      if (this.HTMLInput.classList.contains('InputNotUsed')) {
+        this.HTMLInput.setAttribute('type', type);
+        this.setUsed();
+        this.HTMLInput.value = '';
+      }
     }
+
   }
 }

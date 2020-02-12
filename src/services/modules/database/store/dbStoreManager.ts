@@ -1,5 +1,6 @@
 import { dbStreamerManager } from "../dbStreamerManager";
 import StoreItem from "../../../models/store/StoreItem";
+import { dbStore as dbStoreIten, dbStore } from "../../../models/store/dbStore";
 
 export default class dbStoreManger {
     StreamerID: string;
@@ -12,13 +13,13 @@ export default class dbStoreManger {
 
     async UpdateOrCreateStoreItem(StoreItem: StoreItem) {
         let AccountData = dbStreamerManager.getAccountData(this.StreamerID);
-        let dbStoreItem = await AccountData.dbStore.findOne({ where: { id: StoreItem.id } });
-        if (dbStoreItem[0]) {
-            await dbStoreItem.update(StoreItem);
+        let dbStoreItem = await AccountData.dbStore.findOne({ where: { id: StoreItem.id } });                
+        if (dbStoreItem) {
+            await dbStoreItem.update(<dbStoreIten>StoreItem);
             return { ItemUpdatedSuccessfully: new Date };
         }
         else {
-            await AccountData.dbStore.create(StoreItem);
+            await AccountData.dbStore.create(<dbStoreIten>StoreItem);
             return { SuccessfullyCreatedItem: new Date };
         }
     }

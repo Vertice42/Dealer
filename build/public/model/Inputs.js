@@ -30,12 +30,19 @@ class ResponsiveInput {
     }
 }
 exports.ResponsiveInput = ResponsiveInput;
-class OrientedInput {
-    constructor(Guidance, type) {
-        this.HTMLInput = document.createElement('input');
-        this.HTMLInput.setAttribute('type', 'text');
+class OrientedInput extends ResponsiveInput {
+    setUsed() {
+        this.HTMLInput.classList.add('InputUsed');
+        this.HTMLInput.classList.remove('InputNotUsed');
+    }
+    setNotUsed() {
         this.HTMLInput.classList.add('UnchangedInput');
         this.HTMLInput.classList.add('InputNotUsed');
+    }
+    constructor(Guidance, type) {
+        super(document.createElement('input'));
+        this.HTMLInput.setAttribute('type', 'text');
+        this.setNotUsed();
         this.HTMLInput.value = Guidance; //TODO ADD TRALATE
         this.HTMLInput.addEventListener('focusout', () => {
             if (this.HTMLInput.value === '') {
@@ -46,23 +53,12 @@ class OrientedInput {
             }
         });
         this.HTMLInput.onfocus = () => {
-            this.HTMLInput.setAttribute('type', type);
-            this.HTMLInput.classList.add('InputUsed');
-            this.HTMLInput.classList.remove('InputNotUsed');
-            this.HTMLInput.value = '';
+            if (this.HTMLInput.classList.contains('InputNotUsed')) {
+                this.HTMLInput.setAttribute('type', type);
+                this.setUsed();
+                this.HTMLInput.value = '';
+            }
         };
-    }
-    setChangedInput() {
-        throw new Error("Method not implemented.");
-    }
-    setUnchangedInput() {
-        throw new Error("Method not implemented.");
-    }
-    setInputSentSuccessfully() {
-        throw new Error("Method not implemented.");
-    }
-    setInputSentError() {
-        throw new Error("Method not implemented.");
     }
 }
 exports.OrientedInput = OrientedInput;

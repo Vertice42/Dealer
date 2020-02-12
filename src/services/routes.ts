@@ -267,22 +267,22 @@ app.get(links.GetWallet, function (req: express.Request, res: express.Response) 
         })
 });
 
-app.post(links.StoreManager, function (req: StoreManagerRequest, res: express.Response) {
+app.post(links.StoreManager, function (req ,res: express.Response) {    
     let ErrorList = CheckRequisition([
-        () => {
+        () => {            
             if (!req.body.StreamerID)
                 return ({ RequestError: "StreamerID is no defined" })
         }
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
-
+    
     new dbStoreManger(req.body.StreamerID).UpdateOrCreateStoreItem(req.body.StoreItem)
-        .then((result) => {
+        .then((result) => {    
             res.status(200).send(result);
         })
-        .catch((reject => {
+        .catch((reject) => {
             res.status(500).send(reject);
-        }))
+        })
 })
 
 app.get(links.GetStore, function (req: { params: { StreamerID: string } }, res: express.Response) {

@@ -260,9 +260,9 @@ app.post(Links_1.default.StoreManager, function (req, res) {
         .then((result) => {
         res.status(200).send(result);
     })
-        .catch((reject => {
+        .catch((reject) => {
         res.status(500).send(reject);
-    }));
+    });
 });
 app.get(Links_1.default.GetStore, function (req, res) {
     new dbStoreManager_1.default(req.params.StreamerID).getAllItens()

@@ -470,7 +470,9 @@ class ViewStoreItem {
         this.HTML.appendChild(this.createInputFile());
         this.HTML.appendChild(this.createLabelForInputFile());
         this.HTML.appendChild(this.createDeletebutton());
-        this.DescriptionInput.HTMLInput.onchange = () => { this.onDescriptionChange(this); };
+        this.DescriptionInput.HTMLInput.onchange = () => {
+            this.onDescriptionChange(this);
+        };
         this.PriceInput.HTMLInput.onchange = () => { this.onPriceChange(this); };
     }
     createStoreType() {
@@ -508,12 +510,33 @@ class ViewStore {
         this.HTML_StoreItems = document.getElementById('StoreItems');
         document.getElementById('AddStoreItem').onclick = () => { this.onAddStoreItemActive(); };
     }
-    addStoreItem() {
+    addStoreItem(StoreItem) {
         let Item = new ViewStoreItem(this.StoreItems.length);
+        if (Item) {
+            Item.id = StoreItem.id;
+            if (Item.DescriptionInput) {
+                Item.DescriptionInput.HTMLInput.value = StoreItem.Description;
+                Item.Description = StoreItem.Description;
+                Item.DescriptionInput.setUsed();
+            }
+            if (StoreItem.Price) {
+                Item.PriceInput.HTMLInput.value = StoreItem.Price.toString();
+                Item.Price = StoreItem.Price;
+                Item.PriceInput.setUsed();
+            }
+        }
         this.StoreItems.push(Item);
-        Item.onDescriptionChange = (StoreItem) => { this.onDescriptionChange(StoreItem); };
-        Item.onPriceChange = (StoreItem) => { this.onPriceChange(StoreItem); };
-        Item.onButtonDeleteActived = (StoreItem) => { this.onButtonDeleteActive(StoreItem); };
+        Item.onDescriptionChange = (StoreItem) => {
+            Item.Description = StoreItem.DescriptionInput.HTMLInput.value;
+            this.onDescriptionChange(StoreItem);
+        };
+        Item.onPriceChange = (StoreItem) => {
+            Item.Price = Number(StoreItem.PriceInput.HTMLInput.value);
+            this.onPriceChange(StoreItem);
+        };
+        Item.onButtonDeleteActived = (StoreItem) => {
+            this.onButtonDeleteActive(StoreItem);
+        };
         this.HTML_StoreItems.appendChild(Item.HTML);
     }
     removeStoreItem(StoreItem) {

@@ -21,7 +21,7 @@ class dbStoreManger {
         return __awaiter(this, void 0, void 0, function* () {
             let AccountData = dbStreamerManager_1.dbStreamerManager.getAccountData(this.StreamerID);
             let dbStoreItem = yield AccountData.dbStore.findOne({ where: { id: StoreItem.id } });
-            if (dbStoreItem[0]) {
+            if (dbStoreItem) {
                 yield dbStoreItem.update(StoreItem);
                 return { ItemUpdatedSuccessfully: new Date };
             }

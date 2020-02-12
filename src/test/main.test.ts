@@ -31,7 +31,7 @@ function sleep(ms: number) {
 }
 
 async function createDatabase(StreamersID: string) {
-  let CreateResult = await dbStreamerManager.CreateStreamerDataBase(StreamersID);
+  let CreateResult = await dbStreamerManager.CreateStreamerDataBase(StreamersID);  
   await Loading.StreamerDatabase(StreamersID);
   return CreateResult;
 }
