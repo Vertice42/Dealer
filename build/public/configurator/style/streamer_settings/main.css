@@ -9,7 +9,7 @@
 }
 
 .Setting input {
-    font-size: 3vw;
+    font-size: 2vw;
     width: 100%;
     text-align: center;
     margin: 1vw;
@@ -17,7 +17,6 @@
 
 .Setting input[type='number']{
     font-family: fantasy;
-    font-size: 20pt;
 }
 
 .Setting h2{

@@ -1,18 +1,23 @@
 .UnchangedInput {
-    transition: border 1000ms;
+}
+
+.UnchangedInput:focus{
+    transition: border 400ms 200ms;
+    border-color: rgb(105, 112, 219);
+    outline: none;
 }
 
 .ChangedInput {
-    transition: border 100ms;
+    transition: border 200ms;
     border-color:  yellow;
 }
 
 .InputSentSuccessfully {
-    transition: border 100ms;
+    transition: border 200ms;
     border-color: rgb(71, 255, 15);
 }
 
 .InputSentError {
-    transition: border 100ms;
+    transition: border 200ms;
     border-color: red;
 }

@@ -14,10 +14,18 @@ const dbBettings_1 = require("../../models/poll/dbBettings");
 const dbSettings_1 = require("../../models/poll/dbSettings");
 const dbButton_1 = require("../../models/poll/dbButton");
 const dbFiles_1 = require("../../models/poll/dbFiles");
+const dbStore_1 = require("../../models/store/dbStore");
 /**
  * Loads and / or creates sequelize models by defining them
  */
 class Define {
+    static Store(AccountData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            AccountData.dbStore = AccountData.dbStreamer
+                .define(dbStore_1.StoreDefiner.name, dbStore_1.StoreDefiner.atributes, dbStore_1.StoreDefiner.options);
+            return AccountData.dbStore.sync();
+        });
+    }
     static Files(AccountData) {
         return __awaiter(this, void 0, void 0, function* () {
             AccountData.dbFiles = AccountData.dbStreamer

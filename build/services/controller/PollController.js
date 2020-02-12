@@ -49,7 +49,7 @@ class PollController {
             let DistributionPromises = [];
             Bettings.forEach((Bettings) => __awaiter(this, void 0, void 0, function* () {
                 if (Bettings) {
-                    let walletManeger = new dbWalletManager_1.WalletManeger(this.StreamerID, Bettings.TwitchUserID);
+                    let walletManeger = new dbWalletManager_1.dbWalletManeger(this.StreamerID, Bettings.TwitchUserID);
                     if (dbPollManager_1.dbPollMager.BetIsWinner(WinningButtons, Bettings.Bet))
                         DistributionPromises.push(walletManeger.deposit(Bettings.BetAmount * AccountData.LossDistributor));
                     else
@@ -76,7 +76,7 @@ class PollController {
     AddBet(TwitchUserID, BetID, BetAmount) {
         return __awaiter(this, void 0, void 0, function* () {
             let AccountData = dbStreamerManager_1.dbStreamerManager.getAccountData(this.StreamerID);
-            let Wallet = yield new dbWalletManager_1.WalletManeger(this.StreamerID, TwitchUserID).getWallet();
+            let Wallet = yield new dbWalletManager_1.dbWalletManeger(this.StreamerID, TwitchUserID).getWallet();
             if (BetAmount > Wallet.Coins)
                 return bluebird_1.reject({
                     RequestError: {

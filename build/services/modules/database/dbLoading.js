@@ -15,7 +15,7 @@ const dbDefine_1 = require("./dbDefine");
 const dbStreamerManager_1 = require("./dbStreamerManager");
 const AccountData_1 = require("../../models/AccountData");
 const dbUtil_1 = require("./dbUtil");
-const CoinsSettings_1 = require("../../models/CoinsSettings");
+const CoinsSettings_1 = require("../../models/streamer_settings/CoinsSettings");
 class Loading {
     /**
      * Loads everything needed for all services to work properly
@@ -30,6 +30,7 @@ class Loading {
             yield dbDefine_1.Define.Settings(accountData);
             yield dbDefine_1.Define.Wallets(accountData);
             yield dbDefine_1.Define.Files(accountData);
+            yield dbDefine_1.Define.Store(accountData);
             let tables = yield accountData.dbStreamer.query("show tables");
             if (tables[0].length < 4) {
                 accountData.CurrentPollStatus.waxe();
@@ -92,6 +93,10 @@ class Loading {
                     return Loading.CoinsSettings(StreamerID);
                 }
             }));
+        });
+    }
+    static Store(StreamerID) {
+        return __awaiter(this, void 0, void 0, function* () {
         });
     }
 }

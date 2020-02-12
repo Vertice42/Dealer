@@ -4,7 +4,7 @@ import { PollStatus } from "../services/models/poll/PollStatus";
 import { PollButton } from "../services/models/poll/PollButton";
 import { Poll } from "../services/models/poll/Poll";
 import { MinerSettings, MinimunTimeForMining } from "../services/models/miner/MinerSettings";
-import { getWallet, WalletManeger } from "../services/modules/database/miner/dbWalletManager";
+import { getWallet, dbWalletManeger } from "../services/modules/database/miner/dbWalletManager";
 import { dbWallet } from "../services/models/poll/dbWallet";
 import { PollController } from "../services/controller/PollController";
 import { PollBeat } from "../services/models/poll/PollBeat";
@@ -185,10 +185,10 @@ describe('DATABASE_MANAGER', () => {
         await createPoll(IDForDistribuition);
         await startPoll(IDForDistribuition);
 
-        await new WalletManeger(IDForDistribuition, UsersIdsForTests[0]).deposit(50);
-        await new WalletManeger(IDForDistribuition, UsersIdsForTests[1]).deposit(50);
-        await new WalletManeger(IDForDistribuition, UsersIdsForTests[2]).deposit(50);
-        await new WalletManeger(IDForDistribuition, UsersIdsForTests[3]).deposit(50);
+        await new dbWalletManeger(IDForDistribuition, UsersIdsForTests[0]).deposit(50);
+        await new dbWalletManeger(IDForDistribuition, UsersIdsForTests[1]).deposit(50);
+        await new dbWalletManeger(IDForDistribuition, UsersIdsForTests[2]).deposit(50);
+        await new dbWalletManeger(IDForDistribuition, UsersIdsForTests[3]).deposit(50);
 
         ///////////////////////////////////////////////////////////////////////////////
 
@@ -196,10 +196,10 @@ describe('DATABASE_MANAGER', () => {
         await createPoll(IDForDistributionOfmultipleResults);
         await startPoll(IDForDistributionOfmultipleResults);
 
-        await new WalletManeger(IDForDistributionOfmultipleResults, UsersIdsForTests[0]).deposit(50);
-        await new WalletManeger(IDForDistributionOfmultipleResults, UsersIdsForTests[1]).deposit(50);
-        await new WalletManeger(IDForDistributionOfmultipleResults, UsersIdsForTests[2]).deposit(50);
-        await new WalletManeger(IDForDistributionOfmultipleResults, UsersIdsForTests[3]).deposit(50);
+        await new dbWalletManeger(IDForDistributionOfmultipleResults, UsersIdsForTests[0]).deposit(50);
+        await new dbWalletManeger(IDForDistributionOfmultipleResults, UsersIdsForTests[1]).deposit(50);
+        await new dbWalletManeger(IDForDistributionOfmultipleResults, UsersIdsForTests[2]).deposit(50);
+        await new dbWalletManeger(IDForDistributionOfmultipleResults, UsersIdsForTests[3]).deposit(50);
 
       })
       after(async () => {

@@ -9,10 +9,37 @@
 
 <body class="FullScren" id="display">
 
-  <div class="WalletDiv" id="WalletDiv">
-    <div id="CoinsDiv" ></div>
-    <h3 id="CoinsOfUserView"> </h3>
+  <div class="WalletDiv"id="WalletDiv">
+
+    <div class="Wallet" id="Wallet">
+    <div id="CoinsDiv"></div>
+    </div>
+
+    <div id="StoreDiv" class="StoreHide">
+      <div class="Information">
+        <span>Saldo</span> <span id="CoinsOfUserView"> </span>
+      </div>
+
+      <div id="ItemsList">
+
+        <div class="StoreItem">
+          <img src="configurator/images/undefined-document.png">
+          <span class="Description">POG</span>
+          <span class="PriceText">Price</span><span class="Price">20$</span>
+          <button>Buy</button>
+        </div>
+
+        <div class="StoreItem">
+          <img src="configurator/images/undefined-document.png">
+          <span class="Description">POG</span>
+          <button>Buy</button>
+        </div>
+
+      </div>
+    </div>
   </div>
+
+
 
   <div id="AlertsDiv">
 
@@ -43,7 +70,7 @@
       <h3>Você Perdeu &nbsp <span id="LossView"></span> </h3>
     </div>
   </div>
-  
+
   <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
   <script src="./video_overlay/bundle.js"></script>
 

@@ -21,5 +21,10 @@ exports.default = {
     getCoinsSettings: (StreamerID) => {
         return '/CoinsSettings/' + StreamerID;
     },
-    CoinsSettingsManager: '/CoinsSettingsManager/'
+    CoinsSettingsManager: '/CoinsSettingsManager/',
+    StoreManager: '/StoreManager',
+    GetStore: '/Store/:StreamerID',
+    getStore: (StreamerID) => {
+        return '/Store/' + StreamerID;
+    }
 };

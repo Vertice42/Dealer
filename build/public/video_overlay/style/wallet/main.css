@@ -1,3 +1,4 @@
+@import url(Store.css);
 .WalletDiv {
     display: block;
     position: absolute;
@@ -5,15 +6,21 @@
     bottom: 0px;
     width: 10vw;
     height: 10vw;
+}
+
+.Wallet {
+    z-index: 1;
+    width: 100%;
+    height: 80%;
     background-image: url(../../images/piggy_bank/mask_0.png);
     background-repeat: no-repeat;
     background-size: 100%;
     transition: transform 0.05s;
 }
 
-.WalletDiv::before {
+.Wallet::before {
     content: '';
-    z-index: 1;
+    z-index: 2;
     width: 100%;
     height: 80%;
     position: absolute;
@@ -28,14 +35,14 @@
     display: block;
     position: absolute;
     opacity: 0;
-    width:  3vw;
+    width: 3vw;
     height: 3vw;
     background-image: url(../../images/pirocoin_img.png);
     background-size: 100% 100%;
     transition: top 1s, left 1s, opacity 0.5s;
 }
 
-.WalletDiv.inAction::before {
+.Wallet.inAction::before {
     content: '';
     z-index: 1;
     width: 100%;
@@ -45,7 +52,7 @@
     background-size: 100% 100%;
 }
 
-.WalletDiv.InWithdrawal::before {
+.Wallet.InWithdrawal::before {
     content: '';
     z-index: 1;
     width: 100%;
@@ -55,16 +62,7 @@
     animation: toNormal 1s 0.5s forwards;
 }
 
-.WalletDiv.InWithdrawal::after {
+.Wallet.InWithdrawal::after {
     opacity: 1;
     margin-top: 100px
-}
-
-#CoinsOfUserView {
-    font-family: fantasy;
-    font-size: 4vw;
-    margin-top: 80%;
-    animation: brilliance 0.5s alternate infinite;
-    text-align: center;
-    color: white;
 }

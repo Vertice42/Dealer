@@ -2,24 +2,22 @@ import sequelize = require("sequelize");
 import { Model } from "sequelize";
 
 export class dbFiles extends Model {
-    Name: string;
+    FileName: string;
     StreamerID: unknown;
-    File:[];
+    File: [];
 }
 
 export const FilesDefiner = {
     name: 'files',
     atributes: {
-        Name: {
+        FileName: {
             type: sequelize.STRING,
-            primaryKey: true,
-            allowNull: false
-        },
-        StreamerID:{
+            primaryKey: true
+        }, StreamerID: {
             type: sequelize.STRING,
             allowNull: false
         },
-        File:{
+        File: {
             type: sequelize.BLOB
         }
 
@@ -27,3 +25,5 @@ export const FilesDefiner = {
         freezeTableName: true
     }
 }
+
+let a: sequelize.AttributeType

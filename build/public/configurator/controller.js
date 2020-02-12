@@ -111,4 +111,23 @@ twitch.onAuthorized((auth) => __awaiter(void 0, void 0, void 0, function* () {
             VIEW_SETTINGS.HourlyRewardInput.setInputSentError();
         });
     };
+    const VIEW_STORE = new ViewConfig.ViewStore();
+    VIEW_STORE.onDescriptionChange = (StoreItem) => {
+        StoreItem.DescriptionInput.setChangedInput();
+        BackendConnection_1.SendToStoreManager(StreamerID, StoreItem)
+            .then(() => __awaiter(void 0, void 0, void 0, function* () {
+            StoreItem.DescriptionInput.setInputSentSuccessfully();
+            yield utils_1.sleep(500);
+            StoreItem.DescriptionInput.setUnchangedInput();
+        }))
+            .catch(() => {
+            StoreItem.DescriptionInput.setInputSentError();
+        });
+    };
+    VIEW_STORE.onAddStoreItemActive = () => {
+        VIEW_STORE.addStoreItem();
+    };
+    VIEW_STORE.onButtonDeleteActive = (StoreItem) => {
+        VIEW_STORE.removeStoreItem(StoreItem);
+    };
 }));

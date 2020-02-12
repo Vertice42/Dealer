@@ -4,10 +4,16 @@ import { SettingsDefiner, dbSettings } from "../../models/poll/dbSettings";
 import { AccountData } from "../../models/AccountData";
 import { ButtonDefiner, dbButton } from "../../models/poll/dbButton";
 import { FilesDefiner, dbFiles } from "../../models/poll/dbFiles";
+import { StoreDefiner, dbStore } from "../../models/store/dbStore";
     /**
      * Loads and / or creates sequelize models by defining them
      */
 export class Define {
+    static async Store(AccountData: AccountData) {                
+        AccountData.dbStore = <typeof dbStore> AccountData.dbStreamer
+        .define(StoreDefiner.name, StoreDefiner.atributes, StoreDefiner.options);
+        return AccountData.dbStore.sync();
+    }
     static async Files(AccountData: AccountData) {
         AccountData.dbFiles = <typeof dbFiles> AccountData.dbStreamer
         .define(FilesDefiner.name, FilesDefiner.atributes, FilesDefiner.options);

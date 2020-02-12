@@ -32,7 +32,7 @@ class MinerManeger {
                 return bluebird_1.reject({
                     RequestError: 'It was not possible to mine, as the streamer did not initiate an extension'
                 });
-            let walletManeger = new dbWalletManager_1.WalletManeger(StreamerID, TwitchUserID);
+            let walletManeger = new dbWalletManager_1.dbWalletManeger(StreamerID, TwitchUserID);
             let wallet = yield walletManeger.getWallet();
             let TimeBetweenAttempts = Now - wallet.LastMiningAttemp;
             if (!TimeBetweenAttempts || TimeBetweenAttempts > MinerSettings_1.MinimunTimeForMining)

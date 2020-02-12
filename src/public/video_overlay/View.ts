@@ -1,5 +1,5 @@
 import { PollButton } from "../../services/models/poll/PollButton";
-import { InputNumber } from "../model/Inputs";
+import { ResponsiveInput } from "../model/Inputs";
 
 function hexToRgb(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -11,12 +11,66 @@ function hexToRgb(hex) {
 }
 const GRADIENT_DARKENING_RATE = 1.5;
 
+class StoreItem {
+    HTML:HTMLDivElement
+    HTML_TypeDisplay: HTMLImageElement;
+    HTML_Description: HTMLSpanElement;
+    HTML_PriceText: HTMLSpanElement;
+    HTML_Price: HTMLSpanElement;
+    HTML_BuyButton: HTMLButtonElement;
+
+    createTypeDisplay(){
+        this.HTML_TypeDisplay = document.createElement('img');
+        this.HTML_TypeDisplay.src ='configurator/images/undefined-document.png';
+        return this.HTML_TypeDisplay;
+    }
+
+    createDescription(Description:string){
+        this.HTML_Description = document.createElement('span');
+        this.HTML_Description.classList.add('Description');
+        this.HTML_Description.innerText = Description;
+        return this.HTML_Description;
+    }
+
+    createPriceText(){
+        this.HTML_PriceText = document.createElement('span');
+        this.HTML_PriceText.classList.add('PriceText');
+        this.HTML_PriceText.innerText = 'Price';
+        return this.HTML_PriceText;
+    }
+
+    createPrice(Price:number){  
+        this.HTML_Price = document.createElement('span');
+        this.HTML_Price.classList.add('Price');
+        this.HTML_Price.innerText = Price+'$';
+        return this.HTML_Price;
+    }
+
+    createBuyButton(){
+        this.HTML_BuyButton = document.createElement('button');
+        this.HTML_BuyButton.innerText = 'Buy';
+        return this.HTML_BuyButton;
+    }
+
+    constructor(Description: string,Price:number){
+        this.HTML = <HTMLDivElement> document.createElement('div');
+        this.HTML.classList.add('StoreItem');
+
+        this.HTML.appendChild(this.createTypeDisplay())
+        this.HTML.appendChild(this.createDescription(Description))
+        this.HTML.appendChild(this.createPriceText());
+        this.HTML.appendChild(this.createPrice(Price))
+        this.HTML.appendChild(this.createBuyButton())
+    }
+}
+
 export class GameBoard {
+    public StoreItem:StoreItem
     public getBetValue: () => number;
-    public onBeatIDSelected = () => {};
+    public onBeatIDSelected = () => { };
 
     public SelectedButtonID: number = null;
-    public BetAmountInput = new InputNumber(<HTMLInputElement>document.getElementById("BetAmountInput"));
+    public BetAmountInput = new ResponsiveInput(<HTMLInputElement>document.getElementById("BetAmountInput"));
 
     public CoinsOfUserView = <HTMLElement>document.getElementById("CoinsOfUserView");
 
@@ -33,6 +87,9 @@ export class GameBoard {
     private LossView = <HTMLDivElement>document.getElementById("LossView");
 
     private WalletDiv = <HTMLDivElement>document.getElementById("WalletDiv");
+    private Wallet = <HTMLDivElement>document.getElementById("Wallet");
+    private StoreDiv = <HTMLDivElement>document.getElementById("StoreDiv");
+    private ItemsList = <HTMLDivElement>document.getElementById("ItemsList")
     private CoinsDiv = <HTMLDivElement>document.getElementById("CoinsDiv");
     private PollDiv = <HTMLDivElement>document.getElementById("PollDiv");
     private ButtonsDiv = <HTMLDivElement>document.getElementById("ButtonsDiv");
@@ -340,7 +397,24 @@ export class GameBoard {
         });
     }
 
+    setStoreItems(StoreItems) {
+        this.ItemsList.innerHTML = '';
+        StoreItems.forEach(storeItem => {
+            this.ItemsList.appendChild(new StoreItem(storeItem.Description,storeItem.Price).HTML)
+        });
+    }
+
     constructor() {
+        this.Wallet.addEventListener('click', () => {            
+            if (this.StoreDiv.classList.contains('StoreHide')) {
+                this.StoreDiv.classList.remove('StoreHide');
+                this.StoreDiv.classList.add('StoreSample');
+            } else {
+                this.StoreDiv.classList.remove('StoreSample');
+                this.StoreDiv.classList.add('StoreHide');
+            }
+        })
+
         let display = document.getElementById('display');
 
         let X = display.clientWidth;

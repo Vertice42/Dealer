@@ -1,6 +1,7 @@
 import { PollStatus } from "../../services/models/poll/PollStatus";
 import { Poll } from "../../services/models/poll/Poll";
-import { InputNumber } from "../model/Inputs";
+import { ResponsiveInput, OrientedInput } from "../model/Inputs";
+import StoreItem from "../../services/models/store/StoreItem";
 
 function GenerateColor() {
   /**Generate random hex color*/
@@ -589,8 +590,108 @@ export class ViewPollManeger {
 
 }
 export class ViewSettings {
-  public HourlyRewardInput: InputNumber
+  public HourlyRewardInput: ResponsiveInput
   constructor() {
-    this.HourlyRewardInput = new InputNumber(<HTMLInputElement>document.getElementById('HourlyRewardInput'))
+    this.HourlyRewardInput = new ResponsiveInput(<HTMLInputElement>document.getElementById('HourlyRewardInput'))
+  }
+}
+
+class ViewStoreItem implements StoreItem  {
+  id: number;
+  Type: number;
+  Description: string;
+  Price: number;
+
+  public HTML: HTMLDivElement
+  private ElemeteHTML_ID: string;
+
+  private HTML_StoreType: HTMLImageElement
+  public DescriptionInput: OrientedInput
+  public PriceInput: OrientedInput
+  private HTML_InputFile: HTMLInputElement
+  private HTML_DeleteButton: HTMLButtonElement
+  private HTML_LabelForInputFile: HTMLLabelElement;
+
+  public onDescriptionChange = (ViewStoreItem: ViewStoreItem) => { };
+  public onPriceChange = (ViewStoreItem: ViewStoreItem) => { };
+  public onButtonDeleteActived = (ViewStoreItem: ViewStoreItem) => { };
+
+  private createStoreType() {
+    this.HTML_StoreType = document.createElement('img');
+    this.HTML_StoreType.src = './configurator/images/undefined-document.png';
+    return this.HTML_StoreType;
+  }
+
+  private createInputFile() {
+    this.HTML_InputFile = document.createElement('input');
+    this.HTML_InputFile.setAttribute('type', 'file');
+    this.HTML_InputFile.classList.add('inputfile');
+    this.HTML_InputFile.id = this.ElemeteHTML_ID;
+    return this.HTML_InputFile;
+  }
+
+  private createLabelForInputFile() {
+    this.HTML_LabelForInputFile = document.createElement('label');
+    this.HTML_LabelForInputFile.classList.add('AddUpdateFileIcon');
+    this.HTML_LabelForInputFile.htmlFor = this.ElemeteHTML_ID;
+    return this.HTML_LabelForInputFile;
+  }
+
+  private createDeletebutton() {
+    this.HTML_DeleteButton = document.createElement('button');
+    this.HTML_DeleteButton.classList.add('DeleteStoreItem')
+    this.HTML_DeleteButton.onclick = () => { this.onButtonDeleteActived(this) };
+    return this.HTML_DeleteButton;
+  }
+
+  constructor(ID: number) {
+    this.id = ID
+    this.ElemeteHTML_ID = 'inputFile' + this.id;
+
+    this.DescriptionInput = new OrientedInput('Incert Description', 'text');
+    this.PriceInput = new OrientedInput('Incert Price', 'number');
+
+    this.HTML = document.createElement('div');
+    this.HTML.classList.add('StoreItem');
+    this.HTML.appendChild(this.createStoreType());
+    this.HTML.appendChild(this.DescriptionInput.HTMLInput);
+    this.HTML.appendChild(this.PriceInput.HTMLInput);
+    this.HTML.appendChild(this.createInputFile());
+    this.HTML.appendChild(this.createLabelForInputFile())
+    this.HTML.appendChild(this.createDeletebutton());
+
+    this.DescriptionInput.HTMLInput.onchange = () => { this.onDescriptionChange(this) };
+    this.PriceInput.HTMLInput.onchange = () => { this.onPriceChange(this) }
+  }
+}
+export class ViewStore {
+  HTML_StoreItems: HTMLDivElement
+
+  onAddStoreItemActive = () => { };
+  onDescriptionChange = (ViewStoreItem: ViewStoreItem) => { };
+  onPriceChange = (ViewStoreItem: ViewStoreItem) => { };
+  onButtonDeleteActive = (ViewStoreItem: ViewStoreItem) => { };
+
+  private StoreItems: ViewStoreItem[] = [];
+
+  addStoreItem() {
+    let Item = new ViewStoreItem(this.StoreItems.length);
+    this.StoreItems.push(Item);
+
+    Item.onDescriptionChange = (StoreItem) => { this.onDescriptionChange(StoreItem) };
+    Item.onPriceChange = (StoreItem) => { this.onPriceChange(StoreItem) };
+    Item.onButtonDeleteActived = (StoreItem) => { this.onButtonDeleteActive(StoreItem) };
+
+    this.HTML_StoreItems.appendChild(Item.HTML);
+  }
+
+  removeStoreItem(StoreItem: ViewStoreItem) {
+    this.HTML_StoreItems.removeChild(StoreItem.HTML)
+    this.StoreItems.splice(this.StoreItems.indexOf(StoreItem),1)
+  }
+  constructor() {
+    this.HTML_StoreItems = <HTMLDivElement>document.getElementById('StoreItems');
+
+    document.getElementById('AddStoreItem').onclick = () => { this.onAddStoreItemActive() }
   }
 }

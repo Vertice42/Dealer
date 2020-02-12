@@ -18,6 +18,7 @@ const dbWalletManager_1 = require("./modules/database/miner/dbWalletManager");
 const Links_1 = require("./Links");
 const dbMinerManager_1 = require("./modules/database/miner/dbMinerManager");
 const StreamerSettings_1 = require("./modules/database/streamer_settings/StreamerSettings");
+const dbStoreManager_1 = require("./modules/database/store/dbStoreManager");
 const app = express();
 exports.app = app;
 app.use(cors());
@@ -226,8 +227,49 @@ app.post(Links_1.default.MineCoin, function (req, res) {
     });
 });
 app.get(Links_1.default.GetWallet, function (req, res) {
-    new dbWalletManager_1.WalletManeger(req.params.StreamerID, req.params.TwitchUserID)
-        .getWallet().then((wallet) => {
+    let ErrorList = CheckRequisition([
+        () => {
+            if (!req.params.StreamerID)
+                return ({ RequestError: "StreamerID is no defined" });
+        }, () => {
+            if (!req.params.TwitchUserID)
+                return ({ RequestError: "TwitchUserID is no defined" });
+        }
+    ]);
+    if (ErrorList.length > 0)
+        return res.status(400).send({ ErrorList: ErrorList });
+    new dbWalletManager_1.dbWalletManeger(req.params.StreamerID, req.params.TwitchUserID)
+        .getWallet()
+        .then((wallet) => {
         res.status(200).send(wallet);
+    })
+        .catch((rej) => {
+        res.status(500).send(rej);
+    });
+});
+app.post(Links_1.default.StoreManager, function (req, res) {
+    let ErrorList = CheckRequisition([
+        () => {
+            if (!req.body.StreamerID)
+                return ({ RequestError: "StreamerID is no defined" });
+        }
+    ]);
+    if (ErrorList.length > 0)
+        return res.status(400).send({ ErrorList: ErrorList });
+    new dbStoreManager_1.default(req.body.StreamerID).UpdateOrCreateStoreItem(req.body.StoreItem)
+        .then((result) => {
+        res.status(200).send(result);
+    })
+        .catch((reject => {
+        res.status(500).send(reject);
+    }));
+});
+app.get(Links_1.default.GetStore, function (req, res) {
+    new dbStoreManager_1.default(req.params.StreamerID).getAllItens()
+        .then((result) => {
+        res.status(200).send(result);
+    })
+        .catch((rej) => {
+        res.status(500).send(rej);
     });
 });

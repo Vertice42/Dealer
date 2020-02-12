@@ -1,4 +1,4 @@
-import { CoinsSettings } from "../CoinsSettings";
+import { CoinsSettings } from "./CoinsSettings";
 
 export class CoinsSettingsManagerRequest {
     body: {

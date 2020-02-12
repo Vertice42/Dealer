@@ -6,8 +6,9 @@ import { dbSettings } from "./poll/dbSettings";
 import { MinerSettings } from "./miner/MinerSettings";
 import { Sequelize } from "sequelize";
 import { dbStreamerManager } from "../modules/database/dbStreamerManager";
-import { CoinsSettings } from "./CoinsSettings";
+import { CoinsSettings } from "./streamer_settings/CoinsSettings";
 import { dbFiles } from "./poll/dbFiles";
+import { dbStore } from "./store/dbStore";
 export class AccountData {
     CurrentPollStatus: PollStatus;
 
@@ -21,6 +22,7 @@ export class AccountData {
     dbWallets: typeof dbWallet;
     dbSettings: typeof dbSettings;
     dbFiles: typeof dbFiles;
+    dbStore: typeof dbStore;
 
     MinerSettings: MinerSettings;
     CoinsSettings: CoinsSettings;

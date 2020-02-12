@@ -25,7 +25,7 @@ exports.getWallet = getWallet;
 /**
  * These classes include methods to manage Wallets in db
  */
-class WalletManeger {
+class dbWalletManeger {
     constructor(StreamerID, TwitchUserID) {
         this.StreamerID = StreamerID;
         this.TwitchUserID = TwitchUserID;
@@ -48,4 +48,4 @@ class WalletManeger {
         });
     }
 }
-exports.WalletManeger = WalletManeger;
+exports.dbWalletManeger = dbWalletManeger;

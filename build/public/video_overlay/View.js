@@ -19,11 +19,50 @@ function hexToRgb(hex) {
     } : null;
 }
 const GRADIENT_DARKENING_RATE = 1.5;
+class StoreItem {
+    constructor(Description, Price) {
+        this.HTML = document.createElement('div');
+        this.HTML.classList.add('StoreItem');
+        this.HTML.appendChild(this.createTypeDisplay());
+        this.HTML.appendChild(this.createDescription(Description));
+        this.HTML.appendChild(this.createPriceText());
+        this.HTML.appendChild(this.createPrice(Price));
+        this.HTML.appendChild(this.createBuyButton());
+    }
+    createTypeDisplay() {
+        this.HTML_TypeDisplay = document.createElement('img');
+        this.HTML_TypeDisplay.src = 'configurator/images/undefined-document.png';
+        return this.HTML_TypeDisplay;
+    }
+    createDescription(Description) {
+        this.HTML_Description = document.createElement('span');
+        this.HTML_Description.classList.add('Description');
+        this.HTML_Description.innerText = Description;
+        return this.HTML_Description;
+    }
+    createPriceText() {
+        this.HTML_PriceText = document.createElement('span');
+        this.HTML_PriceText.classList.add('PriceText');
+        this.HTML_PriceText.innerText = 'Price';
+        return this.HTML_PriceText;
+    }
+    createPrice(Price) {
+        this.HTML_Price = document.createElement('span');
+        this.HTML_Price.classList.add('Price');
+        this.HTML_Price.innerText = Price + '$';
+        return this.HTML_Price;
+    }
+    createBuyButton() {
+        this.HTML_BuyButton = document.createElement('button');
+        this.HTML_BuyButton.innerText = 'Buy';
+        return this.HTML_BuyButton;
+    }
+}
 class GameBoard {
     constructor() {
         this.onBeatIDSelected = () => { };
         this.SelectedButtonID = null;
-        this.BetAmountInput = new Inputs_1.InputNumber(document.getElementById("BetAmountInput"));
+        this.BetAmountInput = new Inputs_1.ResponsiveInput(document.getElementById("BetAmountInput"));
         this.CoinsOfUserView = document.getElementById("CoinsOfUserView");
         this.ParticipatePollButton = document.getElementById("ParticipatePollButton");
         this.AlertsDiv = document.getElementById("AlertsDiv");
@@ -34,6 +73,9 @@ class GameBoard {
         this.AlertOfLoser = document.getElementById("AlertOfLoser");
         this.LossView = document.getElementById("LossView");
         this.WalletDiv = document.getElementById("WalletDiv");
+        this.Wallet = document.getElementById("Wallet");
+        this.StoreDiv = document.getElementById("StoreDiv");
+        this.ItemsList = document.getElementById("ItemsList");
         this.CoinsDiv = document.getElementById("CoinsDiv");
         this.PollDiv = document.getElementById("PollDiv");
         this.ButtonsDiv = document.getElementById("ButtonsDiv");
@@ -72,6 +114,16 @@ class GameBoard {
                 this.HTMLElement.classList.remove("Selected");
             }
         };
+        this.Wallet.addEventListener('click', () => {
+            if (this.StoreDiv.classList.contains('StoreHide')) {
+                this.StoreDiv.classList.remove('StoreHide');
+                this.StoreDiv.classList.add('StoreSample');
+            }
+            else {
+                this.StoreDiv.classList.remove('StoreSample');
+                this.StoreDiv.classList.add('StoreHide');
+            }
+        });
         let display = document.getElementById('display');
         let X = display.clientWidth;
         let Y = display.clientHeight;
@@ -293,6 +345,12 @@ class GameBoard {
         this.HideAllAlerts().then(() => {
             this.ShowAllert(this.AlertOfLoser);
             this.LossView.innerText = this.getBetValue().toString();
+        });
+    }
+    setStoreItems(StoreItems) {
+        this.ItemsList.innerHTML = '';
+        StoreItems.forEach(storeItem => {
+            this.ItemsList.appendChild(new StoreItem(storeItem.Description, storeItem.Price).HTML);
         });
     }
 }

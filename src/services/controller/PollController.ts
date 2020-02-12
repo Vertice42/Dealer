@@ -2,7 +2,7 @@ import { PollButton } from "../models/poll/PollButton";
 
 import { POLL_WAXED, NOT_IN_STRING, POLL_STOPED, POLL_STARTED, dbStreamerManager } from "../modules/database/dbStreamerManager";
 
-import { WalletManeger } from "../modules/database/miner/dbWalletManager";
+import { dbWalletManeger } from "../modules/database/miner/dbWalletManager";
 
 import { reject, resolve } from "bluebird";
 
@@ -59,7 +59,7 @@ export class PollController {
 
         Bettings.forEach(async Bettings => {
             if (Bettings) {
-                let walletManeger = new WalletManeger(this.StreamerID, Bettings.TwitchUserID);
+                let walletManeger = new dbWalletManeger(this.StreamerID, Bettings.TwitchUserID);
 
                 if (dbPollMager.BetIsWinner(WinningButtons, Bettings.Bet))
                     DistributionPromises.push(walletManeger.deposit(Bettings.BetAmount * AccountData.LossDistributor))
@@ -89,7 +89,7 @@ export class PollController {
     async AddBet(TwitchUserID: string, BetID: number, BetAmount: number) {
         let AccountData = dbStreamerManager.getAccountData(this.StreamerID);
 
-        let Wallet = await new WalletManeger(this.StreamerID, TwitchUserID).getWallet();
+        let Wallet = await new dbWalletManeger(this.StreamerID, TwitchUserID).getWallet();
         if (BetAmount > Wallet.Coins) return reject({
             RequestError: {
                 InsufficientFunds: {

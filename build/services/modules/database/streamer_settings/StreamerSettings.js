@@ -13,7 +13,7 @@ const dbStreamerManager_1 = require("../dbStreamerManager");
 const dbLoading_1 = require("../dbLoading");
 const bluebird_1 = require("bluebird");
 const MinerSettings_1 = require("../../../models/miner/MinerSettings");
-const CoinsSettings_1 = require("../../../models/CoinsSettings");
+const CoinsSettings_1 = require("../../../models/streamer_settings/CoinsSettings");
 class StreamerSettings {
     /**
      *

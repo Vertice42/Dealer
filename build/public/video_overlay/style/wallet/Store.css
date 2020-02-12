@@ -1,0 +1,83 @@
+#StoreDiv {
+    display: inline-block;
+    background: rgb(91, 47, 192);
+    transition: clip-path 500ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.StoreHide {
+    clip-path: inset(0% 0% 100% 0%);
+}
+
+.StoreSample {
+    clip-path: inset(0%);
+}
+
+.Information {
+    margin: 0;
+    font-family: fantasy;
+    text-transform: uppercase;
+    font-size: 4vw;
+    color: white;
+    background-color: slateblue;
+    padding: 0 2%;
+}
+
+#CoinsOfUserView {
+    color: white;
+}
+
+#ItemsList {
+    display: flow-root;
+    margin: 1vw 1vw;
+    background: rgb(74, 39, 156);
+}
+
+.StoreItem {
+    display: flex;
+    background: rgb(60, 32, 126);
+    padding: 1vw;
+    margin: 1vw 1vw;
+    height: 3vw;
+}
+
+.StoreItem img {
+    width: 3vw;
+}
+
+.StoreItem span {
+    margin: auto 0;
+    margin-right: 1vw;
+    background: rgb(48, 25, 100);   
+    
+    font-family: fantasy;
+    text-align: center;
+    color: white;
+    font-size: 2vw;
+    padding: 0vw 1vw;
+
+}
+
+.StoreItem .Description {
+    min-width: 10vw;
+    max-width: 10vw;
+}
+
+.StoreItem .PriceText{
+}
+
+.StoreItem .Price {
+}
+
+.StoreItem button {
+    background-color: yellowgreen;
+    font-family: fantasy;
+    text-transform: uppercase;
+    color: white;
+    font-size: 2vw;
+    transition: all 200ms;
+}
+
+.StoreItem button:active {
+    background-color: rgb(157, 224, 22);
+    transform: scale(0.9);
+}

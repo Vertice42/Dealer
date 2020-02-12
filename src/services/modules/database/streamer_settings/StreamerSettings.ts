@@ -2,7 +2,7 @@ import { dbStreamerManager } from "../dbStreamerManager";
 import { Loading } from "../dbLoading";
 import { resolve } from "bluebird";
 import { MinerSettings } from "../../../models/miner/MinerSettings";
-import { CoinsSettings } from "../../../models/CoinsSettings";
+import { CoinsSettings } from "../../../models/streamer_settings/CoinsSettings";
 
 export default class StreamerSettings {
     /**

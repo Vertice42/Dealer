@@ -12,7 +12,7 @@ export async function getWallet(StreamerID: string, TwitchUserID: string) {
 /**
  * These classes include methods to manage Wallets in db
  */
-export class WalletManeger {
+export class dbWalletManeger {
     private StreamerID: string;
     private TwitchUserID: string;
     constructor(StreamerID: string, TwitchUserID: string) {

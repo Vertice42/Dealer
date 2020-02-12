@@ -181,18 +181,18 @@ describe('DATABASE_MANAGER', () => {
                 yield createDatabase(IDForDistribuition);
                 yield createPoll(IDForDistribuition);
                 yield startPoll(IDForDistribuition);
-                yield new dbWalletManager_1.WalletManeger(IDForDistribuition, UsersIdsForTests[0]).deposit(50);
-                yield new dbWalletManager_1.WalletManeger(IDForDistribuition, UsersIdsForTests[1]).deposit(50);
-                yield new dbWalletManager_1.WalletManeger(IDForDistribuition, UsersIdsForTests[2]).deposit(50);
-                yield new dbWalletManager_1.WalletManeger(IDForDistribuition, UsersIdsForTests[3]).deposit(50);
+                yield new dbWalletManager_1.dbWalletManeger(IDForDistribuition, UsersIdsForTests[0]).deposit(50);
+                yield new dbWalletManager_1.dbWalletManeger(IDForDistribuition, UsersIdsForTests[1]).deposit(50);
+                yield new dbWalletManager_1.dbWalletManeger(IDForDistribuition, UsersIdsForTests[2]).deposit(50);
+                yield new dbWalletManager_1.dbWalletManeger(IDForDistribuition, UsersIdsForTests[3]).deposit(50);
                 ///////////////////////////////////////////////////////////////////////////////
                 yield createDatabase(IDForDistributionOfmultipleResults);
                 yield createPoll(IDForDistributionOfmultipleResults);
                 yield startPoll(IDForDistributionOfmultipleResults);
-                yield new dbWalletManager_1.WalletManeger(IDForDistributionOfmultipleResults, UsersIdsForTests[0]).deposit(50);
-                yield new dbWalletManager_1.WalletManeger(IDForDistributionOfmultipleResults, UsersIdsForTests[1]).deposit(50);
-                yield new dbWalletManager_1.WalletManeger(IDForDistributionOfmultipleResults, UsersIdsForTests[2]).deposit(50);
-                yield new dbWalletManager_1.WalletManeger(IDForDistributionOfmultipleResults, UsersIdsForTests[3]).deposit(50);
+                yield new dbWalletManager_1.dbWalletManeger(IDForDistributionOfmultipleResults, UsersIdsForTests[0]).deposit(50);
+                yield new dbWalletManager_1.dbWalletManeger(IDForDistributionOfmultipleResults, UsersIdsForTests[1]).deposit(50);
+                yield new dbWalletManager_1.dbWalletManeger(IDForDistributionOfmultipleResults, UsersIdsForTests[2]).deposit(50);
+                yield new dbWalletManager_1.dbWalletManeger(IDForDistributionOfmultipleResults, UsersIdsForTests[3]).deposit(50);
             }));
             after(() => __awaiter(this, void 0, void 0, function* () {
                 yield deleteDatabse(IDForDistribuition);

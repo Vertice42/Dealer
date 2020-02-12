@@ -8,12 +8,10 @@ exports.dbFiles = dbFiles;
 exports.FilesDefiner = {
     name: 'files',
     atributes: {
-        Name: {
+        FileName: {
             type: sequelize.STRING,
-            primaryKey: true,
-            allowNull: false
-        },
-        StreamerID: {
+            primaryKey: true
+        }, StreamerID: {
             type: sequelize.STRING,
             allowNull: false
         },
@@ -24,3 +22,4 @@ exports.FilesDefiner = {
         freezeTableName: true
     }
 };
+let a;

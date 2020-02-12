@@ -13,11 +13,16 @@ export default {
     MineCoin: '/MinerCoin',
     GetWallet: '/Wallet/:StreamerID/:TwitchUserID',
     getWallet: (StreamerID: string, TwitchUserID: string) => {
-        return '/Wallet/'+StreamerID+'/'+TwitchUserID
+        return '/Wallet/' + StreamerID + '/' + TwitchUserID
     },
     GetCoinsSettings: '/CoinsSettings/:StreamerID',
-    getCoinsSettings: (StreamerID:String) =>{
-        return '/CoinsSettings/'+StreamerID
+    getCoinsSettings: (StreamerID: String) => {
+        return '/CoinsSettings/' + StreamerID
     },
-    CoinsSettingsManager:'/CoinsSettingsManager/'
+    CoinsSettingsManager: '/CoinsSettingsManager/',
+    StoreManager: '/StoreManager',
+    GetStore: '/Store/:StreamerID',
+    getStore: (StreamerID: string) => {
+        return '/Store/' + StreamerID;
+    }
 }

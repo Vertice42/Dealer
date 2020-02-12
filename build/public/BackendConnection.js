@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const bluebird_1 = require("bluebird");
 const Links_1 = require("../services/Links");
 const ServerConfigs_1 = require("../services/configs/ServerConfigs");
+const StoreManagerRequest_1 = require("../services/models/store/StoreManagerRequest");
 const host = 'http://localhost:' + (ServerConfigs_1.default.Port || process.env.Port);
 function getCurrentPoll(StreamerID) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -276,3 +277,45 @@ function GetWallet(StreamerID, TwitchUserID) {
     });
 }
 exports.GetWallet = GetWallet;
+function GetStore(StreamerID, TwitchUserID) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return fetch(host + Links_1.default.getStore(StreamerID), {
+            method: "GET"
+        }).then(function (res) {
+            if (res.ok)
+                return bluebird_1.resolve(res.json());
+            else
+                return bluebird_1.reject(res.json());
+        }).catch((rej) => {
+            console.log(rej);
+        });
+    });
+}
+exports.GetStore = GetStore;
+function SendToStoreManager(StreamerID, StoreItem) {
+    return __awaiter(this, void 0, void 0, function* () {
+        /*Send current voting with your buttons and current poll status */
+        let H = new Headers();
+        H.append("Content-Type", "application/json");
+        return fetch(host + Links_1.default.PollManager, {
+            method: "POST",
+            headers: H,
+            body: JSON.stringify(new StoreManagerRequest_1.default(StreamerID, StoreItem))
+        }).then((res) => {
+            if (res.ok)
+                return bluebird_1.resolve(res);
+            else
+                return bluebird_1.reject(res);
+        }).then((res) => {
+            return res.json().then((res) => {
+                return res;
+            });
+        }).catch((rej) => {
+            return rej.json()
+                .then((res) => {
+                return bluebird_1.reject(res);
+            });
+        });
+    });
+}
+exports.SendToStoreManager = SendToStoreManager;

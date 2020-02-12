@@ -1,12 +1,10 @@
-import { resolve, reject } from "bluebird";
 import { PollStatus } from "../../models/poll/PollStatus";
 import { MinerSettings } from "../../models/miner/MinerSettings";
 import { Define } from "./dbDefine";
 import { POLL_WAXED, NOT_IN_STRING, POLL_STARTED, POLL_STOPED, dbStreamerManager } from "./dbStreamerManager";
 import { AccountData } from "../../models/AccountData";
 import { getTableName } from "./dbUtil";
-import { dbSettings } from "../../models/poll/dbSettings";
-import { CoinsSettings } from "../../models/CoinsSettings";
+import { CoinsSettings } from "../../models/streamer_settings/CoinsSettings";
 export class Loading {
     /**
      * Loads everything needed for all services to work properly
@@ -23,6 +21,7 @@ export class Loading {
         await Define.Settings(accountData);
         await Define.Wallets(accountData);
         await Define.Files(accountData);
+        await Define.Store(accountData);
 
         let tables = await accountData.dbStreamer.query("show tables");
         if (tables[0].length < 4) {
@@ -87,5 +86,8 @@ export class Loading {
                     return Loading.CoinsSettings(StreamerID);
                 }
             })
+    }
+    static async Store(StreamerID: string){
+
     }
 }

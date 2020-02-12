@@ -121,5 +121,10 @@ twitch.onAuthorized((auth) => __awaiter(void 0, void 0, void 0, function* () {
             gameBoard.CoinsOfUserView.innerText = (~~CurrentCoinsOfUsernulber).toString();
             //TODO ADD METODO PARA MUDAR UI}).startMining()
         }).startMining();
+        gameBoard.setStoreItems([
+            { Description: 'Fon', Price: 20 },
+            { Description: 'ce loco', Price: 40 },
+            { Description: 'meeee', Price: 10 }
+        ]);
     }));
 }));

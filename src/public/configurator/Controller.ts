@@ -1,6 +1,6 @@
 import ViewConfig = require("./View");
 import BackendConnections = require("../BackendConnection");
-import { WatchPoll } from "../BackendConnection";
+import { WatchPoll, SendToStoreManager } from "../BackendConnection";
 import { PollButton } from "../../services/models/poll/PollButton";
 import { PollStatus } from "../../services/models/poll/PollStatus";
 import { Poll } from "../../services/models/poll/Poll";
@@ -107,7 +107,7 @@ twitch.onAuthorized(async (auth) => {
 
     const VIEW_SETTINGS = new ViewConfig.ViewSettings();
 
-    let minerSettings = await BackendConnections.GetMinerSettings(StreamerID);    
+    let minerSettings = await BackendConnections.GetMinerSettings(StreamerID);
 
     VIEW_SETTINGS.HourlyRewardInput.HTMLInput.value = (~~(minerSettings.RewardPerMinute * 60)).toString();
 
@@ -115,12 +115,34 @@ twitch.onAuthorized(async (auth) => {
         VIEW_SETTINGS.HourlyRewardInput.setChangedInput();
         BackendConnections.SendToMinerManager(StreamerID,
             new MinerSettings(Number(VIEW_SETTINGS.HourlyRewardInput.HTMLInput.value) / 60))
-            .then(async ()=>{
+            .then(async () => {
                 VIEW_SETTINGS.HourlyRewardInput.setInputSentSuccessfully();
                 await sleep(100);
                 VIEW_SETTINGS.HourlyRewardInput.setUnchangedInput();
-            }).catch(()=>{
+            }).catch(() => {
                 VIEW_SETTINGS.HourlyRewardInput.setInputSentError();
             })
     }
+
+    const VIEW_STORE = new ViewConfig.ViewStore();
+    VIEW_STORE.onDescriptionChange = (StoreItem) => {
+        StoreItem.DescriptionInput.setChangedInput();
+        SendToStoreManager(StreamerID,StoreItem)
+        .then(async ()=>{
+            StoreItem.DescriptionInput.setInputSentSuccessfully();
+            await sleep(500);
+            StoreItem.DescriptionInput.setUnchangedInput();
+        })
+        .catch(()=>{
+            StoreItem.DescriptionInput.setInputSentError();
+        })
+    }
+    VIEW_STORE.onAddStoreItemActive = () => {
+        VIEW_STORE.addStoreItem();
+    }
+
+    VIEW_STORE.onButtonDeleteActive = (StoreItem) => {
+        VIEW_STORE.removeStoreItem(StoreItem)
+    }
+
 });

@@ -13,12 +13,16 @@ import { PollController } from "./controller/PollController";
 import { MiningResponse } from "./models/miner/MiningResponse";
 import UpdateButtonGroupResult from "./models/poll/UpdateButtonGroupResult";
 import { dbStreamerManager } from "./modules/database/dbStreamerManager";
-import { WalletManeger } from "./modules/database/miner/dbWalletManager";
+import { dbWalletManeger } from "./modules/database/miner/dbWalletManager";
 import links from "./Links";
 import MinerManeger from "./modules/database/miner/dbMinerManager";
 import StreamerSettings from "./modules/database/streamer_settings/StreamerSettings";
-import { CoinsSettingsManagerRequest } from "./models/miner/CoinsSettingsManagerRequest";
-import { CoinsSettings } from "./models/CoinsSettings";
+import { CoinsSettingsManagerRequest } from "./models/streamer_settings/CoinsSettingsManagerRequest";
+import { CoinsSettings } from "./models/streamer_settings/CoinsSettings";
+import StoreManagerRequest from "./models/store/StoreManagerRequest";
+import dbStoreManger from "./modules/database/store/dbStoreManager";
+import { reject } from "bluebird";
+import StoreItem from "./models/store/StoreItem";
 
 const app = express();
 app.use(cors());
@@ -198,7 +202,6 @@ app.post(links.CoinsSettingsManager, function (req: CoinsSettingsManagerRequest,
         }
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
-
     StreamerSettings.UpdateCoinsSettings(req.body.StreamerID, req.body.Setting)
         .then((reso) => { res.status(200).send(reso) })
         .catch((reje) => { res.status(500).send(reje) });
@@ -243,10 +246,53 @@ app.post(links.MineCoin, function (req: MinerRequest, res: express.Response) {
 });
 
 app.get(links.GetWallet, function (req: express.Request, res: express.Response) {
-    new WalletManeger(req.params.StreamerID, req.params.TwitchUserID)
-        .getWallet().then((wallet) => {
+    let ErrorList = CheckRequisition([
+        () => {
+            if (!req.params.StreamerID)
+                return ({ RequestError: "StreamerID is no defined" })
+        }, () => {
+            if (!req.params.TwitchUserID)
+                return ({ RequestError: "TwitchUserID is no defined" })
+        }
+    ])
+    if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
+
+    new dbWalletManeger(req.params.StreamerID, req.params.TwitchUserID)
+        .getWallet()
+        .then((wallet) => {
             res.status(200).send(wallet);
         })
+        .catch((rej)=>{
+            res.status(500).send(rej);
+        })
 });
+
+app.post(links.StoreManager, function (req: StoreManagerRequest, res: express.Response) {
+    let ErrorList = CheckRequisition([
+        () => {
+            if (!req.body.StreamerID)
+                return ({ RequestError: "StreamerID is no defined" })
+        }
+    ])
+    if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
+
+    new dbStoreManger(req.body.StreamerID).UpdateOrCreateStoreItem(req.body.StoreItem)
+        .then((result) => {
+            res.status(200).send(result);
+        })
+        .catch((reject => {
+            res.status(500).send(reject);
+        }))
+})
+
+app.get(links.GetStore, function (req: { params: { StreamerID: string } }, res: express.Response) {
+    new dbStoreManger(req.params.StreamerID).getAllItens()
+        .then((result) => {
+            res.status(200).send(<StoreItem[]>result);
+        })
+        .catch((rej) => {
+            res.status(500).send(rej)
+        })
+})
 
 export { app };
