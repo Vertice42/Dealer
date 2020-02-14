@@ -1,11 +1,12 @@
 import { PollStatus } from "../../services/models/poll/PollStatus";
 import { PollButton } from "../../services/models/poll/PollButton";
 import { isEquivalent, sleep } from "../../utils/utils";
-import { WatchPoll, addBet as addBeat, GetWallet } from "../BackendConnection";
+import { WatchPoll, addBet as addBeat, GetWallet, GetStore } from "../BackendConnection";
 import { Poll } from "../../services/models/poll/Poll";
 import { Miner } from "./modules/Miner";
 import { dbWallet } from "../../services/models/poll/dbWallet";
 import { GameBoard } from "./View";
+import StoreItem from "../../services/models/store/StoreItem";
 
 function makeid(length) {
   var result = "";
@@ -124,10 +125,10 @@ twitch.onAuthorized(async (auth) => {
         //TODO ADD METODO PARA MUDAR UI}).startMining()
       }).startMining();
 
-    gameBoard.setStoreItems([
-      { Description: 'Fon', Price: 20 },
-      { Description: 'ce loco', Price: 40 },
-      { Description: 'meeee', Price: 10 }])
+    let StoreItens = await GetStore(StreamerID)
+
+    gameBoard.setStoreItems(StoreItens)
+
   });
 })
 

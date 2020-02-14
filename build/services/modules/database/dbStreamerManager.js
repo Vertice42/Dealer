@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const DatabseConfig_1 = require("../../configs/DatabseConfig");
@@ -38,27 +29,23 @@ class dbStreamerManager {
         AccountDataArray.splice(AccountDataArray
             .indexOf(dbStreamerManager.getAccountData(StreamerID)), 1);
     }
-    static CreateStreamerDataBase(StreamerID) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return Mysql.query("CREATE DATABASE " + STREAMER_DATABASE_NAME + StreamerID)
-                .then(() => {
-                return bluebird_1.resolve({ StreamerDataBaseCreated: StreamerID });
-            })
-                .catch((error) => {
-                if (("CREATE DATABASE ?" + error).indexOf('database exists') > exports.NOT_IN_STRING)
-                    return bluebird_1.resolve({ StreamerDataBaseAlreadyExists: { StreamerID } });
-                else
-                    return bluebird_1.reject(error);
-            });
+    static async CreateStreamerDataBase(StreamerID) {
+        return Mysql.query("CREATE DATABASE " + STREAMER_DATABASE_NAME + StreamerID)
+            .then(() => {
+            return bluebird_1.resolve({ StreamerDataBaseCreated: StreamerID });
+        })
+            .catch((error) => {
+            if (("CREATE DATABASE ?" + error).indexOf('database exists') > exports.NOT_IN_STRING)
+                return bluebird_1.resolve({ StreamerDataBaseAlreadyExists: { StreamerID } });
+            else
+                return bluebird_1.reject(error);
         });
     }
-    static DeleteStreamerDataBase(StreamerID) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return Mysql.query("drop database " + STREAMER_DATABASE_NAME + StreamerID)
-                .then((res) => {
-                dbStreamerManager.removeAccountData(StreamerID);
-                return bluebird_1.resolve(res);
-            });
+    static async DeleteStreamerDataBase(StreamerID) {
+        return Mysql.query("drop database " + STREAMER_DATABASE_NAME + StreamerID)
+            .then((res) => {
+            dbStreamerManager.removeAccountData(StreamerID);
+            return bluebird_1.resolve(res);
         });
     }
 }

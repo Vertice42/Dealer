@@ -127,39 +127,47 @@ twitch.onAuthorized(async (auth) => {
 
     const VIEW_STORE = new ViewConfig.ViewStore();
 
-    let StoreItems:StoreItem[] = await GetStore(StreamerID);
+    let StoreItems: StoreItem[] = await GetStore(StreamerID);
     StoreItems.forEach(StoreItem => VIEW_STORE.addStoreItem(StoreItem));
 
     VIEW_STORE.onDescriptionChange = (ViewStoreItem) => {
         ViewStoreItem.DescriptionInput.setChangedInput();
-        SendToStoreManager(StreamerID,<StoreItem>ViewStoreItem)
-        .then(async ()=>{
-            ViewStoreItem.DescriptionInput.setInputSentSuccessfully();
-            await sleep(500);
-            ViewStoreItem.DescriptionInput.setUnchangedInput();
-        })
-        .catch((rej)=>{
-            console.log(rej);
-            ViewStoreItem.DescriptionInput.setInputSentError();
-        })
+        SendToStoreManager(StreamerID, <StoreItem>ViewStoreItem)
+            .then(async () => {
+                ViewStoreItem.DescriptionInput.setInputSentSuccessfully();
+                await sleep(500);
+                ViewStoreItem.DescriptionInput.setUnchangedInput();
+            })
+            .catch((rej) => {
+                console.log(rej);
+                ViewStoreItem.DescriptionInput.setInputSentError();
+            })
     }
 
     VIEW_STORE.onPriceChange = (ViewStoreItem) => {
         ViewStoreItem.PriceInput.setChangedInput();
-        SendToStoreManager(StreamerID,<StoreItem>ViewStoreItem)
-        .then(async ()=>{
-            ViewStoreItem.PriceInput.setInputSentSuccessfully();
-            await sleep(500);
-            ViewStoreItem.PriceInput.setUnchangedInput();
-        })
-        .catch((rej)=>{
-            console.log(rej);
-            ViewStoreItem.PriceInput.setInputSentError();
-        })
+        SendToStoreManager(StreamerID, <StoreItem>ViewStoreItem)
+            .then(async () => {
+                ViewStoreItem.PriceInput.setInputSentSuccessfully();
+                await sleep(500);
+                ViewStoreItem.PriceInput.setUnchangedInput();
+            })
+            .catch((rej) => {
+                console.log(rej);
+                ViewStoreItem.PriceInput.setInputSentError();
+            })
     }
 
     VIEW_STORE.onAddStoreItemActive = () => {
         VIEW_STORE.addStoreItem(null);
+    }
+
+    VIEW_STORE.onFileInputChange = async (ViewStoreItem) => {
+        let file = ViewStoreItem.HTML_InputFile.files[0];
+        if (file)
+            BackendConnections.UploadFile(StreamerID, file.name, file)
+                .then((res) => { console.log(res) }
+                )
     }
 
     VIEW_STORE.onButtonDeleteActive = (StoreItem) => {

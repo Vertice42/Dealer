@@ -43,9 +43,10 @@ export class OrientedInput extends ResponsiveInput {
     this.HTMLInput.classList.add('UnchangedInput');
     this.HTMLInput.classList.add('InputNotUsed');
   }
-  constructor(Guidance: string, type: string) {
+  constructor(Guidance: string, type: string,ClassCSS:string) {
 
     super(<HTMLInputElement>document.createElement('input'));
+    this.HTMLInput.classList.add(ClassCSS)
 
     this.HTMLInput.setAttribute('type', 'text');
     this.setNotUsed();

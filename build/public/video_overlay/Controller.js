@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("../../utils/utils");
 const BackendConnection_1 = require("../BackendConnection");
@@ -39,8 +30,8 @@ function IsWinner(PollButtons, ChosenButtonID) {
     });
     return is_winner;
 }
-twitch.onAuthorized((auth) => __awaiter(void 0, void 0, void 0, function* () {
-    twitch.onContext((context) => __awaiter(void 0, void 0, void 0, function* () {
+twitch.onAuthorized(async (auth) => {
+    twitch.onContext(async (context) => {
         console.log(context);
         var gameBoard = new View_1.GameBoard();
         token = auth.token;
@@ -55,11 +46,11 @@ twitch.onAuthorized((auth) => __awaiter(void 0, void 0, void 0, function* () {
             if (gameBoard.SelectedButtonID !== null) {
                 gameBoard.BetAmountInput.setChangedInput();
                 BackendConnection_1.addBet(StreamerID, TwitchUserID, gameBoard.SelectedButtonID, gameBoard.getBetValue())
-                    .then(() => __awaiter(void 0, void 0, void 0, function* () {
+                    .then(async () => {
                     gameBoard.BetAmountInput.setInputSentSuccessfully();
-                    yield utils_1.sleep(100);
+                    await utils_1.sleep(100);
                     gameBoard.BetAmountInput.setUnchangedInput();
-                }))
+                })
                     .catch(() => {
                     gameBoard.BetAmountInput.setInputSentError();
                 });
@@ -71,19 +62,19 @@ twitch.onAuthorized((auth) => __awaiter(void 0, void 0, void 0, function* () {
         gameBoard.onBeatIDSelected = ChangeBeat;
         gameBoard.BetAmountInput.HTMLInput.onchange = ChangeBeat;
         new BackendConnection_1.WatchPoll(StreamerID)
-            .setOnPollChange((Poll) => __awaiter(void 0, void 0, void 0, function* () {
+            .setOnPollChange(async (Poll) => {
             if (utils_1.isEquivalent(CurrentPollStatus, Poll.PollStatus)) {
                 gameBoard.setButtonsInPollDiv(Poll.PollButtons);
             }
             else {
                 if (Poll.PollStatus.PollWaxed) {
-                    yield gameBoard.HideAllAlerts();
+                    await gameBoard.HideAllAlerts();
                 }
                 else {
                     if (Poll.PollStatus.PollStarted) {
                         if (Poll.PollStatus.DistributionCompleted) {
                             if (isNaN(gameBoard.SelectedButtonID)) {
-                                yield gameBoard.HideAllAlerts();
+                                await gameBoard.HideAllAlerts();
                             }
                             else {
                                 if (IsWinner(Poll.PollButtons, gameBoard.SelectedButtonID)) {
@@ -104,9 +95,9 @@ twitch.onAuthorized((auth) => __awaiter(void 0, void 0, void 0, function* () {
                 }
                 CurrentPollStatus = Poll.PollStatus;
             }
-        }))
+        })
             .start();
-        let WalletOfUser = yield BackendConnection_1.GetWallet(StreamerID, TwitchUserID);
+        let WalletOfUser = await BackendConnection_1.GetWallet(StreamerID, TwitchUserID);
         twitch.rig.log(WalletOfUser.Coins.toString());
         gameBoard.CoinsOfUserView.innerText = (~~WalletOfUser.Coins).toString();
         new Miner_1.Miner(StreamerID, TwitchUserID, WalletOfUser.Coins, (CurrentCoinsOfUsernulber, CoinsAddedOrSubtracted) => {
@@ -121,10 +112,7 @@ twitch.onAuthorized((auth) => __awaiter(void 0, void 0, void 0, function* () {
             gameBoard.CoinsOfUserView.innerText = (~~CurrentCoinsOfUsernulber).toString();
             //TODO ADD METODO PARA MUDAR UI}).startMining()
         }).startMining();
-        gameBoard.setStoreItems([
-            { Description: 'Fon', Price: 20 },
-            { Description: 'ce loco', Price: 40 },
-            { Description: 'meeee', Price: 10 }
-        ]);
-    }));
-}));
+        let StoreItens = await BackendConnection_1.GetStore(StreamerID);
+        gameBoard.setStoreItems(StoreItens);
+    });
+});

@@ -26,5 +26,6 @@ exports.default = {
     GetStore: '/Store/:StreamerID',
     getStore: (StreamerID) => {
         return '/Store/' + StreamerID;
-    }
+    },
+    UploadFile: '/UploadFile'
 };

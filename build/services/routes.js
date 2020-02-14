@@ -1,17 +1,8 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
-const BodyParcer = require("body-parser");
 const cors = require("cors");
+const bodyParser = require("body-parser");
 const PollController_1 = require("./controller/PollController");
 const dbStreamerManager_1 = require("./modules/database/dbStreamerManager");
 const dbWalletManager_1 = require("./modules/database/miner/dbWalletManager");
@@ -19,11 +10,15 @@ const Links_1 = require("./Links");
 const dbMinerManager_1 = require("./modules/database/miner/dbMinerManager");
 const StreamerSettings_1 = require("./modules/database/streamer_settings/StreamerSettings");
 const dbStoreManager_1 = require("./modules/database/store/dbStoreManager");
+const fs = require("fs");
+const http = require("http");
+const Socket_io = require("socket.io");
 const app = express();
 exports.app = app;
+const server = http.createServer(app);
+const oi = Socket_io(server);
 app.use(cors());
-app.use(BodyParcer.urlencoded({ extended: false }));
-app.use(BodyParcer.json());
+app.use(bodyParser.json());
 function CheckRequisition(CheckList) {
     let ErrorList = [];
     CheckList.forEach(chekage => {
@@ -39,42 +34,40 @@ function ThereWinningButtonsInArray(PollButtons) {
             return true;
     return false;
 }
-app.post(Links_1.default.PollManager, function (req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let ErrorList = CheckRequisition([
-            () => {
-                if (!req.body.StreamerID)
-                    return ({ RequestError: "StreamerID is no defined" });
-            },
-            () => {
-                if (!req.body.StreamerID)
-                    return ({ RequestError: "CurrentPollStatus is no defined" });
-            }
-        ]);
-        if (ErrorList.length > 0)
-            return res.status(400).send({ ErrorList });
-        let pollController = new PollController_1.PollController(req.body.StreamerID);
-        let PoolUpdateResult;
-        let DistribuitionResult;
-        let AccountData = dbStreamerManager_1.dbStreamerManager.getAccountData(req.body.StreamerID);
-        if (AccountData.CurrentPollStatus.PollWaxed)
-            return res.status(200).send(pollController.CreatePoll());
-        else {
-            if (req.body.NewPollStatus) {
-                AccountData.CurrentPollStatus = req.body.NewPollStatus;
-                PoolUpdateResult = yield pollController.UpdatePoll(req.body.PollButtons);
-                if (AccountData.CurrentPollStatus.InDistribution &&
-                    !AccountData.CurrentPollStatus.PollWaxed &&
-                    !AccountData.CurrentPollStatus.DistributionStarted) {
-                    if (ThereWinningButtonsInArray(req.body.PollButtons))
-                        DistribuitionResult = yield pollController.StartDistribuition(req.body.PollButtons);
-                    else
-                        return res.status(500).send({ RequestError: 'There is no winning button' });
-                }
+app.post(Links_1.default.PollManager, async function (req, res) {
+    let ErrorList = CheckRequisition([
+        () => {
+            if (!req.body.StreamerID)
+                return ({ RequestError: "StreamerID is no defined" });
+        },
+        () => {
+            if (!req.body.StreamerID)
+                return ({ RequestError: "CurrentPollStatus is no defined" });
+        }
+    ]);
+    if (ErrorList.length > 0)
+        return res.status(400).send({ ErrorList });
+    let pollController = new PollController_1.PollController(req.body.StreamerID);
+    let PoolUpdateResult;
+    let DistribuitionResult;
+    let AccountData = dbStreamerManager_1.dbStreamerManager.getAccountData(req.body.StreamerID);
+    if (AccountData.CurrentPollStatus.PollWaxed)
+        return res.status(200).send(pollController.CreatePoll());
+    else {
+        if (req.body.NewPollStatus) {
+            AccountData.CurrentPollStatus = req.body.NewPollStatus;
+            PoolUpdateResult = await pollController.UpdatePoll(req.body.PollButtons);
+            if (AccountData.CurrentPollStatus.InDistribution &&
+                !AccountData.CurrentPollStatus.PollWaxed &&
+                !AccountData.CurrentPollStatus.DistributionStarted) {
+                if (ThereWinningButtonsInArray(req.body.PollButtons))
+                    DistribuitionResult = await pollController.StartDistribuition(req.body.PollButtons);
+                else
+                    return res.status(500).send({ RequestError: 'There is no winning button' });
             }
         }
-        return res.status(200).send({ PoolUpdateResult, DistribuitionResult });
-    });
+    }
+    return res.status(200).send({ PoolUpdateResult, DistribuitionResult });
 });
 app.get(Links_1.default.GetPoll, function (req, res) {
     let ErrorList = CheckRequisition([
@@ -272,4 +265,16 @@ app.get(Links_1.default.GetStore, function (req, res) {
         .catch((rej) => {
         res.status(500).send(rej);
     });
+});
+app.post(Links_1.default.UploadFile, function (req, res) {
+    console.log(req.headers);
+    let file = fs.createWriteStream("./uploads/" + req.headers["file-name"]);
+    req.on('data', chunk => {
+        file.write(chunk);
+    });
+    req.on('end', () => {
+        file.end();
+        res.status(200).send({ UploadCompleted: new Date });
+    });
+    console.log(req.headers["content-type"]);
 });

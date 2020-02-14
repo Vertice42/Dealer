@@ -35,11 +35,16 @@ export default class StreamerSettings {
      */
     static async UpdateMinerSettings(StreamerID: string, NewMinerSettings: MinerSettings) {
         let AccountData = dbStreamerManager.getAccountData(StreamerID);
-        AccountData.MinerSettings = NewMinerSettings
-        return AccountData.dbSettings.update(NewMinerSettings, { where: { SettingName: MinerSettings.name } })
-            .then(() => {
+        AccountData.MinerSettings = NewMinerSettings;        
+        return AccountData.dbSettings.update({SettingsJson:NewMinerSettings}, { where: { SettingName: MinerSettings.name } })
+            .then((res) => {
+                console.log(res);
+                
                 return resolve({ SuccessfullyUpdatedMinerSettings: AccountData.MinerSettings });
-            });
+            }).catch((rej)=>{
+                console.log(rej);
+                
+            })
     }
 
     /**

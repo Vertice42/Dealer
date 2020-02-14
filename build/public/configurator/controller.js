@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const ViewConfig = require("./View");
 const BackendConnections = require("../BackendConnection");
@@ -43,10 +34,10 @@ class StatusObservation {
 twitch.onContext((context) => {
     console.log(context);
 });
-twitch.onAuthorized((auth) => __awaiter(void 0, void 0, void 0, function* () {
+twitch.onAuthorized(async (auth) => {
     token = auth.token;
     StreamerID = auth.channelId.toLowerCase();
-    let Poll = yield BackendConnections.getCurrentPoll(StreamerID);
+    let Poll = await BackendConnections.getCurrentPoll(StreamerID);
     ViewPoll = new ViewConfig.ViewPollManeger(Poll);
     let watchPoll;
     ViewPoll.PollStatus = Poll.PollStatus;
@@ -98,30 +89,30 @@ twitch.onAuthorized((auth) => __awaiter(void 0, void 0, void 0, function* () {
         });
     };
     const VIEW_SETTINGS = new ViewConfig.ViewSettings();
-    let minerSettings = yield BackendConnections.GetMinerSettings(StreamerID);
+    let minerSettings = await BackendConnections.GetMinerSettings(StreamerID);
     VIEW_SETTINGS.HourlyRewardInput.HTMLInput.value = (~~(minerSettings.RewardPerMinute * 60)).toString();
     VIEW_SETTINGS.HourlyRewardInput.HTMLInput.onchange = () => {
         VIEW_SETTINGS.HourlyRewardInput.setChangedInput();
         BackendConnections.SendToMinerManager(StreamerID, new MinerSettings_1.MinerSettings(Number(VIEW_SETTINGS.HourlyRewardInput.HTMLInput.value) / 60))
-            .then(() => __awaiter(void 0, void 0, void 0, function* () {
+            .then(async () => {
             VIEW_SETTINGS.HourlyRewardInput.setInputSentSuccessfully();
-            yield utils_1.sleep(100);
+            await utils_1.sleep(100);
             VIEW_SETTINGS.HourlyRewardInput.setUnchangedInput();
-        })).catch(() => {
+        }).catch(() => {
             VIEW_SETTINGS.HourlyRewardInput.setInputSentError();
         });
     };
     const VIEW_STORE = new ViewConfig.ViewStore();
-    let StoreItems = yield BackendConnection_1.GetStore(StreamerID);
+    let StoreItems = await BackendConnection_1.GetStore(StreamerID);
     StoreItems.forEach(StoreItem => VIEW_STORE.addStoreItem(StoreItem));
     VIEW_STORE.onDescriptionChange = (ViewStoreItem) => {
         ViewStoreItem.DescriptionInput.setChangedInput();
         BackendConnection_1.SendToStoreManager(StreamerID, ViewStoreItem)
-            .then(() => __awaiter(void 0, void 0, void 0, function* () {
+            .then(async () => {
             ViewStoreItem.DescriptionInput.setInputSentSuccessfully();
-            yield utils_1.sleep(500);
+            await utils_1.sleep(500);
             ViewStoreItem.DescriptionInput.setUnchangedInput();
-        }))
+        })
             .catch((rej) => {
             console.log(rej);
             ViewStoreItem.DescriptionInput.setInputSentError();
@@ -130,11 +121,11 @@ twitch.onAuthorized((auth) => __awaiter(void 0, void 0, void 0, function* () {
     VIEW_STORE.onPriceChange = (ViewStoreItem) => {
         ViewStoreItem.PriceInput.setChangedInput();
         BackendConnection_1.SendToStoreManager(StreamerID, ViewStoreItem)
-            .then(() => __awaiter(void 0, void 0, void 0, function* () {
+            .then(async () => {
             ViewStoreItem.PriceInput.setInputSentSuccessfully();
-            yield utils_1.sleep(500);
+            await utils_1.sleep(500);
             ViewStoreItem.PriceInput.setUnchangedInput();
-        }))
+        })
             .catch((rej) => {
             console.log(rej);
             ViewStoreItem.PriceInput.setInputSentError();
@@ -143,7 +134,13 @@ twitch.onAuthorized((auth) => __awaiter(void 0, void 0, void 0, function* () {
     VIEW_STORE.onAddStoreItemActive = () => {
         VIEW_STORE.addStoreItem(null);
     };
+    VIEW_STORE.onFileInputChange = async (ViewStoreItem) => {
+        let file = ViewStoreItem.HTML_InputFile.files[0];
+        if (file)
+            BackendConnections.UploadFile(StreamerID, file.name, file)
+                .then((res) => { console.log(res); });
+    };
     VIEW_STORE.onButtonDeleteActive = (StoreItem) => {
         VIEW_STORE.removeStoreItem(StoreItem);
     };
-}));
+});

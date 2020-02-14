@@ -7,6 +7,7 @@ export class dbStore extends Model implements StoreItem {
     Type: number;
     Description: string;
     Price: number;
+    FileName:string
 }
 
 export const StoreDefiner = {
@@ -22,6 +23,10 @@ export const StoreDefiner = {
         },
         Price: {
             type: sequelize.INTEGER,
+            allowNull: true
+        },
+        FileName:{
+            type: sequelize.STRING,
             allowNull: true
         }
 

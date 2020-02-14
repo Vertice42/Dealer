@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const Inputs_1 = require("../model/Inputs");
 function hexToRgb(hex) {
@@ -25,7 +16,6 @@ class StoreItem {
         this.HTML.classList.add('StoreItem');
         this.HTML.appendChild(this.createTypeDisplay());
         this.HTML.appendChild(this.createDescription(Description));
-        this.HTML.appendChild(this.createPriceText());
         this.HTML.appendChild(this.createPrice(Price));
         this.HTML.appendChild(this.createBuyButton());
     }
@@ -39,12 +29,6 @@ class StoreItem {
         this.HTML_Description.classList.add('Description');
         this.HTML_Description.innerText = Description;
         return this.HTML_Description;
-    }
-    createPriceText() {
-        this.HTML_PriceText = document.createElement('span');
-        this.HTML_PriceText.classList.add('PriceText');
-        this.HTML_PriceText.innerText = 'Price';
-        return this.HTML_PriceText;
     }
     createPrice(Price) {
         this.HTML_Price = document.createElement('span');
@@ -290,16 +274,14 @@ class GameBoard {
             }
         });
     }
-    HideAllAlerts() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return Promise.all([
-                this.HideAllert(this.PollAlert),
-                this.HideAllert(this.StopAlert),
-                this.HideAllert(this.AlertOfWinner),
-                this.HideAllert(this.AlertOfLoser),
-                this.HideAllert(this.PollDiv)
-            ]);
-        });
+    async HideAllAlerts() {
+        return Promise.all([
+            this.HideAllert(this.PollAlert),
+            this.HideAllert(this.StopAlert),
+            this.HideAllert(this.AlertOfWinner),
+            this.HideAllert(this.AlertOfLoser),
+            this.HideAllert(this.PollDiv)
+        ]);
     }
     onclickOfParticipatePollButton() {
         this.HideAllAlerts().then(() => {

@@ -39,8 +39,9 @@ class OrientedInput extends ResponsiveInput {
         this.HTMLInput.classList.add('UnchangedInput');
         this.HTMLInput.classList.add('InputNotUsed');
     }
-    constructor(Guidance, type) {
+    constructor(Guidance, type, ClassCSS) {
         super(document.createElement('input'));
+        this.HTMLInput.classList.add(ClassCSS);
         this.HTMLInput.setAttribute('type', 'text');
         this.setNotUsed();
         this.HTMLInput.value = Guidance; //TODO ADD TRALATE

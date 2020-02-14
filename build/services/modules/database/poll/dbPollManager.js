@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const bluebird_1 = require("bluebird");
 const PollBeat_1 = require("../../../models/poll/PollBeat");
@@ -28,32 +19,28 @@ class dbPollMager {
      *
      * @returns {Bets: PollBeat[]}
      */
-    getBeatsOfCurrentPoll() {
-        return __awaiter(this, void 0, void 0, function* () {
-            let Bettings = yield this.getAllBettings();
-            let Bets = [];
-            Bettings.forEach(Bettings => {
-                if (Bets[Bettings.Bet])
-                    Bets[Bettings.Bet].NumberOfBets++;
-                else
-                    Bets[Bettings.Bet] = new PollBeat_1.PollBeat(Bettings.Bet).setNumberOfBets(1);
-            });
-            return Bets;
+    async getBeatsOfCurrentPoll() {
+        let Bettings = await this.getAllBettings();
+        let Bets = [];
+        Bettings.forEach(Bettings => {
+            if (Bets[Bettings.Bet])
+                Bets[Bettings.Bet].NumberOfBets++;
+            else
+                Bets[Bettings.Bet] = new PollBeat_1.PollBeat(Bettings.Bet).setNumberOfBets(1);
         });
+        return Bets;
     }
     /**
      * @returns Promise<dbButton[]>
      */
-    getAllButtonsOfCurrentPoll() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return dbStreamerManager_1.dbStreamerManager.getAccountData(this.StreamerID).dbCurrentPollButtons.findAll()
-                .catch((rej) => __awaiter(this, void 0, void 0, function* () {
-                if (rej.parent.errno === 1146) {
-                    yield utils_1.sleep(500);
-                    return this.getAllButtonsOfCurrentPoll();
-                    //TODO POSIVEL LOOP INFINITO
-                }
-            }));
+    async getAllButtonsOfCurrentPoll() {
+        return dbStreamerManager_1.dbStreamerManager.getAccountData(this.StreamerID).dbCurrentPollButtons.findAll()
+            .catch(async (rej) => {
+            if (rej.parent.errno === 1146) {
+                await utils_1.sleep(500);
+                return this.getAllButtonsOfCurrentPoll();
+                //TODO POSIVEL LOOP INFINITO
+            }
         });
     }
     /**
@@ -93,78 +80,68 @@ class dbPollMager {
      * @param dbButton
      * @param newButton
      */
-    UpdateButtonOfCurrentPoll(dbButton, newButton) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return dbButton.update(newButton);
-        });
+    async UpdateButtonOfCurrentPoll(dbButton, newButton) {
+        return dbButton.update(newButton);
     }
     /**
      *
      * @param Button
      */
-    AddButtonOfCurrentPoll(Button) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return dbStreamerManager_1.dbStreamerManager.getAccountData(this.StreamerID).dbCurrentPollButtons.create(Button);
-        });
+    async AddButtonOfCurrentPoll(Button) {
+        return dbStreamerManager_1.dbStreamerManager.getAccountData(this.StreamerID).dbCurrentPollButtons.create(Button);
     }
     /**
      *
      * @param ButtonID
      */
-    DeleteButtonOfCurrentPoll(ButtonID) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return (yield this.getButtonOfCurrentPoll(ButtonID)).destroy();
-        });
+    async DeleteButtonOfCurrentPoll(ButtonID) {
+        return (await this.getButtonOfCurrentPoll(ButtonID)).destroy();
     }
     /**
      *
      * @param Buttons: Array of PollButton
      * @returns { CreatedButtons:number, UpdatedButtons:number }
      */
-    UpdateOrCreateButtonsOfPoll(Buttons) {
-        return __awaiter(this, void 0, void 0, function* () {
-            var CreatedButtons = 0;
-            var UpdatedButtons = 0;
-            let CreationAndUpdatePromises = [];
-            for (const Button of Buttons) {
-                let ButtonOfPoll = yield this.getButtonOfCurrentPoll(Button.ID);
-                if (ButtonOfPoll) {
-                    CreationAndUpdatePromises.push(this.UpdateButtonOfCurrentPoll(ButtonOfPoll, Button));
-                    UpdatedButtons++;
-                }
-                else {
-                    CreationAndUpdatePromises.push(this.AddButtonOfCurrentPoll(Button));
-                    CreatedButtons++;
-                }
+    async UpdateOrCreateButtonsOfPoll(Buttons) {
+        var CreatedButtons = 0;
+        var UpdatedButtons = 0;
+        let CreationAndUpdatePromises = [];
+        for (const Button of Buttons) {
+            let ButtonOfPoll = await this.getButtonOfCurrentPoll(Button.ID);
+            if (ButtonOfPoll) {
+                CreationAndUpdatePromises.push(this.UpdateButtonOfCurrentPoll(ButtonOfPoll, Button));
+                UpdatedButtons++;
             }
-            yield Promise.all(CreationAndUpdatePromises);
-            return bluebird_1.resolve({ CreatedButtons, UpdatedButtons });
-        });
+            else {
+                CreationAndUpdatePromises.push(this.AddButtonOfCurrentPoll(Button));
+                CreatedButtons++;
+            }
+        }
+        await Promise.all(CreationAndUpdatePromises);
+        return bluebird_1.resolve({ CreatedButtons, UpdatedButtons });
     }
     /**
      * The buttons that exist in the array given to the parameter but do not exist in the database
      * are deleted, if the array is empty nothing is deleted.
      * @param buttons:PollButton[]
      */
-    DeleteButtonsThatAreNotIndb(buttons) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const db_buttons = yield this.getAllButtonsOfCurrentPoll();
-            let PromisesToDeleteButtons = [];
-            for (let a = 0; a < db_buttons.length; a++) {
-                let no_longer_exists_in_db = true;
-                for (let b = 0; b < buttons.length; b++) {
-                    if (db_buttons[a].ID === buttons[b].ID) {
-                        no_longer_exists_in_db = false;
-                        db_buttons.splice(a, 1);
-                        break;
-                    }
+    async DeleteButtonsThatAreNotIndb(buttons) {
+        const db_buttons = await this.getAllButtonsOfCurrentPoll();
+        let PromisesToDeleteButtons = [];
+        for (let a = 0; a < db_buttons.length; a++) {
+            let no_longer_exists_in_db = true;
+            for (let b = 0; b < buttons.length; b++) {
+                if (db_buttons[a].ID === buttons[b].ID) {
+                    no_longer_exists_in_db = false;
+                    db_buttons.splice(a, 1);
+                    break;
                 }
-                if (no_longer_exists_in_db)
-                    PromisesToDeleteButtons.push(this.DeleteButtonOfCurrentPoll(db_buttons[a].ID));
             }
-            yield Promise.all(PromisesToDeleteButtons);
-            return bluebird_1.resolve({ DeletedButtons: PromisesToDeleteButtons.length });
-        });
+            if (no_longer_exists_in_db)
+                PromisesToDeleteButtons.push(this.DeleteButtonOfCurrentPoll(db_buttons[a].ID));
+        }
+        await Promise.all(PromisesToDeleteButtons);
+        return bluebird_1.resolve({ DeletedButtons: PromisesToDeleteButtons.length });
     }
     /**
      * Determines whether the bet is a winner, for which the button array works to contain

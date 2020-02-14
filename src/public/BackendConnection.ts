@@ -7,7 +7,21 @@ import { Poll } from '../services/models/poll/Poll';
 import { MinerSettings } from '../services/models/miner/MinerSettings';
 import StoreItem from '../services/models/store/StoreItem';
 import StoreManagerRequest from '../services/models/store/StoreManagerRequest';
+
 const host = 'http://localhost:' + (ServerConfigs.Port || process.env.Port);
+function futch(url, opts, onProgress: (ev: ProgressEvent) => any) {
+  return new Promise((res, rej) => {
+    var xhr = new XMLHttpRequest();
+    xhr.open(opts.method || 'get', url);
+    for (var k in opts.headers || {})
+      xhr.setRequestHeader(k, opts.headers[k]);
+    xhr.onload = e => res(e.target);
+    xhr.onerror = rej;
+    if (xhr.upload && onProgress)
+      xhr.upload.onprogress = (ev: ProgressEvent) => onProgress(ev); // event.loaded / event.total * 100 ; //event.lengthComputable
+    xhr.send(opts.body);
+  });
+}
 
 export async function getCurrentPoll(StreamerID: string) {
   /* Use fetch to communicate to backend and get current voting */
@@ -257,7 +271,7 @@ export async function GetStore(StreamerID: string) {
 
 }
 
-export async function SendToStoreManager(StreamerID: string, StoreItem:StoreItem): Promise<any> {
+export async function SendToStoreManager(StreamerID: string, StoreItem: StoreItem): Promise<any> {
   /*Send current voting with your buttons and current poll status */
   let H = new Headers();
   H.append("Content-Type", "application/json");
@@ -265,7 +279,7 @@ export async function SendToStoreManager(StreamerID: string, StoreItem:StoreItem
   return fetch(host + link.StoreManager, {
     method: "POST",
     headers: H,
-    body: JSON.stringify(new StoreManagerRequest(StreamerID,StoreItem))
+    body: JSON.stringify(new StoreManagerRequest(StreamerID, StoreItem))
   }).then((res) => {
     if (res.ok) return resolve(res)
     else return reject(res);
@@ -280,3 +294,22 @@ export async function SendToStoreManager(StreamerID: string, StoreItem:StoreItem
       })
   });
 }
+
+export async function UploadFile(StreamerID: string, FileName: string, File: File) {
+  /*Send current voting with your buttons and current poll status */
+  let headers = new Headers();
+  headers.append("Accept", "application/json");
+  headers.append("file-name", FileName);
+  return fetch(host + link.UploadFile,
+    {
+      method: "POST",
+      headers: headers,
+      body: File
+    }).then((res) => {
+      console.log(res);
+    }).catch((rej) => {
+      console.log(rej);
+    });
+}
+
+

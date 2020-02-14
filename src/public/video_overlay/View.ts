@@ -15,7 +15,6 @@ class StoreItem {
     HTML:HTMLDivElement
     HTML_TypeDisplay: HTMLImageElement;
     HTML_Description: HTMLSpanElement;
-    HTML_PriceText: HTMLSpanElement;
     HTML_Price: HTMLSpanElement;
     HTML_BuyButton: HTMLButtonElement;
 
@@ -30,13 +29,6 @@ class StoreItem {
         this.HTML_Description.classList.add('Description');
         this.HTML_Description.innerText = Description;
         return this.HTML_Description;
-    }
-
-    createPriceText(){
-        this.HTML_PriceText = document.createElement('span');
-        this.HTML_PriceText.classList.add('PriceText');
-        this.HTML_PriceText.innerText = 'Price';
-        return this.HTML_PriceText;
     }
 
     createPrice(Price:number){  
@@ -58,7 +50,6 @@ class StoreItem {
 
         this.HTML.appendChild(this.createTypeDisplay())
         this.HTML.appendChild(this.createDescription(Description))
-        this.HTML.appendChild(this.createPriceText());
         this.HTML.appendChild(this.createPrice(Price))
         this.HTML.appendChild(this.createBuyButton())
     }

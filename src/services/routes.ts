@@ -1,6 +1,6 @@
 import express = require("express");
-import BodyParcer = require("body-parser");
 import cors = require("cors");
+import bodyParser = require("body-parser");
 import { PollRequest } from "./models/poll/PollRequest";
 import { PollButton } from "./models/poll/PollButton";
 import { PollStatus } from "./models/poll/PollStatus";
@@ -19,15 +19,18 @@ import MinerManeger from "./modules/database/miner/dbMinerManager";
 import StreamerSettings from "./modules/database/streamer_settings/StreamerSettings";
 import { CoinsSettingsManagerRequest } from "./models/streamer_settings/CoinsSettingsManagerRequest";
 import { CoinsSettings } from "./models/streamer_settings/CoinsSettings";
-import StoreManagerRequest from "./models/store/StoreManagerRequest";
 import dbStoreManger from "./modules/database/store/dbStoreManager";
-import { reject } from "bluebird";
 import StoreItem from "./models/store/StoreItem";
+import fs = require('fs');
+import http = require('http')
+import Socket_io = require('socket.io')
 
 const app = express();
+const server = http.createServer(app);
+const oi = Socket_io(server);
+
 app.use(cors());
-app.use(BodyParcer.urlencoded({ extended: false }));
-app.use(BodyParcer.json());
+app.use(bodyParser.json());
 
 function CheckRequisition(CheckList: (() => Object)[]) {
     let ErrorList = [];
@@ -262,22 +265,22 @@ app.get(links.GetWallet, function (req: express.Request, res: express.Response) 
         .then((wallet) => {
             res.status(200).send(wallet);
         })
-        .catch((rej)=>{
+        .catch((rej) => {
             res.status(500).send(rej);
         })
 });
 
-app.post(links.StoreManager, function (req ,res: express.Response) {    
+app.post(links.StoreManager, function (req, res: express.Response) {
     let ErrorList = CheckRequisition([
-        () => {            
+        () => {
             if (!req.body.StreamerID)
                 return ({ RequestError: "StreamerID is no defined" })
         }
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
-    
+
     new dbStoreManger(req.body.StreamerID).UpdateOrCreateStoreItem(req.body.StoreItem)
-        .then((result) => {    
+        .then((result) => {
             res.status(200).send(result);
         })
         .catch((reject) => {
@@ -293,6 +296,20 @@ app.get(links.GetStore, function (req: { params: { StreamerID: string } }, res: 
         .catch((rej) => {
             res.status(500).send(rej)
         })
+})
+
+app.post(links.UploadFile, function (req, res: express.Response) {
+    console.log(req.headers);
+    
+    let file = fs.createWriteStream("./uploads/"+req.headers["file-name"]);
+    req.on('data', chunk => {        
+        file.write(chunk);
+    })
+    req.on('end', () => {
+        file.end();
+        res.status(200).send({ UploadCompleted: new Date })
+    })
+    console.log(req.headers["content-type"]);
 })
 
 export { app };

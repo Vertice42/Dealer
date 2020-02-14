@@ -62,10 +62,9 @@
     max-width: 10vw;
 }
 
-.StoreItem .PriceText{
-}
-
 .StoreItem .Price {
+    min-width: 5vw;
+    max-width: 5vw;
 }
 
 .StoreItem button {

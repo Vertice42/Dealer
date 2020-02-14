@@ -460,8 +460,8 @@ class ViewStoreItem {
         this.onButtonDeleteActived = (ViewStoreItem) => { };
         this.id = ID;
         this.ElemeteHTML_ID = 'inputFile' + this.id;
-        this.DescriptionInput = new Inputs_1.OrientedInput('Incert Description', 'text');
-        this.PriceInput = new Inputs_1.OrientedInput('Incert Price', 'number');
+        this.DescriptionInput = new Inputs_1.OrientedInput('Incert Description', 'text', 'DescriptionInput');
+        this.PriceInput = new Inputs_1.OrientedInput('Incert Price', 'number', 'PriceInput');
         this.HTML = document.createElement('div');
         this.HTML.classList.add('StoreItem');
         this.HTML.appendChild(this.createStoreType());
@@ -484,6 +484,7 @@ class ViewStoreItem {
         this.HTML_InputFile = document.createElement('input');
         this.HTML_InputFile.setAttribute('type', 'file');
         this.HTML_InputFile.classList.add('inputfile');
+        this.HTML_InputFile.name = 'file';
         this.HTML_InputFile.id = this.ElemeteHTML_ID;
         return this.HTML_InputFile;
     }
@@ -506,15 +507,18 @@ class ViewStore {
         this.onDescriptionChange = (ViewStoreItem) => { };
         this.onPriceChange = (ViewStoreItem) => { };
         this.onButtonDeleteActive = (ViewStoreItem) => { };
+        this.onFileInputChange = (ViewStoreItem) => { };
         this.StoreItems = [];
         this.HTML_StoreItems = document.getElementById('StoreItems');
         document.getElementById('AddStoreItem').onclick = () => { this.onAddStoreItemActive(); };
     }
     addStoreItem(StoreItem) {
         let Item = new ViewStoreItem(this.StoreItems.length);
-        if (Item) {
-            Item.id = StoreItem.id;
-            if (Item.DescriptionInput) {
+        if (StoreItem) {
+            if (StoreItem.id) {
+                Item.id = StoreItem.id;
+            }
+            if (StoreItem.Description) {
                 Item.DescriptionInput.HTMLInput.value = StoreItem.Description;
                 Item.Description = StoreItem.Description;
                 Item.DescriptionInput.setUsed();
@@ -534,6 +538,9 @@ class ViewStore {
             Item.Price = Number(StoreItem.PriceInput.HTMLInput.value);
             this.onPriceChange(StoreItem);
         };
+        Item.HTML_InputFile.addEventListener('change', () => {
+            this.onFileInputChange(Item); //TODO > 0)
+        });
         Item.onButtonDeleteActived = (StoreItem) => {
             this.onButtonDeleteActive(StoreItem);
         };

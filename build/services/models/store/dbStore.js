@@ -19,6 +19,10 @@ exports.StoreDefiner = {
         Price: {
             type: sequelize.INTEGER,
             allowNull: true
+        },
+        FileName: {
+            type: sequelize.STRING,
+            allowNull: true
         }
     }, options: {
         freezeTableName: true

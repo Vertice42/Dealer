@@ -1,5 +1,26 @@
 .StoreDiv {}
 
+#CaptionOfStoreItems {
+    display: flex;
+    margin-left: 12vw;
+}
+
+#CaptionOfStoreItems h2 {
+    background-color: white;
+    font-family: fantasy;
+    text-transform: uppercase;
+    padding: 0 1vw;
+}
+
+#Caption1 {
+    margin: 0;
+}
+
+#Caption2 {
+    margin: 0;
+    margin-left: 30%;
+}
+
 #StoreItems {
     display: table;
     background-color: rgb(48, 29, 63);
@@ -8,6 +29,7 @@
 
 .StoreItem {
     display: flex;
+    max-width: 82vw;
     height: 5vw;
     margin: 1vw 1vw;
     background-image: linear-gradient(to right, rgb(44, 11, 54) 60%, rgb(66, 43, 85));
@@ -17,24 +39,33 @@
     font-family: fantasy;
     font-size: 2vw;
     text-align: center;
-
     background-color: rgb(255, 255, 255);
     margin: 1vw 1vmin;
-    width: 90%;
-    transition: width 500ms;
+    transition: all 500ms;
 }
 
-.InputUsed{
+.DescriptionInput {
+    width: 50%;
+}
+
+.PriceInput {
+    width: 30%;
+}
+
+.DescriptionInput:hover {
+    width: 70%;
+}
+
+.PriceInput:hover {
+    width: 40%;
+}
+
+.InputUsed {
     color: black;
 }
 
-.InputNotUsed{
+.InputNotUsed {
     color: gray;
-}
-
-
-.StoreItem input:hover {
-    width: 100%;
 }
 
 .StoreItem input:focus {
@@ -59,8 +90,8 @@
 }
 
 .AddUpdateFileIcon {
-    width: 10vw;
-    height: 4vmax;
+    min-width:5vw;
+    min-height: 5vw;
     margin: 10vw 1vw;
     border: none;
     background-color: white;
