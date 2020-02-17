@@ -63,3 +63,27 @@ class OrientedInput extends ResponsiveInput {
     }
 }
 exports.OrientedInput = OrientedInput;
+class ResponsiveInputFile {
+    constructor(id) {
+        this.HTMLInput = document.createElement('label');
+        this.HTMLInput.classList.add('AddUpdateFileIcon');
+        this.HTMLInput.classList.add('Default');
+        this.HTMLInput.htmlFor = id;
+    }
+    setDefault() {
+        this.HTMLInput.classList.remove('Upgradeable');
+        this.HTMLInput.classList.remove('InUpload');
+        this.HTMLInput.classList.add('Default');
+    }
+    setUpgradeable() {
+        this.HTMLInput.classList.remove('Default');
+        this.HTMLInput.classList.remove('InUpload');
+        this.HTMLInput.classList.add('Upgradeable');
+    }
+    setInUpload() {
+        this.HTMLInput.classList.remove('Default');
+        this.HTMLInput.classList.remove('Upgradeable');
+        this.HTMLInput.classList.add('InUpload');
+    }
+}
+exports.ResponsiveInputFile = ResponsiveInputFile;

@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize = require("sequelize");
 const sequelize_1 = require("sequelize");
+class Bettings {
+}
+exports.Bettings = Bettings;
 class dbBettings extends sequelize_1.Model {
 }
 exports.dbBettings = dbBettings;

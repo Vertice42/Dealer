@@ -43,7 +43,7 @@ export class OrientedInput extends ResponsiveInput {
     this.HTMLInput.classList.add('UnchangedInput');
     this.HTMLInput.classList.add('InputNotUsed');
   }
-  constructor(Guidance: string, type: string,ClassCSS:string) {
+  constructor(Guidance: string, type: string, ClassCSS: string) {
 
     super(<HTMLInputElement>document.createElement('input'));
     this.HTMLInput.classList.add(ClassCSS)
@@ -68,5 +68,30 @@ export class OrientedInput extends ResponsiveInput {
       }
     }
 
+  }
+}
+
+export class ResponsiveInputFile {
+  HTMLInput: HTMLLabelElement;
+  constructor(id: string) {
+    this.HTMLInput = document.createElement('label');
+    this.HTMLInput.classList.add('AddUpdateFileIcon');
+    this.HTMLInput.classList.add('Default');
+    this.HTMLInput.htmlFor = id;
+  }
+  setDefault() {
+    this.HTMLInput.classList.remove('Upgradeable');
+    this.HTMLInput.classList.remove('InUpload');
+    this.HTMLInput.classList.add('Default');
+  }
+  setUpgradeable() {
+    this.HTMLInput.classList.remove('Default')
+    this.HTMLInput.classList.remove('InUpload');
+    this.HTMLInput.classList.add('Upgradeable');
+  }
+  setInUpload() {
+    this.HTMLInput.classList.remove('Default')
+    this.HTMLInput.classList.remove('Upgradeable');
+    this.HTMLInput.classList.add('InUpload');
   }
 }

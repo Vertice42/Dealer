@@ -13,7 +13,7 @@ export default class dbStoreManger {
 
     async UpdateOrCreateStoreItem(StoreItem: StoreItem) {
         let AccountData = dbStreamerManager.getAccountData(this.StreamerID);
-        let dbStoreItem = await AccountData.dbStore.findOne({ where: { id: StoreItem.id } });                
+        let dbStoreItem = await AccountData.dbStore.findOne({ where: { id: StoreItem.id } });
         if (dbStoreItem) {
             await dbStoreItem.update(<dbStoreIten>StoreItem);
             return { ItemUpdatedSuccessfully: new Date };
@@ -22,6 +22,12 @@ export default class dbStoreManger {
             await AccountData.dbStore.create(<dbStoreIten>StoreItem);
             return { SuccessfullyCreatedItem: new Date };
         }
+    }
+
+    async DeleteStoreItem(StoreItem: StoreItem) {
+        let AccountData = dbStreamerManager.getAccountData(this.StreamerID);
+        let dbStoreItem = await AccountData.dbStore.findOne({ where: { id: StoreItem.id } });
+        return dbStoreItem.destroy();
     }
 
 }

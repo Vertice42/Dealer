@@ -11,7 +11,7 @@ function hexToRgb(hex) {
 }
 const GRADIENT_DARKENING_RATE = 1.5;
 
-class StoreItem {
+class ViewStoreItem {
     HTML:HTMLDivElement
     HTML_TypeDisplay: HTMLImageElement;
     HTML_Description: HTMLSpanElement;
@@ -56,7 +56,7 @@ class StoreItem {
 }
 
 export class GameBoard {
-    public StoreItem:StoreItem
+    public StoreItem:ViewStoreItem
     public getBetValue: () => number;
     public onBeatIDSelected = () => { };
 
@@ -391,7 +391,7 @@ export class GameBoard {
     setStoreItems(StoreItems) {
         this.ItemsList.innerHTML = '';
         StoreItems.forEach(storeItem => {
-            this.ItemsList.appendChild(new StoreItem(storeItem.Description,storeItem.Price).HTML)
+            this.ItemsList.appendChild(new ViewStoreItem(storeItem.Description,storeItem.Price).HTML)
         });
     }
 

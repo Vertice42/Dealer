@@ -1,6 +1,6 @@
 import { PollStatus } from "../../services/models/poll/PollStatus";
 import { Poll } from "../../services/models/poll/Poll";
-import { ResponsiveInput, OrientedInput } from "../model/Inputs";
+import { ResponsiveInput, OrientedInput, ResponsiveInputFile } from "../model/Inputs";
 import StoreItem from "../../services/models/store/StoreItem";
 
 function GenerateColor() {
@@ -600,6 +600,7 @@ class ViewStoreItem implements StoreItem {
   id: number;
   Type: number;
   Description: string;
+  FileName: string;
   Price: number;
 
   public HTML: HTMLDivElement
@@ -609,8 +610,9 @@ class ViewStoreItem implements StoreItem {
   public DescriptionInput: OrientedInput
   public PriceInput: OrientedInput
   public HTML_InputFile: HTMLInputElement
+  public ResponsiveInputFile: ResponsiveInputFile;
+
   private HTML_DeleteButton: HTMLButtonElement
-  private HTML_LabelForInputFile: HTMLLabelElement;
 
   public onDescriptionChange = (ViewStoreItem: ViewStoreItem) => { };
   public onPriceChange = (ViewStoreItem: ViewStoreItem) => { };
@@ -631,13 +633,6 @@ class ViewStoreItem implements StoreItem {
     return this.HTML_InputFile;
   }
 
-  private createLabelForInputFile() {
-    this.HTML_LabelForInputFile = document.createElement('label');
-    this.HTML_LabelForInputFile.classList.add('AddUpdateFileIcon');
-    this.HTML_LabelForInputFile.htmlFor = this.ElemeteHTML_ID;
-    return this.HTML_LabelForInputFile;
-  }
-
   private createDeletebutton() {
     this.HTML_DeleteButton = document.createElement('button');
     this.HTML_DeleteButton.classList.add('DeleteStoreItem')
@@ -650,6 +645,7 @@ class ViewStoreItem implements StoreItem {
     this.ElemeteHTML_ID = 'inputFile' + this.id;
 
     this.DescriptionInput = new OrientedInput('Incert Description', 'text', 'DescriptionInput');
+    this.ResponsiveInputFile = new ResponsiveInputFile(this.ElemeteHTML_ID);
     this.PriceInput = new OrientedInput('Incert Price', 'number', 'PriceInput');
 
     this.HTML = document.createElement('div');
@@ -658,7 +654,7 @@ class ViewStoreItem implements StoreItem {
     this.HTML.appendChild(this.DescriptionInput.HTMLInput);
     this.HTML.appendChild(this.PriceInput.HTMLInput);
     this.HTML.appendChild(this.createInputFile());
-    this.HTML.appendChild(this.createLabelForInputFile())
+    this.HTML.appendChild(this.ResponsiveInputFile.HTMLInput)
     this.HTML.appendChild(this.createDeletebutton());
 
     this.DescriptionInput.HTMLInput.onchange = () => {
@@ -668,7 +664,8 @@ class ViewStoreItem implements StoreItem {
   }
 }
 export class ViewStore {
-  HTML_StoreItems: HTMLDivElement
+  HTML_StoreItems = <HTMLDivElement>document.getElementById('StoreItems');
+  HTML_AudioPlayer = <HTMLAudioElement>document.getElementById('AudioPlayer');
 
   onAddStoreItemActive = () => { };
   onDescriptionChange = (ViewStoreItem: ViewStoreItem) => { };
@@ -679,7 +676,8 @@ export class ViewStore {
   private StoreItems: ViewStoreItem[] = [];
 
   addStoreItem(StoreItem: StoreItem) {
-    let Item = new ViewStoreItem(this.StoreItems.length);
+    let id = (this.StoreItems[this.StoreItems.length - 1]) ? this.StoreItems[this.StoreItems.length - 1].id + 1 : 0
+    let Item = new ViewStoreItem(id);
 
     if (StoreItem) {
       if (StoreItem.id) {
@@ -696,6 +694,13 @@ export class ViewStore {
         Item.PriceInput.HTMLInput.value = StoreItem.Price.toString()
         Item.Price = StoreItem.Price;
         Item.PriceInput.setUsed();
+      }
+      console.log('Item', StoreItem);
+
+      if (StoreItem.FileName) {
+        console.log('sond', localStorage[StoreItem.FileName]);
+
+        Item.ResponsiveInputFile.setUpgradeable();
       }
     }
 
@@ -727,8 +732,77 @@ export class ViewStore {
     this.StoreItems.splice(this.StoreItems.indexOf(StoreItem), 1)
   }
   constructor() {
-    this.HTML_StoreItems = <HTMLDivElement>document.getElementById('StoreItems');
-
     document.getElementById('AddStoreItem').onclick = () => { this.onAddStoreItemActive() }
+  }
+}
+export class ViewPurchasedItems {
+  HTML:HTMLDivElement
+  private HTML_ItemPlacement:HTMLSpanElement
+  private HTML_UserName:HTMLSpanElement
+  private HTML_PurchaseTime:HTMLSpanElement
+  private HTML_ItemName:HTMLSpanElement
+  private HTML_RefundButton:HTMLSpanElement
+
+  private CreateHTML_ItemPlacement(ItemPlacement:number){
+    this.HTML_ItemPlacement = document.createElement('span');
+    this.HTML_ItemPlacement.classList.add('ItemPlacement');
+    this.HTML_ItemPlacement.innerText = ItemPlacement + '°';
+    return this.HTML_ItemPlacement;
+  }
+
+  private CreateHTML_UserName(UserName:string){
+    this.HTML_UserName = document.createElement('span');
+    this.HTML_UserName.classList.add('UserName');
+    this.HTML_UserName.innerText = '@'+UserName;
+    return this.HTML_UserName;
+  }
+
+  private CreatePurchaseTime(PurchaseTime:number){
+    this.HTML_PurchaseTime = document.createElement('span');
+    this.HTML_PurchaseTime.classList.add('PurchaseTime');
+    //add ,ecanica de tempo dinamico
+    this.HTML_PurchaseTime.innerText = PurchaseTime+'';
+    return this.HTML_PurchaseTime;
+  }
+
+  private CreateHTML_ItemName(ItemName:string){
+    this.HTML_ItemName = document.createElement('span');
+    this.HTML_ItemName.classList.add('ItemName');
+    this.HTML_ItemName.innerText = ItemName;
+    return this.HTML_ItemName;
+  }
+
+  private CreateHTML_RefundButton(){
+    this.HTML_RefundButton = document.createElement('button');
+    this.HTML_RefundButton.classList.add('RefundButton');
+    this.HTML_RefundButton.innerText = 'Refund';
+    return this.HTML_RefundButton;
+  }
+
+  constructor(Placement:number,UserName:string,PurchaseTime:number,ItemName:string){
+    this.HTML = document.createElement('div');
+    this.HTML.classList.add('PurchasedItem');
+    this.HTML.appendChild(this.CreateHTML_ItemPlacement(Placement))
+    this.HTML.appendChild(this.CreateHTML_UserName(UserName))
+    this.HTML.appendChild(this.CreatePurchaseTime(PurchaseTime))
+    this.HTML.appendChild(this.CreateHTML_ItemName(ItemName))
+    this.HTML.appendChild(this.CreateHTML_RefundButton())
+
+  }
+}
+
+export class ShoppingQueue {
+  HTML_ListOfPurchasedItems = <HTMLDivElement> document.getElementById('ListOfPurchasedItems');
+  HTML_LoadingBarOfAudioPlayer = <HTMLDivElement> document.getElementById('LoadingBarOfAudioPlayer');
+  setAudioPlayerProgress(progres:number){
+    let left = progres;
+    let rigth = progres;
+    this.HTML_LoadingBarOfAudioPlayer.style.backgroundImage = 
+    `linear-gradient(to left, rgb(86, 128, 219) ${rigth}%, rgb(93, 144, 255) ${left}%)`;
+  }
+  constructor(){
+    this.HTML_ListOfPurchasedItems.appendChild(new ViewPurchasedItems(2,'vertise',2000285,'fonn').HTML)
+    this.HTML_ListOfPurchasedItems.appendChild(new ViewPurchasedItems(3,'vertise',2000285,'fonn').HTML)
+
   }
 }

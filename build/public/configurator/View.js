@@ -461,6 +461,7 @@ class ViewStoreItem {
         this.id = ID;
         this.ElemeteHTML_ID = 'inputFile' + this.id;
         this.DescriptionInput = new Inputs_1.OrientedInput('Incert Description', 'text', 'DescriptionInput');
+        this.ResponsiveInputFile = new Inputs_1.ResponsiveInputFile(this.ElemeteHTML_ID);
         this.PriceInput = new Inputs_1.OrientedInput('Incert Price', 'number', 'PriceInput');
         this.HTML = document.createElement('div');
         this.HTML.classList.add('StoreItem');
@@ -468,7 +469,7 @@ class ViewStoreItem {
         this.HTML.appendChild(this.DescriptionInput.HTMLInput);
         this.HTML.appendChild(this.PriceInput.HTMLInput);
         this.HTML.appendChild(this.createInputFile());
-        this.HTML.appendChild(this.createLabelForInputFile());
+        this.HTML.appendChild(this.ResponsiveInputFile.HTMLInput);
         this.HTML.appendChild(this.createDeletebutton());
         this.DescriptionInput.HTMLInput.onchange = () => {
             this.onDescriptionChange(this);
@@ -488,12 +489,6 @@ class ViewStoreItem {
         this.HTML_InputFile.id = this.ElemeteHTML_ID;
         return this.HTML_InputFile;
     }
-    createLabelForInputFile() {
-        this.HTML_LabelForInputFile = document.createElement('label');
-        this.HTML_LabelForInputFile.classList.add('AddUpdateFileIcon');
-        this.HTML_LabelForInputFile.htmlFor = this.ElemeteHTML_ID;
-        return this.HTML_LabelForInputFile;
-    }
     createDeletebutton() {
         this.HTML_DeleteButton = document.createElement('button');
         this.HTML_DeleteButton.classList.add('DeleteStoreItem');
@@ -503,17 +498,19 @@ class ViewStoreItem {
 }
 class ViewStore {
     constructor() {
+        this.HTML_StoreItems = document.getElementById('StoreItems');
+        this.HTML_AudioPlayer = document.getElementById('AudioPlayer');
         this.onAddStoreItemActive = () => { };
         this.onDescriptionChange = (ViewStoreItem) => { };
         this.onPriceChange = (ViewStoreItem) => { };
         this.onButtonDeleteActive = (ViewStoreItem) => { };
         this.onFileInputChange = (ViewStoreItem) => { };
         this.StoreItems = [];
-        this.HTML_StoreItems = document.getElementById('StoreItems');
         document.getElementById('AddStoreItem').onclick = () => { this.onAddStoreItemActive(); };
     }
     addStoreItem(StoreItem) {
-        let Item = new ViewStoreItem(this.StoreItems.length);
+        let id = (this.StoreItems[this.StoreItems.length - 1]) ? this.StoreItems[this.StoreItems.length - 1].id + 1 : 0;
+        let Item = new ViewStoreItem(id);
         if (StoreItem) {
             if (StoreItem.id) {
                 Item.id = StoreItem.id;
@@ -527,6 +524,11 @@ class ViewStore {
                 Item.PriceInput.HTMLInput.value = StoreItem.Price.toString();
                 Item.Price = StoreItem.Price;
                 Item.PriceInput.setUsed();
+            }
+            console.log('Item', StoreItem);
+            if (StoreItem.FileName) {
+                console.log('sond', localStorage[StoreItem.FileName]);
+                Item.ResponsiveInputFile.setUpgradeable();
             }
         }
         this.StoreItems.push(Item);
@@ -552,3 +554,61 @@ class ViewStore {
     }
 }
 exports.ViewStore = ViewStore;
+class ViewPurchasedItems {
+    constructor(Placement, UserName, PurchaseTime, ItemName) {
+        this.HTML = document.createElement('div');
+        this.HTML.classList.add('PurchasedItem');
+        this.HTML.appendChild(this.CreateHTML_ItemPlacement(Placement));
+        this.HTML.appendChild(this.CreateHTML_UserName(UserName));
+        this.HTML.appendChild(this.CreatePurchaseTime(PurchaseTime));
+        this.HTML.appendChild(this.CreateHTML_ItemName(ItemName));
+        this.HTML.appendChild(this.CreateHTML_RefundButton());
+    }
+    CreateHTML_ItemPlacement(ItemPlacement) {
+        this.HTML_ItemPlacement = document.createElement('span');
+        this.HTML_ItemPlacement.classList.add('ItemPlacement');
+        this.HTML_ItemPlacement.innerText = ItemPlacement + '°';
+        return this.HTML_ItemPlacement;
+    }
+    CreateHTML_UserName(UserName) {
+        this.HTML_UserName = document.createElement('span');
+        this.HTML_UserName.classList.add('UserName');
+        this.HTML_UserName.innerText = '@' + UserName;
+        return this.HTML_UserName;
+    }
+    CreatePurchaseTime(PurchaseTime) {
+        this.HTML_PurchaseTime = document.createElement('span');
+        this.HTML_PurchaseTime.classList.add('PurchaseTime');
+        //add ,ecanica de tempo dinamico
+        this.HTML_PurchaseTime.innerText = PurchaseTime + '';
+        return this.HTML_PurchaseTime;
+    }
+    CreateHTML_ItemName(ItemName) {
+        this.HTML_ItemName = document.createElement('span');
+        this.HTML_ItemName.classList.add('ItemName');
+        this.HTML_ItemName.innerText = ItemName;
+        return this.HTML_ItemName;
+    }
+    CreateHTML_RefundButton() {
+        this.HTML_RefundButton = document.createElement('button');
+        this.HTML_RefundButton.classList.add('RefundButton');
+        this.HTML_RefundButton.innerText = 'Refund';
+        return this.HTML_RefundButton;
+    }
+}
+exports.ViewPurchasedItems = ViewPurchasedItems;
+class ShoppingQueue {
+    constructor() {
+        this.HTML_ListOfPurchasedItems = document.getElementById('ListOfPurchasedItems');
+        this.HTML_LoadingBarOfAudioPlayer = document.getElementById('LoadingBarOfAudioPlayer');
+        this.HTML_ListOfPurchasedItems.appendChild(new ViewPurchasedItems(2, 'vertise', 2000285, 'fonn').HTML);
+        this.HTML_ListOfPurchasedItems.appendChild(new ViewPurchasedItems(3, 'vertise', 2000285, 'fonn').HTML);
+    }
+    setAudioPlayerProgress(progres) {
+        let left = progres;
+        let rigth = progres;
+        this.HTML_LoadingBarOfAudioPlayer.style.backgroundImage =
+            `linear-gradient(to left, rgb(86, 128, 219) ${rigth}%, rgb(93, 144, 255) ${left}%)`;
+    }
+}
+exports.ShoppingQueue = ShoppingQueue;

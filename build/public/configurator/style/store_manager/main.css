@@ -1,4 +1,10 @@
-.StoreDiv {}
+@import url(./ShoppingQueue.css);
+
+#StoreManeger{
+    display: table;
+    background-color: rgb(48, 29, 63);
+    margin: 1vw 5vw;
+}
 
 #CaptionOfStoreItems {
     display: flex;
@@ -22,7 +28,6 @@
 }
 
 #StoreItems {
-    display: table;
     background-color: rgb(48, 29, 63);
     margin: 1vw 5vw;
 }
@@ -47,16 +52,14 @@
 .DescriptionInput {
     width: 50%;
 }
+.DescriptionInput:hover ,.DescriptionInput:focus{
+    width: 60%;
+}
 
 .PriceInput {
     width: 30%;
 }
-
-.DescriptionInput:hover {
-    width: 70%;
-}
-
-.PriceInput:hover {
+.PriceInput:hover,.PriceInput:focus{
     width: 40%;
 }
 
@@ -66,10 +69,6 @@
 
 .InputNotUsed {
     color: gray;
-}
-
-.StoreItem input:focus {
-    width: 100%;
 }
 
 .StoreItem img {
@@ -95,8 +94,6 @@
     margin: 10vw 1vw;
     border: none;
     background-color: white;
-    background-image: url(https://img.icons8.com/cotton/2x/upload.png);
-    background-size: 60%;
     background-repeat: no-repeat;
     background-position: center;
     border-radius: 100%;
@@ -104,8 +101,23 @@
     transition: background-size 250ms;
 }
 
+.Default{    
+    background-size: 60%;   
+    background-image: url(https://img.icons8.com/cotton/2x/upload.png);
+}
+
+.InUpload{
+    background-size: 101%;   
+    background-image: url();
+}
+
+.Upgradeable{
+    background-size: 101%;   
+    background-image: url(https://freeiconshop.com/wp-content/uploads/edd/sync-flat.png);
+}
+
 .AddUpdateFileIcon:hover {
-    background-size: 100%;
+    background-size: 101%;
 }
 
 .AddUpdateFileIcon img {
@@ -124,7 +136,7 @@
     color: white;
     font-size: 4vw;
     margin: 1vw 0;
-    margin-left: 92%;
+    margin-left: 89%;
     width: 5vw;
     height: 5vw;
     border-radius: 50%;

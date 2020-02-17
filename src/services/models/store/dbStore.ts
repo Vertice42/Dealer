@@ -3,30 +3,25 @@ import { Model } from "sequelize";
 import StoreItem from "./StoreItem";
 
 export class dbStore extends Model implements StoreItem {
-    id: number; 
-    Type: number;
+    id: number;
     Description: string;
     Price: number;
-    FileName:string
+    FileName: string;
 }
 
 export const StoreDefiner = {
     name: 'store',
     atributes: {
-        Type: {
-            type: sequelize.INTEGER,
+        Description: {
+            type: sequelize.STRING,
             allowNull: true
         },
-        Description: {
+        FileName: {
             type: sequelize.STRING,
             allowNull: true
         },
         Price: {
             type: sequelize.INTEGER,
-            allowNull: true
-        },
-        FileName:{
-            type: sequelize.STRING,
             allowNull: true
         }
 

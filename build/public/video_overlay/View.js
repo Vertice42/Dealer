@@ -10,7 +10,7 @@ function hexToRgb(hex) {
     } : null;
 }
 const GRADIENT_DARKENING_RATE = 1.5;
-class StoreItem {
+class ViewStoreItem {
     constructor(Description, Price) {
         this.HTML = document.createElement('div');
         this.HTML.classList.add('StoreItem');
@@ -332,7 +332,7 @@ class GameBoard {
     setStoreItems(StoreItems) {
         this.ItemsList.innerHTML = '';
         StoreItems.forEach(storeItem => {
-            this.ItemsList.appendChild(new StoreItem(storeItem.Description, storeItem.Price).HTML);
+            this.ItemsList.appendChild(new ViewStoreItem(storeItem.Description, storeItem.Price).HTML);
         });
     }
 }

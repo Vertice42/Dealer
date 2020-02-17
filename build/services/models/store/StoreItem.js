@@ -4,10 +4,10 @@ class StoreItem {
     /**
      *
      */
-    constructor(ID, Type, Description, Price) {
+    constructor(ID, Type, Description, FileName, Price) {
         this.id = ID;
-        this.Type = Type;
         this.Description = Description;
+        this.FileName = FileName;
         this.Price = Price;
     }
 }

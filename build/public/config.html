@@ -56,11 +56,25 @@
 
   <div class="StoreDiv Module">
     <h1>Gerenciador da Loja</h1>
-    <div id="CaptionOfStoreItems"><h2 id="Caption1">Decription</h2><h2 id="Caption2">Price</h2></div>
-    <div id="StoreItems">
-    </div>
+    <div id="StoreManeger">
+      <div id="StoreItems"></div>
       <button id="AddStoreItem">+</button>
+    </div>
+    <div id="ShoppingQueue">
+      <div id="ReproducingMedia">
+        <audio id="AudioPlayer"></audio>
+        <div class="LoadingBar" id="LoadingBarOfAudioPlayer">
+          <span id="PlaybackUserName">@jasper</span>
+          <span id="PlaybackItemName">Sond Name</span>
+        </div>
+        <button>stop</button>
+      </div>
+      <div id="ListOfPurchasedItems">
+      </div>
+    </div>
   </div>
+
+
 
   <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
   <script src="./configurator/bundle.js"></script>

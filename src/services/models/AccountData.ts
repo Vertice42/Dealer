@@ -2,12 +2,11 @@ import { PollStatus } from "./poll/PollStatus";
 import { dbButton as dbButton } from "./poll/dbButton";
 import { dbBettings } from "./poll/dbBettings";
 import { dbWallet } from "./poll/dbWallet";
-import { dbSettings } from "./poll/dbSettings";
+import { dbSettings } from "./streamer_settings/dbSettings";
 import { MinerSettings } from "./miner/MinerSettings";
 import { Sequelize } from "sequelize";
 import { dbStreamerManager } from "../modules/database/dbStreamerManager";
 import { CoinsSettings } from "./streamer_settings/CoinsSettings";
-import { dbFiles } from "./poll/dbFiles";
 import { dbStore } from "./store/dbStore";
 export class AccountData {
     CurrentPollStatus: PollStatus;
@@ -21,7 +20,6 @@ export class AccountData {
     dbCurrentBettings: typeof dbBettings;
     dbWallets: typeof dbWallet;
     dbSettings: typeof dbSettings;
-    dbFiles: typeof dbFiles;
     dbStore: typeof dbStore;
 
     MinerSettings: MinerSettings;

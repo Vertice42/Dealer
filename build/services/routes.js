@@ -13,10 +13,12 @@ const dbStoreManager_1 = require("./modules/database/store/dbStoreManager");
 const fs = require("fs");
 const http = require("http");
 const Socket_io = require("socket.io");
+const UploadFileResponse_1 = require("./models/files_manager/UploadFileResponse");
+const path = require("path");
 const app = express();
 exports.app = app;
 const server = http.createServer(app);
-const oi = Socket_io(server);
+const io = Socket_io(server);
 app.use(cors());
 app.use(bodyParser.json());
 function CheckRequisition(CheckList) {
@@ -69,7 +71,7 @@ app.post(Links_1.default.PollManager, async function (req, res) {
     }
     return res.status(200).send({ PoolUpdateResult, DistribuitionResult });
 });
-app.get(Links_1.default.GetPoll, function (req, res) {
+app.get(Links_1.default.GetPoll, async function (req, res) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.params.StreamerID)
@@ -87,7 +89,7 @@ app.get(Links_1.default.GetPoll, function (req, res) {
         res.status(500).send(reje);
     });
 });
-app.post(Links_1.default.addVote, function (req, res) {
+app.post(Links_1.default.addVote, async function (req, res) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -132,7 +134,7 @@ app.post(Links_1.default.addVote, function (req, res) {
             res.status(500).send(reject);
     });
 });
-app.post(Links_1.default.MinerManager, function (req, res) {
+app.post(Links_1.default.MinerManager, async function (req, res) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -149,7 +151,7 @@ app.post(Links_1.default.MinerManager, function (req, res) {
         .then((reso) => { res.status(200).send(reso); })
         .catch((reje) => { res.status(500).send(reje); });
 });
-app.get(Links_1.default.GetMinerSettings, function (req, res) {
+app.get(Links_1.default.GetMinerSettings, async function (req, res) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.params.StreamerID)
@@ -166,7 +168,7 @@ app.get(Links_1.default.GetMinerSettings, function (req, res) {
         res.status(500).send(rej);
     });
 });
-app.post(Links_1.default.CoinsSettingsManager, function (req, res) {
+app.post(Links_1.default.CoinsSettingsManager, async function (req, res) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -183,7 +185,7 @@ app.post(Links_1.default.CoinsSettingsManager, function (req, res) {
         .then((reso) => { res.status(200).send(reso); })
         .catch((reje) => { res.status(500).send(reje); });
 });
-app.get(Links_1.default.GetCoinsSettings, function (req, res) {
+app.get(Links_1.default.GetCoinsSettings, async function (req, res) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.params.StreamerID)
@@ -200,7 +202,7 @@ app.get(Links_1.default.GetCoinsSettings, function (req, res) {
         res.status(500).send(rej);
     });
 });
-app.post(Links_1.default.MineCoin, function (req, res) {
+app.post(Links_1.default.MineCoin, async function (req, res) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -219,7 +221,7 @@ app.post(Links_1.default.MineCoin, function (req, res) {
         res.status(500).send(reje);
     });
 });
-app.get(Links_1.default.GetWallet, function (req, res) {
+app.get(Links_1.default.GetWallet, async function (req, res) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.params.StreamerID)
@@ -240,7 +242,7 @@ app.get(Links_1.default.GetWallet, function (req, res) {
         res.status(500).send(rej);
     });
 });
-app.post(Links_1.default.StoreManager, function (req, res) {
+app.post(Links_1.default.StoreManager, async function (req, res) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -257,7 +259,24 @@ app.post(Links_1.default.StoreManager, function (req, res) {
         res.status(500).send(reject);
     });
 });
-app.get(Links_1.default.GetStore, function (req, res) {
+app.delete(Links_1.default.StoreManager, async function (req, res) {
+    let ErrorList = CheckRequisition([
+        () => {
+            if (!req.body.StreamerID)
+                return ({ RequestError: "StreamerID is no defined" });
+        }
+    ]);
+    if (ErrorList.length > 0)
+        return res.status(400).send({ ErrorList: ErrorList });
+    new dbStoreManager_1.default(req.body.StreamerID).DeleteStoreItem(req.body.StoreItem)
+        .then((result) => {
+        res.status(200).send(result);
+    })
+        .catch((reject) => {
+        res.status(500).send(reject);
+    });
+});
+app.get(Links_1.default.GetStore, async function (req, res) {
     new dbStoreManager_1.default(req.params.StreamerID).getAllItens()
         .then((result) => {
         res.status(200).send(result);
@@ -266,15 +285,19 @@ app.get(Links_1.default.GetStore, function (req, res) {
         res.status(500).send(rej);
     });
 });
-app.post(Links_1.default.UploadFile, function (req, res) {
-    console.log(req.headers);
-    let file = fs.createWriteStream("./uploads/" + req.headers["file-name"]);
+app.post(Links_1.default.UploadFile, async function (req, res) {
+    let dir = `./uploads/${req.headers["streamer-id"]}`;
+    if (!fs.existsSync(dir))
+        fs.mkdirSync(dir);
+    let file = fs.createWriteStream(dir + '/' + req.headers["file-name"]);
     req.on('data', chunk => {
         file.write(chunk);
     });
     req.on('end', () => {
         file.end();
-        res.status(200).send({ UploadCompleted: new Date });
+        res.status(200).send(new UploadFileResponse_1.default(req.headers["file-name"], new Date));
     });
-    console.log(req.headers["content-type"]);
+});
+app.get(Links_1.default.GetFile, async function (req, res) {
+    res.status(200).sendFile(path.resolve(`./uploads/${req.params.StreamerID}/${req.params.FileName}`));
 });

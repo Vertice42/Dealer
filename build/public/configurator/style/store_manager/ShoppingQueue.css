@@ -1,0 +1,83 @@
+#ShoppingQueue {
+    display: table;
+}
+
+#ReproducingMedia {
+    display: flex;
+    height: 10vw;
+    font-family: fantasy;
+    font-size: 5vw;
+    background-color: rgb(93, 144, 255);
+}
+
+.LoadingBar {
+    display: flex;
+    width: 100%;
+}
+
+#ReproducingMedia span {
+    width: 100%;
+    text-align: center;
+    margin: auto;
+}
+
+#ReproducingMedia button {
+    height: 100%;
+    width: 20vw;
+    border: none;
+    background-color: tomato;
+    text-transform: uppercase;
+    font-family: fantasy;
+    font-size: 5vw;
+}
+
+#ListOfPurchasedItems {
+    display: block;
+}
+
+.PurchasedItem {
+    display: flex;
+    background-color: rgb(81, 59, 145);
+    width: fit-content;
+    margin: 1vw auto;
+}
+
+.PurchasedItem span {
+    margin: 1vw 1vw;
+    text-align: center;
+    font-family: fantasy;
+    padding: 1vw 2vw;
+    background-color: white;
+}
+
+.PurchasedItem button {
+    background-color: tomato;
+    width: 15vw;
+    border: none;
+    text-transform: uppercase;
+    font-family: fantasy;
+    font-size: 3vw;
+}
+
+.ItemPlacement {
+    min-width: 3vw;
+    max-width: 3vw;
+
+}
+
+.UserName {
+    min-width: 10vw;
+    max-width: 10vw;
+
+}
+
+.PurchaseTime {
+    min-width: 18vw;
+    max-width: 18vw;
+}
+
+.ItemName {
+    min-width: 20vw;
+    max-width: 20vw;
+
+}

@@ -8,20 +8,16 @@ exports.dbStore = dbStore;
 exports.StoreDefiner = {
     name: 'store',
     atributes: {
-        Type: {
-            type: sequelize.INTEGER,
+        Description: {
+            type: sequelize.STRING,
             allowNull: true
         },
-        Description: {
+        FileName: {
             type: sequelize.STRING,
             allowNull: true
         },
         Price: {
             type: sequelize.INTEGER,
-            allowNull: true
-        },
-        FileName: {
-            type: sequelize.STRING,
             allowNull: true
         }
     }, options: {

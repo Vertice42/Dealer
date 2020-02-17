@@ -20,7 +20,6 @@ export class Loading {
 
         await Define.Settings(accountData);
         await Define.Wallets(accountData);
-        await Define.Files(accountData);
         await Define.Store(accountData);
 
         let tables = await accountData.dbStreamer.query("show tables");
@@ -30,8 +29,8 @@ export class Loading {
         }
         //If there are only 2 tables in the database, no poll has been created yet
 
-        accountData.CurrentPollID = getTableName(tables[0], tables[0].length - 5);
-        accountData.CurrentBettingsID = getTableName(tables[0], tables[0].length - 6);
+        accountData.CurrentPollID = getTableName(tables[0], tables[0].length - 4);
+        accountData.CurrentBettingsID = getTableName(tables[0], tables[0].length - 5);
         /**
          * The wallet and settings table are in the same database and will always be
          * the first and second index, while the most recent Bettings poll tables will 

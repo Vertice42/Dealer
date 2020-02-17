@@ -1,12 +1,15 @@
 import ViewConfig = require("./View");
 import BackendConnections = require("../BackendConnection");
-import { WatchPoll, SendToStoreManager, GetStore } from "../BackendConnection";
+import { WatchPoll, SendToStoreManager, GetStore, DeteleStoreItem } from "../BackendConnection";
 import { PollButton } from "../../services/models/poll/PollButton";
 import { PollStatus } from "../../services/models/poll/PollStatus";
 import { Poll } from "../../services/models/poll/Poll";
 import { MinerSettings } from "../../services/models/miner/MinerSettings";
 import { sleep } from "../../utils/utils";
 import StoreItem from "../../services/models/store/StoreItem";
+import UploadFileResponse from "../../services/models/files_manager/UploadFileResponse";
+import Links from "../../services/Links";
+import { ShoppingQueue } from "./View";
 
 const twitch: TwitchExt = window.Twitch.ext;
 var token, StreamerID;
@@ -164,14 +167,22 @@ twitch.onAuthorized(async (auth) => {
 
     VIEW_STORE.onFileInputChange = async (ViewStoreItem) => {
         let file = ViewStoreItem.HTML_InputFile.files[0];
-        if (file)
-            BackendConnections.UploadFile(StreamerID, file.name, file)
-                .then((res) => { console.log(res) }
-                )
+        if (file) {
+            BackendConnections.UploadFile(StreamerID, file.name, file
+            ).then(async (UploadFileResponse: UploadFileResponse) => {
+                let StoreItem = <StoreItem>ViewStoreItem;
+                StoreItem.FileName = UploadFileResponse.FileName;
+                await SendToStoreManager(StreamerID, StoreItem);
+                ViewStoreItem.ResponsiveInputFile.setUpgradeable();
+            }
+            ).catch(rej => console.log(rej))
+        }
     }
 
-    VIEW_STORE.onButtonDeleteActive = (StoreItem) => {
+    VIEW_STORE.onButtonDeleteActive = async (StoreItem) => {
+        await DeteleStoreItem(StreamerID, StoreItem)
         VIEW_STORE.removeStoreItem(StoreItem)
     }
 
+    new ShoppingQueue();
 });

@@ -7,6 +7,7 @@ const PollButton_1 = require("../../services/models/poll/PollButton");
 const PollStatus_1 = require("../../services/models/poll/PollStatus");
 const MinerSettings_1 = require("../../services/models/miner/MinerSettings");
 const utils_1 = require("../../utils/utils");
+const View_1 = require("./View");
 const twitch = window.Twitch.ext;
 var token, StreamerID;
 var ViewPoll;
@@ -136,11 +137,18 @@ twitch.onAuthorized(async (auth) => {
     };
     VIEW_STORE.onFileInputChange = async (ViewStoreItem) => {
         let file = ViewStoreItem.HTML_InputFile.files[0];
-        if (file)
-            BackendConnections.UploadFile(StreamerID, file.name, file)
-                .then((res) => { console.log(res); });
+        if (file) {
+            BackendConnections.UploadFile(StreamerID, file.name, file).then(async (UploadFileResponse) => {
+                let StoreItem = ViewStoreItem;
+                StoreItem.FileName = UploadFileResponse.FileName;
+                await BackendConnection_1.SendToStoreManager(StreamerID, StoreItem);
+                ViewStoreItem.ResponsiveInputFile.setUpgradeable();
+            }).catch(rej => console.log(rej));
+        }
     };
-    VIEW_STORE.onButtonDeleteActive = (StoreItem) => {
+    VIEW_STORE.onButtonDeleteActive = async (StoreItem) => {
+        await BackendConnection_1.DeteleStoreItem(StreamerID, StoreItem);
         VIEW_STORE.removeStoreItem(StoreItem);
     };
+    new View_1.ShoppingQueue();
 });

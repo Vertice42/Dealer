@@ -1,13 +1,20 @@
 import sequelize = require("sequelize");
 import { Model } from "sequelize";
-export class dbBettings extends Model {
+
+export class Bettings {
+    TwitchUserID: string;
+    Bet: number;
+    BetAmount: number;
+}
+
+export class dbBettings extends Model implements Bettings {
     TwitchUserID: string
     Bet: number
     BetAmount: number
 }
 export const BettingsDefiner = {
-    TableName:'_bettings',
-    atributes:{
+    TableName: '_bettings',
+    atributes: {
         TwitchUserID: {
             type: sequelize.STRING,
             primaryKey: true
@@ -19,7 +26,7 @@ export const BettingsDefiner = {
             type: sequelize.INTEGER
         }
     },
-    options:{ timestamps: false , freezeTableName: true}
+    options: { timestamps: false, freezeTableName: true }
 }
 
 

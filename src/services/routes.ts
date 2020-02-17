@@ -24,10 +24,13 @@ import StoreItem from "./models/store/StoreItem";
 import fs = require('fs');
 import http = require('http')
 import Socket_io = require('socket.io')
+import UploadFileResponse from "./models/files_manager/UploadFileResponse";
+import path = require('path');
+
 
 const app = express();
 const server = http.createServer(app);
-const oi = Socket_io(server);
+const io = Socket_io(server);
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -89,7 +92,7 @@ app.post(links.PollManager, async function (req: PollRequest, res: express.Respo
 
 });
 
-app.get(links.GetPoll, function (req: { params: { StreamerID: string } }, res: express.Response) {
+app.get(links.GetPoll,async function (req: { params: { StreamerID: string } }, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.params.StreamerID)
@@ -109,7 +112,7 @@ app.get(links.GetPoll, function (req: { params: { StreamerID: string } }, res: e
         })
 });
 
-app.post(links.addVote, function (req: AddBetRequest, res: express.Response) {
+app.post(links.addVote,async function (req: AddBetRequest, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -158,7 +161,7 @@ app.post(links.addVote, function (req: AddBetRequest, res: express.Response) {
         })
 });
 
-app.post(links.MinerManager, function (req: MinerManagerRequest, res: express.Response) {
+app.post(links.MinerManager,async function (req: MinerManagerRequest, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -176,7 +179,7 @@ app.post(links.MinerManager, function (req: MinerManagerRequest, res: express.Re
         .catch((reje) => { res.status(500).send(reje) });
 });
 
-app.get(links.GetMinerSettings, function (req: { params: { StreamerID: string } }, res: express.Response) {
+app.get(links.GetMinerSettings,async function (req: { params: { StreamerID: string } }, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.params.StreamerID)
@@ -193,7 +196,7 @@ app.get(links.GetMinerSettings, function (req: { params: { StreamerID: string } 
         })
 });
 
-app.post(links.CoinsSettingsManager, function (req: CoinsSettingsManagerRequest, res: express.Response) {
+app.post(links.CoinsSettingsManager,async function (req: CoinsSettingsManagerRequest, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -210,7 +213,7 @@ app.post(links.CoinsSettingsManager, function (req: CoinsSettingsManagerRequest,
         .catch((reje) => { res.status(500).send(reje) });
 });
 
-app.get(links.GetCoinsSettings, function (req: { params: { StreamerID: string } }, res: express.Response) {
+app.get(links.GetCoinsSettings,async function (req: { params: { StreamerID: string } }, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.params.StreamerID)
@@ -227,7 +230,7 @@ app.get(links.GetCoinsSettings, function (req: { params: { StreamerID: string } 
         })
 });
 
-app.post(links.MineCoin, function (req: MinerRequest, res: express.Response) {
+app.post(links.MineCoin,async function (req: MinerRequest, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -248,7 +251,7 @@ app.post(links.MineCoin, function (req: MinerRequest, res: express.Response) {
 
 });
 
-app.get(links.GetWallet, function (req: express.Request, res: express.Response) {
+app.get(links.GetWallet,async function (req: express.Request, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.params.StreamerID)
@@ -270,7 +273,7 @@ app.get(links.GetWallet, function (req: express.Request, res: express.Response) 
         })
 });
 
-app.post(links.StoreManager, function (req, res: express.Response) {
+app.post(links.StoreManager,async function (req, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -288,7 +291,25 @@ app.post(links.StoreManager, function (req, res: express.Response) {
         })
 })
 
-app.get(links.GetStore, function (req: { params: { StreamerID: string } }, res: express.Response) {
+app.delete(links.StoreManager,async function (req, res: express.Response) {
+    let ErrorList = CheckRequisition([
+        () => {
+            if (!req.body.StreamerID)
+                return ({ RequestError: "StreamerID is no defined" })
+        }
+    ])
+    if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
+
+    new dbStoreManger(req.body.StreamerID).DeleteStoreItem(req.body.StoreItem)
+        .then((result) => {
+            res.status(200).send(result);
+        })
+        .catch((reject) => {
+            res.status(500).send(reject);
+        })
+})
+
+app.get(links.GetStore,async function (req: { params: { StreamerID: string } }, res: express.Response) {
     new dbStoreManger(req.params.StreamerID).getAllItens()
         .then((result) => {
             res.status(200).send(<StoreItem[]>result);
@@ -298,18 +319,24 @@ app.get(links.GetStore, function (req: { params: { StreamerID: string } }, res: 
         })
 })
 
-app.post(links.UploadFile, function (req, res: express.Response) {
-    console.log(req.headers);
+app.post(links.UploadFile, async function (req, res: express.Response) {
+    let dir = `./uploads/${req.headers["streamer-id"]}`;
+
+    if (!fs.existsSync(dir))  fs.mkdirSync(dir);
     
-    let file = fs.createWriteStream("./uploads/"+req.headers["file-name"]);
-    req.on('data', chunk => {        
+    let file = fs.createWriteStream(dir+'/'+req.headers["file-name"]);
+
+    req.on('data', chunk => {
         file.write(chunk);
     })
     req.on('end', () => {
         file.end();
-        res.status(200).send({ UploadCompleted: new Date })
+        res.status(200).send(new UploadFileResponse(<string>req.headers["file-name"], new Date));
     })
-    console.log(req.headers["content-type"]);
+})
+
+app.get(links.GetFile,async function (req,res: express.Response){    
+    res.status(200).sendFile(path.resolve(`./uploads/${req.params.StreamerID}/${req.params.FileName}`))
 })
 
 export { app };

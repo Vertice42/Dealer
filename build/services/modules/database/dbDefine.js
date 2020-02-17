@@ -2,9 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const dbWallet_1 = require("../../models/poll/dbWallet");
 const dbBettings_1 = require("../../models/poll/dbBettings");
-const dbSettings_1 = require("../../models/poll/dbSettings");
+const dbSettings_1 = require("../../models/streamer_settings/dbSettings");
 const dbButton_1 = require("../../models/poll/dbButton");
-const dbFiles_1 = require("../../models/poll/dbFiles");
 const dbStore_1 = require("../../models/store/dbStore");
 /**
  * Loads and / or creates sequelize models by defining them
@@ -14,11 +13,6 @@ class Define {
         AccountData.dbStore = AccountData.dbStreamer
             .define(dbStore_1.StoreDefiner.name, dbStore_1.StoreDefiner.atributes, dbStore_1.StoreDefiner.options);
         return AccountData.dbStore.sync();
-    }
-    static async Files(AccountData) {
-        AccountData.dbFiles = AccountData.dbStreamer
-            .define(dbFiles_1.FilesDefiner.name, dbFiles_1.FilesDefiner.atributes, dbFiles_1.FilesDefiner.options);
-        return AccountData.dbFiles.sync();
     }
     static async Settings(AccountData) {
         AccountData.dbSettings = AccountData.dbStreamer

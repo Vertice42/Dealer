@@ -20,5 +20,10 @@ class dbStoreManger {
             return { SuccessfullyCreatedItem: new Date };
         }
     }
+    async DeleteStoreItem(StoreItem) {
+        let AccountData = dbStreamerManager_1.dbStreamerManager.getAccountData(this.StreamerID);
+        let dbStoreItem = await AccountData.dbStore.findOne({ where: { id: StoreItem.id } });
+        return dbStoreItem.destroy();
+    }
 }
 exports.default = dbStoreManger;

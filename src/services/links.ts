@@ -25,5 +25,9 @@ export default {
     getStore: (StreamerID: string) => {
         return '/Store/' + StreamerID;
     },
-    UploadFile:'/UploadFile'
+    UploadFile:'/UploadFile',
+    GetFile:'/File/:StreamerID/:FileName',
+    getFile: (StreamerID:string,FileName:string) => {
+        return '/File/'+StreamerID+'/'+FileName;
+    }
 }

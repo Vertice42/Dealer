@@ -4,23 +4,10 @@ const bluebird_1 = require("bluebird");
 const Links_1 = require("../services/Links");
 const ServerConfigs_1 = require("../services/configs/ServerConfigs");
 const StoreManagerRequest_1 = require("../services/models/store/StoreManagerRequest");
-const host = 'http://localhost:' + (ServerConfigs_1.default.Port || process.env.Port);
-function futch(url, opts, onProgress) {
-    return new Promise((res, rej) => {
-        var xhr = new XMLHttpRequest();
-        xhr.open(opts.method || 'get', url);
-        for (var k in opts.headers || {})
-            xhr.setRequestHeader(k, opts.headers[k]);
-        xhr.onload = e => res(e.target);
-        xhr.onerror = rej;
-        if (xhr.upload && onProgress)
-            xhr.upload.onprogress = (ev) => onProgress(ev); // event.loaded / event.total * 100 ; //event.lengthComputable
-        xhr.send(opts.body);
-    });
-}
+exports.host = 'http://localhost:' + (ServerConfigs_1.default.Port || process.env.Port);
 async function getCurrentPoll(StreamerID) {
     /* Use fetch to communicate to backend and get current voting */
-    return fetch(host + Links_1.default.getPoll(StreamerID), {
+    return fetch(exports.host + Links_1.default.getPoll(StreamerID), {
         method: "GET"
     }).then(function (res) {
         if (res.ok)
@@ -86,7 +73,7 @@ async function SendToPollManager(StreamerID, PollButtons, NewPollStatus) {
     /*Send current voting with your buttons and current poll status */
     let H = new Headers();
     H.append("Content-Type", "application/json");
-    return fetch(host + Links_1.default.PollManager, {
+    return fetch(exports.host + Links_1.default.PollManager, {
         method: "POST",
         headers: H,
         body: JSON.stringify({
@@ -114,7 +101,7 @@ exports.SendToPollManager = SendToPollManager;
 async function SendToMinerManager(StreamerID, Setting) {
     let H = new Headers();
     H.append("Content-Type", "application/json");
-    return fetch(host + Links_1.default.MinerManager, {
+    return fetch(exports.host + Links_1.default.MinerManager, {
         method: "POST",
         headers: H,
         body: JSON.stringify({
@@ -140,7 +127,7 @@ exports.SendToMinerManager = SendToMinerManager;
 async function SendToCoinsSettingsManager(StreamerID, Setting) {
     let H = new Headers();
     H.append("Content-Type", "application/json");
-    return fetch(host + Links_1.default.CoinsSettingsManager, {
+    return fetch(exports.host + Links_1.default.CoinsSettingsManager, {
         method: "POST",
         headers: H,
         body: JSON.stringify({
@@ -166,7 +153,7 @@ exports.SendToCoinsSettingsManager = SendToCoinsSettingsManager;
 async function addBet(StreamerID, TwitchUserID, IdOfVote, BetAmount) {
     let H = new Headers();
     H.append("Content-Type", "application/json");
-    return fetch(host + Links_1.default.addVote, {
+    return fetch(exports.host + Links_1.default.addVote, {
         method: "POST",
         headers: H,
         body: JSON.stringify({
@@ -185,7 +172,7 @@ async function addBet(StreamerID, TwitchUserID, IdOfVote, BetAmount) {
 }
 exports.addBet = addBet;
 async function GetMinerSettings(StreamerID) {
-    return fetch(host + Links_1.default.getMiner(StreamerID), {
+    return fetch(exports.host + Links_1.default.getMiner(StreamerID), {
         method: "GET"
     }).then(function (res) {
         if (res.ok)
@@ -204,7 +191,7 @@ async function GetMinerSettings(StreamerID) {
 }
 exports.GetMinerSettings = GetMinerSettings;
 async function GetCoinsSettings(StreamerID) {
-    return fetch(host + Links_1.default.getCoinsSettings(StreamerID), {
+    return fetch(exports.host + Links_1.default.getCoinsSettings(StreamerID), {
         method: "GET"
     }).then(function (res) {
         if (res.ok)
@@ -225,7 +212,7 @@ exports.GetCoinsSettings = GetCoinsSettings;
 async function MineCoin(StreamerID, TwitchUserID) {
     let H = new Headers();
     H.append("Content-Type", "application/json");
-    return fetch(host + Links_1.default.MineCoin, {
+    return fetch(exports.host + Links_1.default.MineCoin, {
         method: "POST",
         headers: H,
         body: JSON.stringify({
@@ -249,7 +236,7 @@ async function MineCoin(StreamerID, TwitchUserID) {
 }
 exports.MineCoin = MineCoin;
 async function GetWallet(StreamerID, TwitchUserID) {
-    return fetch(host + Links_1.default.getWallet(StreamerID, TwitchUserID), {
+    return fetch(exports.host + Links_1.default.getWallet(StreamerID, TwitchUserID), {
         method: "GET"
     }).then(function (res) {
         if (res.ok)
@@ -262,7 +249,7 @@ async function GetWallet(StreamerID, TwitchUserID) {
 }
 exports.GetWallet = GetWallet;
 async function GetStore(StreamerID) {
-    return fetch(host + Links_1.default.getStore(StreamerID), {
+    return fetch(exports.host + Links_1.default.getStore(StreamerID), {
         method: "GET"
     }).then(function (res) {
         if (res.ok)
@@ -278,7 +265,7 @@ async function SendToStoreManager(StreamerID, StoreItem) {
     /*Send current voting with your buttons and current poll status */
     let H = new Headers();
     H.append("Content-Type", "application/json");
-    return fetch(host + Links_1.default.StoreManager, {
+    return fetch(exports.host + Links_1.default.StoreManager, {
         method: "POST",
         headers: H,
         body: JSON.stringify(new StoreManagerRequest_1.default(StreamerID, StoreItem))
@@ -299,19 +286,47 @@ async function SendToStoreManager(StreamerID, StoreItem) {
     });
 }
 exports.SendToStoreManager = SendToStoreManager;
+async function DeteleStoreItem(StreamerID, StoreItem) {
+    /*Send current voting with your buttons and current poll status */
+    let H = new Headers();
+    H.append("Content-Type", "application/json");
+    return fetch(exports.host + Links_1.default.StoreManager, {
+        method: "DELETE",
+        headers: H,
+        body: JSON.stringify(new StoreManagerRequest_1.default(StreamerID, StoreItem))
+    }).then((res) => {
+        if (res.ok)
+            return bluebird_1.resolve(res);
+        else
+            return bluebird_1.reject(res);
+    }).then((res) => {
+        return res.json().then((res) => {
+            return res;
+        });
+    }).catch((rej) => {
+        return rej.json()
+            .then((res) => {
+            return bluebird_1.reject(res);
+        });
+    });
+}
+exports.DeteleStoreItem = DeteleStoreItem;
 async function UploadFile(StreamerID, FileName, File) {
     /*Send current voting with your buttons and current poll status */
     let headers = new Headers();
     headers.append("Accept", "application/json");
+    headers.append('streamer-id', StreamerID);
     headers.append("file-name", FileName);
-    return fetch(host + Links_1.default.UploadFile, {
+    return fetch(exports.host + Links_1.default.UploadFile, {
         method: "POST",
         headers: headers,
         body: File
-    }).then((res) => {
-        console.log(res);
     }).catch((rej) => {
         console.log(rej);
+        return rej.json();
+    })
+        .then((res) => {
+        return res.json();
     });
 }
 exports.UploadFile = UploadFile;
