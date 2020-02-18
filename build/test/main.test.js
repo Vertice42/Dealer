@@ -27,7 +27,7 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 async function createDatabase(StreamersID) {
-    let CreateResult = await dbStreamerManager_1.dbStreamerManager.CreateStreamerDataBase(StreamersID);
+    let CreateResult = await dbStreamerManager_1.dbStreamerManager.CreateIfNotExistStreamerDataBase(StreamersID);
     await dbLoading_1.Loading.StreamerDatabase(StreamersID);
     return CreateResult;
 }
@@ -61,8 +61,8 @@ describe('DATABASE_MANAGER', () => {
             let Poll = await new PollController_1.PollController(DatabasePreCreated).getCurrentPoll();
             chai_1.expect(Poll.PollStatus).to.deep.equal(new PollStatus_1.PollStatus().start().stop());
             chai_1.expect(Poll.PollButtons).to.deep.equal([
-                new PollButton_1.PollButton(0, '', '#ed8e3b', true),
-                new PollButton_1.PollButton(1, '', '#efc289', false)
+                new PollButton_1.PollButton(0, '', '#3aa555', true),
+                new PollButton_1.PollButton(1, '', '#fa2500', false)
             ]);
             chai_1.expect(Poll.Bets).to.deep.equal([]);
         });

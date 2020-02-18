@@ -5,9 +5,7 @@ const BackendConnections = require("../BackendConnection");
 const BackendConnection_1 = require("../BackendConnection");
 const PollButton_1 = require("../../services/models/poll/PollButton");
 const PollStatus_1 = require("../../services/models/poll/PollStatus");
-const MinerSettings_1 = require("../../services/models/miner/MinerSettings");
 const utils_1 = require("../../utils/utils");
-const View_1 = require("./View");
 const twitch = window.Twitch.ext;
 var token, StreamerID;
 var ViewPoll;
@@ -89,24 +87,24 @@ twitch.onAuthorized(async (auth) => {
             });
         });
     };
-    const VIEW_SETTINGS = new ViewConfig.ViewSettings();
-    let minerSettings = await BackendConnections.GetMinerSettings(StreamerID);
-    VIEW_SETTINGS.HourlyRewardInput.HTMLInput.value = (~~(minerSettings.RewardPerMinute * 60)).toString();
-    VIEW_SETTINGS.HourlyRewardInput.HTMLInput.onchange = () => {
-        VIEW_SETTINGS.HourlyRewardInput.setChangedInput();
-        BackendConnections.SendToMinerManager(StreamerID, new MinerSettings_1.MinerSettings(Number(VIEW_SETTINGS.HourlyRewardInput.HTMLInput.value) / 60))
+    const ViewSettings = new ViewConfig.ViewSettings;
+    let MinerSettings = await BackendConnections.GetMinerSettings(StreamerID);
+    ViewSettings.HourlyRewardInput.HTMLInput.value = (~~(MinerSettings.RewardPerMinute * 60)).toString();
+    ViewSettings.HourlyRewardInput.HTMLInput.onchange = () => {
+        ViewSettings.HourlyRewardInput.setChangedInput();
+        BackendConnections.SendToMinerManager(StreamerID, new MinerSettings(Number(ViewSettings.HourlyRewardInput.HTMLInput.value) / 60))
             .then(async () => {
-            VIEW_SETTINGS.HourlyRewardInput.setInputSentSuccessfully();
+            ViewSettings.HourlyRewardInput.setInputSentSuccessfully();
             await utils_1.sleep(100);
-            VIEW_SETTINGS.HourlyRewardInput.setUnchangedInput();
+            ViewSettings.HourlyRewardInput.setUnchangedInput();
         }).catch(() => {
-            VIEW_SETTINGS.HourlyRewardInput.setInputSentError();
+            ViewSettings.HourlyRewardInput.setInputSentError();
         });
     };
-    const VIEW_STORE = new ViewConfig.ViewStore();
-    let StoreItems = await BackendConnection_1.GetStore(StreamerID);
-    StoreItems.forEach(StoreItem => VIEW_STORE.addStoreItem(StoreItem));
-    VIEW_STORE.onDescriptionChange = (ViewStoreItem) => {
+    const ViewStore = new ViewConfig.ViewStore;
+    let StoreItems = await BackendConnection_1.GetStore(StreamerID, -1); //ALL Items === -1
+    StoreItems.forEach(StoreItem => ViewStore.addStoreItem(StoreItem));
+    ViewStore.onDescriptionChange = (ViewStoreItem) => {
         ViewStoreItem.DescriptionInput.setChangedInput();
         BackendConnection_1.SendToStoreManager(StreamerID, ViewStoreItem)
             .then(async () => {
@@ -119,7 +117,7 @@ twitch.onAuthorized(async (auth) => {
             ViewStoreItem.DescriptionInput.setInputSentError();
         });
     };
-    VIEW_STORE.onPriceChange = (ViewStoreItem) => {
+    ViewStore.onPriceChange = (ViewStoreItem) => {
         ViewStoreItem.PriceInput.setChangedInput();
         BackendConnection_1.SendToStoreManager(StreamerID, ViewStoreItem)
             .then(async () => {
@@ -132,10 +130,10 @@ twitch.onAuthorized(async (auth) => {
             ViewStoreItem.PriceInput.setInputSentError();
         });
     };
-    VIEW_STORE.onAddStoreItemActive = () => {
-        VIEW_STORE.addStoreItem(null);
+    ViewStore.onAddStoreItemActive = () => {
+        ViewStore.addStoreItem(null);
     };
-    VIEW_STORE.onFileInputChange = async (ViewStoreItem) => {
+    ViewStore.onFileInputChange = async (ViewStoreItem) => {
         let file = ViewStoreItem.HTML_InputFile.files[0];
         if (file) {
             BackendConnections.UploadFile(StreamerID, file.name, file).then(async (UploadFileResponse) => {
@@ -146,9 +144,13 @@ twitch.onAuthorized(async (auth) => {
             }).catch(rej => console.log(rej));
         }
     };
-    VIEW_STORE.onButtonDeleteActive = async (StoreItem) => {
+    ViewStore.onButtonDeleteActive = async (StoreItem) => {
         await BackendConnection_1.DeteleStoreItem(StreamerID, StoreItem);
-        VIEW_STORE.removeStoreItem(StoreItem);
+        ViewStore.removeStoreItem(StoreItem);
     };
-    new View_1.ShoppingQueue();
+    const ViewPurchaseOrders = new ViewConfig.ViewPurchaseOrders;
+    let PurchaseOrders = await BackendConnections.GetPurchaseOrder(StreamerID);
+    PurchaseOrders.forEach(async (PurchaseOrder) => {
+        ViewPurchaseOrders.addViewPurchaseOrder(PurchaseOrder.id, PurchaseOrder.TwitchUserID, new Date(PurchaseOrder.updatedAt).getTime(), await BackendConnections.GetStore(StreamerID, PurchaseOrder.StoreItemID));
+    });
 });

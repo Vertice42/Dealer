@@ -779,19 +779,19 @@ export class ViewPurchasedItems {
     return this.HTML_RefundButton;
   }
 
-  constructor(Placement:number,UserName:string,PurchaseTime:number,ItemName:string){
+  constructor(Placement:number,UserName:string,PurchaseTime:number,ItemDescription:string){
     this.HTML = document.createElement('div');
     this.HTML.classList.add('PurchasedItem');
     this.HTML.appendChild(this.CreateHTML_ItemPlacement(Placement))
     this.HTML.appendChild(this.CreateHTML_UserName(UserName))
     this.HTML.appendChild(this.CreatePurchaseTime(PurchaseTime))
-    this.HTML.appendChild(this.CreateHTML_ItemName(ItemName))
+    this.HTML.appendChild(this.CreateHTML_ItemName(ItemDescription))
     this.HTML.appendChild(this.CreateHTML_RefundButton())
 
   }
 }
 
-export class ShoppingQueue {
+export class ViewPurchaseOrders {
   HTML_ListOfPurchasedItems = <HTMLDivElement> document.getElementById('ListOfPurchasedItems');
   HTML_LoadingBarOfAudioPlayer = <HTMLDivElement> document.getElementById('LoadingBarOfAudioPlayer');
   setAudioPlayerProgress(progres:number){
@@ -800,9 +800,9 @@ export class ShoppingQueue {
     this.HTML_LoadingBarOfAudioPlayer.style.backgroundImage = 
     `linear-gradient(to left, rgb(86, 128, 219) ${rigth}%, rgb(93, 144, 255) ${left}%)`;
   }
+  addViewPurchaseOrder(OrderPlacement:number,UserName:string,PurchaseTime:number,StoreItem:StoreItem){
+    this.HTML_ListOfPurchasedItems.appendChild(new ViewPurchasedItems(OrderPlacement,UserName,PurchaseTime,StoreItem.Description).HTML)
+  }
   constructor(){
-    this.HTML_ListOfPurchasedItems.appendChild(new ViewPurchasedItems(2,'vertise',2000285,'fonn').HTML)
-    this.HTML_ListOfPurchasedItems.appendChild(new ViewPurchasedItems(3,'vertise',2000285,'fonn').HTML)
-
   }
 }

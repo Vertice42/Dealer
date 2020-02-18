@@ -555,13 +555,13 @@ class ViewStore {
 }
 exports.ViewStore = ViewStore;
 class ViewPurchasedItems {
-    constructor(Placement, UserName, PurchaseTime, ItemName) {
+    constructor(Placement, UserName, PurchaseTime, ItemDescription) {
         this.HTML = document.createElement('div');
         this.HTML.classList.add('PurchasedItem');
         this.HTML.appendChild(this.CreateHTML_ItemPlacement(Placement));
         this.HTML.appendChild(this.CreateHTML_UserName(UserName));
         this.HTML.appendChild(this.CreatePurchaseTime(PurchaseTime));
-        this.HTML.appendChild(this.CreateHTML_ItemName(ItemName));
+        this.HTML.appendChild(this.CreateHTML_ItemName(ItemDescription));
         this.HTML.appendChild(this.CreateHTML_RefundButton());
     }
     CreateHTML_ItemPlacement(ItemPlacement) {
@@ -597,12 +597,10 @@ class ViewPurchasedItems {
     }
 }
 exports.ViewPurchasedItems = ViewPurchasedItems;
-class ShoppingQueue {
+class ViewPurchaseOrders {
     constructor() {
         this.HTML_ListOfPurchasedItems = document.getElementById('ListOfPurchasedItems');
         this.HTML_LoadingBarOfAudioPlayer = document.getElementById('LoadingBarOfAudioPlayer');
-        this.HTML_ListOfPurchasedItems.appendChild(new ViewPurchasedItems(2, 'vertise', 2000285, 'fonn').HTML);
-        this.HTML_ListOfPurchasedItems.appendChild(new ViewPurchasedItems(3, 'vertise', 2000285, 'fonn').HTML);
     }
     setAudioPlayerProgress(progres) {
         let left = progres;
@@ -610,5 +608,8 @@ class ShoppingQueue {
         this.HTML_LoadingBarOfAudioPlayer.style.backgroundImage =
             `linear-gradient(to left, rgb(86, 128, 219) ${rigth}%, rgb(93, 144, 255) ${left}%)`;
     }
+    addViewPurchaseOrder(OrderPlacement, UserName, PurchaseTime, StoreItem) {
+        this.HTML_ListOfPurchasedItems.appendChild(new ViewPurchasedItems(OrderPlacement, UserName, PurchaseTime, StoreItem.Description).HTML);
+    }
 }
-exports.ShoppingQueue = ShoppingQueue;
+exports.ViewPurchaseOrders = ViewPurchaseOrders;

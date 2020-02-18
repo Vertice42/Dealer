@@ -15,6 +15,8 @@ const http = require("http");
 const Socket_io = require("socket.io");
 const UploadFileResponse_1 = require("./models/files_manager/UploadFileResponse");
 const path = require("path");
+const PurchaseOrder_1 = require("./models/store/PurchaseOrder");
+const dbPurchaseOrderManager_1 = require("./modules/database/store/dbPurchaseOrderManager");
 const app = express();
 exports.app = app;
 const server = http.createServer(app);
@@ -277,13 +279,25 @@ app.delete(Links_1.default.StoreManager, async function (req, res) {
     });
 });
 app.get(Links_1.default.GetStore, async function (req, res) {
-    new dbStoreManager_1.default(req.params.StreamerID).getAllItens()
-        .then((result) => {
-        res.status(200).send(result);
-    })
-        .catch((rej) => {
-        res.status(500).send(rej);
-    });
+    let dbStoreM = new dbStoreManager_1.default(req.params.StreamerID);
+    if (req.params.StoreItemID === '-1') {
+        dbStoreM.getAllItens()
+            .then((result) => {
+            res.status(200).send(result);
+        })
+            .catch((rej) => {
+            res.status(500).send(rej);
+        });
+    }
+    else {
+        dbStoreM.getIten(Number(req.params.StoreItemID))
+            .then((result) => {
+            res.status(200).send(result);
+        })
+            .catch((rej) => {
+            res.status(500).send(rej);
+        });
+    }
 });
 app.post(Links_1.default.UploadFile, async function (req, res) {
     let dir = `./uploads/${req.headers["streamer-id"]}`;
@@ -300,4 +314,31 @@ app.post(Links_1.default.UploadFile, async function (req, res) {
 });
 app.get(Links_1.default.GetFile, async function (req, res) {
     res.status(200).sendFile(path.resolve(`./uploads/${req.params.StreamerID}/${req.params.FileName}`));
+});
+app.post(Links_1.default.BuyStoreItem, async function (req, res) {
+    let BuyRequest = req.body;
+    //TODO add CheckRequisition
+    let ItemPrice = (await new dbStoreManager_1.default(BuyRequest.StreamerID).getIten(BuyRequest.StoreItemID)).Price;
+    let dbWalletM = new dbWalletManager_1.dbWalletManeger(BuyRequest.StreamerID, BuyRequest.TwitchUserID);
+    if ((await dbWalletM.getWallet()).Coins < ItemPrice)
+        return res.status(400).send({ ErrorBuying: 'Insufficient funds' });
+    await dbWalletM.withdraw(ItemPrice);
+    new dbPurchaseOrderManager_1.default(BuyRequest.StreamerID)
+        .addPurchaseOrder(new PurchaseOrder_1.default(ItemPrice, BuyRequest.TwitchUserID, BuyRequest.StoreItemID, new Date))
+        .then((result) => {
+        res.status(200).send({ PurchaseOrderWasSentSuccessfully: new Date });
+    })
+        .catch((rej) => {
+        console.log(rej);
+        res.status(500).send(rej);
+    });
+});
+app.get(Links_1.default.GetPurchaseOrder, async function (req, res) {
+    new dbPurchaseOrderManager_1.default(req.params.StreamerID).getAllPurchaseOrders()
+        .then((result) => {
+        res.status(200).send(result);
+    })
+        .catch((rej) => {
+        res.status(500).send(rej);
+    });
 });

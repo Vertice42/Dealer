@@ -37,9 +37,7 @@ export default class StreamerSettings {
         let AccountData = dbStreamerManager.getAccountData(StreamerID);
         AccountData.MinerSettings = NewMinerSettings;        
         return AccountData.dbSettings.update({SettingsJson:NewMinerSettings}, { where: { SettingName: MinerSettings.name } })
-            .then((res) => {
-                console.log(res);
-                
+            .then(() => {                
                 return resolve({ SuccessfullyUpdatedMinerSettings: AccountData.MinerSettings });
             }).catch((rej)=>{
                 console.log(rej);

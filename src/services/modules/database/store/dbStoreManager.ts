@@ -4,13 +4,16 @@ import { dbStore as dbStoreIten, dbStore } from "../../../models/store/dbStore";
 
 export default class dbStoreManger {
     StreamerID: string;
-    constructor(StreamerID: string) {
-        this.StreamerID = StreamerID;
-    }
-    getAllItens() {
+
+    async getAllItens() {
         return dbStreamerManager.getAccountData(this.StreamerID).dbStore.findAll();
     }
 
+    async getIten(StoreItemID:number) {
+        let AccountData = dbStreamerManager.getAccountData(this.StreamerID);
+        return AccountData.dbStore.findOne({ where: { id: StoreItemID } });
+    }
+    
     async UpdateOrCreateStoreItem(StoreItem: StoreItem) {
         let AccountData = dbStreamerManager.getAccountData(this.StreamerID);
         let dbStoreItem = await AccountData.dbStore.findOne({ where: { id: StoreItem.id } });
@@ -25,9 +28,11 @@ export default class dbStoreManger {
     }
 
     async DeleteStoreItem(StoreItem: StoreItem) {
-        let AccountData = dbStreamerManager.getAccountData(this.StreamerID);
-        let dbStoreItem = await AccountData.dbStore.findOne({ where: { id: StoreItem.id } });
+        let dbStoreItem = await this.getIten(StoreItem.id);
         return dbStoreItem.destroy();
     }
 
+    constructor(StreamerID: string) {
+        this.StreamerID = StreamerID;
+    }
 }

@@ -35,8 +35,7 @@ class StreamerSettings {
         let AccountData = dbStreamerManager_1.dbStreamerManager.getAccountData(StreamerID);
         AccountData.MinerSettings = NewMinerSettings;
         return AccountData.dbSettings.update({ SettingsJson: NewMinerSettings }, { where: { SettingName: MinerSettings_1.MinerSettings.name } })
-            .then((res) => {
-            console.log(res);
+            .then(() => {
             return bluebird_1.resolve({ SuccessfullyUpdatedMinerSettings: AccountData.MinerSettings });
         }).catch((rej) => {
             console.log(rej);

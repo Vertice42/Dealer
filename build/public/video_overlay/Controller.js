@@ -33,7 +33,7 @@ function IsWinner(PollButtons, ChosenButtonID) {
 twitch.onAuthorized(async (auth) => {
     twitch.onContext(async (context) => {
         console.log(context);
-        var gameBoard = new View_1.GameBoard();
+        const GAME_BOARD = new View_1.GameBoard();
         token = auth.token;
         StreamerID = auth.channelId.toLowerCase();
         if (process.env.NODE_ENV === 'production') {
@@ -43,53 +43,53 @@ twitch.onAuthorized(async (auth) => {
             TwitchUserID = makeid(5);
         }
         let ChangeBeat = () => {
-            if (gameBoard.SelectedButtonID !== null) {
-                gameBoard.BetAmountInput.setChangedInput();
-                BackendConnection_1.addBet(StreamerID, TwitchUserID, gameBoard.SelectedButtonID, gameBoard.getBetValue())
+            if (GAME_BOARD.SelectedButtonID !== null) {
+                GAME_BOARD.BetAmountInput.setChangedInput();
+                BackendConnection_1.addBet(StreamerID, TwitchUserID, GAME_BOARD.SelectedButtonID, GAME_BOARD.getBetValue())
                     .then(async () => {
-                    gameBoard.BetAmountInput.setInputSentSuccessfully();
+                    GAME_BOARD.BetAmountInput.setInputSentSuccessfully();
                     await utils_1.sleep(100);
-                    gameBoard.BetAmountInput.setUnchangedInput();
+                    GAME_BOARD.BetAmountInput.setUnchangedInput();
                 })
                     .catch(() => {
-                    gameBoard.BetAmountInput.setInputSentError();
+                    GAME_BOARD.BetAmountInput.setInputSentError();
                 });
             }
             else {
-                gameBoard.BetAmountInput.setInputSentError();
+                GAME_BOARD.BetAmountInput.setInputSentError();
             }
         };
-        gameBoard.onBeatIDSelected = ChangeBeat;
-        gameBoard.BetAmountInput.HTMLInput.onchange = ChangeBeat;
+        GAME_BOARD.onBeatIDSelected = ChangeBeat;
+        GAME_BOARD.BetAmountInput.HTMLInput.onchange = ChangeBeat;
         new BackendConnection_1.WatchPoll(StreamerID)
             .setOnPollChange(async (Poll) => {
             if (utils_1.isEquivalent(CurrentPollStatus, Poll.PollStatus)) {
-                gameBoard.setButtonsInPollDiv(Poll.PollButtons);
+                GAME_BOARD.setButtonsInPollDiv(Poll.PollButtons);
             }
             else {
                 if (Poll.PollStatus.PollWaxed) {
-                    await gameBoard.HideAllAlerts();
+                    await GAME_BOARD.HideAllAlerts();
                 }
                 else {
                     if (Poll.PollStatus.PollStarted) {
                         if (Poll.PollStatus.DistributionCompleted) {
-                            if (isNaN(gameBoard.SelectedButtonID)) {
-                                await gameBoard.HideAllAlerts();
+                            if (isNaN(GAME_BOARD.SelectedButtonID)) {
+                                await GAME_BOARD.HideAllAlerts();
                             }
                             else {
-                                if (IsWinner(Poll.PollButtons, gameBoard.SelectedButtonID)) {
-                                    gameBoard.setInWinnerMode(Poll.LossDistributorOfPoll);
+                                if (IsWinner(Poll.PollButtons, GAME_BOARD.SelectedButtonID)) {
+                                    GAME_BOARD.setInWinnerMode(Poll.LossDistributorOfPoll);
                                 }
                                 else {
-                                    gameBoard.setInLoserMode();
+                                    GAME_BOARD.setInLoserMode();
                                 }
                             }
                         }
                         else if (Poll.PollStatus.PollStoped) {
-                            gameBoard.setInStopedMode();
+                            GAME_BOARD.setInStopedMode();
                         }
                         else if (Poll.PollStatus.PollStarted) {
-                            gameBoard.setInBetMode(Poll.PollButtons);
+                            GAME_BOARD.setInBetMode(Poll.PollButtons);
                         }
                     }
                 }
@@ -99,20 +99,28 @@ twitch.onAuthorized(async (auth) => {
             .start();
         let WalletOfUser = await BackendConnection_1.GetWallet(StreamerID, TwitchUserID);
         twitch.rig.log(WalletOfUser.Coins.toString());
-        gameBoard.CoinsOfUserView.innerText = (~~WalletOfUser.Coins).toString();
+        GAME_BOARD.CoinsOfUserView.innerText = (~~WalletOfUser.Coins).toString();
         new Miner_1.Miner(StreamerID, TwitchUserID, WalletOfUser.Coins, (CurrentCoinsOfUsernulber, CoinsAddedOrSubtracted) => {
             if (CoinsAddedOrSubtracted > 0) {
-                gameBoard.startDepositAnimation(~~CoinsAddedOrSubtracted + 1);
+                GAME_BOARD.startDepositAnimation(~~CoinsAddedOrSubtracted + 1);
             }
             else {
                 if (CoinsAddedOrSubtracted <= -1) {
-                    gameBoard.startWithdrawalAnimation((~~CoinsAddedOrSubtracted + 1) * -1);
+                    GAME_BOARD.startWithdrawalAnimation((~~CoinsAddedOrSubtracted + 1) * -1);
                 }
             }
-            gameBoard.CoinsOfUserView.innerText = (~~CurrentCoinsOfUsernulber).toString();
+            GAME_BOARD.CoinsOfUserView.innerText = (~~CurrentCoinsOfUsernulber).toString();
             //TODO ADD METODO PARA MUDAR UI}).startMining()
         }).startMining();
-        let StoreItens = await BackendConnection_1.GetStore(StreamerID);
-        gameBoard.setStoreItems(StoreItens);
+        GAME_BOARD.setStoreItems(await BackendConnection_1.GetStore(StreamerID, -1));
+        GAME_BOARD.onBuyItemButtonActive = (StoreItem) => {
+            BackendConnection_1.BuyStoreItem(StreamerID, TwitchUserID, StoreItem)
+                .then((res) => {
+                console.log(res);
+            })
+                .catch((rej) => {
+                console.log(rej);
+            });
+        };
     });
 });

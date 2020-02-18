@@ -31,7 +31,7 @@ function sleep(ms: number) {
 }
 
 async function createDatabase(StreamersID: string) {
-  let CreateResult = await dbStreamerManager.CreateStreamerDataBase(StreamersID);  
+  let CreateResult = await dbStreamerManager.CreateIfNotExistStreamerDataBase(StreamersID);  
   await Loading.StreamerDatabase(StreamersID);
   return CreateResult;
 }
@@ -68,11 +68,11 @@ describe('DATABASE_MANAGER', () => {
     })
 
     it('Load poll already created in db already created', async function () {
-      let Poll = await new PollController(DatabasePreCreated).getCurrentPoll()
+      let Poll = await new PollController(DatabasePreCreated).getCurrentPoll();      
       expect(Poll.PollStatus).to.deep.equal(new PollStatus().start().stop());
       expect(Poll.PollButtons).to.deep.equal([
-        new PollButton(0, '', '#ed8e3b', true),
-        new PollButton(1, '', '#efc289', false)]);
+        new PollButton(0, '', '#3aa555', true),
+        new PollButton(1, '', '#fa2500', false)]);
       expect(Poll.Bets).to.deep.equal([]);
 
     })

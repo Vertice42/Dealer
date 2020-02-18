@@ -4,10 +4,18 @@ import { SettingsDefiner, dbSettings } from "../../models/streamer_settings/dbSe
 import { AccountData } from "../../models/AccountData";
 import { ButtonDefiner, dbButton } from "../../models/poll/dbButton";
 import { StoreDefiner, dbStore } from "../../models/store/dbStore";
+import { dbPurchaseOrder, PurchaseOrdersDefiner } from "../../models/store/dbPurchaseOrders";
     /**
      * Loads and / or creates sequelize models by defining them
      */
 export class Define {
+
+    static async PurchaseOrder(AccountData: AccountData) {                
+        AccountData.dbPurchaseOrders = <typeof dbPurchaseOrder> AccountData.dbStreamer
+        .define(PurchaseOrdersDefiner.name, PurchaseOrdersDefiner.atributes, PurchaseOrdersDefiner.options);
+        return AccountData.dbPurchaseOrders.sync();
+    }
+
     static async Store(AccountData: AccountData) {                
         AccountData.dbStore = <typeof dbStore> AccountData.dbStreamer
         .define(StoreDefiner.name, StoreDefiner.atributes, StoreDefiner.options);

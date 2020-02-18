@@ -5,8 +5,12 @@ class dbStoreManger {
     constructor(StreamerID) {
         this.StreamerID = StreamerID;
     }
-    getAllItens() {
+    async getAllItens() {
         return dbStreamerManager_1.dbStreamerManager.getAccountData(this.StreamerID).dbStore.findAll();
+    }
+    async getIten(StoreItemID) {
+        let AccountData = dbStreamerManager_1.dbStreamerManager.getAccountData(this.StreamerID);
+        return AccountData.dbStore.findOne({ where: { id: StoreItemID } });
     }
     async UpdateOrCreateStoreItem(StoreItem) {
         let AccountData = dbStreamerManager_1.dbStreamerManager.getAccountData(this.StreamerID);
@@ -21,8 +25,7 @@ class dbStoreManger {
         }
     }
     async DeleteStoreItem(StoreItem) {
-        let AccountData = dbStreamerManager_1.dbStreamerManager.getAccountData(this.StreamerID);
-        let dbStoreItem = await AccountData.dbStore.findOne({ where: { id: StoreItem.id } });
+        let dbStoreItem = await this.getIten(StoreItem.id);
         return dbStoreItem.destroy();
     }
 }

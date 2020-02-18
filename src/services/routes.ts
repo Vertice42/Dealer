@@ -19,13 +19,17 @@ import MinerManeger from "./modules/database/miner/dbMinerManager";
 import StreamerSettings from "./modules/database/streamer_settings/StreamerSettings";
 import { CoinsSettingsManagerRequest } from "./models/streamer_settings/CoinsSettingsManagerRequest";
 import { CoinsSettings } from "./models/streamer_settings/CoinsSettings";
-import dbStoreManger from "./modules/database/store/dbStoreManager";
+import dbStoreManager from "./modules/database/store/dbStoreManager";
 import StoreItem from "./models/store/StoreItem";
 import fs = require('fs');
 import http = require('http')
 import Socket_io = require('socket.io')
 import UploadFileResponse from "./models/files_manager/UploadFileResponse";
 import path = require('path');
+import BuyStoreItemRequest from "./modules/database/store/BuyStoreItemRequest";
+import PurchaseOrder from "./models/store/PurchaseOrder";
+import dbPurchaseOrderManager from "./modules/database/store/dbPurchaseOrderManager";
+import { dbPurchaseOrder } from "./models/store/dbPurchaseOrders";
 
 
 const app = express();
@@ -92,7 +96,7 @@ app.post(links.PollManager, async function (req: PollRequest, res: express.Respo
 
 });
 
-app.get(links.GetPoll,async function (req: { params: { StreamerID: string } }, res: express.Response) {
+app.get(links.GetPoll, async function (req: { params: { StreamerID: string } }, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.params.StreamerID)
@@ -112,7 +116,7 @@ app.get(links.GetPoll,async function (req: { params: { StreamerID: string } }, r
         })
 });
 
-app.post(links.addVote,async function (req: AddBetRequest, res: express.Response) {
+app.post(links.addVote, async function (req: AddBetRequest, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -161,7 +165,7 @@ app.post(links.addVote,async function (req: AddBetRequest, res: express.Response
         })
 });
 
-app.post(links.MinerManager,async function (req: MinerManagerRequest, res: express.Response) {
+app.post(links.MinerManager, async function (req: MinerManagerRequest, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -179,7 +183,7 @@ app.post(links.MinerManager,async function (req: MinerManagerRequest, res: expre
         .catch((reje) => { res.status(500).send(reje) });
 });
 
-app.get(links.GetMinerSettings,async function (req: { params: { StreamerID: string } }, res: express.Response) {
+app.get(links.GetMinerSettings, async function (req: { params: { StreamerID: string } }, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.params.StreamerID)
@@ -196,7 +200,7 @@ app.get(links.GetMinerSettings,async function (req: { params: { StreamerID: stri
         })
 });
 
-app.post(links.CoinsSettingsManager,async function (req: CoinsSettingsManagerRequest, res: express.Response) {
+app.post(links.CoinsSettingsManager, async function (req: CoinsSettingsManagerRequest, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -213,7 +217,7 @@ app.post(links.CoinsSettingsManager,async function (req: CoinsSettingsManagerReq
         .catch((reje) => { res.status(500).send(reje) });
 });
 
-app.get(links.GetCoinsSettings,async function (req: { params: { StreamerID: string } }, res: express.Response) {
+app.get(links.GetCoinsSettings, async function (req: { params: { StreamerID: string } }, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.params.StreamerID)
@@ -230,7 +234,7 @@ app.get(links.GetCoinsSettings,async function (req: { params: { StreamerID: stri
         })
 });
 
-app.post(links.MineCoin,async function (req: MinerRequest, res: express.Response) {
+app.post(links.MineCoin, async function (req: MinerRequest, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -251,7 +255,7 @@ app.post(links.MineCoin,async function (req: MinerRequest, res: express.Response
 
 });
 
-app.get(links.GetWallet,async function (req: express.Request, res: express.Response) {
+app.get(links.GetWallet, async function (req: express.Request, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.params.StreamerID)
@@ -273,7 +277,7 @@ app.get(links.GetWallet,async function (req: express.Request, res: express.Respo
         })
 });
 
-app.post(links.StoreManager,async function (req, res: express.Response) {
+app.post(links.StoreManager, async function (req, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -282,7 +286,7 @@ app.post(links.StoreManager,async function (req, res: express.Response) {
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
 
-    new dbStoreManger(req.body.StreamerID).UpdateOrCreateStoreItem(req.body.StoreItem)
+    new dbStoreManager(req.body.StreamerID).UpdateOrCreateStoreItem(req.body.StoreItem)
         .then((result) => {
             res.status(200).send(result);
         })
@@ -291,7 +295,7 @@ app.post(links.StoreManager,async function (req, res: express.Response) {
         })
 })
 
-app.delete(links.StoreManager,async function (req, res: express.Response) {
+app.delete(links.StoreManager, async function (req, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -300,7 +304,7 @@ app.delete(links.StoreManager,async function (req, res: express.Response) {
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
 
-    new dbStoreManger(req.body.StreamerID).DeleteStoreItem(req.body.StoreItem)
+    new dbStoreManager(req.body.StreamerID).DeleteStoreItem(req.body.StoreItem)
         .then((result) => {
             res.status(200).send(result);
         })
@@ -309,22 +313,36 @@ app.delete(links.StoreManager,async function (req, res: express.Response) {
         })
 })
 
-app.get(links.GetStore,async function (req: { params: { StreamerID: string } }, res: express.Response) {
-    new dbStoreManger(req.params.StreamerID).getAllItens()
-        .then((result) => {
-            res.status(200).send(<StoreItem[]>result);
-        })
-        .catch((rej) => {
-            res.status(500).send(rej)
-        })
+app.get(links.GetStore, async function (req: { params: { StreamerID: string, StoreItemID: string } }, res: express.Response) {
+    let dbStoreM = new dbStoreManager(req.params.StreamerID)
+
+    if (req.params.StoreItemID === '-1') {
+        dbStoreM.getAllItens()
+            .then((result) => {
+                res.status(200).send(<StoreItem[]>result);
+            })
+            .catch((rej) => {
+                res.status(500).send(rej)
+            })
+
+    } else {
+        dbStoreM.getIten(Number(req.params.StoreItemID))
+            .then((result) => {
+                res.status(200).send(<StoreItem>result);
+            })
+            .catch((rej) => {
+                res.status(500).send(rej)
+            })
+    }
+
 })
 
 app.post(links.UploadFile, async function (req, res: express.Response) {
     let dir = `./uploads/${req.headers["streamer-id"]}`;
 
-    if (!fs.existsSync(dir))  fs.mkdirSync(dir);
-    
-    let file = fs.createWriteStream(dir+'/'+req.headers["file-name"]);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+
+    let file = fs.createWriteStream(dir + '/' + req.headers["file-name"]);
 
     req.on('data', chunk => {
         file.write(chunk);
@@ -335,8 +353,39 @@ app.post(links.UploadFile, async function (req, res: express.Response) {
     })
 })
 
-app.get(links.GetFile,async function (req,res: express.Response){    
+app.get(links.GetFile, async function (req, res: express.Response) {
     res.status(200).sendFile(path.resolve(`./uploads/${req.params.StreamerID}/${req.params.FileName}`))
 })
 
+app.post(links.BuyStoreItem, async function (req, res: express.Response) {
+    let BuyRequest: BuyStoreItemRequest = req.body;
+    //TODO add CheckRequisition
+    let ItemPrice = (await new dbStoreManager(BuyRequest.StreamerID).getIten(BuyRequest.StoreItemID)).Price;
+    let dbWalletM = new dbWalletManeger(BuyRequest.StreamerID, BuyRequest.TwitchUserID);
+
+    if ((await dbWalletM.getWallet()).Coins < ItemPrice)
+        return res.status(400).send({ ErrorBuying: 'Insufficient funds' })
+
+    await dbWalletM.withdraw(ItemPrice);
+    new dbPurchaseOrderManager(BuyRequest.StreamerID)
+        .addPurchaseOrder(new PurchaseOrder(ItemPrice, BuyRequest.TwitchUserID, BuyRequest.StoreItemID, new Date))
+        .then((result) => {
+            res.status(200).send({ PurchaseOrderWasSentSuccessfully: new Date })
+        })
+        .catch((rej) => {
+            console.log(rej);
+            res.status(500).send(rej);
+        })
+}
+)
+
+app.get(links.GetPurchaseOrder, async function (req: { params: { StreamerID: string } }, res: express.Response) {
+    new dbPurchaseOrderManager(req.params.StreamerID).getAllPurchaseOrders()
+        .then((result) => {
+            res.status(200).send(<dbPurchaseOrder[]>result);
+        })
+        .catch((rej) => {
+            res.status(500).send(rej)
+        })
+})
 export { app };

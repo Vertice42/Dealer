@@ -11,26 +11,29 @@ export class Loading {
      * @returns AccountData
      * */
     static async StreamerDatabase(StreamerID: string) {
-        await dbStreamerManager.CreateStreamerDataBase(StreamerID);
+        await dbStreamerManager.CreateIfNotExistStreamerDataBase(StreamerID);
 
         let accountData: AccountData = dbStreamerManager
             .setAccountData(new AccountData(StreamerID));
 
         accountData.CurrentPollStatus = new PollStatus();
 
-        await Define.Settings(accountData);
-        await Define.Wallets(accountData);
-        await Define.Store(accountData);
+        let DefinitionPromises = [
+            Define.Settings(accountData),
+            Define.Wallets(accountData),
+            Define.Store(accountData),
+            Define.PurchaseOrder(accountData)
+        ]
+        await Promise.all(DefinitionPromises);
 
         let tables = await accountData.dbStreamer.query("show tables");
-        if (tables[0].length < 5) {
+        if (tables[0].length < DefinitionPromises.length + 2) {
             accountData.CurrentPollStatus.waxe();
             return accountData;
         }
         //If there are only 2 tables in the database, no poll has been created yet
-
-        accountData.CurrentPollID = getTableName(tables[0], tables[0].length - 4);
-        accountData.CurrentBettingsID = getTableName(tables[0], tables[0].length - 5);
+        accountData.CurrentPollID = getTableName(tables[0], tables[0].length - (DefinitionPromises.length+1));
+        accountData.CurrentBettingsID = getTableName(tables[0], tables[0].length - (DefinitionPromises.length + 2));
         /**
          * The wallet and settings table are in the same database and will always be
          * the first and second index, while the most recent Bettings poll tables will 
@@ -86,7 +89,7 @@ export class Loading {
                 }
             })
     }
-    static async Store(StreamerID: string){
+    static async Store(StreamerID: string) {
 
     }
 }

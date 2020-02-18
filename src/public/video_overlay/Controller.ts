@@ -1,7 +1,7 @@
 import { PollStatus } from "../../services/models/poll/PollStatus";
 import { PollButton } from "../../services/models/poll/PollButton";
 import { isEquivalent, sleep } from "../../utils/utils";
-import { WatchPoll, addBet as addBeat, GetWallet, GetStore } from "../BackendConnection";
+import { WatchPoll, addBet as addBeat, GetWallet, GetStore, BuyStoreItem } from "../BackendConnection";
 import { Poll } from "../../services/models/poll/Poll";
 import { Miner } from "./modules/Miner";
 import { dbWallet } from "../../services/models/poll/dbWallet";
@@ -45,7 +45,7 @@ twitch.onAuthorized(async (auth) => {
   twitch.onContext(async (context) => {
     console.log(context);
 
-    var gameBoard = new GameBoard();
+    const GAME_BOARD = new GameBoard();
     token = auth.token;
     StreamerID = auth.channelId.toLowerCase();
     if (process.env.NODE_ENV === 'production') {
@@ -55,49 +55,49 @@ twitch.onAuthorized(async (auth) => {
     }
 
     let ChangeBeat = () => {
-      if (gameBoard.SelectedButtonID !== null) {
-        gameBoard.BetAmountInput.setChangedInput();
-        addBeat(StreamerID, TwitchUserID, gameBoard.SelectedButtonID, gameBoard.getBetValue())
+      if (GAME_BOARD.SelectedButtonID !== null) {
+        GAME_BOARD.BetAmountInput.setChangedInput();
+        addBeat(StreamerID, TwitchUserID, GAME_BOARD.SelectedButtonID, GAME_BOARD.getBetValue())
           .then(async () => {
-            gameBoard.BetAmountInput.setInputSentSuccessfully();
+            GAME_BOARD.BetAmountInput.setInputSentSuccessfully();
             await sleep(100);
-            gameBoard.BetAmountInput.setUnchangedInput();
+            GAME_BOARD.BetAmountInput.setUnchangedInput();
           })
           .catch(() => {
-            gameBoard.BetAmountInput.setInputSentError();
+            GAME_BOARD.BetAmountInput.setInputSentError();
           })
       } else {
-        gameBoard.BetAmountInput.setInputSentError();
+        GAME_BOARD.BetAmountInput.setInputSentError();
       }
     }
 
-    gameBoard.onBeatIDSelected = ChangeBeat;
-    gameBoard.BetAmountInput.HTMLInput.onchange = ChangeBeat;
+    GAME_BOARD.onBeatIDSelected = ChangeBeat;
+    GAME_BOARD.BetAmountInput.HTMLInput.onchange = ChangeBeat;
 
     new WatchPoll(StreamerID)
       .setOnPollChange(async (Poll: Poll) => {
         if (isEquivalent(CurrentPollStatus, Poll.PollStatus)) {
-          gameBoard.setButtonsInPollDiv(Poll.PollButtons);
+          GAME_BOARD.setButtonsInPollDiv(Poll.PollButtons);
 
         } else {
           if (Poll.PollStatus.PollWaxed) {
-            await gameBoard.HideAllAlerts();
+            await GAME_BOARD.HideAllAlerts();
           } else {
             if (Poll.PollStatus.PollStarted) {
               if (Poll.PollStatus.DistributionCompleted) {
-                if (isNaN(gameBoard.SelectedButtonID)) {
-                  await gameBoard.HideAllAlerts();
+                if (isNaN(GAME_BOARD.SelectedButtonID)) {
+                  await GAME_BOARD.HideAllAlerts();
                 } else {
-                  if (IsWinner(Poll.PollButtons, gameBoard.SelectedButtonID)) {
-                    gameBoard.setInWinnerMode(Poll.LossDistributorOfPoll);
+                  if (IsWinner(Poll.PollButtons, GAME_BOARD.SelectedButtonID)) {
+                    GAME_BOARD.setInWinnerMode(Poll.LossDistributorOfPoll);
                   } else {
-                    gameBoard.setInLoserMode();
+                    GAME_BOARD.setInLoserMode();
                   }
                 }
               } else if (Poll.PollStatus.PollStoped) {
-                gameBoard.setInStopedMode();
+                GAME_BOARD.setInStopedMode();
               } else if (Poll.PollStatus.PollStarted) {
-                gameBoard.setInBetMode(Poll.PollButtons);
+                GAME_BOARD.setInBetMode(Poll.PollButtons);
               }
             }
           }
@@ -108,29 +108,35 @@ twitch.onAuthorized(async (auth) => {
 
     let WalletOfUser: dbWallet = await GetWallet(StreamerID, TwitchUserID);
     twitch.rig.log(WalletOfUser.Coins.toString());
-    gameBoard.CoinsOfUserView.innerText = (~~WalletOfUser.Coins).toString();
+    GAME_BOARD.CoinsOfUserView.innerText = (~~WalletOfUser.Coins).toString();
 
     new Miner(StreamerID, TwitchUserID, WalletOfUser.Coins,
       (CurrentCoinsOfUsernulber, CoinsAddedOrSubtracted: number) => {
 
         if (CoinsAddedOrSubtracted > 0) {
-          gameBoard.startDepositAnimation(~~CoinsAddedOrSubtracted + 1);
+          GAME_BOARD.startDepositAnimation(~~CoinsAddedOrSubtracted + 1);
         }
         else {
           if (CoinsAddedOrSubtracted <= -1) {
-            gameBoard.startWithdrawalAnimation((~~CoinsAddedOrSubtracted + 1) * -1);
+            GAME_BOARD.startWithdrawalAnimation((~~CoinsAddedOrSubtracted + 1) * -1);
           }
         }
-        gameBoard.CoinsOfUserView.innerText = (~~CurrentCoinsOfUsernulber).toString();
+        GAME_BOARD.CoinsOfUserView.innerText = (~~CurrentCoinsOfUsernulber).toString();
         //TODO ADD METODO PARA MUDAR UI}).startMining()
       }).startMining();
 
-    let StoreItens = await GetStore(StreamerID)
+    GAME_BOARD.setStoreItems(await GetStore(StreamerID,-1));
 
-    gameBoard.setStoreItems(StoreItens)
+    GAME_BOARD.onBuyItemButtonActive = (StoreItem:StoreItem) => {
+      BuyStoreItem(StreamerID,TwitchUserID,StoreItem)
+      .then((res)=>{
+        console.log(res);
+      })
+      .catch((rej)=>{
+        console.log(rej);
+        
+      })
+    }
 
   });
 })
-
-
-

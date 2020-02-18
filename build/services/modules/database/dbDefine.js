@@ -5,10 +5,16 @@ const dbBettings_1 = require("../../models/poll/dbBettings");
 const dbSettings_1 = require("../../models/streamer_settings/dbSettings");
 const dbButton_1 = require("../../models/poll/dbButton");
 const dbStore_1 = require("../../models/store/dbStore");
+const dbPurchaseOrders_1 = require("../../models/store/dbPurchaseOrders");
 /**
  * Loads and / or creates sequelize models by defining them
  */
 class Define {
+    static async PurchaseOrder(AccountData) {
+        AccountData.dbPurchaseOrders = AccountData.dbStreamer
+            .define(dbPurchaseOrders_1.PurchaseOrdersDefiner.name, dbPurchaseOrders_1.PurchaseOrdersDefiner.atributes, dbPurchaseOrders_1.PurchaseOrdersDefiner.options);
+        return AccountData.dbPurchaseOrders.sync();
+    }
     static async Store(AccountData) {
         AccountData.dbStore = AccountData.dbStreamer
             .define(dbStore_1.StoreDefiner.name, dbStore_1.StoreDefiner.atributes, dbStore_1.StoreDefiner.options);

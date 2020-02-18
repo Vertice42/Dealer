@@ -4,6 +4,7 @@ const bluebird_1 = require("bluebird");
 const Links_1 = require("../services/Links");
 const ServerConfigs_1 = require("../services/configs/ServerConfigs");
 const StoreManagerRequest_1 = require("../services/models/store/StoreManagerRequest");
+const BuyStoreItemRequest_1 = require("../services/modules/database/store/BuyStoreItemRequest");
 exports.host = 'http://localhost:' + (ServerConfigs_1.default.Port || process.env.Port);
 async function getCurrentPoll(StreamerID) {
     /* Use fetch to communicate to backend and get current voting */
@@ -248,8 +249,8 @@ async function GetWallet(StreamerID, TwitchUserID) {
     });
 }
 exports.GetWallet = GetWallet;
-async function GetStore(StreamerID) {
-    return fetch(exports.host + Links_1.default.getStore(StreamerID), {
+async function GetStore(StreamerID, StoreItemID) {
+    return fetch(exports.host + Links_1.default.getStore(StreamerID, StoreItemID), {
         method: "GET"
     }).then(function (res) {
         if (res.ok)
@@ -286,6 +287,30 @@ async function SendToStoreManager(StreamerID, StoreItem) {
     });
 }
 exports.SendToStoreManager = SendToStoreManager;
+async function BuyStoreItem(StreamerID, TwitchUserID, StoreItem) {
+    let H = new Headers();
+    H.append("Content-Type", "application/json");
+    return fetch(exports.host + Links_1.default.BuyStoreItem, {
+        method: "POST",
+        headers: H,
+        body: JSON.stringify(new BuyStoreItemRequest_1.default(StreamerID, TwitchUserID, StoreItem.id))
+    }).then((res) => {
+        if (res.ok)
+            return bluebird_1.resolve(res);
+        else
+            return bluebird_1.reject(res);
+    }).then((res) => {
+        return res.json().then((res) => {
+            return res;
+        });
+    }).catch((rej) => {
+        return rej.json()
+            .then((res) => {
+            return bluebird_1.reject(res);
+        });
+    });
+}
+exports.BuyStoreItem = BuyStoreItem;
 async function DeteleStoreItem(StreamerID, StoreItem) {
     /*Send current voting with your buttons and current poll status */
     let H = new Headers();
@@ -311,6 +336,19 @@ async function DeteleStoreItem(StreamerID, StoreItem) {
     });
 }
 exports.DeteleStoreItem = DeteleStoreItem;
+async function GetPurchaseOrder(StreamerID) {
+    return fetch(exports.host + Links_1.default.getPurchaseOrder(StreamerID), {
+        method: "GET"
+    }).then(function (res) {
+        if (res.ok)
+            return bluebird_1.resolve(res.json());
+        else
+            return bluebird_1.reject(res.json());
+    }).catch((rej) => {
+        console.log(rej);
+    });
+}
+exports.GetPurchaseOrder = GetPurchaseOrder;
 async function UploadFile(StreamerID, FileName, File) {
     /*Send current voting with your buttons and current poll status */
     let headers = new Headers();

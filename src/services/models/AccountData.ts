@@ -8,6 +8,7 @@ import { Sequelize } from "sequelize";
 import { dbStreamerManager } from "../modules/database/dbStreamerManager";
 import { CoinsSettings } from "./streamer_settings/CoinsSettings";
 import { dbStore } from "./store/dbStore";
+import { dbPurchaseOrder } from "./store/dbPurchaseOrders";
 export class AccountData {
     CurrentPollStatus: PollStatus;
 
@@ -21,6 +22,7 @@ export class AccountData {
     dbWallets: typeof dbWallet;
     dbSettings: typeof dbSettings;
     dbStore: typeof dbStore;
+    dbPurchaseOrders: typeof dbPurchaseOrder;
 
     MinerSettings: MinerSettings;
     CoinsSettings: CoinsSettings;

@@ -21,13 +21,18 @@ export default {
     },
     CoinsSettingsManager: '/CoinsSettingsManager/',
     StoreManager: '/StoreManager',
-    GetStore: '/Store/:StreamerID',
-    getStore: (StreamerID: string) => {
-        return '/Store/' + StreamerID;
+    GetStore: '/Store/:StreamerID/:StoreItemID',
+    getStore: (StreamerID: string, StoreItemID: number) => {
+        return '/Store/' + StreamerID + '/' + StoreItemID;
     },
-    UploadFile:'/UploadFile',
-    GetFile:'/File/:StreamerID/:FileName',
-    getFile: (StreamerID:string,FileName:string) => {
-        return '/File/'+StreamerID+'/'+FileName;
-    }
+    BuyStoreItem: '/BuyStoreItem',
+    GetPurchaseOrder: '/PurchaseOrder/:StreamerID',
+    getPurchaseOrder: (StreamerID: string) => {
+        return '/PurchaseOrder/' + StreamerID
+    },
+    UploadFile: '/UploadFile',
+    GetFile: '/File/:StreamerID/:FileName',
+    getFile: (StreamerID: string, FileName: string) => {
+        return '/File/' + StreamerID + '/' + FileName;
+    },
 }

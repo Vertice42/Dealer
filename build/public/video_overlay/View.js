@@ -45,6 +45,7 @@ class ViewStoreItem {
 class GameBoard {
     constructor() {
         this.onBeatIDSelected = () => { };
+        this.onBuyItemButtonActive = (StoreItem) => { };
         this.SelectedButtonID = null;
         this.BetAmountInput = new Inputs_1.ResponsiveInput(document.getElementById("BetAmountInput"));
         this.CoinsOfUserView = document.getElementById("CoinsOfUserView");
@@ -331,8 +332,12 @@ class GameBoard {
     }
     setStoreItems(StoreItems) {
         this.ItemsList.innerHTML = '';
-        StoreItems.forEach(storeItem => {
-            this.ItemsList.appendChild(new ViewStoreItem(storeItem.Description, storeItem.Price).HTML);
+        StoreItems.forEach(StoreItem => {
+            if (StoreItem.FileName) {
+                let viewStoreItem = new ViewStoreItem(StoreItem.Description, StoreItem.Price);
+                viewStoreItem.HTML_BuyButton.onclick = () => { this.onBuyItemButtonActive(StoreItem); };
+                this.ItemsList.appendChild(viewStoreItem.HTML);
+            }
         });
     }
 }

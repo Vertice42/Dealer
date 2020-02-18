@@ -29,7 +29,7 @@ class dbStreamerManager {
         AccountDataArray.splice(AccountDataArray
             .indexOf(dbStreamerManager.getAccountData(StreamerID)), 1);
     }
-    static async CreateStreamerDataBase(StreamerID) {
+    static async CreateIfNotExistStreamerDataBase(StreamerID) {
         return Mysql.query("CREATE DATABASE " + STREAMER_DATABASE_NAME + StreamerID)
             .then(() => {
             return bluebird_1.resolve({ StreamerDataBaseCreated: StreamerID });

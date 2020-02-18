@@ -13,21 +13,25 @@ class Loading {
      * @returns AccountData
      * */
     static async StreamerDatabase(StreamerID) {
-        await dbStreamerManager_1.dbStreamerManager.CreateStreamerDataBase(StreamerID);
+        await dbStreamerManager_1.dbStreamerManager.CreateIfNotExistStreamerDataBase(StreamerID);
         let accountData = dbStreamerManager_1.dbStreamerManager
             .setAccountData(new AccountData_1.AccountData(StreamerID));
         accountData.CurrentPollStatus = new PollStatus_1.PollStatus();
-        await dbDefine_1.Define.Settings(accountData);
-        await dbDefine_1.Define.Wallets(accountData);
-        await dbDefine_1.Define.Store(accountData);
+        let DefinitionPromises = [
+            dbDefine_1.Define.Settings(accountData),
+            dbDefine_1.Define.Wallets(accountData),
+            dbDefine_1.Define.Store(accountData),
+            dbDefine_1.Define.PurchaseOrder(accountData)
+        ];
+        await Promise.all(DefinitionPromises);
         let tables = await accountData.dbStreamer.query("show tables");
-        if (tables[0].length < 5) {
+        if (tables[0].length < DefinitionPromises.length + 2) {
             accountData.CurrentPollStatus.waxe();
             return accountData;
         }
         //If there are only 2 tables in the database, no poll has been created yet
-        accountData.CurrentPollID = dbUtil_1.getTableName(tables[0], tables[0].length - 4);
-        accountData.CurrentBettingsID = dbUtil_1.getTableName(tables[0], tables[0].length - 5);
+        accountData.CurrentPollID = dbUtil_1.getTableName(tables[0], tables[0].length - (DefinitionPromises.length + 1));
+        accountData.CurrentBettingsID = dbUtil_1.getTableName(tables[0], tables[0].length - (DefinitionPromises.length + 2));
         /**
          * The wallet and settings table are in the same database and will always be
          * the first and second index, while the most recent Bettings poll tables will

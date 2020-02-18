@@ -1,5 +1,6 @@
 import { PollButton } from "../../services/models/poll/PollButton";
 import { ResponsiveInput } from "../model/Inputs";
+import StoreItem from "../../services/models/store/StoreItem";
 
 function hexToRgb(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -12,40 +13,40 @@ function hexToRgb(hex) {
 const GRADIENT_DARKENING_RATE = 1.5;
 
 class ViewStoreItem {
-    HTML:HTMLDivElement
+    HTML: HTMLDivElement
     HTML_TypeDisplay: HTMLImageElement;
     HTML_Description: HTMLSpanElement;
     HTML_Price: HTMLSpanElement;
     HTML_BuyButton: HTMLButtonElement;
 
-    createTypeDisplay(){
+    createTypeDisplay() {
         this.HTML_TypeDisplay = document.createElement('img');
-        this.HTML_TypeDisplay.src ='configurator/images/undefined-document.png';
+        this.HTML_TypeDisplay.src = 'configurator/images/undefined-document.png';
         return this.HTML_TypeDisplay;
     }
 
-    createDescription(Description:string){
+    createDescription(Description: string) {
         this.HTML_Description = document.createElement('span');
         this.HTML_Description.classList.add('Description');
         this.HTML_Description.innerText = Description;
         return this.HTML_Description;
     }
 
-    createPrice(Price:number){  
+    createPrice(Price: number) {
         this.HTML_Price = document.createElement('span');
         this.HTML_Price.classList.add('Price');
-        this.HTML_Price.innerText = Price+'$';
+        this.HTML_Price.innerText = Price + '$';
         return this.HTML_Price;
     }
 
-    createBuyButton(){
+    createBuyButton() {
         this.HTML_BuyButton = document.createElement('button');
         this.HTML_BuyButton.innerText = 'Buy';
         return this.HTML_BuyButton;
     }
 
-    constructor(Description: string,Price:number){
-        this.HTML = <HTMLDivElement> document.createElement('div');
+    constructor(Description: string, Price: number) {
+        this.HTML = <HTMLDivElement>document.createElement('div');
         this.HTML.classList.add('StoreItem');
 
         this.HTML.appendChild(this.createTypeDisplay())
@@ -56,9 +57,10 @@ class ViewStoreItem {
 }
 
 export class GameBoard {
-    public StoreItem:ViewStoreItem
+    public StoreItem: ViewStoreItem
     public getBetValue: () => number;
     public onBeatIDSelected = () => { };
+    public onBuyItemButtonActive = (StoreItem:StoreItem) => { };
 
     public SelectedButtonID: number = null;
     public BetAmountInput = new ResponsiveInput(<HTMLInputElement>document.getElementById("BetAmountInput"));
@@ -388,15 +390,19 @@ export class GameBoard {
         });
     }
 
-    setStoreItems(StoreItems) {
+    setStoreItems(StoreItems: StoreItem[]) {
         this.ItemsList.innerHTML = '';
-        StoreItems.forEach(storeItem => {
-            this.ItemsList.appendChild(new ViewStoreItem(storeItem.Description,storeItem.Price).HTML)
+        StoreItems.forEach(StoreItem => {
+            if (StoreItem.FileName) {
+                let viewStoreItem = new ViewStoreItem(StoreItem.Description, StoreItem.Price);
+                viewStoreItem.HTML_BuyButton.onclick = () => { this.onBuyItemButtonActive(StoreItem) }
+                this.ItemsList.appendChild(viewStoreItem.HTML);
+            }
         });
     }
 
     constructor() {
-        this.Wallet.addEventListener('click', () => {            
+        this.Wallet.addEventListener('click', () => {
             if (this.StoreDiv.classList.contains('StoreHide')) {
                 this.StoreDiv.classList.remove('StoreHide');
                 this.StoreDiv.classList.add('StoreSample');

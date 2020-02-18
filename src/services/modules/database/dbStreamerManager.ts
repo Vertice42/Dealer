@@ -46,7 +46,7 @@ export class dbStreamerManager {
             .indexOf(dbStreamerManager.getAccountData(StreamerID)), 1);
     }
 
-    static async CreateStreamerDataBase(StreamerID: string) {
+    static async CreateIfNotExistStreamerDataBase(StreamerID: string) {
         return Mysql.query("CREATE DATABASE " + STREAMER_DATABASE_NAME + StreamerID)
             .then(() => {
                 return resolve({ StreamerDataBaseCreated: StreamerID });
