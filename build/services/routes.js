@@ -18,9 +18,8 @@ const path = require("path");
 const PurchaseOrder_1 = require("./models/store/PurchaseOrder");
 const dbPurchaseOrderManager_1 = require("./modules/database/store/dbPurchaseOrderManager");
 const app = express();
-exports.app = app;
 const server = http.createServer(app);
-const io = Socket_io(server);
+const io = Socket_io(server).listen(server);
 app.use(cors());
 app.use(bodyParser.json());
 function CheckRequisition(CheckList) {
@@ -38,6 +37,15 @@ function ThereWinningButtonsInArray(PollButtons) {
             return true;
     return false;
 }
+var Sockets = [];
+function getSoketOfStreamer(StreamerID) {
+    return Sockets[StreamerID];
+}
+io.on('connect', (socket) => {
+    socket.on('registered', (StreamerID) => {
+        Sockets[StreamerID] = socket;
+    });
+});
 app.post(Links_1.default.PollManager, async function (req, res) {
     let ErrorList = CheckRequisition([
         () => {
@@ -326,6 +334,7 @@ app.post(Links_1.default.BuyStoreItem, async function (req, res) {
     new dbPurchaseOrderManager_1.default(BuyRequest.StreamerID)
         .addPurchaseOrder(new PurchaseOrder_1.default(ItemPrice, BuyRequest.TwitchUserID, BuyRequest.StoreItemID, new Date))
         .then((result) => {
+        getSoketOfStreamer(BuyRequest.StreamerID).emit('PurchasedItem', new Date);
         res.status(200).send({ PurchaseOrderWasSentSuccessfully: new Date });
     })
         .catch((rej) => {
@@ -342,3 +351,4 @@ app.get(Links_1.default.GetPurchaseOrder, async function (req, res) {
         res.status(500).send(rej);
     });
 });
+exports.default = server;

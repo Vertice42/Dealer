@@ -329,7 +329,7 @@ export async function DeteleStoreItem(StreamerID: string, StoreItem: StoreItem):
   });
 }
 
-export async function GetPurchaseOrder(StreamerID: string) {
+export async function GetPurchaseOrders(StreamerID: string) {
   return fetch(host + link.getPurchaseOrder(StreamerID), {
     method: "GET"
   }).then(function (res) {

@@ -2,6 +2,7 @@ import { PollStatus } from "../../services/models/poll/PollStatus";
 import { Poll } from "../../services/models/poll/Poll";
 import { ResponsiveInput, OrientedInput, ResponsiveInputFile } from "../model/Inputs";
 import StoreItem from "../../services/models/store/StoreItem";
+import PurchaseOrder from "../../services/models/store/PurchaseOrder";
 
 function GenerateColor() {
   /**Generate random hex color*/
@@ -695,11 +696,8 @@ export class ViewStore {
         Item.Price = StoreItem.Price;
         Item.PriceInput.setUsed();
       }
-      console.log('Item', StoreItem);
 
       if (StoreItem.FileName) {
-        console.log('sond', localStorage[StoreItem.FileName]);
-
         Item.ResponsiveInputFile.setUpgradeable();
       }
     }
@@ -802,6 +800,9 @@ export class ViewPurchaseOrders {
   }
   addViewPurchaseOrder(OrderPlacement:number,UserName:string,PurchaseTime:number,StoreItem:StoreItem){
     this.HTML_ListOfPurchasedItems.appendChild(new ViewPurchasedItems(OrderPlacement,UserName,PurchaseTime,StoreItem.Description).HTML)
+  }
+  clear(){
+    this.HTML_ListOfPurchasedItems.innerHTML = '';
   }
   constructor(){
   }

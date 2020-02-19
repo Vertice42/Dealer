@@ -2,10 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const ViewConfig = require("./View");
 const BackendConnections = require("../BackendConnection");
+const io = require("socket.io-client");
 const BackendConnection_1 = require("../BackendConnection");
 const PollButton_1 = require("../../services/models/poll/PollButton");
 const PollStatus_1 = require("../../services/models/poll/PollStatus");
 const utils_1 = require("../../utils/utils");
+const MinerSettings_1 = require("../../services/models/miner/MinerSettings");
+const socket = io(BackendConnection_1.host);
 const twitch = window.Twitch.ext;
 var token, StreamerID;
 var ViewPoll;
@@ -36,6 +39,7 @@ twitch.onContext((context) => {
 twitch.onAuthorized(async (auth) => {
     token = auth.token;
     StreamerID = auth.channelId.toLowerCase();
+    socket.emit('registered', StreamerID);
     let Poll = await BackendConnections.getCurrentPoll(StreamerID);
     ViewPoll = new ViewConfig.ViewPollManeger(Poll);
     let watchPoll;
@@ -88,11 +92,11 @@ twitch.onAuthorized(async (auth) => {
         });
     };
     const ViewSettings = new ViewConfig.ViewSettings;
-    let MinerSettings = await BackendConnections.GetMinerSettings(StreamerID);
-    ViewSettings.HourlyRewardInput.HTMLInput.value = (~~(MinerSettings.RewardPerMinute * 60)).toString();
+    let minerSettings = await BackendConnections.GetMinerSettings(StreamerID);
+    ViewSettings.HourlyRewardInput.HTMLInput.value = (~~(minerSettings.RewardPerMinute * 60)).toString();
     ViewSettings.HourlyRewardInput.HTMLInput.onchange = () => {
         ViewSettings.HourlyRewardInput.setChangedInput();
-        BackendConnections.SendToMinerManager(StreamerID, new MinerSettings(Number(ViewSettings.HourlyRewardInput.HTMLInput.value) / 60))
+        BackendConnections.SendToMinerManager(StreamerID, new MinerSettings_1.MinerSettings(Number(ViewSettings.HourlyRewardInput.HTMLInput.value) / 60))
             .then(async () => {
             ViewSettings.HourlyRewardInput.setInputSentSuccessfully();
             await utils_1.sleep(100);
@@ -149,8 +153,15 @@ twitch.onAuthorized(async (auth) => {
         ViewStore.removeStoreItem(StoreItem);
     };
     const ViewPurchaseOrders = new ViewConfig.ViewPurchaseOrders;
-    let PurchaseOrders = await BackendConnections.GetPurchaseOrder(StreamerID);
-    PurchaseOrders.forEach(async (PurchaseOrder) => {
-        ViewPurchaseOrders.addViewPurchaseOrder(PurchaseOrder.id, PurchaseOrder.TwitchUserID, new Date(PurchaseOrder.updatedAt).getTime(), await BackendConnections.GetStore(StreamerID, PurchaseOrder.StoreItemID));
+    async function setPurchaseOrders() {
+        ViewPurchaseOrders.clear();
+        let PurchaseOrders = await BackendConnections.GetPurchaseOrders(StreamerID);
+        PurchaseOrders.forEach(async (PurchaseOrder) => {
+            ViewPurchaseOrders.addViewPurchaseOrder(PurchaseOrder.id, PurchaseOrder.TwitchUserID, new Date(PurchaseOrder.updatedAt).getTime(), await BackendConnections.GetStore(StreamerID, PurchaseOrder.StoreItemID));
+        });
+    }
+    setPurchaseOrders();
+    socket.on('PurchasedItem', () => {
+        setPurchaseOrders();
     });
 });

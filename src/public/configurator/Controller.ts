@@ -1,14 +1,18 @@
 import ViewConfig = require("./View");
 import BackendConnections = require("../BackendConnection");
-import { WatchPoll, SendToStoreManager, GetStore, DeteleStoreItem } from "../BackendConnection";
+import io = require('socket.io-client');
+
+import { WatchPoll, SendToStoreManager, GetStore, DeteleStoreItem, host } from "../BackendConnection";
 import { PollButton } from "../../services/models/poll/PollButton";
 import { PollStatus } from "../../services/models/poll/PollStatus";
 import { Poll } from "../../services/models/poll/Poll";
-import { MinerSettings } from "../../services/models/miner/MinerSettings";
 import { sleep } from "../../utils/utils";
 import StoreItem from "../../services/models/store/StoreItem";
 import UploadFileResponse from "../../services/models/files_manager/UploadFileResponse";
 import PurchaseOrder from "../../services/models/store/PurchaseOrder";
+import { MinerSettings } from "../../services/models/miner/MinerSettings";
+
+const socket = io(host);
 
 const twitch: TwitchExt = window.Twitch.ext;
 var token, StreamerID;
@@ -48,9 +52,13 @@ twitch.onContext((context) => {
     console.log(context);
 })
 
+
 twitch.onAuthorized(async (auth) => {
     token = auth.token;
     StreamerID = auth.channelId.toLowerCase();
+
+    socket.emit('registered', StreamerID)
+
     let Poll = await BackendConnections.getCurrentPoll(StreamerID);
 
     ViewPoll = new ViewConfig.ViewPollManeger(Poll);
@@ -110,9 +118,9 @@ twitch.onAuthorized(async (auth) => {
 
     const ViewSettings = new ViewConfig.ViewSettings;
 
-    let MinerSettings = await BackendConnections.GetMinerSettings(StreamerID);
+    let minerSettings = await BackendConnections.GetMinerSettings(StreamerID);
 
-    ViewSettings.HourlyRewardInput.HTMLInput.value = (~~(MinerSettings.RewardPerMinute * 60)).toString();
+    ViewSettings.HourlyRewardInput.HTMLInput.value = (~~(minerSettings.RewardPerMinute * 60)).toString();
 
     ViewSettings.HourlyRewardInput.HTMLInput.onchange = () => {
         ViewSettings.HourlyRewardInput.setChangedInput();
@@ -185,9 +193,22 @@ twitch.onAuthorized(async (auth) => {
 
     const ViewPurchaseOrders = new ViewConfig.ViewPurchaseOrders;
 
-    let PurchaseOrders: PurchaseOrder[] = await BackendConnections.GetPurchaseOrder(StreamerID);
-    PurchaseOrders.forEach(async PurchaseOrder => {
-        ViewPurchaseOrders.addViewPurchaseOrder(PurchaseOrder.id, PurchaseOrder.TwitchUserID, new Date(PurchaseOrder.updatedAt).getTime(), await BackendConnections.GetStore(StreamerID, PurchaseOrder.StoreItemID));
-    });
+    async function setPurchaseOrders() {
+        ViewPurchaseOrders.clear();
+        let PurchaseOrders: PurchaseOrder[] = await BackendConnections.GetPurchaseOrders(StreamerID);
+
+        PurchaseOrders.forEach(async PurchaseOrder => {
+            ViewPurchaseOrders.addViewPurchaseOrder(
+                PurchaseOrder.id,
+                PurchaseOrder.TwitchUserID,
+                new Date(PurchaseOrder.updatedAt).getTime(),
+                await BackendConnections.GetStore(StreamerID, PurchaseOrder.StoreItemID));
+        });
+    }
+    setPurchaseOrders();
+    socket.on('PurchasedItem', () => {
+        setPurchaseOrders()
+    })
 
 });
+

@@ -525,9 +525,7 @@ class ViewStore {
                 Item.Price = StoreItem.Price;
                 Item.PriceInput.setUsed();
             }
-            console.log('Item', StoreItem);
             if (StoreItem.FileName) {
-                console.log('sond', localStorage[StoreItem.FileName]);
                 Item.ResponsiveInputFile.setUpgradeable();
             }
         }
@@ -610,6 +608,9 @@ class ViewPurchaseOrders {
     }
     addViewPurchaseOrder(OrderPlacement, UserName, PurchaseTime, StoreItem) {
         this.HTML_ListOfPurchasedItems.appendChild(new ViewPurchasedItems(OrderPlacement, UserName, PurchaseTime, StoreItem.Description).HTML);
+    }
+    clear() {
+        this.HTML_ListOfPurchasedItems.innerHTML = '';
     }
 }
 exports.ViewPurchaseOrders = ViewPurchaseOrders;

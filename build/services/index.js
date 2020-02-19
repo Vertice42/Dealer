@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const routes_1 = require("./routes");
 const ServerConfigs_1 = require("./configs/ServerConfigs");
+const routes_1 = require("./routes");
 console.log('**** SERVER AS STARTDED ****');
-routes_1.app.listen(ServerConfigs_1.default.Port);
+//app.listen(ServerConfigs.Port);
+routes_1.default.listen(ServerConfigs_1.default.Port); // not 'app.listen'!

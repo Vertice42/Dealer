@@ -336,7 +336,7 @@ async function DeteleStoreItem(StreamerID, StoreItem) {
     });
 }
 exports.DeteleStoreItem = DeteleStoreItem;
-async function GetPurchaseOrder(StreamerID) {
+async function GetPurchaseOrders(StreamerID) {
     return fetch(exports.host + Links_1.default.getPurchaseOrder(StreamerID), {
         method: "GET"
     }).then(function (res) {
@@ -348,7 +348,7 @@ async function GetPurchaseOrder(StreamerID) {
         console.log(rej);
     });
 }
-exports.GetPurchaseOrder = GetPurchaseOrder;
+exports.GetPurchaseOrders = GetPurchaseOrders;
 async function UploadFile(StreamerID, FileName, File) {
     /*Send current voting with your buttons and current poll status */
     let headers = new Headers();

@@ -31,10 +31,9 @@ import PurchaseOrder from "./models/store/PurchaseOrder";
 import dbPurchaseOrderManager from "./modules/database/store/dbPurchaseOrderManager";
 import { dbPurchaseOrder } from "./models/store/dbPurchaseOrders";
 
-
 const app = express();
 const server = http.createServer(app);
-const io = Socket_io(server);
+const io = Socket_io(server).listen(server)
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -52,6 +51,17 @@ function ThereWinningButtonsInArray(PollButtons: PollButton[]): boolean {
         if (PollButtons[i].IsWinner) return true;
     return false;
 }
+
+var Sockets:Socket_io.Socket[] = [];
+function getSoketOfStreamer(StreamerID:string):Socket_io.Socket{
+    return Sockets[StreamerID];
+}
+
+io.on('connect', (socket) => {
+    socket.on('registered', (StreamerID)=>{
+        Sockets[StreamerID] = socket;
+    })
+});
 
 app.post(links.PollManager, async function (req: PollRequest, res: express.Response) {
 
@@ -370,6 +380,7 @@ app.post(links.BuyStoreItem, async function (req, res: express.Response) {
     new dbPurchaseOrderManager(BuyRequest.StreamerID)
         .addPurchaseOrder(new PurchaseOrder(ItemPrice, BuyRequest.TwitchUserID, BuyRequest.StoreItemID, new Date))
         .then((result) => {
+            getSoketOfStreamer(BuyRequest.StreamerID).emit('PurchasedItem', new Date)
             res.status(200).send({ PurchaseOrderWasSentSuccessfully: new Date })
         })
         .catch((rej) => {
@@ -388,4 +399,5 @@ app.get(links.GetPurchaseOrder, async function (req: { params: { StreamerID: str
             res.status(500).send(rej)
         })
 })
-export { app };
+
+export default server;
