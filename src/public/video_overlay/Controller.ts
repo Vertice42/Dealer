@@ -1,7 +1,7 @@
 import { PollStatus } from "../../services/models/poll/PollStatus";
 import { PollButton } from "../../services/models/poll/PollButton";
 import { isEquivalent, sleep } from "../../utils/utils";
-import { WatchPoll, addBet as addBeat, GetWallet, GetStore, BuyStoreItem } from "../BackendConnection";
+import { WatchPoll, addBet as addBeat, GetWallet, GetStore, addPurchaseOrder } from "../BackendConnection";
 import { Poll } from "../../services/models/poll/Poll";
 import { Miner } from "./modules/Miner";
 import { dbWallet } from "../../services/models/poll/dbWallet";
@@ -128,7 +128,7 @@ twitch.onAuthorized(async (auth) => {
     GAME_BOARD.setStoreItems(await GetStore(StreamerID,-1));
 
     GAME_BOARD.onBuyItemButtonActive = (StoreItem:StoreItem) => {
-      BuyStoreItem(StreamerID,TwitchUserID,StoreItem)
+      addPurchaseOrder(StreamerID,TwitchUserID,StoreItem)
       .then((res)=>{
         console.log(res);
       })

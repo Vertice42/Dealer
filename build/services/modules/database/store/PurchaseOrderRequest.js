@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class PurchaseOrder {
-    constructor(SpentCoins, TwitchUserID, StoreItemID) {
-        this.SpentCoins = SpentCoins;
+class PurchaseOrderRequest {
+    constructor(StreamerID, TwitchUserID, StoreItemID) {
+        this.StreamerID = StreamerID;
         this.TwitchUserID = TwitchUserID;
         this.StoreItemID = StoreItemID;
     }
 }
-exports.default = PurchaseOrder;
+exports.default = PurchaseOrderRequest;

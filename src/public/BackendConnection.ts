@@ -8,7 +8,9 @@ import { MinerSettings } from '../services/models/miner/MinerSettings';
 import StoreItem from '../services/models/store/StoreItem';
 import StoreManagerRequest from '../services/models/store/StoreManagerRequest';
 import UploadFileResponse from '../services/models/files_manager/UploadFileResponse';
-import BuyStoreItemRequest from '../services/modules/database/store/BuyStoreItemRequest';
+import PurchaseOrderRequest from '../services/modules/database/store/PurchaseOrderRequest';
+import DeletePurchaseOrderRequest from '../services/modules/database/store/DeletePurchaseOrderRequest';
+import PurchaseOrder from '../services/models/store/PurchaseOrder';
 
 export const host = 'http://localhost:' + (ServerConfigs.Port || process.env.Port);
 
@@ -245,8 +247,8 @@ export async function GetWallet(StreamerID: string, TwitchUserID: string) {
   })
 }
 
-export async function GetStore(StreamerID: string,StoreItemID:number) {
-  return fetch(host + link.getStore(StreamerID,StoreItemID), {
+export async function GetStore(StreamerID: string, StoreItemID: number) {
+  return fetch(host + link.getStore(StreamerID, StoreItemID), {
     method: "GET"
   }).then(function (res) {
     if (res.ok)
@@ -282,14 +284,37 @@ export async function SendToStoreManager(StreamerID: string, StoreItem: StoreIte
   });
 }
 
-export async function BuyStoreItem(StreamerID: string, TwitchUserID: string, StoreItem: StoreItem) {
+export async function addPurchaseOrder(StreamerID: string, TwitchUserID: string, StoreItem: StoreItem) {
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
-  return fetch(host + link.BuyStoreItem, {
+  return fetch(host + link.PurchaseOrder, {
     method: "POST",
     headers: H,
-    body: JSON.stringify(new BuyStoreItemRequest(StreamerID, TwitchUserID, StoreItem.id))
+    body: JSON.stringify(new PurchaseOrderRequest(StreamerID, TwitchUserID, StoreItem.id))
+  }).then((res) => {
+    if (res.ok) return resolve(res)
+    else return reject(res);
+  }).then((res) => {
+    return res.json().then((res) => {
+      return res;
+    })
+  }).catch((rej) => {
+    return rej.json()
+      .then((res) => {
+        return reject(res);
+      })
+  });
+}
+
+export async function DeletePurchaseOrder(StreamerID: string, PurchaseOrder: PurchaseOrder, Refund: boolean) {
+  let H = new Headers();
+  H.append("Content-Type", "application/json");
+
+  return fetch(host + link.PurchaseOrder, {
+    method: "DELETE",
+    headers: H,
+    body: JSON.stringify(new DeletePurchaseOrderRequest(StreamerID, PurchaseOrder.TwitchUserID, PurchaseOrder.id, PurchaseOrder.StoreItemID, PurchaseOrder.SpentCoins, Refund))
   }).then((res) => {
     if (res.ok) return resolve(res)
     else return reject(res);
@@ -364,4 +389,7 @@ export async function UploadFile(StreamerID: string, FileName: string, File: Fil
     });
 }
 
+export function getUrlOfFile(StreamerID: string, FileName: string) {
+  return host + link.getFiles(StreamerID, FileName);
+}
 

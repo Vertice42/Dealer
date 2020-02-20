@@ -3,6 +3,7 @@ import { Poll } from "../../services/models/poll/Poll";
 import { ResponsiveInput, OrientedInput, ResponsiveInputFile } from "../model/Inputs";
 import StoreItem from "../../services/models/store/StoreItem";
 import PurchaseOrder from "../../services/models/store/PurchaseOrder";
+import Links from "../../services/Links";
 
 function GenerateColor() {
   /**Generate random hex color*/
@@ -733,77 +734,109 @@ export class ViewStore {
     document.getElementById('AddStoreItem').onclick = () => { this.onAddStoreItemActive() }
   }
 }
-export class ViewPurchasedItems {
-  HTML:HTMLDivElement
-  private HTML_ItemPlacement:HTMLSpanElement
-  private HTML_UserName:HTMLSpanElement
-  private HTML_PurchaseTime:HTMLSpanElement
-  private HTML_ItemName:HTMLSpanElement
-  private HTML_RefundButton:HTMLSpanElement
+export class ViewPurchasedItem {
+  id:number
+  HTML: HTMLDivElement
+  private HTML_ItemPlacement: HTMLSpanElement
+  private HTML_UserName: HTMLSpanElement
+  private HTML_PurchaseTime: HTMLSpanElement
+  private HTML_ItemName: HTMLSpanElement
+  private HTML_RefundButton: HTMLSpanElement
 
-  private CreateHTML_ItemPlacement(ItemPlacement:number){
+  onRefundButtonActive = () => { }
+
+  private CreateHTML_ItemPlacement(ItemPlacement: number) {
     this.HTML_ItemPlacement = document.createElement('span');
     this.HTML_ItemPlacement.classList.add('ItemPlacement');
     this.HTML_ItemPlacement.innerText = ItemPlacement + '°';
     return this.HTML_ItemPlacement;
   }
 
-  private CreateHTML_UserName(UserName:string){
+  private CreateHTML_UserName(UserName: string) {
     this.HTML_UserName = document.createElement('span');
     this.HTML_UserName.classList.add('UserName');
-    this.HTML_UserName.innerText = '@'+UserName;
+    this.HTML_UserName.innerText = '@' + UserName;
     return this.HTML_UserName;
   }
 
-  private CreatePurchaseTime(PurchaseTime:number){
+  private CreatePurchaseTime(PurchaseTime: number) {
     this.HTML_PurchaseTime = document.createElement('span');
     this.HTML_PurchaseTime.classList.add('PurchaseTime');
     //add ,ecanica de tempo dinamico
-    this.HTML_PurchaseTime.innerText = PurchaseTime+'';
+    this.HTML_PurchaseTime.innerText = PurchaseTime + '';
     return this.HTML_PurchaseTime;
   }
 
-  private CreateHTML_ItemName(ItemName:string){
+  private CreateHTML_ItemName(ItemName: string) {
     this.HTML_ItemName = document.createElement('span');
     this.HTML_ItemName.classList.add('ItemName');
     this.HTML_ItemName.innerText = ItemName;
     return this.HTML_ItemName;
   }
 
-  private CreateHTML_RefundButton(){
+  private CreateHTML_RefundButton() {
     this.HTML_RefundButton = document.createElement('button');
     this.HTML_RefundButton.classList.add('RefundButton');
     this.HTML_RefundButton.innerText = 'Refund';
+    this.HTML_RefundButton.onclick = () => {
+      this.onRefundButtonActive();
+    }
     return this.HTML_RefundButton;
   }
 
-  constructor(Placement:number,UserName:string,PurchaseTime:number,ItemDescription:string){
+  constructor(id: number, UserName: string, PurchaseTime: number, ItemDescription: string) {
+    this.id = id;
     this.HTML = document.createElement('div');
     this.HTML.classList.add('PurchasedItem');
-    this.HTML.appendChild(this.CreateHTML_ItemPlacement(Placement))
+    this.HTML.appendChild(this.CreateHTML_ItemPlacement(id))
     this.HTML.appendChild(this.CreateHTML_UserName(UserName))
     this.HTML.appendChild(this.CreatePurchaseTime(PurchaseTime))
     this.HTML.appendChild(this.CreateHTML_ItemName(ItemDescription))
     this.HTML.appendChild(this.CreateHTML_RefundButton())
-
   }
 }
 
 export class ViewPurchaseOrders {
-  HTML_ListOfPurchasedItems = <HTMLDivElement> document.getElementById('ListOfPurchasedItems');
-  HTML_LoadingBarOfAudioPlayer = <HTMLDivElement> document.getElementById('LoadingBarOfAudioPlayer');
-  setAudioPlayerProgress(progres:number){
+  leght = 0;
+
+  private HTML_PlaybackUserName = <HTMLSpanElement> document.getElementById('PlaybackUserName');
+  private HTML_PlaybackItemName = <HTMLSpanElement> document.getElementById('PlaybackItemName');
+
+  HTML_ListOfPurchasedItems = <HTMLDivElement>document.getElementById('ListOfPurchasedItems');
+  HTML_LoadingBarOfAudioPlayer = <HTMLDivElement>document.getElementById('LoadingBarOfAudioPlayer');
+  HTML_AudioPlayer = <HTMLAudioElement>document.getElementById('AudioPlayer');
+
+  onButtonPurchaseOrderRefundActive = (ViewPurchasedItem: ViewPurchasedItem, PurchaseOrder: PurchaseOrder) => { };
+  onAddPuchaseOrder = (ViewPurchasedItem:ViewPurchasedItem,PurchaseOrder: PurchaseOrder,StoreItem:StoreItem) => { }
+
+  setAudioPlayerProgress(progres: number) {
     let left = progres;
     let rigth = progres;
-    this.HTML_LoadingBarOfAudioPlayer.style.backgroundImage = 
-    `linear-gradient(to left, rgb(86, 128, 219) ${rigth}%, rgb(93, 144, 255) ${left}%)`;
+    this.HTML_LoadingBarOfAudioPlayer.style.backgroundImage =
+      `linear-gradient(to left, rgb(86, 128, 219) ${rigth}%, rgb(93, 144, 255) ${left}%)`;
   }
-  addViewPurchaseOrder(OrderPlacement:number,UserName:string,PurchaseTime:number,StoreItem:StoreItem){
-    this.HTML_ListOfPurchasedItems.appendChild(new ViewPurchasedItems(OrderPlacement,UserName,PurchaseTime,StoreItem.Description).HTML)
+
+  setCurrentPay(TwitchUserName:string,StoreItemName:string) {
+    this.HTML_PlaybackUserName.innerText = TwitchUserName;
+    this.HTML_PlaybackItemName.innerText = StoreItemName;
   }
-  clear(){
+
+  addViewPurchaseOrder(PurchaseOrder: PurchaseOrder, StoreItem: StoreItem) {
+    this.leght++;
+    let viewPurchasedItem = new ViewPurchasedItem(this.leght, PurchaseOrder.TwitchUserID, new Date(PurchaseOrder.updatedAt).getTime(), StoreItem.Description)
+    viewPurchasedItem.onRefundButtonActive = () => {
+      this.onButtonPurchaseOrderRefundActive(viewPurchasedItem, PurchaseOrder)
+    }
+    this.onAddPuchaseOrder(viewPurchasedItem,PurchaseOrder,StoreItem);
+    this.HTML_ListOfPurchasedItems.appendChild(viewPurchasedItem.HTML)
+  }
+  removeViewPurchaseOrder(ViewPurchasedItem: ViewPurchasedItem) {
+    this.HTML_ListOfPurchasedItems.removeChild(ViewPurchasedItem.HTML)
+  }
+
+  clear() {
     this.HTML_ListOfPurchasedItems.innerHTML = '';
   }
-  constructor(){
+  constructor() {
   }
 }

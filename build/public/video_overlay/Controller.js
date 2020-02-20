@@ -114,7 +114,7 @@ twitch.onAuthorized(async (auth) => {
         }).startMining();
         GAME_BOARD.setStoreItems(await BackendConnection_1.GetStore(StreamerID, -1));
         GAME_BOARD.onBuyItemButtonActive = (StoreItem) => {
-            BackendConnection_1.BuyStoreItem(StreamerID, TwitchUserID, StoreItem)
+            BackendConnection_1.addPurchaseOrder(StreamerID, TwitchUserID, StoreItem)
                 .then((res) => {
                 console.log(res);
             })

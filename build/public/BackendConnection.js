@@ -4,7 +4,8 @@ const bluebird_1 = require("bluebird");
 const Links_1 = require("../services/Links");
 const ServerConfigs_1 = require("../services/configs/ServerConfigs");
 const StoreManagerRequest_1 = require("../services/models/store/StoreManagerRequest");
-const BuyStoreItemRequest_1 = require("../services/modules/database/store/BuyStoreItemRequest");
+const PurchaseOrderRequest_1 = require("../services/modules/database/store/PurchaseOrderRequest");
+const DeletePurchaseOrderRequest_1 = require("../services/modules/database/store/DeletePurchaseOrderRequest");
 exports.host = 'http://localhost:' + (ServerConfigs_1.default.Port || process.env.Port);
 async function getCurrentPoll(StreamerID) {
     /* Use fetch to communicate to backend and get current voting */
@@ -287,13 +288,13 @@ async function SendToStoreManager(StreamerID, StoreItem) {
     });
 }
 exports.SendToStoreManager = SendToStoreManager;
-async function BuyStoreItem(StreamerID, TwitchUserID, StoreItem) {
+async function addPurchaseOrder(StreamerID, TwitchUserID, StoreItem) {
     let H = new Headers();
     H.append("Content-Type", "application/json");
-    return fetch(exports.host + Links_1.default.BuyStoreItem, {
+    return fetch(exports.host + Links_1.default.PurchaseOrder, {
         method: "POST",
         headers: H,
-        body: JSON.stringify(new BuyStoreItemRequest_1.default(StreamerID, TwitchUserID, StoreItem.id))
+        body: JSON.stringify(new PurchaseOrderRequest_1.default(StreamerID, TwitchUserID, StoreItem.id))
     }).then((res) => {
         if (res.ok)
             return bluebird_1.resolve(res);
@@ -310,7 +311,31 @@ async function BuyStoreItem(StreamerID, TwitchUserID, StoreItem) {
         });
     });
 }
-exports.BuyStoreItem = BuyStoreItem;
+exports.addPurchaseOrder = addPurchaseOrder;
+async function DeletePurchaseOrder(StreamerID, PurchaseOrder, Refund) {
+    let H = new Headers();
+    H.append("Content-Type", "application/json");
+    return fetch(exports.host + Links_1.default.PurchaseOrder, {
+        method: "DELETE",
+        headers: H,
+        body: JSON.stringify(new DeletePurchaseOrderRequest_1.default(StreamerID, PurchaseOrder.TwitchUserID, PurchaseOrder.id, PurchaseOrder.StoreItemID, PurchaseOrder.SpentCoins, Refund))
+    }).then((res) => {
+        if (res.ok)
+            return bluebird_1.resolve(res);
+        else
+            return bluebird_1.reject(res);
+    }).then((res) => {
+        return res.json().then((res) => {
+            return res;
+        });
+    }).catch((rej) => {
+        return rej.json()
+            .then((res) => {
+            return bluebird_1.reject(res);
+        });
+    });
+}
+exports.DeletePurchaseOrder = DeletePurchaseOrder;
 async function DeteleStoreItem(StreamerID, StoreItem) {
     /*Send current voting with your buttons and current poll status */
     let H = new Headers();
@@ -368,3 +393,7 @@ async function UploadFile(StreamerID, FileName, File) {
     });
 }
 exports.UploadFile = UploadFile;
+function getUrlOfFile(StreamerID, FileName) {
+    return exports.host + Links_1.default.getFiles(StreamerID, FileName);
+}
+exports.getUrlOfFile = getUrlOfFile;

@@ -26,10 +26,11 @@ import http = require('http')
 import Socket_io = require('socket.io')
 import UploadFileResponse from "./models/files_manager/UploadFileResponse";
 import path = require('path');
-import BuyStoreItemRequest from "./modules/database/store/BuyStoreItemRequest";
+import PurchaseOrderRequest from "./modules/database/store/PurchaseOrderRequest";
 import PurchaseOrder from "./models/store/PurchaseOrder";
 import dbPurchaseOrderManager from "./modules/database/store/dbPurchaseOrderManager";
 import { dbPurchaseOrder } from "./models/store/dbPurchaseOrders";
+import DeletePurchaseOrderRequest from "./modules/database/store/DeletePurchaseOrderRequest";
 
 const app = express();
 const server = http.createServer(app);
@@ -52,13 +53,13 @@ function ThereWinningButtonsInArray(PollButtons: PollButton[]): boolean {
     return false;
 }
 
-var Sockets:Socket_io.Socket[] = [];
-function getSoketOfStreamer(StreamerID:string):Socket_io.Socket{
+var Sockets: Socket_io.Socket[] = [];
+function getSoketOfStreamer(StreamerID: string): Socket_io.Socket {
     return Sockets[StreamerID];
 }
 
 io.on('connect', (socket) => {
-    socket.on('registered', (StreamerID)=>{
+    socket.on('registered', (StreamerID) => {
         Sockets[StreamerID] = socket;
     })
 });
@@ -348,6 +349,7 @@ app.get(links.GetStore, async function (req: { params: { StreamerID: string, Sto
 })
 
 app.post(links.UploadFile, async function (req, res: express.Response) {
+    //TODO ON UPDATE REMOVER ANTIGO
     let dir = `./uploads/${req.headers["streamer-id"]}`;
 
     if (!fs.existsSync(dir)) fs.mkdirSync(dir);
@@ -367,28 +369,46 @@ app.get(links.GetFile, async function (req, res: express.Response) {
     res.status(200).sendFile(path.resolve(`./uploads/${req.params.StreamerID}/${req.params.FileName}`))
 })
 
-app.post(links.BuyStoreItem, async function (req, res: express.Response) {
-    let BuyRequest: BuyStoreItemRequest = req.body;
+app.post(links.PurchaseOrder, async function (req, res: express.Response) {
+    let PurchaseOrderRequest: PurchaseOrderRequest = req.body;
     //TODO add CheckRequisition
-    let ItemPrice = (await new dbStoreManager(BuyRequest.StreamerID).getIten(BuyRequest.StoreItemID)).Price;
-    let dbWalletM = new dbWalletManeger(BuyRequest.StreamerID, BuyRequest.TwitchUserID);
+    let ItemPrice = (await new dbStoreManager(PurchaseOrderRequest.StreamerID).getIten(PurchaseOrderRequest.StoreItemID)).Price;
+    let dbWalletM = new dbWalletManeger(PurchaseOrderRequest.StreamerID, PurchaseOrderRequest.TwitchUserID);
 
-    if ((await dbWalletM.getWallet()).Coins < ItemPrice)
+    if ((await dbWalletM.getWallet()).Coins < ItemPrice) {
         return res.status(400).send({ ErrorBuying: 'Insufficient funds' })
+    }
 
-    await dbWalletM.withdraw(ItemPrice);
-    new dbPurchaseOrderManager(BuyRequest.StreamerID)
-        .addPurchaseOrder(new PurchaseOrder(ItemPrice, BuyRequest.TwitchUserID, BuyRequest.StoreItemID, new Date))
-        .then((result) => {
-            getSoketOfStreamer(BuyRequest.StreamerID).emit('PurchasedItem', new Date)
+    new dbPurchaseOrderManager(PurchaseOrderRequest.StreamerID)
+        .addPurchaseOrder(new PurchaseOrder(ItemPrice, PurchaseOrderRequest.TwitchUserID, PurchaseOrderRequest.StoreItemID)
+        )
+        .then(async (dbPurchaseOrder) => {
+            await dbWalletM.withdraw(ItemPrice);
+            getSoketOfStreamer(PurchaseOrderRequest.StreamerID).emit('PurchasedItem', <PurchaseOrder>dbPurchaseOrder)
             res.status(200).send({ PurchaseOrderWasSentSuccessfully: new Date })
         })
         .catch((rej) => {
             console.log(rej);
             res.status(500).send(rej);
         })
-}
-)
+})
+
+app.delete(links.PurchaseOrder, async function (req, res: express.Response){    
+    let PurchaseOrder:DeletePurchaseOrderRequest = req.body;
+    new dbPurchaseOrderManager(PurchaseOrder.StreamerID)
+    .removePurchaseOrder(PurchaseOrder.PurchaseOrderID)
+    .then(()=>{
+        if(PurchaseOrder.Refund){
+            return new dbWalletManeger(PurchaseOrder.StreamerID, PurchaseOrder.TwitchUserID)
+            .deposit(PurchaseOrder.SpentCoins)
+        }
+        res.status(200).send({ PurchaseOrderRemovedSuccessfully: new Date })
+    })
+    .catch((rej) => {
+        console.log(rej);
+        res.status(500).send(rej);
+    })
+})
 
 app.get(links.GetPurchaseOrder, async function (req: { params: { StreamerID: string } }, res: express.Response) {
     new dbPurchaseOrderManager(req.params.StreamerID).getAllPurchaseOrders()

@@ -25,14 +25,14 @@ export default {
     getStore: (StreamerID: string, StoreItemID: number) => {
         return '/Store/' + StreamerID + '/' + StoreItemID;
     },
-    BuyStoreItem: '/BuyStoreItem',
+    PurchaseOrder: '/BuyStoreItem',
     GetPurchaseOrder: '/PurchaseOrder/:StreamerID',
     getPurchaseOrder: (StreamerID: string) => {
         return '/PurchaseOrder/' + StreamerID
     },
     UploadFile: '/UploadFile',
     GetFile: '/File/:StreamerID/:FileName',
-    getFile: (StreamerID: string, FileName: string) => {
+    getFiles: (StreamerID: string, FileName: string) => {
         return '/File/' + StreamerID + '/' + FileName;
     },
 }

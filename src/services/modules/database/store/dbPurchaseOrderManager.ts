@@ -10,10 +10,10 @@ export default class dbPurchaseOrderManager {
         return AccountData.dbPurchaseOrders.create(<dbPurchaseOrder>PurchaseOrder)
     }
 
-    async removePurchaseOrder(PurchaseOrder: PurchaseOrder) {
+    async removePurchaseOrder(PurchaseOrderID: number) {
         let AccountData = dbStreamerManager.getAccountData(this.StreamerID);
         let dbPurchaseOrder = await AccountData.dbPurchaseOrders
-            .findOne({ where: { id: PurchaseOrder.id } });
+            .findOne({ where: { id: PurchaseOrderID } });
         return dbPurchaseOrder.destroy();
     }
 

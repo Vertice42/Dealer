@@ -552,11 +552,13 @@ class ViewStore {
     }
 }
 exports.ViewStore = ViewStore;
-class ViewPurchasedItems {
-    constructor(Placement, UserName, PurchaseTime, ItemDescription) {
+class ViewPurchasedItem {
+    constructor(id, UserName, PurchaseTime, ItemDescription) {
+        this.onRefundButtonActive = () => { };
+        this.id = id;
         this.HTML = document.createElement('div');
         this.HTML.classList.add('PurchasedItem');
-        this.HTML.appendChild(this.CreateHTML_ItemPlacement(Placement));
+        this.HTML.appendChild(this.CreateHTML_ItemPlacement(id));
         this.HTML.appendChild(this.CreateHTML_UserName(UserName));
         this.HTML.appendChild(this.CreatePurchaseTime(PurchaseTime));
         this.HTML.appendChild(this.CreateHTML_ItemName(ItemDescription));
@@ -591,14 +593,23 @@ class ViewPurchasedItems {
         this.HTML_RefundButton = document.createElement('button');
         this.HTML_RefundButton.classList.add('RefundButton');
         this.HTML_RefundButton.innerText = 'Refund';
+        this.HTML_RefundButton.onclick = () => {
+            this.onRefundButtonActive();
+        };
         return this.HTML_RefundButton;
     }
 }
-exports.ViewPurchasedItems = ViewPurchasedItems;
+exports.ViewPurchasedItem = ViewPurchasedItem;
 class ViewPurchaseOrders {
     constructor() {
+        this.leght = 0;
+        this.HTML_PlaybackUserName = document.getElementById('PlaybackUserName');
+        this.HTML_PlaybackItemName = document.getElementById('PlaybackItemName');
         this.HTML_ListOfPurchasedItems = document.getElementById('ListOfPurchasedItems');
         this.HTML_LoadingBarOfAudioPlayer = document.getElementById('LoadingBarOfAudioPlayer');
+        this.HTML_AudioPlayer = document.getElementById('AudioPlayer');
+        this.onButtonPurchaseOrderRefundActive = (ViewPurchasedItem, PurchaseOrder) => { };
+        this.onAddPuchaseOrder = (ViewPurchasedItem, PurchaseOrder, StoreItem) => { };
     }
     setAudioPlayerProgress(progres) {
         let left = progres;
@@ -606,8 +617,21 @@ class ViewPurchaseOrders {
         this.HTML_LoadingBarOfAudioPlayer.style.backgroundImage =
             `linear-gradient(to left, rgb(86, 128, 219) ${rigth}%, rgb(93, 144, 255) ${left}%)`;
     }
-    addViewPurchaseOrder(OrderPlacement, UserName, PurchaseTime, StoreItem) {
-        this.HTML_ListOfPurchasedItems.appendChild(new ViewPurchasedItems(OrderPlacement, UserName, PurchaseTime, StoreItem.Description).HTML);
+    setCurrentPay(TwitchUserName, StoreItemName) {
+        this.HTML_PlaybackUserName.innerText = TwitchUserName;
+        this.HTML_PlaybackItemName.innerText = StoreItemName;
+    }
+    addViewPurchaseOrder(PurchaseOrder, StoreItem) {
+        this.leght++;
+        let viewPurchasedItem = new ViewPurchasedItem(this.leght, PurchaseOrder.TwitchUserID, new Date(PurchaseOrder.updatedAt).getTime(), StoreItem.Description);
+        viewPurchasedItem.onRefundButtonActive = () => {
+            this.onButtonPurchaseOrderRefundActive(viewPurchasedItem, PurchaseOrder);
+        };
+        this.onAddPuchaseOrder(viewPurchasedItem, PurchaseOrder, StoreItem);
+        this.HTML_ListOfPurchasedItems.appendChild(viewPurchasedItem.HTML);
+    }
+    removeViewPurchaseOrder(ViewPurchasedItem) {
+        this.HTML_ListOfPurchasedItems.removeChild(ViewPurchasedItem.HTML);
     }
     clear() {
         this.HTML_ListOfPurchasedItems.innerHTML = '';

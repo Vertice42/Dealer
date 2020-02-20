@@ -11,6 +11,7 @@ import StoreItem from "../../services/models/store/StoreItem";
 import UploadFileResponse from "../../services/models/files_manager/UploadFileResponse";
 import PurchaseOrder from "../../services/models/store/PurchaseOrder";
 import { MinerSettings } from "../../services/models/miner/MinerSettings";
+import Links from "../../services/Links";
 
 const socket = io(host);
 
@@ -193,21 +194,53 @@ twitch.onAuthorized(async (auth) => {
 
     const ViewPurchaseOrders = new ViewConfig.ViewPurchaseOrders;
 
-    async function setPurchaseOrders() {
-        ViewPurchaseOrders.clear();
-        let PurchaseOrders: PurchaseOrder[] = await BackendConnections.GetPurchaseOrders(StreamerID);
+    let PurchaseOrders = [];
 
-        PurchaseOrders.forEach(async PurchaseOrder => {
-            ViewPurchaseOrders.addViewPurchaseOrder(
-                PurchaseOrder.id,
-                PurchaseOrder.TwitchUserID,
-                new Date(PurchaseOrder.updatedAt).getTime(),
-                await BackendConnections.GetStore(StreamerID, PurchaseOrder.StoreItemID));
-        });
+    function pay({ ViewPurchasedItem, PurchaseOrder, StoreItem }) {
+        ViewPurchaseOrders.HTML_AudioPlayer.src = BackendConnections.getUrlOfFile(StreamerID, StoreItem.FileName);
+
+        ViewPurchaseOrders.HTML_AudioPlayer.onplay = () => {
+            ViewPurchaseOrders.removeViewPurchaseOrder(ViewPurchasedItem);
+            ViewPurchaseOrders.setCurrentPay(PurchaseOrder.TwitchUserID,StoreItem.Description)
+        }
+
+        ViewPurchaseOrders.HTML_AudioPlayer.ontimeupdate = (event) => {
+            ViewPurchaseOrders.setAudioPlayerProgress(
+                ViewPurchaseOrders.HTML_AudioPlayer.currentTime / ViewPurchaseOrders.HTML_AudioPlayer.duration * 100)
+        }
+        ViewPurchaseOrders.HTML_AudioPlayer.play().catch(() => {
+            let onBodyClick = () => {
+                ViewPurchaseOrders.HTML_AudioPlayer.play()
+                document.body.removeEventListener('click', onBodyClick)
+            }
+            document.body.addEventListener('click', onBodyClick)
+        })
+
+        ViewPurchaseOrders.HTML_AudioPlayer.onended = () => {
+            BackendConnections.DeletePurchaseOrder(StreamerID, PurchaseOrder, false);
+            PurchaseOrders.shift()
+            if (PurchaseOrders[0]) pay(PurchaseOrders[0])
+        }
     }
-    setPurchaseOrders();
-    socket.on('PurchasedItem', () => {
-        setPurchaseOrders()
+
+    ViewPurchaseOrders.onAddPuchaseOrder = (ViewPurchasedItem, PurchaseOrder, StoreItem) => {
+        PurchaseOrders.push({ ViewPurchasedItem, PurchaseOrder, StoreItem });
+
+        if (PurchaseOrders.length === 1) pay({ ViewPurchasedItem, PurchaseOrder, StoreItem })
+    }
+
+    ViewPurchaseOrders.onButtonPurchaseOrderRefundActive = (ViewPurchasedItem, PurchaseOrder) => {
+        ViewPurchaseOrders.removeViewPurchaseOrder(ViewPurchasedItem);
+        PurchaseOrders.splice(ViewPurchasedItem.id,1);
+        BackendConnections.DeletePurchaseOrder(StreamerID, PurchaseOrder, true);
+    }
+
+    (await BackendConnections.GetPurchaseOrders(StreamerID)).forEach(async PurchaseOrder => {
+        ViewPurchaseOrders.addViewPurchaseOrder(PurchaseOrder, await BackendConnections.GetStore(StreamerID, PurchaseOrder.StoreItemID));
+    })
+
+    socket.on('PurchasedItem', async (PurchaseOrder: PurchaseOrder) => {
+        ViewPurchaseOrders.addViewPurchaseOrder(PurchaseOrder, await BackendConnections.GetStore(StreamerID, PurchaseOrder.StoreItemID));
     })
 
 });

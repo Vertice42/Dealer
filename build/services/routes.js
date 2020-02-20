@@ -308,6 +308,7 @@ app.get(Links_1.default.GetStore, async function (req, res) {
     }
 });
 app.post(Links_1.default.UploadFile, async function (req, res) {
+    //TODO ON UPDATE REMOVER ANTIGO
     let dir = `./uploads/${req.headers["streamer-id"]}`;
     if (!fs.existsSync(dir))
         fs.mkdirSync(dir);
@@ -323,19 +324,36 @@ app.post(Links_1.default.UploadFile, async function (req, res) {
 app.get(Links_1.default.GetFile, async function (req, res) {
     res.status(200).sendFile(path.resolve(`./uploads/${req.params.StreamerID}/${req.params.FileName}`));
 });
-app.post(Links_1.default.BuyStoreItem, async function (req, res) {
-    let BuyRequest = req.body;
+app.post(Links_1.default.PurchaseOrder, async function (req, res) {
+    let PurchaseOrderRequest = req.body;
     //TODO add CheckRequisition
-    let ItemPrice = (await new dbStoreManager_1.default(BuyRequest.StreamerID).getIten(BuyRequest.StoreItemID)).Price;
-    let dbWalletM = new dbWalletManager_1.dbWalletManeger(BuyRequest.StreamerID, BuyRequest.TwitchUserID);
-    if ((await dbWalletM.getWallet()).Coins < ItemPrice)
+    let ItemPrice = (await new dbStoreManager_1.default(PurchaseOrderRequest.StreamerID).getIten(PurchaseOrderRequest.StoreItemID)).Price;
+    let dbWalletM = new dbWalletManager_1.dbWalletManeger(PurchaseOrderRequest.StreamerID, PurchaseOrderRequest.TwitchUserID);
+    if ((await dbWalletM.getWallet()).Coins < ItemPrice) {
         return res.status(400).send({ ErrorBuying: 'Insufficient funds' });
-    await dbWalletM.withdraw(ItemPrice);
-    new dbPurchaseOrderManager_1.default(BuyRequest.StreamerID)
-        .addPurchaseOrder(new PurchaseOrder_1.default(ItemPrice, BuyRequest.TwitchUserID, BuyRequest.StoreItemID, new Date))
-        .then((result) => {
-        getSoketOfStreamer(BuyRequest.StreamerID).emit('PurchasedItem', new Date);
+    }
+    new dbPurchaseOrderManager_1.default(PurchaseOrderRequest.StreamerID)
+        .addPurchaseOrder(new PurchaseOrder_1.default(ItemPrice, PurchaseOrderRequest.TwitchUserID, PurchaseOrderRequest.StoreItemID))
+        .then(async (dbPurchaseOrder) => {
+        await dbWalletM.withdraw(ItemPrice);
+        getSoketOfStreamer(PurchaseOrderRequest.StreamerID).emit('PurchasedItem', dbPurchaseOrder);
         res.status(200).send({ PurchaseOrderWasSentSuccessfully: new Date });
+    })
+        .catch((rej) => {
+        console.log(rej);
+        res.status(500).send(rej);
+    });
+});
+app.delete(Links_1.default.PurchaseOrder, async function (req, res) {
+    let PurchaseOrder = req.body;
+    new dbPurchaseOrderManager_1.default(PurchaseOrder.StreamerID)
+        .removePurchaseOrder(PurchaseOrder.PurchaseOrderID)
+        .then(() => {
+        if (PurchaseOrder.Refund) {
+            return new dbWalletManager_1.dbWalletManeger(PurchaseOrder.StreamerID, PurchaseOrder.TwitchUserID)
+                .deposit(PurchaseOrder.SpentCoins);
+        }
+        res.status(200).send({ PurchaseOrderRemovedSuccessfully: new Date });
     })
         .catch((rej) => {
         console.log(rej);
