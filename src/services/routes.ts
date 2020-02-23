@@ -13,7 +13,7 @@ import { PollController } from "./controller/PollController";
 import { MiningResponse } from "./models/miner/MiningResponse";
 import UpdateButtonGroupResult from "./models/poll/UpdateButtonGroupResult";
 import { dbStreamerManager } from "./modules/database/dbStreamerManager";
-import { dbWalletManeger } from "./modules/database/miner/dbWalletManager";
+import { dbWalletManeger, getAllWallets } from "./modules/database/miner/dbWalletManager";
 import links from "./Links";
 import MinerManeger from "./modules/database/miner/dbMinerManager";
 import StreamerSettings from "./modules/database/streamer_settings/StreamerSettings";
@@ -31,6 +31,8 @@ import PurchaseOrder from "./models/store/PurchaseOrder";
 import dbPurchaseOrderManager from "./modules/database/store/dbPurchaseOrderManager";
 import { dbPurchaseOrder } from "./models/store/dbPurchaseOrders";
 import DeletePurchaseOrderRequest from "./modules/database/store/DeletePurchaseOrderRequest";
+import { dbWallet } from "./models/poll/dbWallet";
+import { WalletManagerRequest } from "./models/wallet/WalletManagerRequest";
 
 const app = express();
 const server = http.createServer(app);
@@ -393,21 +395,21 @@ app.post(links.PurchaseOrder, async function (req, res: express.Response) {
         })
 })
 
-app.delete(links.PurchaseOrder, async function (req, res: express.Response){    
-    let PurchaseOrder:DeletePurchaseOrderRequest = req.body;
+app.delete(links.PurchaseOrder, async function (req, res: express.Response) {
+    let PurchaseOrder: DeletePurchaseOrderRequest = req.body;
     new dbPurchaseOrderManager(PurchaseOrder.StreamerID)
-    .removePurchaseOrder(PurchaseOrder.PurchaseOrderID)
-    .then(()=>{
-        if(PurchaseOrder.Refund){
-            return new dbWalletManeger(PurchaseOrder.StreamerID, PurchaseOrder.TwitchUserID)
-            .deposit(PurchaseOrder.SpentCoins)
-        }
-        res.status(200).send({ PurchaseOrderRemovedSuccessfully: new Date })
-    })
-    .catch((rej) => {
-        console.log(rej);
-        res.status(500).send(rej);
-    })
+        .removePurchaseOrder(PurchaseOrder.PurchaseOrderID)
+        .then(() => {
+            if (PurchaseOrder.Refund) {
+                return new dbWalletManeger(PurchaseOrder.StreamerID, PurchaseOrder.TwitchUserID)
+                    .deposit(PurchaseOrder.SpentCoins)
+            }
+            res.status(200).send({ PurchaseOrderRemovedSuccessfully: new Date })
+        })
+        .catch((rej) => {
+            console.log(rej);
+            res.status(500).send(rej);
+        })
 })
 
 app.get(links.GetPurchaseOrder, async function (req: { params: { StreamerID: string } }, res: express.Response) {
@@ -418,6 +420,29 @@ app.get(links.GetPurchaseOrder, async function (req: { params: { StreamerID: str
         .catch((rej) => {
             res.status(500).send(rej)
         })
+})
+
+app.get(links.GetWallets, async function (req: { params: { StreamerID: string, TwitchUserID: string } }, res: express.Response) {    
+    getAllWallets(req.params.StreamerID, req.params.TwitchUserID)
+        .then((Wallets) => {
+            res.status(200).send(<dbWallet[]>Wallets);
+        })
+        .catch((rej) => {
+            console.log(rej);
+            res.status(500).send(rej);
+        })
+})
+
+app.post(links.WalletManager, async function (req, res: express.Response) {
+    let walletManagerRequest:WalletManagerRequest = req.body;
+    new dbWalletManeger(walletManagerRequest.StreamerID, walletManagerRequest.TwitchUserID)
+    .update(walletManagerRequest.newValue).then(()=>{
+        res.status(200).send({WalletSuccessfullyChanged: new Date});
+    })
+    .catch((rej)=>{
+        console.log(rej);
+        res.status(500).send(rej);
+    })
 })
 
 export default server;

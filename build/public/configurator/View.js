@@ -496,6 +496,7 @@ class ViewStoreItem {
         return this.HTML_DeleteButton;
     }
 }
+exports.ViewStoreItem = ViewStoreItem;
 class ViewStore {
     constructor() {
         this.HTML_StoreItems = document.getElementById('StoreItems');
@@ -605,11 +606,32 @@ class ViewPurchaseOrders {
         this.leght = 0;
         this.HTML_PlaybackUserName = document.getElementById('PlaybackUserName');
         this.HTML_PlaybackItemName = document.getElementById('PlaybackItemName');
+        this.HTML_PauseAudioPlayerButton = document.getElementById('PauseAudioPlayerButton');
+        this.HTML_RefundCurrentAudioButton = document.getElementById('RefundCurrentAudioButton');
         this.HTML_ListOfPurchasedItems = document.getElementById('ListOfPurchasedItems');
         this.HTML_LoadingBarOfAudioPlayer = document.getElementById('LoadingBarOfAudioPlayer');
         this.HTML_AudioPlayer = document.getElementById('AudioPlayer');
         this.onButtonPurchaseOrderRefundActive = (ViewPurchasedItem, PurchaseOrder) => { };
         this.onAddPuchaseOrder = (ViewPurchasedItem, PurchaseOrder, StoreItem) => { };
+    }
+    IsStarted() {
+        return this.HTML_PauseAudioPlayerButton.classList.contains('Started');
+    }
+    EnableAudioPlayerButtons() {
+        this.HTML_PauseAudioPlayerButton.classList.remove('Disable');
+        this.HTML_RefundCurrentAudioButton.classList.remove('Disable');
+    }
+    DisableAudioPlayerButtons() {
+        this.HTML_PauseAudioPlayerButton.classList.add('Disable');
+        this.HTML_RefundCurrentAudioButton.classList.add('Disable');
+    }
+    setStarted() {
+        this.HTML_PauseAudioPlayerButton.classList.remove('InPause');
+        this.HTML_PauseAudioPlayerButton.classList.add('Started');
+    }
+    setInPause() {
+        this.HTML_PauseAudioPlayerButton.classList.remove('Started');
+        this.HTML_PauseAudioPlayerButton.classList.add('InPause');
     }
     setAudioPlayerProgress(progres) {
         let left = progres;
@@ -638,3 +660,47 @@ class ViewPurchaseOrders {
     }
 }
 exports.ViewPurchaseOrders = ViewPurchaseOrders;
+class ViewWallet {
+    constructor(Placing, TwitchUserID, CoinsOfWalletOfUser) {
+        this.HTML = document.createElement('div');
+        this.HTML.classList.add('WalletOfUser');
+        this.InputOfCoinsOfWalletOfUser = new Inputs_1.ResponsiveInput();
+        this.InputOfCoinsOfWalletOfUser.setUnchangedInput();
+        this.InputOfCoinsOfWalletOfUser.HTMLInput.value = CoinsOfWalletOfUser.toString();
+        this.HTML.appendChild(this.createPlacing(Placing));
+        this.HTML.appendChild(this.createTwitchUserID(TwitchUserID));
+        this.HTML.appendChild(this.InputOfCoinsOfWalletOfUser.HTMLInput);
+    }
+    createPlacing(Placing) {
+        let placing = document.createElement('span');
+        placing.classList.add('Placing');
+        placing.innerText = '#' + Placing;
+        return placing;
+    }
+    createTwitchUserID(TwitchUserID) {
+        let twitchUserID = document.createElement('span');
+        twitchUserID.classList.add('TwitchUserID');
+        twitchUserID.innerText = '@' + TwitchUserID;
+        return twitchUserID;
+    }
+}
+exports.ViewWallet = ViewWallet;
+class ViewWallets {
+    constructor() {
+        this.HTML_DivOfWallets = document.getElementById('DivOfWallets');
+        this.HTML_SearchInput = document.getElementById('SearchInput');
+        this.HTMl_SearchInputButton = document.getElementById('SearchInputButton');
+        this.onWalletInputChange = (TwitchUserID, viewWallet) => { };
+    }
+    uptate(Wallets) {
+        this.HTML_DivOfWallets.innerHTML = '';
+        Wallets.forEach((Wallet, index) => {
+            let viewWallet = new ViewWallet(index + 1, Wallet.TwitchUserID, (~~Wallet.Coins));
+            viewWallet.InputOfCoinsOfWalletOfUser.HTMLInput.onchange = () => {
+                this.onWalletInputChange(Wallet.TwitchUserID, viewWallet);
+            };
+            this.HTML_DivOfWallets.appendChild(viewWallet.HTML);
+        });
+    }
+}
+exports.ViewWallets = ViewWallets;

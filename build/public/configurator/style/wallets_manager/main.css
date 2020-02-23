@@ -1,0 +1,69 @@
+.Search {
+    display: flex;
+    height: 10vw;
+    margin: 1vw auto;
+}
+
+#SearchInput{
+    font-size: 5vw;
+    text-align: center;
+}
+
+.Search button {
+    height: inherit;
+}
+
+.Search img {
+    height: -webkit-fill-available;
+    margin: 0;
+}
+
+#DivOfWallets {
+    background-color: rgb(72, 73, 116);
+    margin: 1vw 10vw;
+}
+
+.WalletOfUser {
+    display: flex;
+    background-color: rgb(100, 101, 161);
+    margin: 1vw;
+
+}
+
+.WalletOfUser input{
+    margin: auto;
+}
+
+.Placing {
+    display: block;
+    background-color: white;
+
+    margin: 1vw ;
+    min-width: 10vw;
+    font-size: 5vw;
+
+    text-align: center;
+    font-family: fantasy;
+}
+
+.TwitchUserID {
+    display: block;
+    min-width: 30vw;
+    max-width: 30vw;
+    margin: auto;
+    padding: 1vw;
+
+    background-color: white;
+    font-size: 2vw;
+    text-align: center;
+
+}
+
+.CoinsOfWalletOfUser {
+    width: auto;
+    max-width: 15vw;
+
+    font-family: fantasy;
+    font-size: 4vw;
+    text-align: center;
+}

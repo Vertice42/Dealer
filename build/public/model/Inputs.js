@@ -2,7 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 class ResponsiveInput {
     constructor(HTMLInput) {
-        this.HTMLInput = HTMLInput;
+        if (HTMLInput) {
+            this.HTMLInput = HTMLInput;
+        }
+        else {
+            this.HTMLInput = document.createElement('input');
+        }
     }
     setChangedInput() {
         this.HTMLInput.classList.remove('InputSentSuccessfully');

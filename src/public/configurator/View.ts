@@ -3,7 +3,7 @@ import { Poll } from "../../services/models/poll/Poll";
 import { ResponsiveInput, OrientedInput, ResponsiveInputFile } from "../model/Inputs";
 import StoreItem from "../../services/models/store/StoreItem";
 import PurchaseOrder from "../../services/models/store/PurchaseOrder";
-import Links from "../../services/Links";
+import { dbWallet } from "../../services/models/poll/dbWallet";
 
 function GenerateColor() {
   /**Generate random hex color*/
@@ -598,7 +598,7 @@ export class ViewSettings {
   }
 }
 
-class ViewStoreItem implements StoreItem {
+export class ViewStoreItem implements StoreItem {
   id: number;
   Type: number;
   Description: string;
@@ -734,8 +734,9 @@ export class ViewStore {
     document.getElementById('AddStoreItem').onclick = () => { this.onAddStoreItemActive() }
   }
 }
+
 export class ViewPurchasedItem {
-  id:number
+  id: number
   HTML: HTMLDivElement
   private HTML_ItemPlacement: HTMLSpanElement
   private HTML_UserName: HTMLSpanElement
@@ -795,19 +796,44 @@ export class ViewPurchasedItem {
     this.HTML.appendChild(this.CreateHTML_RefundButton())
   }
 }
-
 export class ViewPurchaseOrders {
   leght = 0;
 
-  private HTML_PlaybackUserName = <HTMLSpanElement> document.getElementById('PlaybackUserName');
-  private HTML_PlaybackItemName = <HTMLSpanElement> document.getElementById('PlaybackItemName');
+  private HTML_PlaybackUserName = <HTMLSpanElement>document.getElementById('PlaybackUserName');
+  private HTML_PlaybackItemName = <HTMLSpanElement>document.getElementById('PlaybackItemName');
+  HTML_PauseAudioPlayerButton = <HTMLDivElement>document.getElementById('PauseAudioPlayerButton');
+  HTML_RefundCurrentAudioButton = <HTMLButtonElement>document.getElementById('RefundCurrentAudioButton');
 
   HTML_ListOfPurchasedItems = <HTMLDivElement>document.getElementById('ListOfPurchasedItems');
   HTML_LoadingBarOfAudioPlayer = <HTMLDivElement>document.getElementById('LoadingBarOfAudioPlayer');
   HTML_AudioPlayer = <HTMLAudioElement>document.getElementById('AudioPlayer');
 
+  IsStarted() {
+    return this.HTML_PauseAudioPlayerButton.classList.contains('Started');
+  }
+
+  EnableAudioPlayerButtons() {
+    this.HTML_PauseAudioPlayerButton.classList.remove('Disable');
+    this.HTML_RefundCurrentAudioButton.classList.remove('Disable');
+  }
+
+  DisableAudioPlayerButtons() {
+    this.HTML_PauseAudioPlayerButton.classList.add('Disable');
+    this.HTML_RefundCurrentAudioButton.classList.add('Disable');
+  }
+
+  setStarted() {
+    this.HTML_PauseAudioPlayerButton.classList.remove('InPause');
+    this.HTML_PauseAudioPlayerButton.classList.add('Started');
+  }
+
+  setInPause() {    
+    this.HTML_PauseAudioPlayerButton.classList.remove('Started');
+    this.HTML_PauseAudioPlayerButton.classList.add('InPause');
+  }
+
   onButtonPurchaseOrderRefundActive = (ViewPurchasedItem: ViewPurchasedItem, PurchaseOrder: PurchaseOrder) => { };
-  onAddPuchaseOrder = (ViewPurchasedItem:ViewPurchasedItem,PurchaseOrder: PurchaseOrder,StoreItem:StoreItem) => { }
+  onAddPuchaseOrder = (ViewPurchasedItem: ViewPurchasedItem, PurchaseOrder: PurchaseOrder, StoreItem: StoreItem) => { }
 
   setAudioPlayerProgress(progres: number) {
     let left = progres;
@@ -816,7 +842,7 @@ export class ViewPurchaseOrders {
       `linear-gradient(to left, rgb(86, 128, 219) ${rigth}%, rgb(93, 144, 255) ${left}%)`;
   }
 
-  setCurrentPay(TwitchUserName:string,StoreItemName:string) {
+  setCurrentPay(TwitchUserName: string, StoreItemName: string) {
     this.HTML_PlaybackUserName.innerText = TwitchUserName;
     this.HTML_PlaybackItemName.innerText = StoreItemName;
   }
@@ -827,7 +853,7 @@ export class ViewPurchaseOrders {
     viewPurchasedItem.onRefundButtonActive = () => {
       this.onButtonPurchaseOrderRefundActive(viewPurchasedItem, PurchaseOrder)
     }
-    this.onAddPuchaseOrder(viewPurchasedItem,PurchaseOrder,StoreItem);
+    this.onAddPuchaseOrder(viewPurchasedItem, PurchaseOrder, StoreItem);
     this.HTML_ListOfPurchasedItems.appendChild(viewPurchasedItem.HTML)
   }
   removeViewPurchaseOrder(ViewPurchasedItem: ViewPurchasedItem) {
@@ -838,5 +864,61 @@ export class ViewPurchaseOrders {
     this.HTML_ListOfPurchasedItems.innerHTML = '';
   }
   constructor() {
+  }
+}
+
+export class ViewWallet {
+  HTML: HTMLDivElement;
+  InputOfCoinsOfWalletOfUser: ResponsiveInput;
+
+  private createPlacing(Placing: number) {
+    let placing = document.createElement('span');
+    placing.classList.add('Placing');
+    placing.innerText = '#' + Placing;
+    return placing;
+  }
+
+  private createTwitchUserID(TwitchUserID: string) {
+    let twitchUserID = document.createElement('span');
+    twitchUserID.classList.add('TwitchUserID');
+    twitchUserID.innerText = '@' + TwitchUserID;
+    return twitchUserID;
+  }
+
+  constructor(Placing: number, TwitchUserID: string, CoinsOfWalletOfUser: number) {
+    this.HTML = document.createElement('div');
+    this.HTML.classList.add('WalletOfUser');
+
+    this.InputOfCoinsOfWalletOfUser = new ResponsiveInput();
+    this.InputOfCoinsOfWalletOfUser.setUnchangedInput();
+    this.InputOfCoinsOfWalletOfUser.HTMLInput.value = CoinsOfWalletOfUser.toString();
+
+    this.HTML.appendChild(this.createPlacing(Placing));
+    this.HTML.appendChild(this.createTwitchUserID(TwitchUserID));
+    this.HTML.appendChild(this.InputOfCoinsOfWalletOfUser.HTMLInput);
+  }
+}
+
+export class ViewWallets {
+  HTML_DivOfWallets = <HTMLDivElement>document.getElementById('DivOfWallets');
+  HTML_SearchInput = <HTMLInputElement>document.getElementById('SearchInput');
+  HTMl_SearchInputButton = <HTMLButtonElement>document.getElementById('SearchInputButton');
+
+  onWalletInputChange = (TwitchUserID:string,viewWallet:ViewWallet)=>{};
+
+  uptate(Wallets: dbWallet[]) {
+    this.HTML_DivOfWallets.innerHTML = '';
+
+    Wallets.forEach((Wallet, index) => {
+      let viewWallet = new ViewWallet(index + 1, Wallet.TwitchUserID, (~~Wallet.Coins));
+      viewWallet.InputOfCoinsOfWalletOfUser.HTMLInput.onchange = () => {        
+        this.onWalletInputChange(Wallet.TwitchUserID,viewWallet)};
+
+      this.HTML_DivOfWallets.appendChild(viewWallet.HTML)
+    })
+  }
+
+  constructor() {
+
   }
 }

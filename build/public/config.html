@@ -55,23 +55,60 @@
   </div>
 
   <div class="StoreDiv Module">
+
     <h1>Gerenciador da Loja</h1>
     <div id="StoreManeger">
       <div id="StoreItems"></div>
       <button id="AddStoreItem">+</button>
     </div>
+
     <div id="ShoppingQueue">
+
       <div id="ReproducingMedia">
-        <audio id="AudioPlayer" ></audio>
+        <audio id="AudioPlayer"></audio>
+
         <div class="LoadingBar" id="LoadingBarOfAudioPlayer">
           <span id="PlaybackUserName"></span>
           <span id="PlaybackItemName"></span>
         </div>
-        <button>stop</button>
+
+        <div class="PlayerButtonsDiv">
+          <button id="PauseAudioPlayerButton" class="Disable PlayerButton"></button>
+          <button id="RefundCurrentAudioButton" class="Disable PlayerButton">Refund</button>
+        </div>
+
       </div>
+
       <div id="ListOfPurchasedItems">
       </div>
+
     </div>
+  </div>
+
+  <div class="WalletsDiv Module">
+    <h1>Wallets</h1>
+
+    <div class="Search">
+      <input id="SearchInput" type="text">
+      <button id="SearchInputButton"><img src="https://img.icons8.com/pastel-glyph/2x/search--v2.png"></button>
+    </div>
+
+    <div id="DivOfWallets">
+
+      <div class="WalletOfUser">
+        <span class="Placing">1#</span>
+        <span class="TwitchUserID"> @kake</span>
+        <input type="number" class="CoinsOfWalletOfUser">
+      </div>
+
+      <div class="WalletOfUser">
+        <span class="Placing">2#</span>
+        <span class="TwitchUserID"> @kake</span>
+        <input type="number" class="CoinsOfWalletOfUser">
+      </div>
+
+    </div>
+
   </div>
 
   <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>

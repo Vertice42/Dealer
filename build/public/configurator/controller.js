@@ -159,6 +159,24 @@ twitch.onAuthorized(async (auth) => {
         ViewPurchaseOrders.HTML_AudioPlayer.onplay = () => {
             ViewPurchaseOrders.removeViewPurchaseOrder(ViewPurchasedItem);
             ViewPurchaseOrders.setCurrentPay(PurchaseOrder.TwitchUserID, StoreItem.Description);
+            ViewPurchaseOrders.EnableAudioPlayerButtons();
+            ViewPurchaseOrders.setStarted();
+            ViewPurchaseOrders.HTML_AudioPlayer.onplay = null;
+        };
+        ViewPurchaseOrders.HTML_PauseAudioPlayerButton.onclick = () => {
+            if (ViewPurchaseOrders.IsStarted()) {
+                ViewPurchaseOrders.setInPause();
+                ViewPurchaseOrders.HTML_AudioPlayer.pause();
+            }
+            else {
+                ViewPurchaseOrders.setStarted();
+                ViewPurchaseOrders.HTML_AudioPlayer.play();
+            }
+        };
+        ViewPurchaseOrders.HTML_RefundCurrentAudioButton.onclick = async () => {
+            await BackendConnections.DeletePurchaseOrder(StreamerID, PurchaseOrder, true);
+            ViewPurchaseOrders.HTML_AudioPlayer.pause();
+            ViewPurchaseOrders.HTML_AudioPlayer.src = '';
         };
         ViewPurchaseOrders.HTML_AudioPlayer.ontimeupdate = (event) => {
             ViewPurchaseOrders.setAudioPlayerProgress(ViewPurchaseOrders.HTML_AudioPlayer.currentTime / ViewPurchaseOrders.HTML_AudioPlayer.duration * 100);
@@ -193,4 +211,30 @@ twitch.onAuthorized(async (auth) => {
     socket.on('PurchasedItem', async (PurchaseOrder) => {
         ViewPurchaseOrders.addViewPurchaseOrder(PurchaseOrder, await BackendConnections.GetStore(StreamerID, PurchaseOrder.StoreItemID));
     });
+    const ViewWallets = new ViewConfig.ViewWallets();
+    let WatchWallets = new BackendConnections.Watch(() => BackendConnections.GetWallets(StreamerID));
+    WatchWallets.OnWaitch = (Wallets) => ViewWallets.uptate(Wallets);
+    let SearchWallets = async () => {
+        let newValue = ViewWallets.HTML_SearchInput.value;
+        let isIvalid = (newValue === '');
+        if (isIvalid)
+            WatchWallets.stat();
+        else
+            await WatchWallets.stop();
+        ViewWallets.uptate(await BackendConnections.GetWallets(StreamerID, (isIvalid) ? undefined : newValue));
+    };
+    ViewWallets.HTML_SearchInput.onchange = SearchWallets;
+    ViewWallets.HTMl_SearchInputButton.onclick = SearchWallets;
+    ViewWallets.onWalletInputChange = (TwitchUserID, ViewWallet) => {
+        ViewWallet.InputOfCoinsOfWalletOfUser.setChangedInput();
+        BackendConnections.SendToWalletManager(StreamerID, TwitchUserID, Number(ViewWallet.InputOfCoinsOfWalletOfUser.HTMLInput.value))
+            .then(async () => {
+            ViewWallet.InputOfCoinsOfWalletOfUser.setInputSentSuccessfully();
+            await utils_1.sleep(500);
+            ViewWallet.InputOfCoinsOfWalletOfUser.setUnchangedInput();
+        })
+            .catch((rej) => {
+            ViewWallet.InputOfCoinsOfWalletOfUser.setInputSentError();
+        });
+    };
 });

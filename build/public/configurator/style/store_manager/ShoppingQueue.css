@@ -16,19 +16,13 @@
 }
 
 #ReproducingMedia span {
-    width: 100%;
-    text-align: center;
+    width: fit-content;
+    min-width: 15vw;
+    min-height: 4vw;
     margin: auto;
-}
-
-#ReproducingMedia button {
-    height: 100%;
-    width: 20vw;
-    border: none;
-    background-color: tomato;
-    text-transform: uppercase;
-    font-family: fantasy;
-    font-size: 5vw;
+    padding: 1vw;
+    text-align: center;
+    background-color: white;
 }
 
 #ListOfPurchasedItems {
@@ -50,25 +44,44 @@
     background-color: white;
 }
 
-.PurchasedItem button {
-    background-color: tomato;
+.PlayerButtonsDiv {
+    display: flex;
+}
+
+.PlayerButton {
+    height: 100%;
     width: 15vw;
     border: none;
+    background-color: tomato;
     text-transform: uppercase;
     font-family: fantasy;
-    font-size: 3vw;
+    font-size: 4vw;
+}
+
+.Disable {
+    opacity: 0;
+}
+
+.Started::before {
+    content: 'Pause';
+}
+
+.InPause::before {
+    content: 'Start';
+}
+
+#RefundCurrentAudioButton {
+    margin-left: 1vw;
 }
 
 .ItemPlacement {
     min-width: 3vw;
     max-width: 3vw;
-
 }
 
 .UserName {
     min-width: 10vw;
     max-width: 10vw;
-
 }
 
 .PurchaseTime {
@@ -79,5 +92,17 @@
 .ItemName {
     min-width: 20vw;
     max-width: 20vw;
+}
 
+.RefundButton {
+    background-color: orangered;
+    border: none;
+    font-family: fantasy;
+    font-size: 4vw;
+    text-transform: uppercase;
+    transition: font-size 50ms;
+}
+
+.RefundButton:hover {
+    font-size: 5vw;
 }

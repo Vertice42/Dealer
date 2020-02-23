@@ -29,8 +29,12 @@ export class ResponsiveInput {
 
     this.HTMLInput.classList.add('InputSentError');
   }
-  constructor(HTMLInput: HTMLInputElement) {
-    this.HTMLInput = HTMLInput;
+  constructor(HTMLInput ?: HTMLInputElement) {
+    if(HTMLInput){
+          this.HTMLInput = HTMLInput;
+    }else{
+      this.HTMLInput = document.createElement('input');
+    }
   }
 }
 

@@ -6,6 +6,7 @@ const ServerConfigs_1 = require("../services/configs/ServerConfigs");
 const StoreManagerRequest_1 = require("../services/models/store/StoreManagerRequest");
 const PurchaseOrderRequest_1 = require("../services/modules/database/store/PurchaseOrderRequest");
 const DeletePurchaseOrderRequest_1 = require("../services/modules/database/store/DeletePurchaseOrderRequest");
+const WalletManagerRequest_1 = require("../services/models/wallet/WalletManagerRequest");
 exports.host = 'http://localhost:' + (ServerConfigs_1.default.Port || process.env.Port);
 async function getCurrentPoll(StreamerID) {
     /* Use fetch to communicate to backend and get current voting */
@@ -71,6 +72,39 @@ class WatchPoll {
     }
 }
 exports.WatchPoll = WatchPoll;
+class Watch {
+    constructor(Watched, WaitingTime = 100) {
+        this.OnWaitch = (_result) => { };
+        this.Stop = false;
+        this.watch = async () => {
+            this.OnWaitch(await this.Watched());
+            setTimeout(async () => {
+                this.OnWaitch(await this.Watched());
+                if (!this.Stop)
+                    this.watch();
+                else {
+                    this.PromiseToStop();
+                }
+            }, this.WaitingTime);
+        };
+        this.Watched = Watched;
+        this.WaitingTime = WaitingTime;
+        this.watch();
+    }
+    async stop() {
+        this.Stop = true;
+        new Promise((resolve, reject) => {
+            return this.PromiseToStop = () => {
+                resolve();
+            };
+        });
+    }
+    stat() {
+        this.Stop = false;
+        this.watch();
+    }
+}
+exports.Watch = Watch;
 async function SendToPollManager(StreamerID, PollButtons, NewPollStatus) {
     /*Send current voting with your buttons and current poll status */
     let H = new Headers();
@@ -250,6 +284,44 @@ async function GetWallet(StreamerID, TwitchUserID) {
     });
 }
 exports.GetWallet = GetWallet;
+async function GetWallets(StreamerID, TwitchUserID) {
+    return fetch(exports.host + Links_1.default.getWallets(StreamerID, TwitchUserID), {
+        method: "GET"
+    }).then(function (res) {
+        if (res.ok)
+            return bluebird_1.resolve(res.json());
+        else
+            return bluebird_1.reject(res.json());
+    }).catch((rej) => {
+        console.log(rej);
+    });
+}
+exports.GetWallets = GetWallets;
+async function SendToWalletManager(StreamerID, TwitchUserID, newValue) {
+    /*Send current voting with your buttons and current poll status */
+    let H = new Headers();
+    H.append("Content-Type", "application/json");
+    return fetch(exports.host + Links_1.default.WalletManager, {
+        method: "POST",
+        headers: H,
+        body: JSON.stringify(new WalletManagerRequest_1.WalletManagerRequest(StreamerID, TwitchUserID, newValue))
+    }).then((res) => {
+        if (res.ok)
+            return bluebird_1.resolve(res);
+        else
+            return bluebird_1.reject(res);
+    }).then((res) => {
+        return res.json().then((res) => {
+            return res;
+        });
+    }).catch((rej) => {
+        return rej.json()
+            .then((res) => {
+            return bluebird_1.reject(res);
+        });
+    });
+}
+exports.SendToWalletManager = SendToWalletManager;
 async function GetStore(StreamerID, StoreItemID) {
     return fetch(exports.host + Links_1.default.getStore(StreamerID, StoreItemID), {
         method: "GET"

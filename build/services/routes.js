@@ -369,4 +369,25 @@ app.get(Links_1.default.GetPurchaseOrder, async function (req, res) {
         res.status(500).send(rej);
     });
 });
+app.get(Links_1.default.GetWallets, async function (req, res) {
+    dbWalletManager_1.getAllWallets(req.params.StreamerID, req.params.TwitchUserID)
+        .then((Wallets) => {
+        res.status(200).send(Wallets);
+    })
+        .catch((rej) => {
+        console.log(rej);
+        res.status(500).send(rej);
+    });
+});
+app.post(Links_1.default.WalletManager, async function (req, res) {
+    let walletManagerRequest = req.body;
+    new dbWalletManager_1.dbWalletManeger(walletManagerRequest.StreamerID, walletManagerRequest.TwitchUserID)
+        .update(walletManagerRequest.newValue).then(() => {
+        res.status(200).send({ WalletSuccessfullyChanged: new Date });
+    })
+        .catch((rej) => {
+        console.log(rej);
+        res.status(500).send(rej);
+    });
+});
 exports.default = server;
