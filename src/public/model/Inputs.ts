@@ -77,11 +77,11 @@ export class OrientedInput extends ResponsiveInput {
 
 export class ResponsiveInputFile {
   HTMLInput: HTMLLabelElement;
-  constructor(id: string) {
-    this.HTMLInput = document.createElement('label');
+  constructor(id?: string, HTMLInput = document.createElement('label')) {
+    this.HTMLInput = HTMLInput;
     this.HTMLInput.classList.add('AddUpdateFileIcon');
     this.HTMLInput.classList.add('Default');
-    this.HTMLInput.htmlFor = id;
+    this.HTMLInput.htmlFor = id|| HTMLInput.id;
   }
   setDefault() {
     this.HTMLInput.classList.remove('Upgradeable');

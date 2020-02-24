@@ -160,32 +160,6 @@ async function SendToMinerManager(StreamerID, Setting) {
     });
 }
 exports.SendToMinerManager = SendToMinerManager;
-async function SendToCoinsSettingsManager(StreamerID, Setting) {
-    let H = new Headers();
-    H.append("Content-Type", "application/json");
-    return fetch(exports.host + Links_1.default.CoinsSettingsManager, {
-        method: "POST",
-        headers: H,
-        body: JSON.stringify({
-            StreamerID: StreamerID,
-            Setting: Setting
-        })
-    }).then(function (res) {
-        if (res.ok)
-            return bluebird_1.resolve(res);
-        else
-            return bluebird_1.reject(res);
-    }).then((res) => {
-        return res.json();
-    }).catch((rej) => {
-        return rej.json()
-            .then((res) => {
-            console.log(res);
-            return bluebird_1.reject(res);
-        });
-    });
-}
-exports.SendToCoinsSettingsManager = SendToCoinsSettingsManager;
 async function addBet(StreamerID, TwitchUserID, IdOfVote, BetAmount) {
     let H = new Headers();
     H.append("Content-Type", "application/json");
@@ -245,6 +219,32 @@ async function GetCoinsSettings(StreamerID) {
     });
 }
 exports.GetCoinsSettings = GetCoinsSettings;
+async function SendToCoinsSettingsManager(StreamerID, Setting) {
+    let H = new Headers();
+    H.append("Content-Type", "application/json");
+    return fetch(exports.host + Links_1.default.CoinsSettingsManager, {
+        method: "POST",
+        headers: H,
+        body: JSON.stringify({
+            StreamerID: StreamerID,
+            Setting: Setting
+        })
+    }).then(function (res) {
+        if (res.ok)
+            return bluebird_1.resolve(res);
+        else
+            return bluebird_1.reject(res);
+    }).then((res) => {
+        return res.json();
+    }).catch((rej) => {
+        return rej.json()
+            .then((res) => {
+            console.log(res);
+            return bluebird_1.reject(res);
+        });
+    });
+}
+exports.SendToCoinsSettingsManager = SendToCoinsSettingsManager;
 async function MineCoin(StreamerID, TwitchUserID) {
     let H = new Headers();
     H.append("Content-Type", "application/json");

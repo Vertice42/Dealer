@@ -50,10 +50,10 @@ export default class StreamerSettings {
      * @param StreamerID 
      * @param minerSettings 
      */
-    static async UpdateCoinsSettings(StreamerID: string, NewCoinsSettings: CoinsSettings) {
+    static async UpdateCoinsSettings(StreamerID: string, NewCoinsSettings: CoinsSettings) {        
         let AccountData = dbStreamerManager.getAccountData(StreamerID);
         AccountData.CoinsSettings = NewCoinsSettings;
-        return AccountData.dbSettings.update(NewCoinsSettings, { where: { SettingName: CoinsSettings.name } })
+        return AccountData.dbSettings.update({SettingsJson:NewCoinsSettings}, { where: { SettingName: CoinsSettings.name } })
             .then(() => {
                 return resolve({ SuccessfullyUpdatedMinerSettings: AccountData.MinerSettings });
             });

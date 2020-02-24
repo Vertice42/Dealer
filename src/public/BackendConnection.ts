@@ -7,12 +7,11 @@ import { Poll } from '../services/models/poll/Poll';
 import { MinerSettings } from '../services/models/miner/MinerSettings';
 import StoreItem from '../services/models/store/StoreItem';
 import StoreManagerRequest from '../services/models/store/StoreManagerRequest';
-import UploadFileResponse from '../services/models/files_manager/UploadFileResponse';
 import PurchaseOrderRequest from '../services/modules/database/store/PurchaseOrderRequest';
 import DeletePurchaseOrderRequest from '../services/modules/database/store/DeletePurchaseOrderRequest';
 import PurchaseOrder from '../services/models/store/PurchaseOrder';
 import { WalletManagerRequest } from '../services/models/wallet/WalletManagerRequest';
-import { Tracing } from 'trace_events';
+import { CoinsSettings } from '../services/models/streamer_settings/CoinsSettings';
 
 export const host = 'http://localhost:' + (ServerConfigs.Port || process.env.Port);
 
@@ -173,32 +172,6 @@ export async function SendToMinerManager(StreamerID: String, Setting: MinerSetti
       })
   });
 }
-
-export async function SendToCoinsSettingsManager(StreamerID: String, Setting: MinerSettings) {
-  let H = new Headers();
-  H.append("Content-Type", "application/json");
-
-  return fetch(host + link.CoinsSettingsManager, {
-    method: "POST",
-    headers: H,
-    body: JSON.stringify({
-      StreamerID: StreamerID,
-      Setting: Setting
-    })
-  }).then(function (res) {
-    if (res.ok) return resolve(res)
-    else return reject(res);
-  }).then((res) => {
-    return res.json();
-  }).catch((rej) => {
-    return rej.json()
-      .then((res) => {
-        console.log(res);
-        return reject(res);
-      })
-  });
-}
-
 export async function addBet(StreamerID: string, TwitchUserID: string,
   IdOfVote: number, BetAmount: number): Promise<any> {
   let H = new Headers();
@@ -236,9 +209,34 @@ export async function GetMinerSettings(StreamerID: string) {
   });
 }
 
-export async function GetCoinsSettings(StreamerID: string) {//TODO A ESTRURA SE REPETE em get Miner
+export async function GetCoinsSettings(StreamerID: string): Promise<CoinsSettings> {//TODO A ESTRURA SE REPETE em get Miner
   return fetch(host + link.getCoinsSettings(StreamerID), {
     method: "GET"
+  }).then(function (res) {
+    if (res.ok) return resolve(res)
+    else return reject(res);
+  }).then((res) => {
+    return res.json();
+  }).catch((rej) => {
+    return rej.json()
+      .then((res) => {
+        console.log(res);
+        return reject(res);
+      })
+  });
+}
+
+export async function SendToCoinsSettingsManager(StreamerID: String, Setting: CoinsSettings) {
+  let H = new Headers();
+  H.append("Content-Type", "application/json");
+
+  return fetch(host + link.CoinsSettingsManager, {
+    method: "POST",
+    headers: H,
+    body: JSON.stringify({
+      StreamerID: StreamerID,
+      Setting: Setting
+    })
   }).then(function (res) {
     if (res.ok) return resolve(res)
     else return reject(res);

@@ -1,4 +1,4 @@
-export class CoinsSettings{
-    CoinName:string;
-    FileNameOfCoinImage:string
+export class CoinsSettings {
+    CoinName: string
+    FileNameOfCoinImage: string
 }

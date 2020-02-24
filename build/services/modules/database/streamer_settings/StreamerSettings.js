@@ -49,7 +49,7 @@ class StreamerSettings {
     static async UpdateCoinsSettings(StreamerID, NewCoinsSettings) {
         let AccountData = dbStreamerManager_1.dbStreamerManager.getAccountData(StreamerID);
         AccountData.CoinsSettings = NewCoinsSettings;
-        return AccountData.dbSettings.update(NewCoinsSettings, { where: { SettingName: CoinsSettings_1.CoinsSettings.name } })
+        return AccountData.dbSettings.update({ SettingsJson: NewCoinsSettings }, { where: { SettingName: CoinsSettings_1.CoinsSettings.name } })
             .then(() => {
             return bluebird_1.resolve({ SuccessfullyUpdatedMinerSettings: AccountData.MinerSettings });
         });

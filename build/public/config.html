@@ -44,12 +44,24 @@
     <h1>Configuraçoes</h1>
 
     <div class="MinerDiv Setting">
-      <h2>Mineração por hora </h2>
-      <input id="HourlyRewardInput" type="number" class="UnchangedInput">
+      <div class="SettingDiv">
+        <h2>Mineração por hora </h2>
+        <input id="HourlyRewardInput" type="number" class="UnchangedInput">
+      </div>
     </div>
 
     <div class="CoinsDiv Setting">
-      <h2>Nome da Moeda</h2><input id="CoinNameInput" type="text">
+      <div class="SettingDiv">
+        <h2>Nome da Moeda</h2><input id="CoinNameInput" type="text">
+      </div>
+      <div class="SettingDiv">
+        <h2>Imagem da Moeda</h2>
+      </div>
+      <div class="SettingDiv">
+        <input type="file" accept="image/png, image/jpeg" class="inputfile" name="file" id="InputCoinImg">
+        <label id="LabeForInputCoinImg" for="InputCoinImg"></label>
+      </div>
+
     </div>
 
   </div>

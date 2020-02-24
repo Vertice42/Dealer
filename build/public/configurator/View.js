@@ -449,7 +449,13 @@ class ViewPollManeger {
 exports.ViewPollManeger = ViewPollManeger;
 class ViewSettings {
     constructor() {
+        this.LabeForInputCoinImg = document.getElementById('LabeForInputCoinImg');
         this.HourlyRewardInput = new Inputs_1.ResponsiveInput(document.getElementById('HourlyRewardInput'));
+        this.CoinNameInput = new Inputs_1.ResponsiveInput(document.getElementById('CoinNameInput'));
+        this.InputCoinImg = document.getElementById('InputCoinImg');
+    }
+    setCoinIMG(URL) {
+        this.LabeForInputCoinImg.style.backgroundImage = 'url(' + URL + ')';
     }
 }
 exports.ViewSettings = ViewSettings;

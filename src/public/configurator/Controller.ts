@@ -11,7 +11,6 @@ import StoreItem from "../../services/models/store/StoreItem";
 import UploadFileResponse from "../../services/models/files_manager/UploadFileResponse";
 import PurchaseOrder from "../../services/models/store/PurchaseOrder";
 import { MinerSettings } from "../../services/models/miner/MinerSettings";
-import Links from "../../services/Links";
 
 const socket = io(host);
 
@@ -119,9 +118,7 @@ twitch.onAuthorized(async (auth) => {
 
     const ViewSettings = new ViewConfig.ViewSettings;
 
-    let minerSettings = await BackendConnections.GetMinerSettings(StreamerID);
-
-    ViewSettings.HourlyRewardInput.HTMLInput.value = (~~(minerSettings.RewardPerMinute * 60)).toString();
+    ViewSettings.HourlyRewardInput.HTMLInput.value = (~~((await BackendConnections.GetMinerSettings(StreamerID)).RewardPerMinute * 60)).toString();
 
     ViewSettings.HourlyRewardInput.HTMLInput.onchange = () => {
         ViewSettings.HourlyRewardInput.setChangedInput();
@@ -134,6 +131,36 @@ twitch.onAuthorized(async (auth) => {
             }).catch(() => {
                 ViewSettings.HourlyRewardInput.setInputSentError();
             })
+    }
+
+    var CoinsSettings = await BackendConnections.GetCoinsSettings(StreamerID);
+    ViewSettings.CoinNameInput.HTMLInput.value = CoinsSettings.CoinName;
+
+    ViewSettings.setCoinIMG(BackendConnections.getUrlOfFile(StreamerID, CoinsSettings.FileNameOfCoinImage))
+
+    ViewSettings.CoinNameInput.HTMLInput.onchange = async () => {
+        ViewSettings.CoinNameInput.setChangedInput();
+        CoinsSettings.CoinName = ViewSettings.CoinNameInput.HTMLInput.value;
+        BackendConnections.SendToCoinsSettingsManager(StreamerID, CoinsSettings)
+            .then(async () => {
+                ViewSettings.CoinNameInput.setInputSentSuccessfully();
+                await sleep(100);
+                ViewSettings.CoinNameInput.setUnchangedInput();
+            }).catch(() => {
+                ViewSettings.CoinNameInput.setInputSentError();
+            })
+    }
+    ViewSettings.InputCoinImg.onchange = () => {
+        let file = ViewSettings.InputCoinImg.files[0]
+        if (file) {
+            BackendConnections.UploadFile(StreamerID, file.name, file
+            ).then(async (UploadFileResponse: UploadFileResponse) => {
+                CoinsSettings.FileNameOfCoinImage = file.name;
+                BackendConnections.SendToCoinsSettingsManager(StreamerID, CoinsSettings)
+                ViewSettings.setCoinIMG(BackendConnections.getUrlOfFile(StreamerID, CoinsSettings.FileNameOfCoinImage))
+            }
+            ).catch(rej => console.log(rej))
+        }
     }
 
     const ViewStore = new ViewConfig.ViewStore;
