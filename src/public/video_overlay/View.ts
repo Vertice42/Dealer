@@ -1,5 +1,5 @@
 import { PollButton } from "../../services/models/poll/PollButton";
-import { ResponsiveInput } from "../model/Inputs";
+import { ResponsiveInput } from "../common/model/Inputs";
 import StoreItem from "../../services/models/store/StoreItem";
 
 function hexToRgb(hex) {
