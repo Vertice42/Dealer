@@ -265,7 +265,7 @@ app.post(links.MineCoin, async function (req: MinerRequest, res: express.Respons
         .catch((reje) => {
             res.status(500).send(reje);
         });
-
+        //TODO ADICINADO MINIRAÇÃO MACIMA
 });
 
 app.get(links.GetWallet, async function (req: express.Request, res: express.Response) {

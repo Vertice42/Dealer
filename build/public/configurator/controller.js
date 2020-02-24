@@ -179,6 +179,17 @@ twitch.onAuthorized(async (auth) => {
     const ViewPurchaseOrders = new ViewConfig.ViewPurchaseOrders;
     let PurchaseOrders = [];
     function pay({ ViewPurchasedItem, PurchaseOrder, StoreItem }) {
+        function next(Refalnd) {
+            if (PurchaseOrder) {
+                BackendConnections.DeletePurchaseOrder(StreamerID, PurchaseOrder, Refalnd);
+                PurchaseOrders.shift();
+                PurchaseOrder = null;
+                if (PurchaseOrders[0])
+                    pay(PurchaseOrders[0]);
+                else
+                    ViewPurchaseOrders.setInPurchaseOrdersEmpty();
+            }
+        }
         ViewPurchaseOrders.HTML_AudioPlayer.src = BackendConnections.getUrlOfFile(StreamerID, StoreItem.FileName);
         ViewPurchaseOrders.HTML_AudioPlayer.onplay = () => {
             ViewPurchaseOrders.removeViewPurchaseOrder(ViewPurchasedItem);
@@ -198,12 +209,8 @@ twitch.onAuthorized(async (auth) => {
             }
         };
         ViewPurchaseOrders.HTML_RefundCurrentAudioButton.onclick = async () => {
-            await BackendConnections.DeletePurchaseOrder(StreamerID, PurchaseOrder, true);
             ViewPurchaseOrders.HTML_AudioPlayer.pause();
-            ViewPurchaseOrders.HTML_AudioPlayer.src = '';
-        };
-        ViewPurchaseOrders.HTML_AudioPlayer.ontimeupdate = (event) => {
-            ViewPurchaseOrders.setAudioPlayerProgress(ViewPurchaseOrders.HTML_AudioPlayer.currentTime / ViewPurchaseOrders.HTML_AudioPlayer.duration * 100);
+            next(true);
         };
         ViewPurchaseOrders.HTML_AudioPlayer.play().catch(() => {
             let onBodyClick = () => {
@@ -212,12 +219,10 @@ twitch.onAuthorized(async (auth) => {
             };
             document.body.addEventListener('click', onBodyClick);
         });
-        ViewPurchaseOrders.HTML_AudioPlayer.onended = () => {
-            BackendConnections.DeletePurchaseOrder(StreamerID, PurchaseOrder, false);
-            PurchaseOrders.shift();
-            if (PurchaseOrders[0])
-                pay(PurchaseOrders[0]);
+        ViewPurchaseOrders.HTML_AudioPlayer.ontimeupdate = (event) => {
+            ViewPurchaseOrders.setAudioPlayerProgress(ViewPurchaseOrders.HTML_AudioPlayer.currentTime / ViewPurchaseOrders.HTML_AudioPlayer.duration * 100);
         };
+        ViewPurchaseOrders.HTML_AudioPlayer.onended = () => next(false);
     }
     ViewPurchaseOrders.onAddPuchaseOrder = (ViewPurchasedItem, PurchaseOrder, StoreItem) => {
         PurchaseOrders.push({ ViewPurchasedItem, PurchaseOrder, StoreItem });

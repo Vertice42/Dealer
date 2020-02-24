@@ -230,6 +230,7 @@ app.post(Links_1.default.MineCoin, async function (req, res) {
         .catch((reje) => {
         res.status(500).send(reje);
     });
+    //TODO ADICINADO MINIRAÇÃO MACIMA
 });
 app.get(Links_1.default.GetWallet, async function (req, res) {
     let ErrorList = CheckRequisition([

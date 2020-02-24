@@ -562,10 +562,10 @@ exports.ViewStore = ViewStore;
 class ViewPurchasedItem {
     constructor(id, UserName, PurchaseTime, ItemDescription) {
         this.onRefundButtonActive = () => { };
-        this.id = id;
+        this.ID = id;
         this.HTML = document.createElement('div');
         this.HTML.classList.add('PurchasedItem');
-        this.HTML.appendChild(this.CreateHTML_ItemPlacement(id));
+        this.HTML.appendChild(this.CreateHTML_ItemPlacement(id + 1));
         this.HTML.appendChild(this.CreateHTML_UserName(UserName));
         this.HTML.appendChild(this.CreatePurchaseTime(PurchaseTime));
         this.HTML.appendChild(this.CreateHTML_ItemName(ItemDescription));
@@ -605,11 +605,19 @@ class ViewPurchasedItem {
         };
         return this.HTML_RefundButton;
     }
+    get id() {
+        return this.ID;
+    }
+    set id(id) {
+        this.ID = id;
+        this.HTML_ItemPlacement.innerText = (id + 1) + '°';
+    }
 }
 exports.ViewPurchasedItem = ViewPurchasedItem;
 class ViewPurchaseOrders {
     constructor() {
-        this.leght = 0;
+        this.ViewPurchaseOrdersArray = [];
+        this.HTML_ReproducingMedia = document.getElementById('ReproducingMedia');
         this.HTML_PlaybackUserName = document.getElementById('PlaybackUserName');
         this.HTML_PlaybackItemName = document.getElementById('PlaybackItemName');
         this.HTML_PauseAudioPlayerButton = document.getElementById('PauseAudioPlayerButton');
@@ -632,12 +640,18 @@ class ViewPurchaseOrders {
         this.HTML_RefundCurrentAudioButton.classList.add('Disable');
     }
     setStarted() {
+        this.HTML_ReproducingMedia.classList.remove('PurchaseOrdersEmpty');
+        this.HTML_ReproducingMedia.classList.add('PurchaseOrdersNotEmpty');
         this.HTML_PauseAudioPlayerButton.classList.remove('InPause');
         this.HTML_PauseAudioPlayerButton.classList.add('Started');
     }
     setInPause() {
         this.HTML_PauseAudioPlayerButton.classList.remove('Started');
         this.HTML_PauseAudioPlayerButton.classList.add('InPause');
+    }
+    setInPurchaseOrdersEmpty() {
+        this.HTML_ReproducingMedia.classList.remove('PurchaseOrdersNotEmpty');
+        this.HTML_ReproducingMedia.classList.add('PurchaseOrdersEmpty');
     }
     setAudioPlayerProgress(progres) {
         let left = progres;
@@ -650,8 +664,8 @@ class ViewPurchaseOrders {
         this.HTML_PlaybackItemName.innerText = StoreItemName;
     }
     addViewPurchaseOrder(PurchaseOrder, StoreItem) {
-        this.leght++;
-        let viewPurchasedItem = new ViewPurchasedItem(this.leght, PurchaseOrder.TwitchUserID, new Date(PurchaseOrder.updatedAt).getTime(), StoreItem.Description);
+        let viewPurchasedItem = new ViewPurchasedItem(this.ViewPurchaseOrdersArray.length, PurchaseOrder.TwitchUserID, new Date(PurchaseOrder.updatedAt).getTime(), StoreItem.Description);
+        this.ViewPurchaseOrdersArray.push(viewPurchasedItem);
         viewPurchasedItem.onRefundButtonActive = () => {
             this.onButtonPurchaseOrderRefundActive(viewPurchasedItem, PurchaseOrder);
         };
@@ -660,9 +674,10 @@ class ViewPurchaseOrders {
     }
     removeViewPurchaseOrder(ViewPurchasedItem) {
         this.HTML_ListOfPurchasedItems.removeChild(ViewPurchasedItem.HTML);
-    }
-    clear() {
-        this.HTML_ListOfPurchasedItems.innerHTML = '';
+        this.ViewPurchaseOrdersArray.splice(ViewPurchasedItem.id, 1);
+        this.ViewPurchaseOrdersArray.forEach((viewPurchasedItem, index) => {
+            viewPurchasedItem.id = index;
+        });
     }
 }
 exports.ViewPurchaseOrders = ViewPurchaseOrders;
