@@ -1,9 +1,17 @@
 import sequelize = require("sequelize");
 import { Model } from "sequelize";
-export class dbWallet extends Model {
+
+export class Wallet {
     TwitchUserID: string
     Coins: number
     LastMiningAttemp: number
+}
+
+export class dbWallet extends Model implements Wallet{
+    TwitchUserID: string;   
+    Coins: number;
+    LastMiningAttemp: number;
+
 }
 
 const WalletDefiner = {

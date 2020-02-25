@@ -94,7 +94,7 @@ export class Watch {
     })
   }
 
-  stat() {
+  start() {
     this.Stop = false;
     this.watch();
   }
@@ -289,7 +289,7 @@ export async function GetWallet(StreamerID: string, TwitchUserID: string) {
   })
 }
 
-export async function GetWallets(StreamerID: string, TwitchUserID?: string) {
+export async function GetWallets(StreamerID: string, TwitchUserID = '*') {
   return fetch(host + link.getWallets(StreamerID, TwitchUserID), {
     method: "GET"
   }).then(function (res) {

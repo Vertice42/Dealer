@@ -1,12 +1,13 @@
 import { PollStatus } from "../../services/models/poll/PollStatus";
 import { PollButton } from "../../services/models/poll/PollButton";
 import { isEquivalent, sleep } from "../../utils/utils";
-import { WatchPoll, addBet as addBeat, GetWallet, GetStore, addPurchaseOrder } from "../BackendConnection";
 import { Poll } from "../../services/models/poll/Poll";
 import { Miner } from "./modules/Miner";
 import { dbWallet } from "../../services/models/poll/dbWallet";
 import { GameBoard } from "./View";
 import StoreItem from "../../services/models/store/StoreItem";
+import BackendConnections = require("../BackendConnection");
+import { CoinsSettings } from "../../services/models/streamer_settings/CoinsSettings";
 
 function makeid(length) {
   var result = "";
@@ -40,14 +41,19 @@ function IsWinner(PollButtons: PollButton[], ChosenButtonID: number) {
   return is_winner;
 }
 
-
 twitch.onAuthorized(async (auth) => {
   twitch.onContext(async (context) => {
     console.log(context);
 
     const GAME_BOARD = new GameBoard();
     token = auth.token;
+
     StreamerID = auth.channelId.toLowerCase();
+
+    let CoinsSettings:CoinsSettings = await BackendConnections.GetCoinsSettings(StreamerID);
+    if(CoinsSettings.FileNameOfCoinImage)
+    GAME_BOARD.CoinImgURL = BackendConnections.getUrlOfFile(StreamerID,CoinsSettings.FileNameOfCoinImage);
+
     if (process.env.NODE_ENV === 'production') {
       TwitchUserID = auth.userId.toLowerCase();
     } else {
@@ -57,7 +63,7 @@ twitch.onAuthorized(async (auth) => {
     let ChangeBeat = () => {
       if (GAME_BOARD.SelectedButtonID !== null) {
         GAME_BOARD.BetAmountInput.setChangedInput();
-        addBeat(StreamerID, TwitchUserID, GAME_BOARD.SelectedButtonID, GAME_BOARD.getBetValue())
+        BackendConnections.addBet(StreamerID, TwitchUserID, GAME_BOARD.SelectedButtonID, GAME_BOARD.getBetValue())
           .then(async () => {
             GAME_BOARD.BetAmountInput.setInputSentSuccessfully();
             await sleep(100);
@@ -74,7 +80,7 @@ twitch.onAuthorized(async (auth) => {
     GAME_BOARD.onBeatIDSelected = ChangeBeat;
     GAME_BOARD.BetAmountInput.HTMLInput.onchange = ChangeBeat;
 
-    new WatchPoll(StreamerID)
+    new BackendConnections.WatchPoll(StreamerID)
       .setOnPollChange(async (Poll: Poll) => {
         if (isEquivalent(CurrentPollStatus, Poll.PollStatus)) {
           GAME_BOARD.setButtonsInPollDiv(Poll.PollButtons);
@@ -106,7 +112,7 @@ twitch.onAuthorized(async (auth) => {
       })
       .start();
 
-    let WalletOfUser: dbWallet = await GetWallet(StreamerID, TwitchUserID);
+    let WalletOfUser: dbWallet = await BackendConnections.GetWallet(StreamerID, TwitchUserID);
     twitch.rig.log(WalletOfUser.Coins.toString());
     GAME_BOARD.CoinsOfUserView.innerText = (~~WalletOfUser.Coins).toString();
 
@@ -125,17 +131,17 @@ twitch.onAuthorized(async (auth) => {
         //TODO ADD METODO PARA MUDAR UI}).startMining()
       }).startMining();
 
-    GAME_BOARD.setStoreItems(await GetStore(StreamerID,-1));
+    GAME_BOARD.setStoreItems(await BackendConnections.GetStore(StreamerID, -1));
 
-    GAME_BOARD.onBuyItemButtonActive = (StoreItem:StoreItem) => {
-      addPurchaseOrder(StreamerID,TwitchUserID,StoreItem)
-      .then((res)=>{
-        console.log(res);
-      })
-      .catch((rej)=>{
-        console.log(rej);
-        
-      })
+    GAME_BOARD.onBuyItemButtonActive = (StoreItem: StoreItem) => {
+      BackendConnections.addPurchaseOrder(StreamerID, TwitchUserID, StoreItem)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((rej) => {
+          console.log(rej);
+
+        })
     }
 
   });

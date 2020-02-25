@@ -12,7 +12,7 @@ import { Define } from "../modules/database/dbDefine";
 
 import { ButtonDefiner } from "../models/poll/dbButton";
 
-import { dbBettings, BettingsDefiner } from "../models/poll/dbBettings";
+import { BettingsDefiner } from "../models/poll/dbBettings";
 
 import { PollStatus } from "../models/poll/PollStatus";
 

@@ -4,7 +4,7 @@ let dir = __dirname.replace("src",'build');
 
 module.exports = {
   watch: true,
-  entry: "./Controller.ts",
+  entry: "./controller/MainController.ts",
   mode: 'development',
   module: {
     rules: [

@@ -1,6 +1,6 @@
 @import url(./alerts/main.css);
 @import url(./wallet/main.css);
-@import url(../../style/common.css);
+@import url(../../common/style/common.css);
 
 @font-face {
     font-family: Heroes;

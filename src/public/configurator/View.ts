@@ -1,9 +1,11 @@
 import { PollStatus } from "../../services/models/poll/PollStatus";
 import { Poll } from "../../services/models/poll/Poll";
-import { ResponsiveInput, OrientedInput, ResponsiveInputFile } from "../model/Inputs";
 import StoreItem from "../../services/models/store/StoreItem";
 import PurchaseOrder from "../../services/models/store/PurchaseOrder";
-import { dbWallet } from "../../services/models/poll/dbWallet";
+import { Wallet } from "../../services/models/poll/dbWallet";
+import { ResponsiveInput, OrientedInput, ResponsiveInputFile as ResponsiveLabelForInputFile } from "../common/model/Inputs";
+import { PollButton } from "../../services/models/poll/PollButton";
+import { PurchaseOrderItem } from "./controller/PurchaseOrderController";
 
 function GenerateColor() {
   /**Generate random hex color*/
@@ -590,14 +592,26 @@ export class ViewPollManeger {
     });
   }
 
+  getPollButtons(): PollButton[] {
+    let Buttons = [];
+    this.PollItemsViewers.forEach(PollItemViewer => {
+      Buttons.push(new PollButton(
+        PollItemViewer.ID,
+        PollItemViewer.getNameInputValue(),
+        PollItemViewer.getColorInputValue(),
+        PollItemViewer.IsWinner()))
+    });
+    return Buttons;
+  }
+
 }
 export class ViewSettings {
   public HourlyRewardInput: ResponsiveInput
   public CoinNameInput: ResponsiveInput
   public InputCoinImg: HTMLInputElement
-  private LabeForInputCoinImg = <HTMLLabelElement> document.getElementById('LabeForInputCoinImg');
-  setCoinIMG(URL:string){
-    this.LabeForInputCoinImg.style.backgroundImage = 'url('+URL+')';
+  private LabeForInputCoinImg = <HTMLLabelElement>document.getElementById('LabeForInputCoinImg');
+  setCoinIMG(URL: string) {
+    this.LabeForInputCoinImg.style.backgroundImage = 'url(' + URL + ')';
   }
   constructor() {
     this.HourlyRewardInput = new ResponsiveInput(<HTMLInputElement>document.getElementById('HourlyRewardInput'));
@@ -620,7 +634,7 @@ export class ViewStoreItem implements StoreItem {
   public DescriptionInput: OrientedInput
   public PriceInput: OrientedInput
   public HTML_InputFile: HTMLInputElement
-  public ResponsiveInputFile: ResponsiveInputFile;
+  public ResponsiveInputFile: ResponsiveLabelForInputFile;
 
   private HTML_DeleteButton: HTMLButtonElement
 
@@ -639,6 +653,8 @@ export class ViewStoreItem implements StoreItem {
     this.HTML_InputFile.setAttribute('type', 'file');
     this.HTML_InputFile.classList.add('inputfile');
     this.HTML_InputFile.name = 'file';
+    this.HTML_InputFile.accept = 'audio/*';
+
     this.HTML_InputFile.id = this.ElemeteHTML_ID;
     return this.HTML_InputFile;
   }
@@ -655,7 +671,7 @@ export class ViewStoreItem implements StoreItem {
     this.ElemeteHTML_ID = 'inputFile' + this.id;
 
     this.DescriptionInput = new OrientedInput('Incert Description', 'text', 'DescriptionInput');
-    this.ResponsiveInputFile = new ResponsiveInputFile(this.ElemeteHTML_ID);
+    this.ResponsiveInputFile = new ResponsiveLabelForInputFile(this.ElemeteHTML_ID);
     this.PriceInput = new OrientedInput('Incert Price', 'number', 'PriceInput');
 
     this.HTML = document.createElement('div');
@@ -792,21 +808,21 @@ export class ViewPurchasedItem {
     }
     return this.HTML_RefundButton;
   }
-  
-  public get id() : number {
-    return  this.ID;
+
+  public get id(): number {
+    return this.ID;
   }
 
-  public set id(id : number) {
+  public set id(id: number) {
     this.ID = id;
-    this.HTML_ItemPlacement.innerText = (id+1)+'°';
+    this.HTML_ItemPlacement.innerText = (id + 1) + '°';
   }
 
   constructor(id: number, UserName: string, PurchaseTime: number, ItemDescription: string) {
     this.ID = id;
     this.HTML = document.createElement('div');
     this.HTML.classList.add('PurchasedItem');
-    this.HTML.appendChild(this.CreateHTML_ItemPlacement(id+1))
+    this.HTML.appendChild(this.CreateHTML_ItemPlacement(id + 1))
     this.HTML.appendChild(this.CreateHTML_UserName(UserName))
     this.HTML.appendChild(this.CreatePurchaseTime(PurchaseTime))
     this.HTML.appendChild(this.CreateHTML_ItemName(ItemDescription))
@@ -814,7 +830,7 @@ export class ViewPurchasedItem {
   }
 }
 export class ViewPurchaseOrders {
-  ViewPurchaseOrdersArray:ViewPurchasedItem[] = []
+  ViewPurchaseOrdersArray: ViewPurchasedItem[] = []
 
   private HTML_ReproducingMedia = <HTMLDivElement>document.getElementById('ReproducingMedia');
   private HTML_PlaybackUserName = <HTMLSpanElement>document.getElementById('PlaybackUserName');
@@ -848,18 +864,18 @@ export class ViewPurchaseOrders {
     this.HTML_PauseAudioPlayerButton.classList.add('Started');
   }
 
-  setInPause() {    
+  setInPause() {
     this.HTML_PauseAudioPlayerButton.classList.remove('Started');
     this.HTML_PauseAudioPlayerButton.classList.add('InPause');
   }
 
-  setInPurchaseOrdersEmpty(){    
+  setInPurchaseOrdersEmpty() {
     this.HTML_ReproducingMedia.classList.remove('PurchaseOrdersNotEmpty');
     this.HTML_ReproducingMedia.classList.add('PurchaseOrdersEmpty');
   }
 
   onButtonPurchaseOrderRefundActive = (ViewPurchasedItem: ViewPurchasedItem, PurchaseOrder: PurchaseOrder) => { };
-  onAddPuchaseOrder = (ViewPurchasedItem: ViewPurchasedItem, PurchaseOrder: PurchaseOrder, StoreItem: StoreItem) => { }
+  onAddPuchaseOrder = (PurchaseOrderItem: PurchaseOrderItem) => { }
 
   setAudioPlayerProgress(progres: number) {
     let left = progres;
@@ -868,7 +884,7 @@ export class ViewPurchaseOrders {
       `linear-gradient(to left, rgb(86, 128, 219) ${rigth}%, rgb(93, 144, 255) ${left}%)`;
   }
 
-  setCurrentPay(TwitchUserName: string, StoreItemName: string) {
+  setRunningOrder(TwitchUserName: string, StoreItemName: string) {
     this.HTML_PlaybackUserName.innerText = TwitchUserName;
     this.HTML_PlaybackItemName.innerText = StoreItemName;
   }
@@ -879,15 +895,15 @@ export class ViewPurchaseOrders {
     viewPurchasedItem.onRefundButtonActive = () => {
       this.onButtonPurchaseOrderRefundActive(viewPurchasedItem, PurchaseOrder)
     }
-    this.onAddPuchaseOrder(viewPurchasedItem, PurchaseOrder, StoreItem);
+    this.onAddPuchaseOrder(new PurchaseOrderItem(viewPurchasedItem, PurchaseOrder, StoreItem));
     this.HTML_ListOfPurchasedItems.appendChild(viewPurchasedItem.HTML)
   }
   removeViewPurchaseOrder(ViewPurchasedItem: ViewPurchasedItem) {
-    
+
     this.HTML_ListOfPurchasedItems.removeChild(ViewPurchasedItem.HTML);
     this.ViewPurchaseOrdersArray.splice(ViewPurchasedItem.id, 1);
-    
-    this.ViewPurchaseOrdersArray.forEach((viewPurchasedItem,index) => {    
+
+    this.ViewPurchaseOrdersArray.forEach((viewPurchasedItem, index) => {
       viewPurchasedItem.id = index;
     });
   }
@@ -933,15 +949,16 @@ export class ViewWallets {
   HTML_SearchInput = <HTMLInputElement>document.getElementById('SearchInput');
   HTMl_SearchInputButton = <HTMLButtonElement>document.getElementById('SearchInputButton');
 
-  onWalletInputChange = (TwitchUserID:string,viewWallet:ViewWallet)=>{};
+  onWalletInputChange = (TwitchUserID: string, viewWallet: ViewWallet) => { };
 
-  uptate(Wallets: dbWallet[]) {
+  uptate(Wallets: Wallet[]) {
     this.HTML_DivOfWallets.innerHTML = '';
 
     Wallets.forEach((Wallet, index) => {
       let viewWallet = new ViewWallet(index + 1, Wallet.TwitchUserID, (~~Wallet.Coins));
-      viewWallet.InputOfCoinsOfWalletOfUser.HTMLInput.onchange = () => {        
-        this.onWalletInputChange(Wallet.TwitchUserID,viewWallet)};
+      viewWallet.InputOfCoinsOfWalletOfUser.HTMLInput.onchange = () => {
+        this.onWalletInputChange(Wallet.TwitchUserID, viewWallet)
+      };
 
       this.HTML_DivOfWallets.appendChild(viewWallet.HTML)
     })

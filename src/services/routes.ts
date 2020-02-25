@@ -436,7 +436,8 @@ app.get(links.GetWallets, async function (req: { params: { StreamerID: string, T
 app.post(links.WalletManager, async function (req, res: express.Response) {
     let walletManagerRequest:WalletManagerRequest = req.body;
     new dbWalletManeger(walletManagerRequest.StreamerID, walletManagerRequest.TwitchUserID)
-    .update(walletManagerRequest.newValue).then(()=>{
+    .update(walletManagerRequest.newValue)
+    .then(()=>{
         res.status(200).send({WalletSuccessfullyChanged: new Date});
     })
     .catch((rej)=>{

@@ -9,11 +9,11 @@ export async function getWallet(StreamerID: string, TwitchUserID: string) {
     })
     return (await AccountData.dbWallets.findOrCreate({ where: { TwitchUserID: TwitchUserID } }))[0];
 }
-export async function getAllWallets(StreamerID: string, TwitchUserID?: string) {
+export async function getAllWallets(StreamerID: string, TwitchUserID: string) {
     let AccountData = dbStreamerManager.getAccountData(StreamerID);
     if (AccountData) {
 
-        if (TwitchUserID === 'undefined') {
+        if (TwitchUserID === '*') {
             return AccountData.dbWallets.findAll({ order: [['Coins', 'DESC']], limit: 20 });
         } else {
             return AccountData.dbWallets.findAll(

@@ -60,7 +60,7 @@ export class GameBoard {
     public StoreItem: ViewStoreItem
     public getBetValue: () => number;
     public onBeatIDSelected = () => { };
-    public onBuyItemButtonActive = (StoreItem:StoreItem) => { };
+    public onBuyItemButtonActive = (StoreItem: StoreItem) => { };
 
     public SelectedButtonID: number = null;
     public BetAmountInput = new ResponsiveInput(<HTMLInputElement>document.getElementById("BetAmountInput"));
@@ -87,8 +87,12 @@ export class GameBoard {
     private PollDiv = <HTMLDivElement>document.getElementById("PollDiv");
     private ButtonsDiv = <HTMLDivElement>document.getElementById("ButtonsDiv");
 
+    public CoinImgURL:string;
+
     DepositAnimation(Coin: HTMLDivElement, CoinNumber: number, onStart: () => void, onEnd: () => void) {
         Coin.classList.add('Coin');
+        if(this.CoinImgURL)Coin.style.backgroundImage = 'url('+this.CoinImgURL+')';        
+
         Coin.style.left = -35 + (CoinNumber * 15) + '%';
         Coin.style.top = -50 + '%';
 

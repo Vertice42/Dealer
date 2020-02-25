@@ -3,8 +3,8 @@ import { PollButton } from "../../../models/poll/PollButton";
 import { PollBeat } from "../../../models/poll/PollBeat"
 import { dbButton, dbButtonType } from "../../../models/poll/dbButton";
 import { dbStreamerManager } from "../dbStreamerManager";
-import { sleep } from "../../../../utils/utils";
 import { Bettings } from "../../../models/poll/dbBettings";
+import { sleep } from "../../../../utils/utils";
 
 export class dbPollMager {
     StreamerID: string;
