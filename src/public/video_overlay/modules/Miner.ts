@@ -5,20 +5,19 @@ export class Miner {
 
     StreamerID: string;
     TwitchUserID: string;
-    CoinsOfUser: number;
-    onSuccess: (arg0: number, arg1: number) => void
+    CoinsOfUser = 0;
+    onMine: (arg0: number, arg1: number) => void
 
-    constructor(StreamerID: string, TwitchUserID: string, CoinsOfUser: number, onSuccess: (arg0: number, arg1: number) => void) {
+    constructor(StreamerID: string, TwitchUserID: string, onSuccess = (arg0: number, arg1: number) => {}) {
         this.StreamerID = StreamerID;
         this.TwitchUserID = TwitchUserID;
-        this.CoinsOfUser = CoinsOfUser;
-        this.onSuccess = onSuccess;
+        this.onMine = onSuccess;
     }
     private onSuccessfullyMined(MiningResponse: MiningResponse) {
         let CoinsAddedOrSubtracted = ~~MiningResponse.CoinsOfUser - this.CoinsOfUser;
         this.CoinsOfUser = MiningResponse.CoinsOfUser;
 
-        this.onSuccess(this.CoinsOfUser, CoinsAddedOrSubtracted);
+        this.onMine(this.CoinsOfUser, CoinsAddedOrSubtracted);
         setTimeout(() => { this.TryToMine() }, MiningResponse.MinimumTimeToMine);
     }
 

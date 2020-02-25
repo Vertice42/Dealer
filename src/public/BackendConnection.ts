@@ -27,6 +27,7 @@ export async function getCurrentPoll(StreamerID: string) {
     return rej.json().then((res) => { console.error(res) });
   })
 }
+/*
 export class WatchPoll {
   public onWatch = null;
 
@@ -75,7 +76,7 @@ export class WatchPoll {
     this.onPollChange = onPollChange;
     return this;
   }
-}
+}*/
 
 export class Watch {
   private Watched: () => Promise<any>;
