@@ -1,12 +1,12 @@
-import ViewConfig = require("../View");
 import BackendConnections = require("../../BackendConnection");
 import { sleep } from "../../../utils/utils";
 import UploadFileResponse from "../../../services/models/files_manager/UploadFileResponse";
 import StoreItem from "../../../services/models/store/StoreItem";
+import ViewStore from "../view/ViewStore";
 
 export default class StoreController {
     StreamerID: string;
-    ViewStore = new ViewConfig.ViewStore;
+    ViewStore = new ViewStore;
     StoreItems: StoreItem[];
 
     async EnbleAllCommands() {

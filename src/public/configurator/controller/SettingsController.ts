@@ -1,14 +1,14 @@
-import ViewConfig = require("../View");
 import BackendConnections = require("../../BackendConnection");
 import { MinerSettings } from "../../../services/models/miner/MinerSettings";
 import { sleep } from "../../../utils/utils";
 import UploadFileResponse from "../../../services/models/files_manager/UploadFileResponse";
 import { CoinsSettings } from "../../../services/models/streamer_settings/CoinsSettings";
+import ViewSettings from "../view/ViewSettings";
 
 
 export default class SettingsController {
     StreamerID: string;
-    ViewSettings: ViewConfig.ViewSettings;
+    ViewSettings = new ViewSettings;
     MinerSettings: MinerSettings;
     CoinsSettings: CoinsSettings;
 
@@ -51,7 +51,6 @@ export default class SettingsController {
         }
     }
     async LoadingSettings() {
-        this.ViewSettings = new ViewConfig.ViewSettings;
 
         this.MinerSettings = await BackendConnections.GetMinerSettings(this.StreamerID);
         this.CoinsSettings = await BackendConnections.GetCoinsSettings(this.StreamerID);

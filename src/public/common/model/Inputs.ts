@@ -75,7 +75,7 @@ export class OrientedInput extends ResponsiveInput {
   }
 }
 
-export class ResponsiveInputFile {
+export class ResponsiveLabelForInputFile {
   HTMLInput: HTMLLabelElement;
   constructor(id?: string, HTMLInput = document.createElement('label')) {
     this.HTMLInput = HTMLInput;

@@ -55,3 +55,13 @@ export function DisableRelocatableElemente(Element: HTMLElement) {
     Element.onmouseleave = null;
     Element.onmouseup = null;
 }
+
+export function GenerateColor() {
+    /**Generate random hex color*/
+    var hexadecimais = "0123456789ABCDEF";
+    var color = "#";
+    for (var i = 0; i < 6; i++) {
+      color += hexadecimais[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }

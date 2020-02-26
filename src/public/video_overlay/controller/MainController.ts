@@ -1,4 +1,3 @@
-import { PollStatus } from "../../../services/models/poll/PollStatus";
 import { Miner } from "../modules/Miner";
 import AllertController from "./AlertController";
 import StoreDisplayController from "./StoreDisplayController";

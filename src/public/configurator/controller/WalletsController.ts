@@ -1,11 +1,11 @@
-import ViewConfig = require("../View");
 import BackendConnections = require("../../BackendConnection");
 import { sleep } from "../../../utils/utils";
 import { Wallet } from "../../../services/models/poll/dbWallet";
+import ViewWallets from "../view/ViewWallets";
 
 export default class WalletsController {
     StreamerID: string;
-    ViewWallets = new ViewConfig.ViewWallets();
+    ViewWallets = new ViewWallets;
     WatchWallets: BackendConnections.Watch
 
 

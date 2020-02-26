@@ -1,13 +1,13 @@
-import ViewConfig = require("../View");
 import BackendConnections = require("../../BackendConnection");
 import StoreItem from "../../../services/models/store/StoreItem";
 import PurchaseOrder from "../../../services/models/store/PurchaseOrder";
+import ViewPurchaseOrders, { ViewPurchasedItem } from "../view/ViewPurchaseOrders";
 
 export class PurchaseOrderItem {
-    ViewPurchasedItem: ViewConfig.ViewPurchasedItem;
+    ViewPurchasedItem: ViewPurchasedItem;
     PurchaseOrder: PurchaseOrder;
     StoreItem: StoreItem;
-    constructor(ViewPurchasedItem: ViewConfig.ViewPurchasedItem, PurchaseOrder: PurchaseOrder, StoreItem: StoreItem) {
+    constructor(ViewPurchasedItem: ViewPurchasedItem, PurchaseOrder: PurchaseOrder, StoreItem: StoreItem) {
         this.ViewPurchasedItem = ViewPurchasedItem;
         this.PurchaseOrder = PurchaseOrder;
         this.StoreItem = StoreItem;
@@ -17,7 +17,7 @@ export class PurchaseOrderItem {
 export default class PurchaseOrderController {
     StreamerID: string;
     socket: SocketIOClient.Socket;
-    ViewPurchaseOrders = new ViewConfig.ViewPurchaseOrders;
+    ViewPurchaseOrders = new ViewPurchaseOrders;
     PurchaseOrdersList: PurchaseOrderItem[] = [];
 
     ExecuteOrder(PurchaseOrderItemList: PurchaseOrderItem) {
