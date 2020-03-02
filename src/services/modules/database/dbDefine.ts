@@ -9,7 +9,6 @@ import { dbPurchaseOrder, PurchaseOrdersDefiner } from "../../models/store/dbPur
      * Loads and / or creates sequelize models by defining them
      */
 export class Define {
-
     static async PurchaseOrder(AccountData: AccountData) {                
         AccountData.dbPurchaseOrders = <typeof dbPurchaseOrder> AccountData.dbStreamer
         .define(PurchaseOrdersDefiner.name, PurchaseOrdersDefiner.atributes, PurchaseOrdersDefiner.options);

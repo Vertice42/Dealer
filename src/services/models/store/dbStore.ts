@@ -1,12 +1,16 @@
 import sequelize = require("sequelize");
 import { Model } from "sequelize";
 import StoreItem from "./StoreItem";
+import ItemSettings from "./ItemSettings";
 
 export class dbStore extends Model implements StoreItem {
-    id: number;
+    id: number;    
+    Type: number;
     Description: string;
-    Price: number;
+    ItemsSettings: ItemSettings[];
+    ItemSettingsJson: string;
     FileName: string;
+    Price: number;
 }
 
 export const StoreDefiner = {
@@ -18,6 +22,10 @@ export const StoreDefiner = {
         },
         FileName: {
             type: sequelize.STRING,
+            allowNull: true
+        },
+        ItemSettingsJson: {
+            type: sequelize.JSON,
             allowNull: true
         },
         Price: {

@@ -2,7 +2,7 @@ import { resolve } from "bluebird";
 import { PollButton } from "../../../models/poll/PollButton";
 import { PollBeat } from "../../../models/poll/PollBeat"
 import { dbButton, dbButtonType } from "../../../models/poll/dbButton";
-import { dbStreamerManager } from "../dbStreamerManager";
+import { dbManager } from "../dbManager";
 import { Bettings } from "../../../models/poll/dbBettings";
 import { sleep } from "../../../../utils/utils";
 
@@ -17,7 +17,7 @@ export class dbPollMager {
      * @returns {dbBettings[]}
      */
     getAllBettings() {
-        return dbStreamerManager.getAccountData(this.StreamerID).dbCurrentBettings.findAll();
+        return dbManager.getAccountData(this.StreamerID).dbCurrentBettings.findAll();
     }
 
     /**
@@ -40,7 +40,7 @@ export class dbPollMager {
      * @returns Promise<dbButton[]>
      */
     async getAllButtonsOfCurrentPoll() {
-        return dbStreamerManager.getAccountData(this.StreamerID).dbCurrentPollButtons.findAll()
+        return dbManager.getAccountData(this.StreamerID).dbCurrentPollButtons.findAll()
             .catch(async (rej) => {
                 if (rej.parent.errno === 1146) {
                     await sleep(500)
@@ -55,7 +55,7 @@ export class dbPollMager {
      * @param ButtonID 
      */
     getButtonOfCurrentPoll(ButtonID: number) {
-        return dbStreamerManager.getAccountData(this.StreamerID).dbCurrentPollButtons.findOne({ where: { ID: ButtonID } });
+        return dbManager.getAccountData(this.StreamerID).dbCurrentPollButtons.findOne({ where: { ID: ButtonID } });
     }
 
     /**
@@ -99,7 +99,7 @@ export class dbPollMager {
      * @param Button 
      */
     async AddButtonOfCurrentPoll(Button: dbButtonType) {
-        return dbStreamerManager.getAccountData(this.StreamerID).dbCurrentPollButtons.create(Button);
+        return dbManager.getAccountData(this.StreamerID).dbCurrentPollButtons.create(Button);
     }
     /**
      * 

@@ -39,5 +39,5 @@ export default {
     GetFile: '/File/:StreamerID/:FileName',
     getFiles: (StreamerID: string, FileName: string) => {
         return '/File/' + StreamerID + '/' + FileName;
-    },
+    }
 }

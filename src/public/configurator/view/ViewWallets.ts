@@ -38,6 +38,9 @@ export default class ViewWallets {
     HTML_SearchInput = <HTMLInputElement>document.getElementById('SearchInput');
     HTMl_SearchInputButton = <HTMLButtonElement>document.getElementById('SearchInputButton');
     onWalletInputChange = (TwitchUserID: string, viewWallet: ViewWallet) => { };
+    onWalletInputInFocus = (TwitchUserID: string, viewWallet: ViewWallet) => { };
+    onWalletInputFocusOut = (TwitchUserID: string, viewWallet: ViewWallet) => { };
+
     uptate(Wallets: Wallet[]) {
         this.HTML_DivOfWallets.innerHTML = '';
         Wallets.forEach((Wallet, index) => {
@@ -45,6 +48,14 @@ export default class ViewWallets {
             viewWallet.InputOfCoinsOfWalletOfUser.HTMLInput.onchange = () => {
                 this.onWalletInputChange(Wallet.TwitchUserID, viewWallet);
             };
+            viewWallet.InputOfCoinsOfWalletOfUser.HTMLInput.onfocus = () => {
+                this.onWalletInputInFocus(Wallet.TwitchUserID, viewWallet);
+            }
+
+            viewWallet.InputOfCoinsOfWalletOfUser.HTMLInput.addEventListener('focusout',() => {
+                this.onWalletInputFocusOut(Wallet.TwitchUserID, viewWallet);
+            }) 
+
             this.HTML_DivOfWallets.appendChild(viewWallet.HTML);
         });
     }

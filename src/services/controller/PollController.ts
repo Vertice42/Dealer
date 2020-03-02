@@ -1,6 +1,6 @@
 import { PollButton } from "../models/poll/PollButton";
 
-import { POLL_WAXED, NOT_IN_STRING, POLL_STOPED, POLL_STARTED, dbStreamerManager } from "../modules/database/dbStreamerManager";
+import { POLL_WAXED, NOT_IN_STRING, POLL_STOPED, POLL_STARTED, dbManager } from "../modules/database/dbManager";
 
 import { dbWalletManeger } from "../modules/database/miner/dbWalletManager";
 
@@ -39,7 +39,7 @@ export class PollController {
      * @param Buttons 
      */
     async StartDistribuition(Buttons: PollButton[]) {
-        let AccountData = dbStreamerManager.getAccountData(this.StreamerID);
+        let AccountData = dbManager.getAccountData(this.StreamerID);
         let startTime = new Date().getTime();
 
         let WinningButtons = dbPollMager.getWinningButtons(Buttons);
@@ -87,7 +87,7 @@ export class PollController {
      * @param BetAmount 
      */
     async AddBet(TwitchUserID: string, BetID: number, BetAmount: number) {
-        let AccountData = dbStreamerManager.getAccountData(this.StreamerID);
+        let AccountData = dbManager.getAccountData(this.StreamerID);
 
         let Wallet = await new dbWalletManeger(this.StreamerID, TwitchUserID).getWallet();
         if (BetAmount > Wallet.Coins) return reject({
@@ -141,7 +141,7 @@ export class PollController {
      * @returns {CurrentPollStatus:PollStatus}
      */
     async dbUpdatePollStatus() {
-        let AccountData = dbStreamerManager.getAccountData(this.StreamerID);
+        let AccountData = dbManager.getAccountData(this.StreamerID);
 
         if (!AccountData.CurrentPollID)         
             return resolve(AccountData.CurrentPollStatus);
@@ -192,7 +192,7 @@ export class PollController {
      * @returns {UpdatePollStatusRes:PollStatus, UpdateButtonGroupRes:UpdateButtonGroupResult}
      */
     async UpdatePoll(Buttons: PollButton[]) {
-        let AccountData = dbStreamerManager.getAccountData(this.StreamerID);
+        let AccountData = dbManager.getAccountData(this.StreamerID);
 
         let UpdatePollStatusRes: PollStatus = null;
         let UpdateButtonGroupRes: UpdateButtonGroupResult = null;
@@ -214,7 +214,7 @@ export class PollController {
         /**Generate a handle with the current time
          * to create the tables
          */
-        let AccountData = dbStreamerManager.getAccountData(this.StreamerID);
+        let AccountData = dbManager.getAccountData(this.StreamerID);
         let ID = new Date().getTime();
         AccountData.CurrentPollID = ID + ButtonDefiner.tableName;
         AccountData.CurrentBettingsID = ID + BettingsDefiner.TableName;
@@ -232,7 +232,7 @@ export class PollController {
      * @returns Poll
      */
     async getCurrentPoll() {
-        let AccountData = dbStreamerManager.getAccountData(this.StreamerID);
+        let AccountData = dbManager.getAccountData(this.StreamerID);
         if (!AccountData) AccountData = await Loading.StreamerDatabase(this.StreamerID);
 
         let Buttons = [];

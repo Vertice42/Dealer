@@ -1,7 +1,7 @@
 import { PollStatus } from "../../models/poll/PollStatus";
 import { MinerSettings } from "../../models/miner/MinerSettings";
 import { Define } from "./dbDefine";
-import { POLL_WAXED, NOT_IN_STRING, POLL_STARTED, POLL_STOPED, dbStreamerManager } from "./dbStreamerManager";
+import { POLL_WAXED, NOT_IN_STRING, POLL_STARTED, POLL_STOPED, dbManager } from "./dbManager";
 import { AccountData } from "../../models/AccountData";
 import { getTableName } from "./dbUtil";
 import { CoinsSettings } from "../../models/streamer_settings/CoinsSettings";
@@ -10,10 +10,11 @@ export class Loading {
      * Loads everything needed for all services to work properly
      * @returns AccountData
      * */
-    static async StreamerDatabase(StreamerID: string) {
-        await dbStreamerManager.CreateIfNotExistStreamerDataBase(StreamerID);
 
-        let accountData: AccountData = dbStreamerManager
+    static async StreamerDatabase(StreamerID: string) {
+        await dbManager.CreateIfNotExistStreamerDataBase(StreamerID);
+
+        let accountData: AccountData = dbManager
             .setAccountData(new AccountData(StreamerID));
 
         accountData.CurrentPollStatus = new PollStatus();
@@ -58,7 +59,7 @@ export class Loading {
         return accountData;
     }
     static async MinerSettings(StreamerID: string) {
-        let accountData = dbStreamerManager.getAccountData(StreamerID);
+        let accountData = dbManager.getAccountData(StreamerID);
         return accountData.dbSettings
             .findOne({ where: { SettingName: MinerSettings.name } })
             .then(async (dbSettings) => {
@@ -74,7 +75,7 @@ export class Loading {
             })
     }
     static async CoinsSettings(StreamerID: string) {
-        let accountData = dbStreamerManager.getAccountData(StreamerID);
+        let accountData = dbManager.getAccountData(StreamerID);
         return accountData.dbSettings
             .findOne({ where: { SettingName: CoinsSettings.name } })
             .then(async (dbSettings) => {
@@ -88,8 +89,5 @@ export class Loading {
                     return Loading.CoinsSettings(StreamerID);
                 }
             })
-    }
-    static async Store(StreamerID: string) {
-
     }
 }

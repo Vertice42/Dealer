@@ -5,7 +5,7 @@ import { dbWallet } from "./poll/dbWallet";
 import { dbSettings } from "./streamer_settings/dbSettings";
 import { MinerSettings } from "./miner/MinerSettings";
 import { Sequelize } from "sequelize";
-import { dbStreamerManager } from "../modules/database/dbStreamerManager";
+import { dbManager } from "../modules/database/dbManager";
 import { CoinsSettings } from "./streamer_settings/CoinsSettings";
 import { dbStore } from "./store/dbStore";
 import { dbPurchaseOrder } from "./store/dbPurchaseOrders";
@@ -32,7 +32,7 @@ export class AccountData {
     
     constructor(StreamerID: string) {
         this.StreamerID = StreamerID;
-        this.dbStreamer = dbStreamerManager.getStreamerDataBase(StreamerID);
+        this.dbStreamer = dbManager.getStreamerDataBase(StreamerID);
         this.dbCurrentPollButtons = null;
         this.dbCurrentBettings = null;
         this.dbWallets = null;

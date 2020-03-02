@@ -8,7 +8,7 @@ import { getWallet, dbWalletManeger } from "../services/modules/database/miner/d
 import { dbWallet } from "../services/models/poll/dbWallet";
 import { PollController } from "../services/controller/PollController";
 import { PollBeat } from "../services/models/poll/PollBeat";
-import { dbStreamerManager } from "../services/modules/database/dbStreamerManager";
+import { dbManager } from "../services/modules/database/dbManager";
 import { Loading } from "../services/modules/database/dbLoading";
 import StreamerSettings from "../services/modules/database/streamer_settings/StreamerSettings";
 import MinerManeger from "../services/modules/database/miner/dbMinerManager";
@@ -31,13 +31,13 @@ function sleep(ms: number) {
 }
 
 async function createDatabase(StreamersID: string) {
-  let CreateResult = await dbStreamerManager.CreateIfNotExistStreamerDataBase(StreamersID);  
+  let CreateResult = await dbManager.CreateIfNotExistStreamerDataBase(StreamersID);  
   await Loading.StreamerDatabase(StreamersID);
   return CreateResult;
 }
 
 async function deleteDatabse(StreamersID: string) {
-  return dbStreamerManager.DeleteStreamerDataBase(StreamersID);
+  return dbManager.DeleteStreamerDataBase(StreamersID);
 }
 
 async function createPoll(StreamersID: string) {
@@ -45,7 +45,7 @@ async function createPoll(StreamersID: string) {
 }
 
 async function startPoll(StreamersID: string) {
-  let AccountData = dbStreamerManager.getAccountData(StreamersID);
+  let AccountData = dbManager.getAccountData(StreamersID);
   AccountData.CurrentPollStatus.PollStarted = true;
   return new PollController(StreamersID).UpdatePoll([
     new PollButton(0, 'wait', '#FFFFFF', false),
@@ -88,7 +88,7 @@ describe('DATABASE_MANAGER', () => {
 
     var ButtonsToTest = [];
     it('Start Poll', async function () {
-      let AccountData = dbStreamerManager.getAccountData(IDForManagerPoll);
+      let AccountData = dbManager.getAccountData(IDForManagerPoll);
       AccountData.CurrentPollStatus.start();
 
       ButtonsToTest.push(new PollButton(0, 'waite', '#FFFFFF', false))
@@ -156,7 +156,7 @@ describe('DATABASE_MANAGER', () => {
     })
 
     it('Stop Poll', async function () {
-      dbStreamerManager.getAccountData(IDForManagerPoll).CurrentPollStatus.stop();
+      dbManager.getAccountData(IDForManagerPoll).CurrentPollStatus.stop();
 
       expect((await new PollController(IDForManagerPoll).UpdatePoll(undefined)).UpdatePollStatusRes)
         .to.include({ PollStarted: true, PollStoped: true });
@@ -164,14 +164,14 @@ describe('DATABASE_MANAGER', () => {
     });
 
     it('Restart Poll', async function () {
-      dbStreamerManager.getAccountData(IDForManagerPoll).CurrentPollStatus.restart();
+      dbManager.getAccountData(IDForManagerPoll).CurrentPollStatus.restart();
 
       expect((await new PollController(IDForManagerPoll).UpdatePoll(undefined)).UpdatePollStatusRes)
         .to.include({ PollStarted: true, PollStoped: false });
     });
 
     it('Waxe Poll', async function () {
-      dbStreamerManager.getAccountData(IDForManagerPoll).CurrentPollStatus.waxe();
+      dbManager.getAccountData(IDForManagerPoll).CurrentPollStatus.waxe();
 
       expect((await new PollController(IDForManagerPoll).UpdatePoll(undefined)).UpdatePollStatusRes)
         .to.include({ PollWaxed: true });

@@ -6,7 +6,7 @@ import ViewWallets from "../view/ViewWallets";
 export default class WalletsController {
     StreamerID: string;
     ViewWallets = new ViewWallets;
-    WatchWallets: BackendConnections.Watch
+    WatchWallets: BackendConnections.Watch;
 
 
     async EnbleAllCommands() {
@@ -24,13 +24,14 @@ export default class WalletsController {
 
         this.ViewWallets.HTMl_SearchInputButton.onclick = Search;
 
+        let InputInUse = false;
+
         this.ViewWallets.onWalletInputChange = (TwitchUserID, ViewWallet) => {
+            InputInUse = true;
+
             ViewWallet.InputOfCoinsOfWalletOfUser.setChangedInput();
 
-            BackendConnections.SendToWalletManager(
-                this.StreamerID,
-                TwitchUserID,
-                Number(ViewWallet.InputOfCoinsOfWalletOfUser.HTMLInput.value))
+            BackendConnections.SendToWalletManager(this.StreamerID, TwitchUserID, Number(ViewWallet.InputOfCoinsOfWalletOfUser.HTMLInput.value))
                 .then(async () => {
                     ViewWallet.InputOfCoinsOfWalletOfUser.setInputSentSuccessfully();
                     await sleep(500)
@@ -39,11 +40,24 @@ export default class WalletsController {
                 .catch((rej) => {
                     ViewWallet.InputOfCoinsOfWalletOfUser.setInputSentError()
                 })
+
+        }
+
+        let ObesrverUseOfInput = () => setTimeout(() => {
+            if (InputInUse) ObesrverUseOfInput();
+            else this.WatchWallets.start()
+            InputInUse = false;
+        }, 5000);
+
+        this.ViewWallets.onWalletInputInFocus = async () => {
+            InputInUse = true;
+            await this.WatchWallets.stop();
+            ObesrverUseOfInput();
         }
     }
 
     loadingWallets() {
-        this.WatchWallets = new BackendConnections.Watch(() => BackendConnections.GetWallets(this.StreamerID));
+        this.WatchWallets = new BackendConnections.Watch(() => BackendConnections.GetWallets(this.StreamerID), 200);
         this.WatchWallets.OnWaitch = (Wallets: Wallet[]) => this.ViewWallets.uptate(Wallets);
 
         this.EnbleAllCommands();

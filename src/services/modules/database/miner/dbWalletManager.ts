@@ -1,16 +1,16 @@
-import { dbStreamerManager } from "../dbStreamerManager";
+import { dbManager } from "../dbManager";
 import { reject } from "bluebird";
 import { Op } from "sequelize";
 
 export async function getWallet(StreamerID: string, TwitchUserID: string) {
-    let AccountData = dbStreamerManager.getAccountData(StreamerID);
+    let AccountData = dbManager.getAccountData(StreamerID);
     if (!AccountData) return reject({
         RequestError: 'It was not possible to mine, as the streamer did not initiate an extension'
     })
     return (await AccountData.dbWallets.findOrCreate({ where: { TwitchUserID: TwitchUserID } }))[0];
 }
 export async function getAllWallets(StreamerID: string, TwitchUserID: string) {
-    let AccountData = dbStreamerManager.getAccountData(StreamerID);
+    let AccountData = dbManager.getAccountData(StreamerID);
     if (AccountData) {
 
         if (TwitchUserID === '*') {

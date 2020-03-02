@@ -2,6 +2,9 @@ import BackendConnections = require("../../BackendConnection");
 import StoreItem from "../../../services/models/store/StoreItem";
 import PurchaseOrder from "../../../services/models/store/PurchaseOrder";
 import ViewPurchaseOrders, { ViewPurchasedItem } from "../view/ViewPurchaseOrders";
+import IO_Listeners from "../../../services/IO_Listeners";
+import { NotifyViewers } from "./MainController";
+import TwitchListeners from "../../../services/TwitchListeners";
 
 export class PurchaseOrderItem {
     ViewPurchasedItem: ViewPurchasedItem;
@@ -66,17 +69,22 @@ export default class PurchaseOrderController {
     }
     nextOrder(Refund: boolean) {
         if (PurchaseOrder) {
-            BackendConnections.DeletePurchaseOrder(this.StreamerID, this.PurchaseOrdersList.shift().PurchaseOrder, Refund);
+            let DeletedPurchaseOrder = this.PurchaseOrdersList.shift().PurchaseOrder;
+            BackendConnections.DeletePurchaseOrder(this.StreamerID, DeletedPurchaseOrder, Refund);
 
             if (this.PurchaseOrdersList[0]) this.ExecuteOrder(this.PurchaseOrdersList[0])
             else this.ViewPurchaseOrders.setInPurchaseOrdersEmpty();
+
+            NotifyViewers({ ListenerName: TwitchListeners.onDeletePurchaseOrder, data: DeletedPurchaseOrder });
+
         }
     }
     async EnbleAllCommands() {
-        this.ViewPurchaseOrders.onButtonPurchaseOrderRefundActive = (ViewPurchasedItem, PurchaseOrder) => {
+        this.ViewPurchaseOrders.onButtonPurchaseOrderRefundActive = async (ViewPurchasedItem, PurchaseOrder) => {
             this.ViewPurchaseOrders.removeViewPurchaseOrder(ViewPurchasedItem);
             this.PurchaseOrdersList.splice(ViewPurchasedItem.id, 1);
-            BackendConnections.DeletePurchaseOrder(this.StreamerID, PurchaseOrder, true);
+            await BackendConnections.DeletePurchaseOrder(this.StreamerID, PurchaseOrder, true);
+            NotifyViewers({ ListenerName: TwitchListeners.onDeletePurchaseOrder, data: PurchaseOrder });
         }
     }
 
@@ -91,8 +99,9 @@ export default class PurchaseOrderController {
             this.ViewPurchaseOrders.addViewPurchaseOrder(PurchaseOrder, await BackendConnections.GetStore(this.StreamerID, PurchaseOrder.StoreItemID));
         })
 
-        this.socket.on('PurchasedItem', async (PurchaseOrder: PurchaseOrder) => {
+        this.socket.on(IO_Listeners.onAddPurchasedItem, async (PurchaseOrder: PurchaseOrder) => {
             this.ViewPurchaseOrders.addViewPurchaseOrder(PurchaseOrder, await BackendConnections.GetStore(this.StreamerID, PurchaseOrder.StoreItemID));
+            NotifyViewers({ ListenerName: TwitchListeners.onAddPurchasedItem, data: PurchaseOrder })
         });
 
         this.EnbleAllCommands();

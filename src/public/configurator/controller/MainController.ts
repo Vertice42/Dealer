@@ -31,6 +31,10 @@ export class StatusObservation {
     }
 }//TODO REMOVE THIS SUBISTITUIR POR SOKET IO
 
+export function NotifyViewers(TwitchListener:{ListenerName:string,data:any}){
+    window.Twitch.ext.send("broadcast", "json", JSON.stringify(TwitchListener));
+  }
+
 twitch.onContext((context) => {
     console.log(context);
 })

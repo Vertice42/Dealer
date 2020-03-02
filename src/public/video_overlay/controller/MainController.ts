@@ -16,7 +16,26 @@ const twitch = window.Twitch.ext;
 
 var token: string, StreamerID: string, TwitchUserID: string;
 
+var TwitchListeners:{ListenerName:string,Listerner:(data)=>any}[] = [];
+
+var Twitchbroadcast = (opic, contentType, json:string) => {  
+  TwitchListeners.forEach((twitchListener) => {
+    let jsonOBJ:{ListenerName:string,data:any} = JSON.parse(json);   
+     
+    if (jsonOBJ.ListenerName === twitchListener.ListenerName) {
+      twitchListener.Listerner(jsonOBJ.data)
+    }
+
+  });
+}
+
+export function addTwitchListeners(ListenerName:string,Listerner:(data)=>any) {
+  TwitchListeners.push({ListenerName,Listerner});
+}
+window.Twitch.ext.listen('broadcast', Twitchbroadcast);
+
 twitch.onAuthorized(async (auth) => {
+
   twitch.onContext((context) => {
     console.log(context);
     token = auth.token;
@@ -32,7 +51,7 @@ twitch.onAuthorized(async (auth) => {
     var ControllerOfStoreDisplay = new StoreDisplayController(StreamerID, TwitchUserID);
 
     var UserMiner = new Miner(StreamerID, TwitchUserID);
-    UserMiner.onMine = (CurrentCoinsOfUserNunber, BalanceChange) => {      
+    UserMiner.onMine = (CurrentCoinsOfUserNunber, BalanceChange) => {
       ControllerOfStoreDisplay.setViewBalance(CurrentCoinsOfUserNunber, BalanceChange)
     };
     UserMiner.startMining();

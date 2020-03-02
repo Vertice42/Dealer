@@ -3,7 +3,7 @@ import { Loading } from "../dbLoading";
 import { MinerSettings, MinimunTimeForMining } from "../../../models/miner/MinerSettings";
 import { dbWalletManeger } from "./dbWalletManager";
 import { MiningResponse } from "../../../models/miner/MiningResponse";
-import { dbStreamerManager } from "../dbStreamerManager";
+import { dbManager } from "../dbManager";
 
 export default class MinerManeger {
     /**
@@ -17,7 +17,7 @@ export default class MinerManeger {
      */
     static async MineCoin(StreamerID: string, TwitchUserID: string) {
         let Now = new Date().getTime();
-        let AccountData = dbStreamerManager.getAccountData(StreamerID);
+        let AccountData = dbManager.getAccountData(StreamerID);
         if (!AccountData.MinerSettings) return reject({
             RequestError: 'It was not possible to mine, as the streamer did not initiate an extension'});
 

@@ -12,7 +12,7 @@ import { MinerRequest } from "./models/miner/MinerRequest";
 import { PollController } from "./controller/PollController";
 import { MiningResponse } from "./models/miner/MiningResponse";
 import UpdateButtonGroupResult from "./models/poll/UpdateButtonGroupResult";
-import { dbStreamerManager } from "./modules/database/dbStreamerManager";
+import { dbManager } from "./modules/database/dbManager";
 import { dbWalletManeger, getAllWallets } from "./modules/database/miner/dbWalletManager";
 import links from "./Links";
 import MinerManeger from "./modules/database/miner/dbMinerManager";
@@ -33,6 +33,10 @@ import { dbPurchaseOrder } from "./models/store/dbPurchaseOrders";
 import DeletePurchaseOrderRequest from "./modules/database/store/DeletePurchaseOrderRequest";
 import { dbWallet } from "./models/poll/dbWallet";
 import { WalletManagerRequest } from "./models/wallet/WalletManagerRequest";
+import StoreManagerRequest from "./models/store/StoreManagerRequest";
+import ControllerOfPermissions from "./controller/ControllerOfPermissions";
+import ItemSettings from "./models/store/ItemSettings";
+import IO_Listeners from "./IO_Listeners";
 
 const app = express();
 const server = http.createServer(app);
@@ -85,7 +89,7 @@ app.post(links.PollManager, async function (req: PollRequest, res: express.Respo
     let PoolUpdateResult: { UpdatePollStatusRes: PollStatus, UpdateButtonGroupRes: UpdateButtonGroupResult };
     let DistribuitionResult: { DistributionStarted: Date; };
 
-    let AccountData = dbStreamerManager.getAccountData(req.body.StreamerID);
+    let AccountData = dbManager.getAccountData(req.body.StreamerID);
     if (AccountData.CurrentPollStatus.PollWaxed)
         return res.status(200).send(pollController.CreatePoll());
     else {
@@ -265,7 +269,7 @@ app.post(links.MineCoin, async function (req: MinerRequest, res: express.Respons
         .catch((reje) => {
             res.status(500).send(reje);
         });
-        //TODO ADICINADO MINIRAÇÃO MACIMA
+    //TODO ADICINADO MINIRAÇÃO MACIMA
 });
 
 app.get(links.GetWallet, async function (req: express.Request, res: express.Response) {
@@ -291,24 +295,40 @@ app.get(links.GetWallet, async function (req: express.Request, res: express.Resp
 });
 
 app.post(links.StoreManager, async function (req, res: express.Response) {
+    let Request: StoreManagerRequest = req.body;
+
     let ErrorList = CheckRequisition([
         () => {
-            if (!req.body.StreamerID)
+            if (!Request.StreamerID)
                 return ({ RequestError: "StreamerID is no defined" })
+        },
+        () => {
+            if (!Request.StoreItem) {
+                return ({ RequestError: "StoreItem is no defined" })
+                //TODO ADD CHEKES
+            }
         }
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
+    //TODO ADICIONAR dotenv
 
-    new dbStoreManager(req.body.StreamerID).UpdateOrCreateStoreItem(req.body.StoreItem)
+    if (!(await new ControllerOfPermissions(Request.StreamerID).AllItemsSettingsIsUnlocked(Request.StoreItem.ItemsSettings))) {
+        return res.status(423).send({ mensage: 'This feature is blocked for you' })
+    }
+
+    new dbStoreManager(Request.StreamerID).UpdateOrCreateStoreItem(Request.StoreItem)
         .then((result) => {
             res.status(200).send(result);
         })
         .catch((reject) => {
+            console.error(reject);
+
             res.status(500).send(reject);
         })
 })
 
 app.delete(links.StoreManager, async function (req, res: express.Response) {
+    let Request: StoreManagerRequest = req.body;
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -317,7 +337,7 @@ app.delete(links.StoreManager, async function (req, res: express.Response) {
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
 
-    new dbStoreManager(req.body.StreamerID).DeleteStoreItem(req.body.StoreItem)
+    new dbStoreManager(Request.StreamerID).DeleteStoreItem(req.body.StoreItem)
         .then((result) => {
             res.status(200).send(result);
         })
@@ -331,8 +351,20 @@ app.get(links.GetStore, async function (req: { params: { StreamerID: string, Sto
 
     if (req.params.StoreItemID === '-1') {
         dbStoreM.getAllItens()
-            .then((result) => {
-                res.status(200).send(<StoreItem[]>result);
+            .then((dbStoreItems) => {
+                let StoreItems: StoreItem[] = [];
+
+                dbStoreItems.forEach((dbStoreItem, index) => {
+                    StoreItems[index] =
+                        new StoreItem(
+                            dbStoreItem.id,
+                            dbStoreItem.Type,
+                            dbStoreItem.Description,
+                            JSON.parse(dbStoreItem.ItemSettingsJson),
+                            dbStoreItem.FileName,
+                            dbStoreItem.Price)
+                });
+                res.status(200).send(StoreItems);
             })
             .catch((rej) => {
                 res.status(500).send(rej)
@@ -374,6 +406,7 @@ app.get(links.GetFile, async function (req, res: express.Response) {
 app.post(links.PurchaseOrder, async function (req, res: express.Response) {
     let PurchaseOrderRequest: PurchaseOrderRequest = req.body;
     //TODO add CheckRequisition
+
     let ItemPrice = (await new dbStoreManager(PurchaseOrderRequest.StreamerID).getIten(PurchaseOrderRequest.StoreItemID)).Price;
     let dbWalletM = new dbWalletManeger(PurchaseOrderRequest.StreamerID, PurchaseOrderRequest.TwitchUserID);
 
@@ -381,16 +414,32 @@ app.post(links.PurchaseOrder, async function (req, res: express.Response) {
         return res.status(400).send({ ErrorBuying: 'Insufficient funds' })
     }
 
-    new dbPurchaseOrderManager(PurchaseOrderRequest.StreamerID)
-        .addPurchaseOrder(new PurchaseOrder(ItemPrice, PurchaseOrderRequest.TwitchUserID, PurchaseOrderRequest.StoreItemID)
+    let dbStoreIten = await new dbStoreManager(PurchaseOrderRequest.StreamerID).getIten(PurchaseOrderRequest.StoreItemID);
+    let ItemSettings: ItemSettings[] = JSON.parse(dbStoreIten.ItemSettingsJson);
+
+    let SingleReproductionEnable = false;
+    ItemSettings.forEach(ItemSetting => {
+        if (ItemSetting.DonorFeatureName === 'SingleReproduction' && ItemSetting.Enable
         )
+            SingleReproductionEnable = true;
+    });
+    let dbPurchaseOrderMan = new dbPurchaseOrderManager(PurchaseOrderRequest.StreamerID);
+
+    if (SingleReproductionEnable) {
+        if (await dbPurchaseOrderMan.getdbPurchaseOrderByStoreItemID(PurchaseOrderRequest.StoreItemID)){
+            return res.status(423).send({PurchaseFailed:'You are only allowed to buy one item at a time'})
+        }
+    }
+
+    dbPurchaseOrderMan.addPurchaseOrder(new PurchaseOrder(ItemPrice, PurchaseOrderRequest.TwitchUserID, PurchaseOrderRequest.StoreItemID)
+    )
         .then(async (dbPurchaseOrder) => {
             await dbWalletM.withdraw(ItemPrice);
-            getSoketOfStreamer(PurchaseOrderRequest.StreamerID).emit('PurchasedItem', <PurchaseOrder>dbPurchaseOrder)
+            getSoketOfStreamer(PurchaseOrderRequest.StreamerID).emit(IO_Listeners.onAddPurchasedItem, <PurchaseOrder>dbPurchaseOrder)
             res.status(200).send({ PurchaseOrderWasSentSuccessfully: new Date })
         })
         .catch((rej) => {
-            console.log(rej);
+            console.error(rej);
             res.status(500).send(rej);
         })
 })
@@ -399,15 +448,15 @@ app.delete(links.PurchaseOrder, async function (req, res: express.Response) {
     let PurchaseOrder: DeletePurchaseOrderRequest = req.body;
     new dbPurchaseOrderManager(PurchaseOrder.StreamerID)
         .removePurchaseOrder(PurchaseOrder.PurchaseOrderID)
-        .then(() => {
+        .then(async () => {
             if (PurchaseOrder.Refund) {
-                return new dbWalletManeger(PurchaseOrder.StreamerID, PurchaseOrder.TwitchUserID)
+                await new dbWalletManeger(PurchaseOrder.StreamerID, PurchaseOrder.TwitchUserID)
                     .deposit(PurchaseOrder.SpentCoins)
             }
-            res.status(200).send({ PurchaseOrderRemovedSuccessfully: new Date })
+            return res.status(200).send({ PurchaseOrderRemovedSuccessfully: new Date })
         })
         .catch((rej) => {
-            console.log(rej);
+            console.error(rej);
             res.status(500).send(rej);
         })
 })
@@ -422,28 +471,28 @@ app.get(links.GetPurchaseOrder, async function (req: { params: { StreamerID: str
         })
 })
 
-app.get(links.GetWallets, async function (req: { params: { StreamerID: string, TwitchUserID: string } }, res: express.Response) {    
+app.get(links.GetWallets, async function (req: { params: { StreamerID: string, TwitchUserID: string } }, res: express.Response) {
     getAllWallets(req.params.StreamerID, req.params.TwitchUserID)
         .then((Wallets) => {
             res.status(200).send(<dbWallet[]>Wallets);
         })
         .catch((rej) => {
-            console.log(rej);
+            console.error(rej);
             res.status(500).send(rej);
         })
 })
 
 app.post(links.WalletManager, async function (req, res: express.Response) {
-    let walletManagerRequest:WalletManagerRequest = req.body;
+    let walletManagerRequest: WalletManagerRequest = req.body;
     new dbWalletManeger(walletManagerRequest.StreamerID, walletManagerRequest.TwitchUserID)
-    .update(walletManagerRequest.newValue)
-    .then(()=>{
-        res.status(200).send({WalletSuccessfullyChanged: new Date});
-    })
-    .catch((rej)=>{
-        console.log(rej);
-        res.status(500).send(rej);
-    })
+        .update(walletManagerRequest.newValue)
+        .then(() => {
+            res.status(200).send({ WalletSuccessfullyChanged: new Date });
+        })
+        .catch((rej) => {
+            console.error(rej);
+            res.status(500).send(rej);
+        })
 })
 
 export default server;

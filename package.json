@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha 'build/test/main.test.js'",
-    "start": "nodemon build/services/index.js"
+    "start": " nodemon build/services/index.js",
+    "nw": "node build/services/index.js"
   },
   "author": "Thiago Ruas Freire",
   "license": "ISC",
@@ -12,6 +13,7 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "lodash": "^4.17.15",
     "morgan": "^1.9.1",
     "mysql2": "^1.7.0",

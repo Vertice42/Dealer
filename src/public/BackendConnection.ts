@@ -27,87 +27,39 @@ export async function getCurrentPoll(StreamerID: string) {
     return rej.json().then((res) => { console.error(res) });
   })
 }
-/*
-export class WatchPoll {
-  public onWatch = null;
-
-  private onPollChange = null;
-  private Stop = null;
-  private LastUpdate = 0;
-  private StreamerID: string
-
-  constructor(StreamerID: string) {
-    this.StreamerID = StreamerID;
-  }
-
-  private Watch() {
-    getCurrentPoll(this.StreamerID).then((Poll: Poll) => {
-      setTimeout(() => {
-        if (!this.Stop) {
-          this.Watch();
-          if (this.onWatch) this.onWatch(Poll);
-          if (this.LastUpdate !== Poll.LastUpdate) {
-            if (this.onPollChange) this.onPollChange(Poll);
-            this.LastUpdate = Poll.LastUpdate;
-          }
-        } else {
-          this.Stop = null;
-        }
-      }, 500);
-    }).catch(() => {
-      console.log('Error connecting to Service, next attempt in 3s');
-      setTimeout(() => {
-        if (!this.Stop) this.Watch();
-      }, 3000);
-    });
-  }
-
-  start() {
-    if (this.Stop === null) this.Watch();
-
-    this.Stop = false;
-    return this;
-  }
-  stop() {
-    this.Stop = true;
-    return this;
-  }
-  setOnPollChange(onPollChange) {
-    this.onPollChange = onPollChange;
-    return this;
-  }
-}*/
-
 export class Watch {
   private Watched: () => Promise<any>;
   public WaitingTime: number;
   public OnWaitch = (_result: any) => { };
   private PromiseToStop: () => any;
 
-  private Stop = false;
+  IsStop = false;
 
   async stop() {
-    this.Stop = true;
-    new Promise((resolve, reject) => {
-      return this.PromiseToStop = () => {
-        resolve();
-      }
-    })
+    if (!this.IsStop) {
+      this.IsStop = true;
+      return new Promise((resolve, reject) => {
+        this.PromiseToStop = () => { resolve() };
+      });
+    }
   }
 
-  start() {
-    this.Stop = false;
-    this.watch();
+  async start() {
+    if (this.IsStop) {
+      this.IsStop = false;
+      this.OnWaitch(await this.Watched());
+      this.watch();
+    }
   }
 
 
   watch = async () => {
-    this.OnWaitch(await this.Watched());
     setTimeout(async () => {
-      this.OnWaitch(await this.Watched());
-      if (!this.Stop) this.watch();
-      else {
+      if (this.IsStop) {
         this.PromiseToStop();
+      } else {
+        this.OnWaitch(await this.Watched());
+        this.watch();
       }
     }, this.WaitingTime);
   }
@@ -396,13 +348,11 @@ export async function DeletePurchaseOrder(StreamerID: string, PurchaseOrder: Pur
     method: "DELETE",
     headers: H,
     body: JSON.stringify(new DeletePurchaseOrderRequest(StreamerID, PurchaseOrder.TwitchUserID, PurchaseOrder.id, PurchaseOrder.StoreItemID, PurchaseOrder.SpentCoins, Refund))
-  }).then((res) => {
+  }).then((res) => {    
     if (res.ok) return resolve(res)
     else return reject(res);
-  }).then((res) => {
-    return res.json().then((res) => {
-      return res;
-    })
+  }).then(async (res) => {
+    return res.json();
   }).catch((rej) => {
     return rej.json()
       .then((res) => {

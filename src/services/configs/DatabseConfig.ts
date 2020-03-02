@@ -1,6 +1,6 @@
 import { Options } from "sequelize/types";
 
-const User ='root';
+const User = 'root';
 const Password = '';
 
 const SequelizeOptions: Options = {
@@ -8,5 +8,4 @@ const SequelizeOptions: Options = {
     host: '127.0.0.1',
     logging: false
 }
-
-export default {User,Password,SequelizeOptions};
+export default { User, Password, SequelizeOptions };
