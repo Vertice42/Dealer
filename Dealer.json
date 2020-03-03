@@ -66,7 +66,7 @@
     "iconUrls": {},
     "id": "liu00zf4fub5qwkk37j7mb4f42jvnl",
     "installationCount": -42,
-    "liveConfigUrl": "",
+    "liveConfigUrl": "https://localhost:8080/config.html",
     "name": "Dealer",
     "panelHeight": 300,
     "privacyPolicyUrl": "",
@@ -116,6 +116,10 @@
         "canLinkExternalContent": false
       },
       "config": {
+        "viewerUrl": "https://localhost:8080/config.html",
+        "canLinkExternalContent": false
+      },
+      "liveConfig": {
         "viewerUrl": "https://localhost:8080/config.html",
         "canLinkExternalContent": false
       }

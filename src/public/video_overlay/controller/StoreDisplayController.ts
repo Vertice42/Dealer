@@ -10,6 +10,7 @@ export default class StoreDisplayController {
     StreamerID: string;
     TwitchUserID: string;
     ViewStoreDisplay = new ViewStoreDisplay();
+    
 
     setViewBalance(Balance: number, BalanceChange = 0) {
         if (BalanceChange > 0) {

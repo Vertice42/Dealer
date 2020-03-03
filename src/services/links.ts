@@ -4,7 +4,10 @@ export default {
         return '/Poll/' + StreamerID;
     },
     GetPoll: '/Poll/:StreamerID',
-    addVote: '/addVote/',
+    addBeat: (StreamerID: string, TwitchUserID: string)=>{
+        return '/addBeat/' + StreamerID + '/' + TwitchUserID
+    },
+    AddBeat: '/addBeat/:StreamerID/:TwitchUserID',
     MinerManager: '/MinerManager',
     getMiner: (StreamerID: string) => {
         return '/MinerSettings/' + StreamerID;

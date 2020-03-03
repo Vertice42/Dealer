@@ -1,6 +1,7 @@
 import { Miner } from "../modules/Miner";
 import AllertController from "./AlertController";
 import StoreDisplayController from "./StoreDisplayController";
+import { getUsername, getUserIDByUsername } from "../../TwitchConnections";
 
 function makeid(length: number) {
   var result = "";
@@ -16,12 +17,12 @@ const twitch = window.Twitch.ext;
 
 var token: string, StreamerID: string, TwitchUserID: string;
 
-var TwitchListeners:{ListenerName:string,Listerner:(data)=>any}[] = [];
+var TwitchListeners: { ListenerName: string, Listerner: (data) => any }[] = [];
 
-var Twitchbroadcast = (opic, contentType, json:string) => {  
+var Twitchbroadcast = (opic, contentType, json: string) => {
   TwitchListeners.forEach((twitchListener) => {
-    let jsonOBJ:{ListenerName:string,data:any} = JSON.parse(json);   
-     
+    let jsonOBJ: { ListenerName: string, data: any } = JSON.parse(json);
+
     if (jsonOBJ.ListenerName === twitchListener.ListenerName) {
       twitchListener.Listerner(jsonOBJ.data)
     }
@@ -29,25 +30,29 @@ var Twitchbroadcast = (opic, contentType, json:string) => {
   });
 }
 
-export function addTwitchListeners(ListenerName:string,Listerner:(data)=>any) {
-  TwitchListeners.push({ListenerName,Listerner});
+export function addTwitchListeners(ListenerName: string, Listerner: (data) => any) {
+  TwitchListeners.push({ ListenerName, Listerner });
 }
 window.Twitch.ext.listen('broadcast', Twitchbroadcast);
 
 twitch.onAuthorized(async (auth) => {
 
+  StreamerID = auth.channelId.toLowerCase();
+  token = auth.token;
+
+  if (process.env.NODE_ENV === 'production') {
+    TwitchUserID = auth.userId.toLowerCase();
+  }
+  else {
+    TwitchUserID = auth.userId.toLowerCase().replace('u', '');
+  }
+
+  TwitchUserID = (await getUsername(TwitchUserID, auth.clientId)).name;
+
   twitch.onContext((context) => {
     console.log(context);
-    token = auth.token;
 
-    StreamerID = auth.channelId.toLowerCase();
-    if (process.env.NODE_ENV === 'production') {
-      TwitchUserID = auth.userId.toLowerCase();
-    } else {
-      TwitchUserID = makeid(5)
-    }
-
-    new AllertController(StreamerID);
+    new AllertController(StreamerID,TwitchUserID);
     var ControllerOfStoreDisplay = new StoreDisplayController(StreamerID, TwitchUserID);
 
     var UserMiner = new Miner(StreamerID, TwitchUserID);

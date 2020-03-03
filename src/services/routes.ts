@@ -133,7 +133,7 @@ app.get(links.GetPoll, async function (req: { params: { StreamerID: string } }, 
         })
 });
 
-app.post(links.addVote, async function (req: AddBetRequest, res: express.Response) {
+app.post(links.AddBeat, async function (req: AddBetRequest, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -165,6 +165,8 @@ app.post(links.addVote, async function (req: AddBetRequest, res: express.Respons
             if (mensage) return { RequestError: mensage };
         }
     ])
+    console.log(ErrorList);
+    
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
 
     let pollController = new PollController(req.body.StreamerID);

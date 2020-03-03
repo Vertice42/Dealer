@@ -53,8 +53,8 @@ export default class AllertController {
     }
 
     async LoadingStore() {
-        this.PollObserver = new BackendConnections.Watch(async () => { return await BackendConnections.getCurrentPoll(this.StreamerID) });
-        this.PollObserver.OnWaitch(async (Poll: Poll) => {
+        this.PollObserver = new BackendConnections.Watch(async () => { return await BackendConnections.getCurrentPoll(this.StreamerID)},500);
+        this.PollObserver.OnWaitch = (async (Poll: Poll) => {
             if (isEquivalent(this.CurrentPollStatus, Poll.PollStatus)) {
                 this.ViewAlerts.setButtonsInPollDiv(Poll.PollButtons);
             } else {
@@ -86,8 +86,9 @@ export default class AllertController {
         this.EnbleAllCommands();
     }
 
-    constructor(StreamerID: string) {
+    constructor(StreamerID: string,TwitchUserID:string) {
         this.StreamerID = StreamerID;
+        this.TwitchUserID = TwitchUserID;
         this.LoadingStore()
     }
 }

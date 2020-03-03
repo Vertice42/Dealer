@@ -1,5 +1,5 @@
 import { MiningResponse } from "../../../services/models/miner/MiningResponse";
-import { MineCoin } from "../../BackendConnection";
+import BackendConnection = require("../../BackendConnection");
 
 export class Miner {
 
@@ -8,7 +8,7 @@ export class Miner {
     CoinsOfUser = 0;
     onMine: (arg0: number, arg1: number) => void
 
-    constructor(StreamerID: string, TwitchUserID: string, onSuccess = (arg0: number, arg1: number) => {}) {
+    constructor(StreamerID: string, TwitchUserID: string, onSuccess = (arg0: number, arg1: number) => { }) {
         this.StreamerID = StreamerID;
         this.TwitchUserID = TwitchUserID;
         this.onMine = onSuccess;
@@ -22,7 +22,7 @@ export class Miner {
     }
 
     private TryToMine() {
-        MineCoin(this.StreamerID, this.TwitchUserID)
+        BackendConnection.MineCoin(this.StreamerID, this.TwitchUserID)
             .then((res) => {
                 this.onSuccessfullyMined(res);
             })
@@ -33,7 +33,8 @@ export class Miner {
                 }, 3000);
             })
     }
-    startMining() {
+    async startMining() {
+        this.CoinsOfUser =  (await BackendConnection.GetWallet(this.StreamerID, this.TwitchUserID)).Coins;
         this.TryToMine()
     }
 }

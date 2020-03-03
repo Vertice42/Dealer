@@ -12,21 +12,10 @@ import DeletePurchaseOrderRequest from '../services/modules/database/store/Delet
 import PurchaseOrder from '../services/models/store/PurchaseOrder';
 import { WalletManagerRequest } from '../services/models/wallet/WalletManagerRequest';
 import { CoinsSettings } from '../services/models/streamer_settings/CoinsSettings';
+import { dbWallet } from '../services/models/poll/dbWallet';
 
 export const host = 'http://localhost:' + (ServerConfigs.Port || process.env.Port);
 
-export async function getCurrentPoll(StreamerID: string) {
-  /* Use fetch to communicate to backend and get current voting */
-  return fetch(host + link.getPoll(StreamerID), {
-    method: "GET"
-  }).then(function (res) {
-    if (res.ok) return res.json()
-    else return reject(res);
-  }).catch((rej) => {
-    console.log(rej);
-    return rej.json().then((res) => { console.error(res) });
-  })
-}
 export class Watch {
   private Watched: () => Promise<any>;
   public WaitingTime: number;
@@ -70,6 +59,18 @@ export class Watch {
 
     this.watch();
   }
+}
+export async function getCurrentPoll(StreamerID: string) {
+  /* Use fetch to communicate to backend and get current voting */
+  return fetch(host + link.getPoll(StreamerID), {
+    method: "GET"
+  }).then(function (res) {
+    if (res.ok) return res.json()
+    else return reject(res);
+  }).catch((rej) => {
+    console.log(rej);
+    return rej.json().then((res) => { console.error(res) });
+  })
 }
 
 export async function SendToPollManager(StreamerID: String, PollButtons: PollButton[],
@@ -129,7 +130,7 @@ export async function addBet(StreamerID: string, TwitchUserID: string,
   IdOfVote: number, BetAmount: number): Promise<any> {
   let H = new Headers();
   H.append("Content-Type", "application/json");
-  return fetch(host + link.addVote, {
+  return fetch(host + link.addBeat(StreamerID, TwitchUserID), {
     method: "POST",
     headers: H,
     body: JSON.stringify({
@@ -228,7 +229,7 @@ export async function MineCoin(StreamerID: string, TwitchUserID: string) {
   });
 }
 
-export async function GetWallet(StreamerID: string, TwitchUserID: string) {
+export async function GetWallet(StreamerID: string, TwitchUserID: string): Promise<dbWallet> {
   return fetch(host + link.getWallet(StreamerID, TwitchUserID), {
     method: "GET"
   }).then(function (res) {
@@ -348,7 +349,7 @@ export async function DeletePurchaseOrder(StreamerID: string, PurchaseOrder: Pur
     method: "DELETE",
     headers: H,
     body: JSON.stringify(new DeletePurchaseOrderRequest(StreamerID, PurchaseOrder.TwitchUserID, PurchaseOrder.id, PurchaseOrder.StoreItemID, PurchaseOrder.SpentCoins, Refund))
-  }).then((res) => {    
+  }).then((res) => {
     if (res.ok) return resolve(res)
     else return reject(res);
   }).then(async (res) => {
