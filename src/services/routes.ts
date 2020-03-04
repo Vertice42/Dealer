@@ -164,9 +164,7 @@ app.post(links.AddBeat, async function (req: AddBetRequest, res: express.Respons
 
             if (mensage) return { RequestError: mensage };
         }
-    ])
-    console.log(ErrorList);
-    
+    ])    
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
 
     let pollController = new PollController(req.body.StreamerID);
@@ -374,8 +372,8 @@ app.get(links.GetStore, async function (req: { params: { StreamerID: string, Sto
 
     } else {
         dbStoreM.getIten(Number(req.params.StoreItemID))
-            .then((result) => {
-                res.status(200).send(<StoreItem>result);
+            .then((Item) => {
+                res.status(200).send(<StoreItem>Item);
             })
             .catch((rej) => {
                 res.status(500).send(rej)
@@ -429,7 +427,7 @@ app.post(links.PurchaseOrder, async function (req, res: express.Response) {
 
     if (SingleReproductionEnable) {
         if (await dbPurchaseOrderMan.getdbPurchaseOrderByStoreItemID(PurchaseOrderRequest.StoreItemID)){
-            return res.status(423).send({PurchaseFailed:'You are only allowed to buy one item at a time'})
+            return res.status(423).send({PurchaseFailed:'There can be only one item at a time in the order fight'})
         }
     }
 

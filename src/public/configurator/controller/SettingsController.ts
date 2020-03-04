@@ -58,6 +58,8 @@ export default class SettingsController {
         this.ViewSettings.HourlyRewardInput.HTMLInput.value = (~~(this.MinerSettings.RewardPerMinute * 60)).toString();
         
         this.ViewSettings.CoinNameInput.HTMLInput.value = this.CoinsSettings.CoinName;
+        
+        if(this.CoinsSettings.FileNameOfCoinImage)
         this.ViewSettings.setCoinIMG(BackendConnections.getUrlOfFile(this.StreamerID, this.CoinsSettings.FileNameOfCoinImage))
 
         this.EnbleAllCommands();

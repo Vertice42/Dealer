@@ -96,7 +96,12 @@ export default class PurchaseOrderController {
 
         let PurchaseOrders = await BackendConnections.GetPurchaseOrders(this.StreamerID);
         PurchaseOrders.forEach(async (PurchaseOrder: PurchaseOrder) => {
-            this.ViewPurchaseOrders.addViewPurchaseOrder(PurchaseOrder, await BackendConnections.GetStore(this.StreamerID, PurchaseOrder.StoreItemID));
+            let StoreItem = await BackendConnections.GetStore(this.StreamerID, PurchaseOrder.StoreItemID)
+            if (StoreItem) {
+                this.ViewPurchaseOrders.addViewPurchaseOrder(PurchaseOrder, StoreItem);
+            } else {
+                BackendConnections.DeletePurchaseOrder(this.StreamerID,PurchaseOrder,true);
+            }
         })
 
         this.socket.on(IO_Listeners.onAddPurchasedItem, async (PurchaseOrder: PurchaseOrder) => {

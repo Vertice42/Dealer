@@ -2,7 +2,7 @@ import BackendConnections = require("../../BackendConnection");
 import { sleep } from "../../../utils/utils";
 import UploadFileResponse from "../../../services/models/files_manager/UploadFileResponse";
 import StoreItem from "../../../services/models/store/StoreItem";
-import ViewStore from "../view/ViewStore";
+import ViewStore, { ViewStoreItem } from "../view/ViewStore";
 import ItemSettings from "../../../services/models/store/ItemSettings";
 import TwitchListeners from "../../../services/TwitchListeners";
 import { NotifyViewers } from "./MainController";
@@ -22,10 +22,9 @@ export default class StoreController {
     }
 
     async EnbleAllCommands() {
-        this.ViewStore.onAddStoreItemActive = () => {
-            this.ViewStore.addStoreItem(null);
+        this.ViewStore.onAddStoreItemActive = async () => {
+            await BackendConnections.SendToStoreManager(this.StreamerID, <StoreItem>this.ViewStore.addStoreItem(null));
         }
-
         this.ViewStore.onDescriptionChange = (ViewStoreItem) => {
             ViewStoreItem.DescriptionInput.setChangedInput();
             BackendConnections.SendToStoreManager(this.StreamerID, <StoreItem>ViewStoreItem)
@@ -55,23 +54,18 @@ export default class StoreController {
                     ViewStoreItem.PriceInput.setInputSentError();
                 })
         }
-        this.ViewStore.StoreItems.forEach(StoreItem => {
-            StoreItem.ViewSettingsOfItens.forEach(ViewSettingsOfIten => {
-                ViewSettingsOfIten.HTML.onchange = () => {
-                    ViewSettingsOfIten.ItemSettings.Enable = ViewSettingsOfIten.HTML.checked;
-                    StoreItem.ItemsSettings[ViewSettingsOfIten.id] = ViewSettingsOfIten.ItemSettings;
-                    BackendConnections.SendToStoreManager(this.StreamerID, StoreItem)
-                        .then(() => {
-                            this.onStoreChange();
-                        })
-                        .catch((rej) => {
-                            ViewSettingsOfIten.HTML.checked = (!ViewSettingsOfIten.HTML.checked);
-                            ViewSettingsOfIten.HTML.classList.add('Error');
-                        })
-                }
-            })
-        })
-
+        this.ViewStore.onSettingsChange = (ViewStoreItem, ViewSettingsOfIten) =>{
+            ViewSettingsOfIten.ItemSettings.Enable = ViewSettingsOfIten.HTML.checked;
+            BackendConnections.SendToStoreManager(this.StreamerID, ViewStoreItem)
+                .then(() => {
+                    this.onStoreChange();
+                })
+                .catch((rej) => {
+                    ViewSettingsOfIten.HTML.checked = (!ViewSettingsOfIten.HTML.checked);
+                    ViewSettingsOfIten.HTML.classList.add('Error');
+                })
+        }
+        
         this.ViewStore.onFileInputChange = async (ViewStoreItem) => {
             let file = ViewStoreItem.HTML_InputFile.files[0];
             if (file) {

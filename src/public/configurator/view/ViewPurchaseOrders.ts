@@ -121,6 +121,8 @@ export default class ViewPurchaseOrders {
         this.HTML_PlaybackItemName.innerText = StoreItemName;
     }
     addViewPurchaseOrder(PurchaseOrder: PurchaseOrder, StoreItem: StoreItem) {
+        console.log(PurchaseOrder,StoreItem);
+        
         let viewPurchasedItem = new ViewPurchasedItem(this.ViewPurchaseOrdersArray.length, PurchaseOrder.TwitchUserID, new Date(PurchaseOrder.updatedAt).getTime(), StoreItem.Description);
         this.ViewPurchaseOrdersArray.push(viewPurchasedItem);
         viewPurchasedItem.onRefundButtonActive = () => {

@@ -8,7 +8,6 @@ export default class WalletsController {
     ViewWallets = new ViewWallets;
     WatchWallets: BackendConnections.Watch;
 
-
     async EnbleAllCommands() {
         let Search = async () => {
             let TwitchUserID = this.ViewWallets.HTML_SearchInput.value;

@@ -1,7 +1,7 @@
 import { Miner } from "../modules/Miner";
 import AllertController from "./AlertController";
 import StoreDisplayController from "./StoreDisplayController";
-import { getUsername, getUserIDByUsername } from "../../TwitchConnections";
+import { getUsername } from "../../TwitchConnections";
 
 function makeid(length: number) {
   var result = "";

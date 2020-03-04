@@ -8,7 +8,6 @@ import SettingsController from "./SettingsController";
 import StoreController from "./StoreController";
 import PurchaseOrderController from "./PurchaseOrderController";
 import WalletsController from "./WalletsController";
-import { getUsername } from "../../TwitchConnections";
 
 const socket = io(host);
 
@@ -40,7 +39,6 @@ export function NotifyViewers(TwitchListener:{ListenerName:string,data:any}){
 twitch.onContext((context) => {
     console.log(context);
 })
-
 
 twitch.onAuthorized(async (auth) => {
     token = auth.token;

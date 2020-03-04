@@ -4,6 +4,8 @@ import { sleep, isEquivalent } from "../../../utils/utils";
 import { Poll } from "../../../services/models/poll/Poll";
 import { PollStatus } from "../../../services/models/poll/PollStatus";
 import { PollButton } from "../../../services/models/poll/PollButton";
+import { addTwitchListeners } from "./MainController";
+import TwitchListeners from "../../../services/TwitchListeners";
 
 
 function IsWinner(PollButtons: PollButton[], ChosenButtonID: number) {
@@ -26,9 +28,8 @@ export default class AllertController {
     TwitchUserID: string;
 
     ViewAlerts = new ViewAlerts();
-    
+
     CurrentPollStatus: PollStatus;
-    PollObserver: BackendConnections.Watch;
 
     ChangeBeat = () => {
         if (this.ViewAlerts.SelectedButtonID !== null) {
@@ -52,43 +53,50 @@ export default class AllertController {
         this.ViewAlerts.BetAmountInput.HTMLInput.onchange = this.ChangeBeat;
     }
 
-    async LoadingStore() {
-        this.PollObserver = new BackendConnections.Watch(async () => { return await BackendConnections.getCurrentPoll(this.StreamerID)},500);
-        this.PollObserver.OnWaitch = (async (Poll: Poll) => {
-            if (isEquivalent(this.CurrentPollStatus, Poll.PollStatus)) {
-                this.ViewAlerts.setButtonsInPollDiv(Poll.PollButtons);
+    private async updateAlerts(Poll: Poll) {
+
+        if (isEquivalent(this.CurrentPollStatus, Poll.PollStatus)) {
+            this.ViewAlerts.setButtonsInPollDiv(Poll.PollButtons);
+        } else {
+            if (Poll.PollStatus.PollWaxed) {
+                await this.ViewAlerts.HideAllAlerts();
             } else {
-                if (Poll.PollStatus.PollWaxed) {
-                    await this.ViewAlerts.HideAllAlerts();
-                } else {
-                    if (Poll.PollStatus.PollStarted) {
-                        if (Poll.PollStatus.DistributionCompleted) {
-                            if (isNaN(this.ViewAlerts.SelectedButtonID)) {
-                                await this.ViewAlerts.HideAllAlerts();
+                if (Poll.PollStatus.PollStarted) {
+                    if (Poll.PollStatus.DistributionCompleted) {
+                        if (isNaN(this.ViewAlerts.SelectedButtonID)) {
+                            await this.ViewAlerts.HideAllAlerts();
+                        } else {
+                            if (IsWinner(Poll.PollButtons, this.ViewAlerts.SelectedButtonID)) {
+                                this.ViewAlerts.setInWinnerMode(Poll.LossDistributorOfPoll);
                             } else {
-                                if (IsWinner(Poll.PollButtons, this.ViewAlerts.SelectedButtonID)) {
-                                    this.ViewAlerts.setInWinnerMode(Poll.LossDistributorOfPoll);
-                                } else {
-                                    this.ViewAlerts.setInLoserMode();
-                                }
+                                this.ViewAlerts.setInLoserMode();
                             }
-                        } else if (Poll.PollStatus.PollStoped) {
-                            this.ViewAlerts.setInStopedMode();
-                        } else if (Poll.PollStatus.PollStarted) {
-                            this.ViewAlerts.setInBetMode(Poll.PollButtons);
                         }
+                    } else if (Poll.PollStatus.PollStoped) {
+                        this.ViewAlerts.setInStopedMode();
+                    } else if (Poll.PollStatus.PollStarted) {
+                        this.ViewAlerts.setInBetMode(Poll.PollButtons);
                     }
                 }
-                this.CurrentPollStatus = Poll.PollStatus;
             }
+            this.CurrentPollStatus = Poll.PollStatus;
+        }
+    }
+
+    async LoadingPoll() {
+
+        this.updateAlerts(await BackendConnections.getCurrentPoll(this.StreamerID)
+        )
+        addTwitchListeners(TwitchListeners.onPollChange, async (Poll) => {
+            this.updateAlerts(Poll);
         })
 
         this.EnbleAllCommands();
     }
 
-    constructor(StreamerID: string,TwitchUserID:string) {
+    constructor(StreamerID: string, TwitchUserID: string) {
         this.StreamerID = StreamerID;
         this.TwitchUserID = TwitchUserID;
-        this.LoadingStore()
+        this.LoadingPoll()
     }
 }

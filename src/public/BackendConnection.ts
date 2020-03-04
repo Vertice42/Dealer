@@ -296,6 +296,8 @@ export async function GetStore(StreamerID: string, StoreItemID: number) {
 
 export async function SendToStoreManager(StreamerID: string, StoreItem: StoreItem): Promise<any> {
   /*Send current voting with your buttons and current poll status */
+  console.log(StoreItem);
+  
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
@@ -424,4 +426,3 @@ export async function UploadFile(StreamerID: string, FileName: string, File: Fil
 export function getUrlOfFile(StreamerID: string, FileName: string) {
   return host + link.getFiles(StreamerID, FileName);
 }
-
