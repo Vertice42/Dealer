@@ -13,7 +13,6 @@ function makeid(length: number) {
   }
   return result;
 }
-const twitch = window.Twitch.ext;
 
 var token: string, StreamerID: string, TwitchUserID: string;
 
@@ -35,7 +34,7 @@ export function addTwitchListeners(ListenerName: string, Listerner: (data) => an
 }
 window.Twitch.ext.listen('broadcast', Twitchbroadcast);
 
-twitch.onAuthorized(async (auth) => {
+window.Twitch.ext.onAuthorized(async (auth) => {
 
   StreamerID = auth.channelId.toLowerCase();
   token = auth.token;
@@ -49,7 +48,7 @@ twitch.onAuthorized(async (auth) => {
 
   TwitchUserID = (await getUsername(TwitchUserID, auth.clientId)).name;
 
-  twitch.onContext((context) => {
+  window.Twitch.ext.onContext((context) => {
     console.log(context);
 
     new AllertController(StreamerID,TwitchUserID);

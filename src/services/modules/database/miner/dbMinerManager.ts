@@ -1,6 +1,6 @@
 import { resolve, reject, } from "bluebird";
 import { Loading } from "../dbLoading";
-import { MinerSettings, MinimunTimeForMining } from "../../../models/miner/MinerSettings";
+import { MinerSettings, MINIMUN_TIME_FOR_MINING } from "../../../models/miner/MinerSettings";
 import { dbWalletManeger } from "./dbWalletManager";
 import { MiningResponse } from "../../../models/miner/MiningResponse";
 import { dbManager } from "../dbManager";
@@ -26,10 +26,10 @@ export default class MinerManeger {
         let wallet = await walletManeger.getWallet();
         let TimeBetweenAttempts = Now - wallet.LastMiningAttemp;
 
-        if (!TimeBetweenAttempts || TimeBetweenAttempts > MinimunTimeForMining)
+        if (!TimeBetweenAttempts || TimeBetweenAttempts > MINIMUN_TIME_FOR_MINING)
             await walletManeger.deposit(AccountData.MinerSettings.RewardPerMining)
 
-        return new MiningResponse(TimeBetweenAttempts, (await walletManeger.getWallet()).Coins, MinimunTimeForMining);
+        return new MiningResponse(TimeBetweenAttempts, (await walletManeger.getWallet()).Coins, MINIMUN_TIME_FOR_MINING);
 
     }
 }

@@ -14,7 +14,7 @@ import { WalletManagerRequest } from '../services/models/wallet/WalletManagerReq
 import { CoinsSettings } from '../services/models/streamer_settings/CoinsSettings';
 import { dbWallet } from '../services/models/poll/dbWallet';
 
-export const host = 'http://localhost:' + (ServerConfigs.Port || process.env.Port);
+export const HOST = 'http://localhost:' + (ServerConfigs.Port || process.env.Port);
 
 export class Watch {
   private Watched: () => Promise<any>;
@@ -62,7 +62,7 @@ export class Watch {
 }
 export async function getCurrentPoll(StreamerID: string) {
   /* Use fetch to communicate to backend and get current voting */
-  return fetch(host + link.getPoll(StreamerID), {
+  return fetch(HOST + link.getPoll(StreamerID), {
     method: "GET"
   }).then(function (res) {
     if (res.ok) return res.json()
@@ -79,7 +79,7 @@ export async function SendToPollManager(StreamerID: String, PollButtons: PollBut
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
-  return fetch(host + link.PollManager, {
+  return fetch(HOST + link.PollManager, {
     method: "POST",
     headers: H,
     body: JSON.stringify({
@@ -106,7 +106,7 @@ export async function SendToMinerManager(StreamerID: String, Setting: MinerSetti
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
-  return fetch(host + link.MinerManager, {
+  return fetch(HOST + link.MinerManager, {
     method: "POST",
     headers: H,
     body: JSON.stringify({
@@ -130,7 +130,7 @@ export async function addBet(StreamerID: string, TwitchUserID: string,
   IdOfVote: number, BetAmount: number): Promise<any> {
   let H = new Headers();
   H.append("Content-Type", "application/json");
-  return fetch(host + link.addBeat(StreamerID, TwitchUserID), {
+  return fetch(HOST + link.addBeat(StreamerID, TwitchUserID), {
     method: "POST",
     headers: H,
     body: JSON.stringify({
@@ -147,7 +147,7 @@ export async function addBet(StreamerID: string, TwitchUserID: string,
 }
 
 export async function GetMinerSettings(StreamerID: string) {
-  return fetch(host + link.getMiner(StreamerID), {
+  return fetch(HOST + link.getMiner(StreamerID), {
     method: "GET"
   }).then(function (res) {
     if (res.ok) return resolve(res)
@@ -164,7 +164,7 @@ export async function GetMinerSettings(StreamerID: string) {
 }
 
 export async function GetCoinsSettings(StreamerID: string): Promise<CoinsSettings> {//TODO A ESTRURA SE REPETE em get Miner
-  return fetch(host + link.getCoinsSettings(StreamerID), {
+  return fetch(HOST + link.getCoinsSettings(StreamerID), {
     method: "GET"
   }).then(function (res) {
     if (res.ok) return resolve(res)
@@ -184,7 +184,7 @@ export async function SendToCoinsSettingsManager(StreamerID: String, Setting: Co
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
-  return fetch(host + link.CoinsSettingsManager, {
+  return fetch(HOST + link.CoinsSettingsManager, {
     method: "POST",
     headers: H,
     body: JSON.stringify({
@@ -208,7 +208,7 @@ export async function SendToCoinsSettingsManager(StreamerID: String, Setting: Co
 export async function MineCoin(StreamerID: string, TwitchUserID: string) {
   let H = new Headers();
   H.append("Content-Type", "application/json");
-  return fetch(host + link.MineCoin, {
+  return fetch(HOST + link.MineCoin, {
     method: "POST",
     headers: H,
     body: JSON.stringify({
@@ -230,7 +230,7 @@ export async function MineCoin(StreamerID: string, TwitchUserID: string) {
 }
 
 export async function GetWallet(StreamerID: string, TwitchUserID: string): Promise<dbWallet> {
-  return fetch(host + link.getWallet(StreamerID, TwitchUserID), {
+  return fetch(HOST + link.getWallet(StreamerID, TwitchUserID), {
     method: "GET"
   }).then(function (res) {
     if (res.ok)
@@ -244,7 +244,7 @@ export async function GetWallet(StreamerID: string, TwitchUserID: string): Promi
 }
 
 export async function GetWallets(StreamerID: string, TwitchUserID = '*') {
-  return fetch(host + link.getWallets(StreamerID, TwitchUserID), {
+  return fetch(HOST + link.getWallets(StreamerID, TwitchUserID), {
     method: "GET"
   }).then(function (res) {
     if (res.ok)
@@ -262,7 +262,7 @@ export async function SendToWalletManager(StreamerID: string, TwitchUserID: stri
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
-  return fetch(host + link.WalletManager, {
+  return fetch(HOST + link.WalletManager, {
     method: "POST",
     headers: H,
     body: JSON.stringify(new WalletManagerRequest(StreamerID, TwitchUserID, newValue))
@@ -282,7 +282,7 @@ export async function SendToWalletManager(StreamerID: string, TwitchUserID: stri
 }
 
 export async function GetStore(StreamerID: string, StoreItemID: number) {
-  return fetch(host + link.getStore(StreamerID, StoreItemID), {
+  return fetch(HOST + link.getStore(StreamerID, StoreItemID), {
     method: "GET"
   }).then(function (res) {
     if (res.ok)
@@ -301,7 +301,7 @@ export async function SendToStoreManager(StreamerID: string, StoreItem: StoreIte
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
-  return fetch(host + link.StoreManager, {
+  return fetch(HOST + link.StoreManager, {
     method: "POST",
     headers: H,
     body: JSON.stringify(new StoreManagerRequest(StreamerID, StoreItem))
@@ -324,7 +324,7 @@ export async function addPurchaseOrder(StreamerID: string, TwitchUserID: string,
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
-  return fetch(host + link.PurchaseOrder, {
+  return fetch(HOST + link.PurchaseOrder, {
     method: "POST",
     headers: H,
     body: JSON.stringify(new PurchaseOrderRequest(StreamerID, TwitchUserID, StoreItem.id))
@@ -347,7 +347,7 @@ export async function DeletePurchaseOrder(StreamerID: string, PurchaseOrder: Pur
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
-  return fetch(host + link.PurchaseOrder, {
+  return fetch(HOST + link.PurchaseOrder, {
     method: "DELETE",
     headers: H,
     body: JSON.stringify(new DeletePurchaseOrderRequest(StreamerID, PurchaseOrder.TwitchUserID, PurchaseOrder.id, PurchaseOrder.StoreItemID, PurchaseOrder.SpentCoins, Refund))
@@ -369,7 +369,7 @@ export async function DeteleStoreItem(StreamerID: string, StoreItem: StoreItem):
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
-  return fetch(host + link.StoreManager, {
+  return fetch(HOST + link.StoreManager, {
     method: "DELETE",
     headers: H,
     body: JSON.stringify(new StoreManagerRequest(StreamerID, StoreItem))
@@ -389,7 +389,7 @@ export async function DeteleStoreItem(StreamerID: string, StoreItem: StoreItem):
 }
 
 export async function GetPurchaseOrders(StreamerID: string) {
-  return fetch(host + link.getPurchaseOrder(StreamerID), {
+  return fetch(HOST + link.getPurchaseOrder(StreamerID), {
     method: "GET"
   }).then(function (res) {
     if (res.ok)
@@ -409,7 +409,7 @@ export async function UploadFile(StreamerID: string, FileName: string, File: Fil
   headers.append("Accept", "application/json");
   headers.append('streamer-id', StreamerID);
   headers.append("file-name", FileName);
-  return fetch(host + link.UploadFile,
+  return fetch(HOST + link.UploadFile,
     {
       method: "POST",
       headers: headers,
@@ -424,5 +424,5 @@ export async function UploadFile(StreamerID: string, FileName: string, File: Fil
 }
 
 export function getUrlOfFile(StreamerID: string, FileName: string) {
-  return host + link.getFiles(StreamerID, FileName);
+  return HOST + link.getFiles(StreamerID, FileName);
 }

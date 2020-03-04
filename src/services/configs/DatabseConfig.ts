@@ -1,11 +1,11 @@
 import { Options } from "sequelize/types";
 
-const User = 'root';
-const Password = '';
+const USER = 'root';
+const PASSWORD = '';
 
-const SequelizeOptions: Options = {
+const SEQUELIZE_OPTIONS: Options = {
     dialect: 'mysql',
     host: '127.0.0.1',
     logging: false
 }
-export default { User, Password, SequelizeOptions };
+export default { User: USER, Password: PASSWORD, SequelizeOptions: SEQUELIZE_OPTIONS };

@@ -3,15 +3,14 @@ import io = require('socket.io-client');
 
 import { Poll } from "../../../services/models/poll/Poll";
 import PollController from "./PollController";
-import { host } from "../../BackendConnection";
+import { HOST } from "../../BackendConnection";
 import SettingsController from "./SettingsController";
 import StoreController from "./StoreController";
 import PurchaseOrderController from "./PurchaseOrderController";
 import WalletsController from "./WalletsController";
 
-const socket = io(host);
+const SOCKET = io(HOST);
 
-const twitch: TwitchExt = window.Twitch.ext;
 
 var token, StreamerID;
 
@@ -36,15 +35,15 @@ export function NotifyViewers(TwitchListener:{ListenerName:string,data:any}){
     window.Twitch.ext.send("broadcast", "json", JSON.stringify(TwitchListener));
   }
 
-twitch.onContext((context) => {
+  window.Twitch.ext.onContext((context) => {
     console.log(context);
 })
 
-twitch.onAuthorized(async (auth) => {
+window.Twitch.ext.onAuthorized(async (auth) => {
     token = auth.token;
     StreamerID = auth.channelId.toLowerCase();
     
-    socket.emit('registered', StreamerID);
+    SOCKET.emit('registered', StreamerID);
 
     new PollController(StreamerID);
 
@@ -52,7 +51,7 @@ twitch.onAuthorized(async (auth) => {
 
     new StoreController(StreamerID);
 
-    new PurchaseOrderController(StreamerID, socket);
+    new PurchaseOrderController(StreamerID, SOCKET);
 
     new WalletsController(StreamerID)
 

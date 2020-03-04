@@ -3,7 +3,7 @@ import { resolve } from "bluebird";
 import { PollStatus } from "../services/models/poll/PollStatus";
 import { PollButton } from "../services/models/poll/PollButton";
 import { Poll } from "../services/models/poll/Poll";
-import { MinerSettings, MinimunTimeForMining } from "../services/models/miner/MinerSettings";
+import { MinerSettings, MINIMUN_TIME_FOR_MINING } from "../services/models/miner/MinerSettings";
 import { getWallet, dbWalletManeger } from "../services/modules/database/miner/dbWalletManager";
 import { dbWallet } from "../services/models/poll/dbWallet";
 import { PollController } from "../services/controller/PollController";
@@ -13,18 +13,18 @@ import { Loading } from "../services/modules/database/dbLoading";
 import StreamerSettings from "../services/modules/database/streamer_settings/StreamerSettings";
 import MinerManeger from "../services/modules/database/miner/dbMinerManager";
 
-const UsersIdsForTests = ['jukes', 'lato', 'naruto', 'saske', 'bankai'];
+const USERS_IDS_FOR_TESTS = ['jukes', 'lato', 'naruto', 'saske', 'bankai'];
 
-const IDForManagerPoll = 'amaterasu';
-const DatabaseForUpdateButtons = 'lapis';
-const IDForDistribuition = 'perola';
-const IDForDistributionOfmultipleResults = 'quark';
-const IDForCreate = 'jasper';
-const DatabaseForMinig = 'peridote';
-const DatabasePreCreated = 'dava';
+const ID_FOR_MANAGER_POLL = 'amaterasu';
+const db_FOR_UPDATE_BUTTONS = 'lapis';
+const ID_FOR_DISTRIBUITION = 'perola';
+const ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS = 'quark';
+const ID_FOR_CREATE = 'jasper';
+const db_FOR_MINIG = 'peridote';
+const db_PRE_CREATED = 'dava';
 
-const HourlyRewardForTest = 102;
-const RewardForTestAttempt = new MinerSettings(HourlyRewardForTest).RewardPerMining;
+const HOURLY_REWARD_FOR_TEST = 102;
+const REWARD_FOR_TEST_ATTEMPT = new MinerSettings(HOURLY_REWARD_FOR_TEST).RewardPerMining;
 
 function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -53,22 +53,22 @@ async function startPoll(StreamersID: string) {
 }
 
 describe('DATABASE_MANAGER', () => {
-  after(async () => { await deleteDatabse(IDForCreate) })
+  after(async () => { await deleteDatabse(ID_FOR_CREATE) })
 
   it('CreateStreamerDataBase', async function () {
-    expect(await createDatabase(IDForCreate)).to.include.keys('StreamerDataBaseCreated');
+    expect(await createDatabase(ID_FOR_CREATE)).to.include.keys('StreamerDataBaseCreated');
   });
 
   describe('Poll', () => {
     before(async function () {
-      await createDatabase(IDForManagerPoll);
+      await createDatabase(ID_FOR_MANAGER_POLL);
     });
     after(async function () {
-      await deleteDatabse(IDForManagerPoll);
+      await deleteDatabse(ID_FOR_MANAGER_POLL);
     })
 
     it('Load poll already created in db already created', async function () {
-      let Poll = await new PollController(DatabasePreCreated).getCurrentPoll();      
+      let Poll = await new PollController(db_PRE_CREATED).getCurrentPoll();      
       expect(Poll.PollStatus).to.deep.equal(new PollStatus().start().stop());
       expect(Poll.PollButtons).to.deep.equal([
         new PollButton(0, '', '#3aa555', true),
@@ -78,23 +78,23 @@ describe('DATABASE_MANAGER', () => {
     })
 
     it('First Get Poll', async function () {
-      expect((await new PollController(IDForManagerPoll).getCurrentPoll()).PollStatus)
+      expect((await new PollController(ID_FOR_MANAGER_POLL).getCurrentPoll()).PollStatus)
         .to.deep.equal(new PollStatus().waxe());
     })
 
     it('CreatePoll', async function () {
-      expect(await new PollController(IDForManagerPoll).CreatePoll()).to.include.keys('PollCreated');
+      expect(await new PollController(ID_FOR_MANAGER_POLL).CreatePoll()).to.include.keys('PollCreated');
     })
 
     var ButtonsToTest = [];
     it('Start Poll', async function () {
-      let AccountData = dbManager.getAccountData(IDForManagerPoll);
+      let AccountData = dbManager.getAccountData(ID_FOR_MANAGER_POLL);
       AccountData.CurrentPollStatus.start();
 
       ButtonsToTest.push(new PollButton(0, 'waite', '#FFFFFF', false))
       ButtonsToTest.push(new PollButton(1, 'black', '#000000', false))
 
-      let UpdatePollResult = await new PollController(IDForManagerPoll).UpdatePoll(ButtonsToTest)
+      let UpdatePollResult = await new PollController(ID_FOR_MANAGER_POLL).UpdatePoll(ButtonsToTest)
 
       expect(UpdatePollResult.UpdatePollStatusRes).to.include({ PollStarted: true });
       expect(UpdatePollResult.UpdateButtonGroupRes).to.include(
@@ -102,7 +102,7 @@ describe('DATABASE_MANAGER', () => {
     })
 
     it('Get Poll', async function () {
-      let poll: Poll = await new PollController(IDForManagerPoll).getCurrentPoll();
+      let poll: Poll = await new PollController(ID_FOR_MANAGER_POLL).getCurrentPoll();
 
       let PollForTest = new PollStatus();
       PollForTest.PollStarted = true;
@@ -116,12 +116,12 @@ describe('DATABASE_MANAGER', () => {
       this.timeout(4000);
 
       before(async function () {
-        await createDatabase(DatabaseForUpdateButtons);
-        await createPoll(DatabaseForUpdateButtons);
-        await startPoll(DatabaseForUpdateButtons);
+        await createDatabase(db_FOR_UPDATE_BUTTONS);
+        await createPoll(db_FOR_UPDATE_BUTTONS);
+        await startPoll(db_FOR_UPDATE_BUTTONS);
       })
       after(async () => {
-        await deleteDatabse(DatabaseForUpdateButtons);
+        await deleteDatabse(db_FOR_UPDATE_BUTTONS);
       })
 
       it('Modify buttons', async function () {
@@ -134,7 +134,7 @@ describe('DATABASE_MANAGER', () => {
         ButtonsToTest.push(new PollButton(2, 'black', '#000020', false))
         ButtonsToTest.push(new PollButton(3, 'wait', '#FFFFFF', false))  // NEW
 
-        let pollController = new PollController(DatabaseForUpdateButtons);
+        let pollController = new PollController(db_FOR_UPDATE_BUTTONS);
 
 
         expect((await pollController.UpdatePoll(ButtonsToTest)).UpdateButtonGroupRes).to.include(
@@ -156,24 +156,24 @@ describe('DATABASE_MANAGER', () => {
     })
 
     it('Stop Poll', async function () {
-      dbManager.getAccountData(IDForManagerPoll).CurrentPollStatus.stop();
+      dbManager.getAccountData(ID_FOR_MANAGER_POLL).CurrentPollStatus.stop();
 
-      expect((await new PollController(IDForManagerPoll).UpdatePoll(undefined)).UpdatePollStatusRes)
+      expect((await new PollController(ID_FOR_MANAGER_POLL).UpdatePoll(undefined)).UpdatePollStatusRes)
         .to.include({ PollStarted: true, PollStoped: true });
 
     });
 
     it('Restart Poll', async function () {
-      dbManager.getAccountData(IDForManagerPoll).CurrentPollStatus.restart();
+      dbManager.getAccountData(ID_FOR_MANAGER_POLL).CurrentPollStatus.restart();
 
-      expect((await new PollController(IDForManagerPoll).UpdatePoll(undefined)).UpdatePollStatusRes)
+      expect((await new PollController(ID_FOR_MANAGER_POLL).UpdatePoll(undefined)).UpdatePollStatusRes)
         .to.include({ PollStarted: true, PollStoped: false });
     });
 
     it('Waxe Poll', async function () {
-      dbManager.getAccountData(IDForManagerPoll).CurrentPollStatus.waxe();
+      dbManager.getAccountData(ID_FOR_MANAGER_POLL).CurrentPollStatus.waxe();
 
-      expect((await new PollController(IDForManagerPoll).UpdatePoll(undefined)).UpdatePollStatusRes)
+      expect((await new PollController(ID_FOR_MANAGER_POLL).UpdatePoll(undefined)).UpdatePollStatusRes)
         .to.include({ PollWaxed: true });
     })
 
@@ -181,53 +181,53 @@ describe('DATABASE_MANAGER', () => {
       this.timeout(6000);
 
       before(async () => {
-        await createDatabase(IDForDistribuition);
-        await createPoll(IDForDistribuition);
-        await startPoll(IDForDistribuition);
+        await createDatabase(ID_FOR_DISTRIBUITION);
+        await createPoll(ID_FOR_DISTRIBUITION);
+        await startPoll(ID_FOR_DISTRIBUITION);
 
-        await new dbWalletManeger(IDForDistribuition, UsersIdsForTests[0]).deposit(50);
-        await new dbWalletManeger(IDForDistribuition, UsersIdsForTests[1]).deposit(50);
-        await new dbWalletManeger(IDForDistribuition, UsersIdsForTests[2]).deposit(50);
-        await new dbWalletManeger(IDForDistribuition, UsersIdsForTests[3]).deposit(50);
+        await new dbWalletManeger(ID_FOR_DISTRIBUITION, USERS_IDS_FOR_TESTS[0]).deposit(50);
+        await new dbWalletManeger(ID_FOR_DISTRIBUITION, USERS_IDS_FOR_TESTS[1]).deposit(50);
+        await new dbWalletManeger(ID_FOR_DISTRIBUITION, USERS_IDS_FOR_TESTS[2]).deposit(50);
+        await new dbWalletManeger(ID_FOR_DISTRIBUITION, USERS_IDS_FOR_TESTS[3]).deposit(50);
 
         ///////////////////////////////////////////////////////////////////////////////
 
-        await createDatabase(IDForDistributionOfmultipleResults);
-        await createPoll(IDForDistributionOfmultipleResults);
-        await startPoll(IDForDistributionOfmultipleResults);
+        await createDatabase(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS);
+        await createPoll(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS);
+        await startPoll(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS);
 
-        await new dbWalletManeger(IDForDistributionOfmultipleResults, UsersIdsForTests[0]).deposit(50);
-        await new dbWalletManeger(IDForDistributionOfmultipleResults, UsersIdsForTests[1]).deposit(50);
-        await new dbWalletManeger(IDForDistributionOfmultipleResults, UsersIdsForTests[2]).deposit(50);
-        await new dbWalletManeger(IDForDistributionOfmultipleResults, UsersIdsForTests[3]).deposit(50);
+        await new dbWalletManeger(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS, USERS_IDS_FOR_TESTS[0]).deposit(50);
+        await new dbWalletManeger(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS, USERS_IDS_FOR_TESTS[1]).deposit(50);
+        await new dbWalletManeger(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS, USERS_IDS_FOR_TESTS[2]).deposit(50);
+        await new dbWalletManeger(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS, USERS_IDS_FOR_TESTS[3]).deposit(50);
 
       })
       after(async () => {
-        await deleteDatabse(IDForDistribuition);
-        await deleteDatabse(IDForDistributionOfmultipleResults);
+        await deleteDatabse(ID_FOR_DISTRIBUITION);
+        await deleteDatabse(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS);
 
       })
 
       it('Add Bet', async function () {
 
-        let pollController = new PollController(IDForDistribuition);
+        let pollController = new PollController(ID_FOR_DISTRIBUITION);
 
         const BetAmontForTest_I = 2;
         const BetAmontForTest_III = 2000;
 
 
         let addBetResult_I = await pollController.AddBet(
-          UsersIdsForTests[0],
+          USERS_IDS_FOR_TESTS[0],
           1,
           BetAmontForTest_I);
 
         await pollController.AddBet(
-          UsersIdsForTests[1],
+          USERS_IDS_FOR_TESTS[1],
           0,
           BetAmontForTest_I);
 
         await pollController.AddBet(
-          UsersIdsForTests[2],
+          USERS_IDS_FOR_TESTS[2],
           0,
           BetAmontForTest_I);
 
@@ -240,7 +240,7 @@ describe('DATABASE_MANAGER', () => {
         //Tests if the answer or a bottomless bet returns an error
 
         await pollController.AddBet(
-          UsersIdsForTests[3],
+          USERS_IDS_FOR_TESTS[3],
           1,
           BetAmontForTest_III)
           .catch((addBetResult_III) => {
@@ -260,18 +260,18 @@ describe('DATABASE_MANAGER', () => {
 
       it('Distribution', async function () {
 
-        let pollController = new PollController(IDForDistribuition);
+        let pollController = new PollController(ID_FOR_DISTRIBUITION);
 
-        await pollController.AddBet(UsersIdsForTests[0], 0, 25);
-        await pollController.AddBet(UsersIdsForTests[1], 1, 25);
+        await pollController.AddBet(USERS_IDS_FOR_TESTS[0], 0, 25);
+        await pollController.AddBet(USERS_IDS_FOR_TESTS[1], 1, 25);
 
         let ButtonsToTestWithWinners = [
           new PollButton(0, 'wait', '#FFFFFF', false),
           new PollButton(1, 'black', '#000000', true)
         ];
 
-        let wallet_I: dbWallet = await getWallet(IDForDistribuition, UsersIdsForTests[0]);
-        let wallet_II: dbWallet = await getWallet(IDForDistribuition, UsersIdsForTests[1]);
+        let wallet_I: dbWallet = await getWallet(ID_FOR_DISTRIBUITION, USERS_IDS_FOR_TESTS[0]);
+        let wallet_II: dbWallet = await getWallet(ID_FOR_DISTRIBUITION, USERS_IDS_FOR_TESTS[1]);
         expect(wallet_I.Coins).to.deep.equal(50);
         expect(wallet_II.Coins).to.deep.equal(50);
 
@@ -279,8 +279,8 @@ describe('DATABASE_MANAGER', () => {
           ButtonsToTestWithWinners)).to.include.keys('DistributionStarted');
 
         await waitResult(pollController, async () => {
-          let wallet_I: dbWallet = await getWallet(IDForDistribuition, UsersIdsForTests[0]);
-          let wallet_II: dbWallet = await getWallet(IDForDistribuition, UsersIdsForTests[1]);
+          let wallet_I: dbWallet = await getWallet(ID_FOR_DISTRIBUITION, USERS_IDS_FOR_TESTS[0]);
+          let wallet_II: dbWallet = await getWallet(ID_FOR_DISTRIBUITION, USERS_IDS_FOR_TESTS[1]);
 
           expect(wallet_I.Coins).to.deep.equal(25);
           expect(wallet_II.Coins).to.deep.equal(77);
@@ -292,16 +292,16 @@ describe('DATABASE_MANAGER', () => {
       it('Distribution for multiple results', async function () {
         this.timeout(4000);
 
-        let pollController = new PollController(IDForDistributionOfmultipleResults);
+        let pollController = new PollController(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS);
 
-        await pollController.AddBet(UsersIdsForTests[0], 1, 25);
-        await pollController.AddBet(UsersIdsForTests[1], 1, 25);
-        await pollController.AddBet(UsersIdsForTests[2], 2, 50);
-        await pollController.AddBet(UsersIdsForTests[3], 3, 30);
+        await pollController.AddBet(USERS_IDS_FOR_TESTS[0], 1, 25);
+        await pollController.AddBet(USERS_IDS_FOR_TESTS[1], 1, 25);
+        await pollController.AddBet(USERS_IDS_FOR_TESTS[2], 2, 50);
+        await pollController.AddBet(USERS_IDS_FOR_TESTS[3], 3, 30);
 
         let wallet = [];
         for (let i = 0; i < 4; i++) {
-          wallet[i] = await getWallet(IDForDistributionOfmultipleResults, UsersIdsForTests[i]);
+          wallet[i] = await getWallet(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS, USERS_IDS_FOR_TESTS[i]);
         }
 
         expect(wallet[0].Coins).to.deep.equal(50);
@@ -322,7 +322,7 @@ describe('DATABASE_MANAGER', () => {
 
           let wallet = [];
           for (let i = 0; i < 4; i++) {
-            wallet[i] = await getWallet(IDForDistributionOfmultipleResults, UsersIdsForTests[i]);
+            wallet[i] = await getWallet(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS, USERS_IDS_FOR_TESTS[i]);
           }
           expect(wallet[0].Coins).to.deep.equal(25);
           expect(wallet[1].Coins).to.deep.equal(25);
@@ -337,38 +337,38 @@ describe('DATABASE_MANAGER', () => {
   describe('Mining', function () {
 
     before(async () => {
-      await createDatabase(DatabaseForMinig);
+      await createDatabase(db_FOR_MINIG);
     })
     after(async () => {
-      await deleteDatabse(DatabaseForMinig)
+      await deleteDatabse(db_FOR_MINIG)
     })
 
     it('Get Miner Settings', async function () {      
-      expect(await StreamerSettings.getMinerSettings(DatabaseForMinig))
+      expect(await StreamerSettings.getMinerSettings(db_FOR_MINIG))
         .to.deep.equal(new MinerSettings(100));// defauth value in db
     })
 
     it('Mining Maneger', async function () {
-      let minerSettings = new MinerSettings(HourlyRewardForTest);
+      let minerSettings = new MinerSettings(HOURLY_REWARD_FOR_TEST);
 
-      let UpdateMinerResult = await StreamerSettings.UpdateMinerSettings(DatabaseForMinig, minerSettings);
+      let UpdateMinerResult = await StreamerSettings.UpdateMinerSettings(db_FOR_MINIG, minerSettings);
 
       expect(UpdateMinerResult).to.deep.include({ SuccessfullyUpdatedMinerSettings: minerSettings })
 
-      let MinerSettingsResult = await StreamerSettings.getMinerSettings(DatabaseForMinig);
+      let MinerSettingsResult = await StreamerSettings.getMinerSettings(db_FOR_MINIG);
       expect(MinerSettingsResult).to.deep.equal(minerSettings);
 
     })
 
     it('Mining Coins', async function () {
       this.slow(1500);
-      let result1 = await MinerManeger.MineCoin(DatabaseForMinig, UsersIdsForTests[0]);
-      expect(result1).to.include({ CoinsOfUser: RewardForTestAttempt })
+      let result1 = await MinerManeger.MineCoin(db_FOR_MINIG, USERS_IDS_FOR_TESTS[0]);
+      expect(result1).to.include({ CoinsOfUser: REWARD_FOR_TEST_ATTEMPT })
 
-      await sleep(MinimunTimeForMining);
+      await sleep(MINIMUN_TIME_FOR_MINING);
 
-      let result2 = await MinerManeger.MineCoin(DatabaseForMinig, UsersIdsForTests[0]);
-      expect(result2).to.include({ CoinsOfUser: RewardForTestAttempt * 2 })
+      let result2 = await MinerManeger.MineCoin(db_FOR_MINIG, USERS_IDS_FOR_TESTS[0]);
+      expect(result2).to.include({ CoinsOfUser: REWARD_FOR_TEST_ATTEMPT * 2 })
 
     })
 
