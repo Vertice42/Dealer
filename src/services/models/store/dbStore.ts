@@ -16,6 +16,9 @@ export class dbStore extends Model implements StoreItem {
 export const StoreDefiner = {
     name: 'store',
     atributes: {
+        Type:{
+            type: sequelize.INTEGER
+        },
         Description: {
             type: sequelize.STRING,
             allowNull: true

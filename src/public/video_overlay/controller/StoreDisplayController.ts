@@ -10,7 +10,7 @@ export default class StoreDisplayController {
     StreamerID: string;
     TwitchUserID: string;
     ViewStoreDisplay = new ViewStoreDisplay();
-    
+
 
     setViewBalance(Balance: number, BalanceChange = 0) {
         if (BalanceChange > 0) {
@@ -39,9 +39,9 @@ export default class StoreDisplayController {
     async LoadingStore() {
         let CoinsSettings: CoinsSettings = await BackendConnections.GetCoinsSettings(this.StreamerID);
         if (CoinsSettings.FileNameOfCoinImage)
-            this.ViewStoreDisplay.CoinImgURL = BackendConnections.getUrlOfFile(this.StreamerID, CoinsSettings.FileNameOfCoinImage);
+            this.ViewStoreDisplay.CoinImgURL = BackendConnections.getUrlOfFile(this.StreamerID, 'CoinImage', CoinsSettings.FileNameOfCoinImage);
 
-        let WalletOfUser: dbWallet = await BackendConnections.GetWallet(this.StreamerID, this.TwitchUserID);
+        let WalletOfUser: dbWallet = await BackendConnections.GetWallets(this.StreamerID, this.TwitchUserID);
         this.ViewStoreDisplay.CoinsOfUserView.innerText = (~~WalletOfUser.Coins).toString();
 
         this.ViewStoreDisplay.setStoreItems(await BackendConnections.GetStore(this.StreamerID, -1));
@@ -50,14 +50,14 @@ export default class StoreDisplayController {
             this.ViewStoreDisplay.setStoreItems(await BackendConnections.GetStore(this.StreamerID, -1));
         })
 
-        addTwitchListeners(TwitchListeners.onAddPurchasedItem,()=>{
+        addTwitchListeners(TwitchListeners.onAddPurchasedItem, () => {
             console.log('Add pude oirde');
-            
+
         })
 
-        addTwitchListeners(TwitchListeners.onDeletePurchaseOrder,()=>{
+        addTwitchListeners(TwitchListeners.onDeletePurchaseOrder, () => {
             console.log('deleted');
-            
+
         })
 
         this.EnbleAllCommands();

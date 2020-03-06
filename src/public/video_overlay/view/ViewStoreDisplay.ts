@@ -168,7 +168,7 @@ export default class ViewStoreDisplay {
     setStoreItems(StoreItems: StoreItem[]) {
         this.ItemsList.innerHTML = '';
         StoreItems.forEach(StoreItem => {
-            if (StoreItem.FileName) {
+            if (StoreItem.FileName && StoreItem.Description && StoreItem.Price) {
                 let viewStoreItem = new ViewStoreItemDisplay(StoreItem.Description, StoreItem.Price);
                 viewStoreItem.HTML_BuyButton.onclick = () => { this.onBuyItemButtonActive(StoreItem) }
                 this.ItemsList.appendChild(viewStoreItem.HTML);

@@ -1,4 +1,4 @@
-import StoreItem from "../../../services/models/store/StoreItem";
+import StoreItem, { StoreTypes } from "../../../services/models/store/StoreItem";
 import { OrientedInput, ResponsiveLabelForInputFile } from "../../common/model/Inputs";
 import ItemSettings from "../../../services/models/store/ItemSettings";
 
@@ -21,9 +21,10 @@ export class ViewStoreItem implements StoreItem {
   Type: number;
   Description: string;
   ItemsSettings: ItemSettings[];
-  ViewSettingsOfItens: ViewItemSettings[] = [];
   FileName: string;
   Price: number;
+
+  ViewSettingsOfItens: ViewItemSettings[] = [];
 
   public HTML: HTMLDivElement
   private ElemeteHTML_ID: string;
@@ -39,12 +40,19 @@ export class ViewStoreItem implements StoreItem {
 
   public onDescriptionChange = (ViewStoreItem: ViewStoreItem) => { };
   public onPriceChange = (ViewStoreItem: ViewStoreItem) => { };
-  public onSettingChange = (ViewStoreItem: ViewStoreItem,ViewItemSettings: ViewItemSettings) => { };
+  public onSettingChange = (ViewStoreItem: ViewStoreItem, ViewItemSettings: ViewItemSettings) => { };
   public onButtonDeleteActived = (ViewStoreItem: ViewStoreItem) => { };
 
-  private createStoreType() {
+  private createStoreType(StoreType: number) {
     this.HTML_StoreType = document.createElement('img');
-    this.HTML_StoreType.src = './configurator/images/undefined-document.png';
+    switch (StoreType) {
+      case StoreTypes.Audio:
+        this.HTML_StoreType.src = './configurator/images/sond-document.png';
+        break;
+      default:
+        this.HTML_StoreType.src = './configurator/images/undefined-document.png';
+        break;
+    }
     return this.HTML_StoreType;
   }
 
@@ -53,7 +61,7 @@ export class ViewStoreItem implements StoreItem {
     ItemSettings.forEach((ItemSettings, id) => {
       let viewItemSettings = new ViewItemSettings(id, ItemSettings);
       viewItemSettings.HTML.onchange = () => {
-        this.onSettingChange(this,viewItemSettings);
+        this.onSettingChange(this, viewItemSettings);
       }
       this.HTML_ItemSettingsDiv.appendChild(viewItemSettings.HTML);
       this.ViewSettingsOfItens.push(viewItemSettings);
@@ -66,7 +74,7 @@ export class ViewStoreItem implements StoreItem {
     this.HTML_InputFile.setAttribute('type', 'file');
     this.HTML_InputFile.classList.add('inputfile');
     this.HTML_InputFile.name = 'file';
-    this.HTML_InputFile.accept = 'audio/*';
+    this.HTML_InputFile.accept = '.mp3,.wav';
 
     this.HTML_InputFile.id = this.ElemeteHTML_ID;
     return this.HTML_InputFile;
@@ -79,8 +87,25 @@ export class ViewStoreItem implements StoreItem {
     return this.HTML_DeleteButton;
   }
 
-  constructor(ID: number, ItemSettings: ItemSettings[]) {
-    this.id = ID
+  constructor(
+    ID: number,
+    Type: number,
+    Description: string,
+    ItemSettings: ItemSettings[],
+    FileName: string,
+    Price: number
+  ) {
+
+    console.log(ID);
+    
+
+    this.id = ID;
+    this.Type = Type;
+    this.Description = Description;
+    this.ItemsSettings = ItemSettings;
+    this.FileName = FileName;
+    this.Price = Price;
+
     this.ElemeteHTML_ID = 'inputFile' + this.id;
 
     this.ItemsSettings = ItemSettings;
@@ -91,7 +116,7 @@ export class ViewStoreItem implements StoreItem {
 
     this.HTML = document.createElement('div');
     this.HTML.classList.add('StoreItem');
-    this.HTML.appendChild(this.createStoreType());
+    this.HTML.appendChild(this.createStoreType(this.Type));
     this.HTML.appendChild(this.DescriptionInput.HTMLInput);
     this.HTML.appendChild(this.PriceInput.HTMLInput);
     this.HTML.appendChild(this.createItemsSettings(ItemSettings));
@@ -113,51 +138,52 @@ export default class ViewStore {
   HTML_StoreItemsDiv = <HTMLDivElement>document.getElementById('StoreItems');
   HTML_AudioPlayer = <HTMLAudioElement>document.getElementById('AudioPlayer');
 
-  onAddStoreItemActive = () => { };
+  onAddStoreItemSondActive = () => { };
   onDescriptionChange = (ViewStoreItem: ViewStoreItem) => { };
   onPriceChange = (ViewStoreItem: ViewStoreItem) => { };
   onButtonDeleteActive = (ViewStoreItem: ViewStoreItem) => { };
-  onSettingsChange = (ViewStoreItem:StoreItem, ViewItemSettings: ViewItemSettings) => {};
+  onSettingsChange = (ViewStoreItem: StoreItem, ViewItemSettings: ViewItemSettings) => { };
   onFileInputChange = (ViewStoreItem: ViewStoreItem) => { };
 
   addStoreItem(StoreItem: StoreItem) {
     let id = 1;
-    if (this.StoreItems.length > 2) {
-      id = this.StoreItems[this.StoreItems.length - 1].id;
+    if (this.StoreItems.length > 1) {
+      id = this.StoreItems[this.StoreItems.length - 1].id + 1;
     } else {
       if (this.StoreItems.length > 0) {
         id = this.StoreItems[0].id + 1;
       }
     }
 
-    let viewStoreItem = new ViewStoreItem(id, this.ViewItemSettings);
-    if (StoreItem) {
-      if (StoreItem.id) {
-        viewStoreItem.id = StoreItem.id;
-      }
-      if (StoreItem.Description) {
-        viewStoreItem.DescriptionInput.HTMLInput.value = StoreItem.Description;
-        viewStoreItem.Description = StoreItem.Description;
-        viewStoreItem.DescriptionInput.setUsed();
-      }
-      if (StoreItem.Price) {
-        viewStoreItem.PriceInput.HTMLInput.value = StoreItem.Price.toString();
-        viewStoreItem.Price = StoreItem.Price;
-        viewStoreItem.PriceInput.setUsed();
-      }
-      if (StoreItem.ItemsSettings) {
-        viewStoreItem.ItemsSettings = StoreItem.ItemsSettings;
-        viewStoreItem.ViewSettingsOfItens.forEach((ViewSettingsOfIten, index) => {
-          ViewSettingsOfIten.ItemSettings = StoreItem.ItemsSettings[index];
-          ViewSettingsOfIten.HTML.checked = StoreItem.ItemsSettings[index].Enable;
-        });
-      }
-      if (StoreItem.FileName) {
-        viewStoreItem.ResponsiveInputFile.setUpgradeable();
-      }
-    }
 
-    this.StoreItems.push(viewStoreItem);
+    let viewStoreItem = new ViewStoreItem(
+      id,
+      StoreItem.Type,
+      StoreItem.Description,
+      StoreItem.ItemsSettings,
+      StoreItem.FileName,
+      StoreItem.Price);
+
+    if (StoreItem.Description) {
+      viewStoreItem.DescriptionInput.HTMLInput.value = StoreItem.Description;
+      viewStoreItem.Description = StoreItem.Description;
+      viewStoreItem.DescriptionInput.setUsed();
+    }
+    if (StoreItem.ItemsSettings) {
+      viewStoreItem.ItemsSettings = StoreItem.ItemsSettings;
+      viewStoreItem.ViewSettingsOfItens.forEach((ViewSettingsOfIten, index) => {
+        ViewSettingsOfIten.ItemSettings = StoreItem.ItemsSettings[index];
+        ViewSettingsOfIten.HTML.checked = StoreItem.ItemsSettings[index].Enable;
+      });
+    }
+    if (StoreItem.FileName) {
+      viewStoreItem.ResponsiveInputFile.setUpgradeable();
+    }
+    if (StoreItem.Price) {
+      viewStoreItem.PriceInput.HTMLInput.value = StoreItem.Price.toString();
+      viewStoreItem.Price = StoreItem.Price;
+      viewStoreItem.PriceInput.setUsed();
+    }
 
     viewStoreItem.onDescriptionChange = (ViewStoreItem) => {
       viewStoreItem.Description = ViewStoreItem.DescriptionInput.HTMLInput.value;
@@ -171,12 +197,13 @@ export default class ViewStore {
       this.onFileInputChange(viewStoreItem); //TODO > 0)
     });
     viewStoreItem.onSettingChange = (ViewStoreItem, ViewItemSettings) => {
-      this.onSettingsChange(ViewStoreItem,ViewItemSettings);
+      this.onSettingsChange(ViewStoreItem, ViewItemSettings);
     }
     viewStoreItem.onButtonDeleteActived = (StoreItem) => {
       this.onButtonDeleteActive(StoreItem);
     };
 
+    this.StoreItems.push(viewStoreItem);
     this.HTML_StoreItemsDiv.appendChild(viewStoreItem.HTML);
     return viewStoreItem;
   }
@@ -186,6 +213,6 @@ export default class ViewStore {
   }
   constructor(ItemSettings: ItemSettings[]) {
     this.ViewItemSettings = ItemSettings;
-    document.getElementById('AddStoreItem').onclick = () => { this.onAddStoreItemActive(); };
+    document.getElementById('AddStoreItem').onclick = () => { this.onAddStoreItemSondActive(); };
   }
 }

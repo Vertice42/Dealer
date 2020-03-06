@@ -1,18 +1,36 @@
 import express = require("express");
 import fs = require('fs');
+import del = require('del');
 import path = require('path');
 
-import { APP } from "..";
+import { APP, CheckRequisition } from "..";
 import UploadFileResponse from "../models/files_manager/UploadFileResponse";
-import Links from "../Links";
+import { UploadFileRoute, GetFileRoute } from "./routes";
 
-APP.post(Links.UploadFile, async function (req, res: express.Response) {
-    //TODO ON UPDATE REMOVER ANTIGO
-    let dir = `./uploads/${req.headers["streamer-id"]}`;
-
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+APP.post(UploadFileRoute, async function (req, res: express.Response) {    
+    let ErrorList = CheckRequisition([
+        () => {
+            if (!req.headers["streamer-id"])
+                return ({ RequestError: "StreamerID is no defined" })
+        },
+        () => {
+            if (!req.headers["folder-name"])
+                return ({ RequestError: "Folder Name is no defined" })
+        },
+        () => {
+            if (!req.headers["file-name"])
+                return ({ RequestError: "File Name is no defined" })
+        }
+    ])
+    
+    if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
+        
+    let dir = `./uploads/${req.headers["streamer-id"]}/${req.headers["folder-name"]}`;
+    if (fs.existsSync(dir)) await del(dir);
+    fs.mkdirSync(dir)
 
     let file = fs.createWriteStream(dir + '/' + req.headers["file-name"]);
+
 
     req.on('data', chunk => {
         file.write(chunk);
@@ -23,6 +41,7 @@ APP.post(Links.UploadFile, async function (req, res: express.Response) {
     })
 })
 
-APP.get(Links.GetFile, async function (req, res: express.Response) {
-    res.status(200).sendFile(path.resolve(`./uploads/${req.params.StreamerID}/${req.params.FileName}`))
+APP.get(GetFileRoute, async function (req, res: express.Response) {    
+    res.status(200).sendFile(path.resolve(`./uploads/${req.params.StreamerID}/${req.params.Folder}/${req.params.FileName}`))
 })
+

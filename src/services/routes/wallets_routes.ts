@@ -1,23 +1,13 @@
 import express = require("express");
 
 import { APP, CheckRequisition } from "..";
-import Links from "../Links";
 import { getAllWallets, dbWalletManeger } from "../modules/database/miner/dbWalletManager";
 import { dbWallet } from "../models/poll/dbWallet";
 import { WalletManagerRequest } from "../models/wallet/WalletManagerRequest";
+import { GetWalletRoute, WalletManager } from "./routes";
 
-APP.get(Links.GetWallets, async function (req: { params: { StreamerID: string, TwitchUserID: string } }, res: express.Response) {
-    getAllWallets(req.params.StreamerID, req.params.TwitchUserID)
-        .then((Wallets) => {
-            res.status(200).send(<dbWallet[]>Wallets);
-        })
-        .catch((rej) => {
-            console.error(rej);
-            res.status(500).send(rej);
-        })
-})
-
-APP.get(Links.GetWallet, async function (req: express.Request, res: express.Response) {
+APP.get(GetWalletRoute, async function (req: express.Request, res: express.Response) {
+    var Request = <{ StreamerID: string, TwitchUserID: string }>req.params;
     let ErrorList = CheckRequisition([
         () => {
             if (!req.params.StreamerID)
@@ -29,17 +19,27 @@ APP.get(Links.GetWallet, async function (req: express.Request, res: express.Resp
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
 
-    new dbWalletManeger(req.params.StreamerID, req.params.TwitchUserID)
-        .getWallet()
-        .then((wallet) => {
-            res.status(200).send(wallet);
-        })
-        .catch((rej) => {
-            res.status(500).send(rej);
-        })
+    if (Request.TwitchUserID === '*') {
+        getAllWallets(Request.StreamerID, Request.TwitchUserID)
+            .then((Wallets) => {
+                res.status(200).send(<dbWallet[]>Wallets);
+            })
+            .catch((rej) => {
+                console.error(rej);
+                res.status(500).send(rej);
+            })
+    } else {
+        new dbWalletManeger(Request.StreamerID, Request.TwitchUserID)
+            .getWallet()
+            .then((wallet) => {
+                res.status(200).send(wallet);
+            })
+            .catch((rej) => {
+                res.status(500).send(rej);
+            })
+    }
 });
-
-APP.post(Links.WalletManager, async function (req, res: express.Response) {
+APP.post(WalletManager, async function (req, res: express.Response) {
     let walletManagerRequest: WalletManagerRequest = req.body;
     new dbWalletManeger(walletManagerRequest.StreamerID, walletManagerRequest.TwitchUserID)
         .update(walletManagerRequest.newValue)

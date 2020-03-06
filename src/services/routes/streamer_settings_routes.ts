@@ -2,11 +2,10 @@ import express = require("express");
 import { APP, CheckRequisition } from "..";
 import { CoinsSettingsManagerRequest } from "../models/streamer_settings/CoinsSettingsManagerRequest";
 import StreamerSettings from "../modules/database/streamer_settings/StreamerSettings";
-import Links from "../Links";
 import { CoinsSettings } from "../models/streamer_settings/CoinsSettings";
+import { CoinsSettingsManagerRoute, GetCoinsSettingsRoute } from "./routes";
 
-
-APP.post(Links.CoinsSettingsManager, async function (req: CoinsSettingsManagerRequest, res: express.Response) {
+APP.post(CoinsSettingsManagerRoute, async function (req: CoinsSettingsManagerRequest, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -22,8 +21,7 @@ APP.post(Links.CoinsSettingsManager, async function (req: CoinsSettingsManagerRe
         .then((reso) => { res.status(200).send(reso) })
         .catch((reje) => { res.status(500).send(reje) });
 });
-
-APP.get(Links.GetCoinsSettings, async function (req: { params: { StreamerID: string } }, res: express.Response) {
+APP.get(GetCoinsSettingsRoute, async function (req: { params: { StreamerID: string } }, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.params.StreamerID)

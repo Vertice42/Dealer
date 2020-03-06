@@ -1,6 +1,7 @@
 import { dbManager } from "../dbManager";
-import StoreItem from "../../../models/store/StoreItem";
+import StoreItem, { StoreTypes } from "../../../models/store/StoreItem";
 import { dbStore as dbStoreIten, dbStore } from "../../../models/store/dbStore";
+import { reject } from "bluebird";
 
 export default class dbStoreManger {
     StreamerID: string;
@@ -9,15 +10,29 @@ export default class dbStoreManger {
         return dbManager.getAccountData(this.StreamerID).dbStore.findAll();
     }
 
-    async getIten(StoreItemID:number) {
+    async getIten(StoreItemID: number) {
         let AccountData = dbManager.getAccountData(this.StreamerID);
         return AccountData.dbStore.findOne({ where: { id: StoreItemID } });
     }
-    
+
     async UpdateOrCreateStoreItem(newStoreItem: StoreItem) {
+        switch (newStoreItem.Type) {
+            case StoreTypes.Audio:
+                {
+                    if(!newStoreItem.FileName) break;
+                    
+                    let FileExtension = newStoreItem.FileName.split('.').pop();
+                    if (!(FileExtension === 'mp3' || FileExtension === 'wav')) {
+                        return reject({ RequestError: `Invalid file "${FileExtension}"` })
+                    }
+                    break;
+                }
+        }
+
+
         let AccountData = dbManager.getAccountData(this.StreamerID);
         let dbStoreItem = await AccountData.dbStore.findOne({ where: { id: newStoreItem.id } });
-        
+
         let newdbStoreIten = <dbStoreIten>newStoreItem;
         newdbStoreIten.ItemSettingsJson = JSON.stringify(newStoreItem.ItemsSettings);
 

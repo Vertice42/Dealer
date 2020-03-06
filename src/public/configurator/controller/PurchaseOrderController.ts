@@ -2,7 +2,7 @@ import BackendConnections = require("../../BackendConnection");
 import StoreItem from "../../../services/models/store/StoreItem";
 import PurchaseOrder from "../../../services/models/store/PurchaseOrder";
 import ViewPurchaseOrders, { ViewPurchasedItem } from "../view/ViewPurchaseOrders";
-import IO_Listeners from "../../../services/IO_Listeners";
+import IO_Listeners from "../../../services/IOListeners";
 import { NotifyViewers } from "./MainController";
 import TwitchListeners from "../../../services/TwitchListeners";
 
@@ -25,7 +25,7 @@ export default class PurchaseOrderController {
 
     ExecuteOrder(PurchaseOrderItemList: PurchaseOrderItem) {
 
-        this.ViewPurchaseOrders.HTML_AudioPlayer.src = BackendConnections.getUrlOfFile(this.StreamerID, PurchaseOrderItemList.StoreItem.FileName);
+        this.ViewPurchaseOrders.HTML_AudioPlayer.src = BackendConnections.getUrlOfFile(this.StreamerID,'Store Item '+PurchaseOrderItemList.StoreItem.id, PurchaseOrderItemList.StoreItem.FileName);
 
         this.ViewPurchaseOrders.HTML_AudioPlayer.onplay = () => {
             this.ViewPurchaseOrders.removeViewPurchaseOrder(PurchaseOrderItemList.ViewPurchasedItem);

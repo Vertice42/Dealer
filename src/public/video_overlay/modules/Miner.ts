@@ -34,7 +34,7 @@ export class Miner {
             })
     }
     async startMining() {
-        this.CoinsOfUser =  (await BackendConnection.GetWallet(this.StreamerID, this.TwitchUserID)).Coins;
+        this.CoinsOfUser =  (await BackendConnection.GetWallets(this.StreamerID, this.TwitchUserID)).Coins;
         this.TryToMine()
     }
 }

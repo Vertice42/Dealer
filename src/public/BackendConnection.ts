@@ -1,9 +1,7 @@
 import { reject, resolve, any } from 'bluebird';
-import link from '../services/Links';
 import ServerConfigs from '../services/configs/ServerConfigs';
 import { PollStatus } from '../services/models/poll/PollStatus';
 import { PollButton } from '../services/models/poll/PollButton';
-import { Poll } from '../services/models/poll/Poll';
 import { MinerSettings } from '../services/models/miner/MinerSettings';
 import StoreItem from '../services/models/store/StoreItem';
 import StoreManagerRequest from '../services/models/store/StoreManagerRequest';
@@ -12,7 +10,7 @@ import DeletePurchaseOrderRequest from '../services/modules/database/store/Delet
 import PurchaseOrder from '../services/models/store/PurchaseOrder';
 import { WalletManagerRequest } from '../services/models/wallet/WalletManagerRequest';
 import { CoinsSettings } from '../services/models/streamer_settings/CoinsSettings';
-import { dbWallet } from '../services/models/poll/dbWallet';
+import { getPollRoute, PollManagerRoute, MinerManagerRoute, addBeatRoute, getMinerSettingsRoute, getCoinsSettingsRoute, CoinsSettingsManagerRoute, MineCoinRoute, getWalletRoute, WalletManager, getStoreRoute, StoreManagerRoute, PurchaseOrderRoute, getPurchaseOrderRoute, UploadFileRoute, getFilesRoute } from '../services/routes/routes';
 
 export const HOST = 'http://localhost:' + (ServerConfigs.Port || process.env.Port);
 
@@ -62,10 +60,10 @@ export class Watch {
 }
 export async function getCurrentPoll(StreamerID: string) {
   /* Use fetch to communicate to backend and get current voting */
-  return fetch(HOST + link.getPoll(StreamerID), {
+  return fetch(HOST + getPollRoute(StreamerID), {
     method: "GET"
   }).then(function (res) {
-    if (res.ok) return res.json()
+    if (res.ok) return res.json();
     else return reject(res);
   }).catch((rej) => {
     console.log(rej);
@@ -79,7 +77,7 @@ export async function SendToPollManager(StreamerID: String, PollButtons: PollBut
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
-  return fetch(HOST + link.PollManager, {
+  return fetch(HOST + PollManagerRoute, {
     method: "POST",
     headers: H,
     body: JSON.stringify({
@@ -102,11 +100,11 @@ export async function SendToPollManager(StreamerID: String, PollButtons: PollBut
   });
 }
 
-export async function SendToMinerManager(StreamerID: String, Setting: MinerSettings) {
+export async function SendToMinerManager(StreamerID: string, Setting: MinerSettings) {
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
-  return fetch(HOST + link.MinerManager, {
+  return fetch(HOST + MinerManagerRoute, {
     method: "POST",
     headers: H,
     body: JSON.stringify({
@@ -130,7 +128,7 @@ export async function addBet(StreamerID: string, TwitchUserID: string,
   IdOfVote: number, BetAmount: number): Promise<any> {
   let H = new Headers();
   H.append("Content-Type", "application/json");
-  return fetch(HOST + link.addBeat(StreamerID, TwitchUserID), {
+  return fetch(HOST + addBeatRoute(StreamerID, TwitchUserID), {
     method: "POST",
     headers: H,
     body: JSON.stringify({
@@ -147,7 +145,7 @@ export async function addBet(StreamerID: string, TwitchUserID: string,
 }
 
 export async function GetMinerSettings(StreamerID: string) {
-  return fetch(HOST + link.getMiner(StreamerID), {
+  return fetch(HOST + getMinerSettingsRoute(StreamerID), {
     method: "GET"
   }).then(function (res) {
     if (res.ok) return resolve(res)
@@ -164,7 +162,7 @@ export async function GetMinerSettings(StreamerID: string) {
 }
 
 export async function GetCoinsSettings(StreamerID: string): Promise<CoinsSettings> {//TODO A ESTRURA SE REPETE em get Miner
-  return fetch(HOST + link.getCoinsSettings(StreamerID), {
+  return fetch(HOST + getCoinsSettingsRoute(StreamerID), {
     method: "GET"
   }).then(function (res) {
     if (res.ok) return resolve(res)
@@ -184,7 +182,7 @@ export async function SendToCoinsSettingsManager(StreamerID: String, Setting: Co
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
-  return fetch(HOST + link.CoinsSettingsManager, {
+  return fetch(HOST + CoinsSettingsManagerRoute, {
     method: "POST",
     headers: H,
     body: JSON.stringify({
@@ -208,7 +206,7 @@ export async function SendToCoinsSettingsManager(StreamerID: String, Setting: Co
 export async function MineCoin(StreamerID: string, TwitchUserID: string) {
   let H = new Headers();
   H.append("Content-Type", "application/json");
-  return fetch(HOST + link.MineCoin, {
+  return fetch(HOST + MineCoinRoute, {
     method: "POST",
     headers: H,
     body: JSON.stringify({
@@ -229,22 +227,8 @@ export async function MineCoin(StreamerID: string, TwitchUserID: string) {
   });
 }
 
-export async function GetWallet(StreamerID: string, TwitchUserID: string): Promise<dbWallet> {
-  return fetch(HOST + link.getWallet(StreamerID, TwitchUserID), {
-    method: "GET"
-  }).then(function (res) {
-    if (res.ok)
-      return resolve(res.json())
-    else
-      return reject(res.json());
-  }).catch((rej) => {
-    console.log(rej);
-
-  })
-}
-
 export async function GetWallets(StreamerID: string, TwitchUserID = '*') {
-  return fetch(HOST + link.getWallets(StreamerID, TwitchUserID), {
+  return fetch(HOST + getWalletRoute(StreamerID, TwitchUserID), {
     method: "GET"
   }).then(function (res) {
     if (res.ok)
@@ -262,7 +246,7 @@ export async function SendToWalletManager(StreamerID: string, TwitchUserID: stri
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
-  return fetch(HOST + link.WalletManager, {
+  return fetch(HOST + WalletManager, {
     method: "POST",
     headers: H,
     body: JSON.stringify(new WalletManagerRequest(StreamerID, TwitchUserID, newValue))
@@ -281,8 +265,8 @@ export async function SendToWalletManager(StreamerID: string, TwitchUserID: stri
   });
 }
 
-export async function GetStore(StreamerID: string, StoreItemID: number) {
-  return fetch(HOST + link.getStore(StreamerID, StoreItemID), {
+export async function GetStore(StreamerID: string, StoreItemID = -1) {
+  return fetch(HOST + getStoreRoute(StreamerID, StoreItemID), {
     method: "GET"
   }).then(function (res) {
     if (res.ok)
@@ -297,11 +281,11 @@ export async function GetStore(StreamerID: string, StoreItemID: number) {
 export async function SendToStoreManager(StreamerID: string, StoreItem: StoreItem): Promise<any> {
   /*Send current voting with your buttons and current poll status */
   console.log(StoreItem);
-  
+
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
-  return fetch(HOST + link.StoreManager, {
+  return fetch(HOST + StoreManagerRoute, {
     method: "POST",
     headers: H,
     body: JSON.stringify(new StoreManagerRequest(StreamerID, StoreItem))
@@ -324,7 +308,7 @@ export async function addPurchaseOrder(StreamerID: string, TwitchUserID: string,
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
-  return fetch(HOST + link.PurchaseOrder, {
+  return fetch(HOST + PurchaseOrderRoute, {
     method: "POST",
     headers: H,
     body: JSON.stringify(new PurchaseOrderRequest(StreamerID, TwitchUserID, StoreItem.id))
@@ -347,7 +331,7 @@ export async function DeletePurchaseOrder(StreamerID: string, PurchaseOrder: Pur
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
-  return fetch(HOST + link.PurchaseOrder, {
+  return fetch(HOST + PurchaseOrderRoute, {
     method: "DELETE",
     headers: H,
     body: JSON.stringify(new DeletePurchaseOrderRequest(StreamerID, PurchaseOrder.TwitchUserID, PurchaseOrder.id, PurchaseOrder.StoreItemID, PurchaseOrder.SpentCoins, Refund))
@@ -369,7 +353,7 @@ export async function DeteleStoreItem(StreamerID: string, StoreItem: StoreItem):
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
-  return fetch(HOST + link.StoreManager, {
+  return fetch(HOST + StoreManagerRoute, {
     method: "DELETE",
     headers: H,
     body: JSON.stringify(new StoreManagerRequest(StreamerID, StoreItem))
@@ -389,7 +373,7 @@ export async function DeteleStoreItem(StreamerID: string, StoreItem: StoreItem):
 }
 
 export async function GetPurchaseOrders(StreamerID: string) {
-  return fetch(HOST + link.getPurchaseOrder(StreamerID), {
+  return fetch(HOST + getPurchaseOrderRoute(StreamerID), {
     method: "GET"
   }).then(function (res) {
     if (res.ok)
@@ -403,13 +387,14 @@ export async function GetPurchaseOrders(StreamerID: string) {
 
 }
 
-export async function UploadFile(StreamerID: string, FileName: string, File: File) {
+export async function UploadFile(StreamerID: string, FolderName: string, FileName: string, File: File) {
   /*Send current voting with your buttons and current poll status */
   let headers = new Headers();
   headers.append("Accept", "application/json");
   headers.append('streamer-id', StreamerID);
   headers.append("file-name", FileName);
-  return fetch(HOST + link.UploadFile,
+  headers.append("folder-name", FolderName);
+  return fetch(HOST + UploadFileRoute,
     {
       method: "POST",
       headers: headers,
@@ -423,6 +408,6 @@ export async function UploadFile(StreamerID: string, FileName: string, File: Fil
     });
 }
 
-export function getUrlOfFile(StreamerID: string, FileName: string) {
-  return HOST + link.getFiles(StreamerID, FileName);
+export function getUrlOfFile(StreamerID: string, Folder: string, FileName: string) {
+  return HOST + getFilesRoute(StreamerID, Folder, FileName);
 }

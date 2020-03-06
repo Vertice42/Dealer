@@ -2,13 +2,13 @@ import express = require("express");
 import { APP, CheckRequisition } from "..";
 import { MinerManagerRequest } from "../models/miner/MinerManagerRequest";
 import StreamerSettings from "../modules/database/streamer_settings/StreamerSettings";
-import Links from "../Links";
 import { MinerSettings } from "../models/miner/MinerSettings";
 import MinerManeger from "../modules/database/miner/dbMinerManager";
 import { MiningResponse } from "../models/miner/MiningResponse";
 import { MinerRequest } from "../models/miner/MinerRequest";
-
-APP.post(Links.MinerManager, async function (req: MinerManagerRequest, res: express.Response) {
+import { MinerManagerRoute, MineCoinRoute, GetMinerSettingsRoute } from "./routes";
+ 
+APP.post(MinerManagerRoute, async function (req: MinerManagerRequest, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)
@@ -25,8 +25,7 @@ APP.post(Links.MinerManager, async function (req: MinerManagerRequest, res: expr
         .then((reso) => { res.status(200).send(reso) })
         .catch((reje) => { res.status(500).send(reje) });
 });
-
-APP.get(Links.GetMinerSettings, async function (req: { params: { StreamerID: string } }, res: express.Response) {
+APP.get(GetMinerSettingsRoute, async function (req: { params: { StreamerID: string } }, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.params.StreamerID)
@@ -42,8 +41,7 @@ APP.get(Links.GetMinerSettings, async function (req: { params: { StreamerID: str
             res.status(500).send(rej);
         })
 });
-
-APP.post(Links.MineCoin, async function (req: MinerRequest, res: express.Response) {
+APP.post(MineCoinRoute, async function (req: MinerRequest, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)

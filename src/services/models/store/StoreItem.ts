@@ -1,5 +1,9 @@
 import ItemSettings from "./ItemSettings";
 
+export const StoreTypes = {
+    Audio: 1
+}
+
 export default class StoreItem {
     id: number;
     Type:number;

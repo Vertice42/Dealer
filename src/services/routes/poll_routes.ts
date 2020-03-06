@@ -1,6 +1,5 @@
 import express = require("express");
 import { APP, CheckRequisition } from "..";
-import Links from "../Links";
 import { PollRequest } from "../models/poll/PollRequest";
 import { PollStatus } from "../models/poll/PollStatus";
 import UpdateButtonGroupResult from "../models/poll/UpdateButtonGroupResult";
@@ -9,6 +8,7 @@ import { Poll } from "../models/poll/Poll";
 import { AddBetRequest } from "../models/poll/AddBetRequest";
 import { PollController } from "../controller/PollController";
 import { PollButton } from "../models/poll/PollButton";
+import { PollManagerRoute, AddBeatRoute, GetPollRoute } from "./routes";
 
 function ThereWinningButtonsInArray(PollButtons: PollButton[]): boolean {
     for (let i = 0; i < PollButtons.length; i++)
@@ -16,7 +16,7 @@ function ThereWinningButtonsInArray(PollButtons: PollButton[]): boolean {
     return false;
 }
 
-APP.post(Links.PollManager, async function (req: PollRequest, res: express.Response) {
+APP.post(PollManagerRoute, async function (req: PollRequest, res: express.Response) {
 
     let ErrorList = CheckRequisition([
         () => {
@@ -58,8 +58,7 @@ APP.post(Links.PollManager, async function (req: PollRequest, res: express.Respo
     return res.status(200).send({ PoolUpdateResult, DistribuitionResult });
 
 });
-
-APP.get(Links.GetPoll, async function (req: { params: { StreamerID: string } }, res: express.Response) {
+APP.get(GetPollRoute, async function (req: { params: { StreamerID: string } }, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.params.StreamerID)
@@ -78,8 +77,7 @@ APP.get(Links.GetPoll, async function (req: { params: { StreamerID: string } }, 
             res.status(500).send(reje)
         })
 });
-
-APP.post(Links.AddBeat, async function (req: AddBetRequest, res: express.Response) {
+APP.post(AddBeatRoute, async function (req: AddBetRequest, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
             if (!req.body.StreamerID)

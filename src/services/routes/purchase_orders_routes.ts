@@ -4,15 +4,15 @@ import { APP, getSoketOfStreamer } from "..";
 import { dbWalletManeger } from "../modules/database/miner/dbWalletManager";
 import dbPurchaseOrderManager from "../modules/database/store/dbPurchaseOrderManager";
 import PurchaseOrder from "../models/store/PurchaseOrder";
-import IO_Listeners from "../IO_Listeners";
+import IO_Listeners from "../IOListeners";
 import DeletePurchaseOrderRequest from "../modules/database/store/DeletePurchaseOrderRequest";
 import { dbPurchaseOrder } from "../models/store/dbPurchaseOrders";
-import Links from "../Links";
 import PurchaseOrderRequest from "../modules/database/store/PurchaseOrderRequest";
 import dbStoreManager from "../modules/database/store/dbStoreManager";
 import ItemSettings from "../models/store/ItemSettings";
+import { PurchaseOrderRoute, GetPurchaseOrderRoute } from "./routes";
 
-APP.post(Links.PurchaseOrder, async function (req, res: express.Response) {
+APP.post(PurchaseOrderRoute, async function (req, res: express.Response) {
     let PurchaseOrderRequest: PurchaseOrderRequest = req.body;
     //TODO add CheckRequisition
 
@@ -35,8 +35,8 @@ APP.post(Links.PurchaseOrder, async function (req, res: express.Response) {
     let dbPurchaseOrderMan = new dbPurchaseOrderManager(PurchaseOrderRequest.StreamerID);
 
     if (SingleReproductionEnable) {
-        if (await dbPurchaseOrderMan.getdbPurchaseOrderByStoreItemID(PurchaseOrderRequest.StoreItemID)){
-            return res.status(423).send({PurchaseFailed:'There can be only one item at a time in the order fight'})
+        if (await dbPurchaseOrderMan.getdbPurchaseOrderByStoreItemID(PurchaseOrderRequest.StoreItemID)) {
+            return res.status(423).send({ PurchaseFailed: 'There can be only one item at a time in the order fight' })
         }
     }
 
@@ -52,8 +52,7 @@ APP.post(Links.PurchaseOrder, async function (req, res: express.Response) {
             res.status(500).send(rej);
         })
 })
-
-APP.delete(Links.PurchaseOrder, async function (req, res: express.Response) {
+APP.delete(PurchaseOrderRoute, async function (req, res: express.Response) {
     let PurchaseOrder: DeletePurchaseOrderRequest = req.body;
     new dbPurchaseOrderManager(PurchaseOrder.StreamerID)
         .removePurchaseOrder(PurchaseOrder.PurchaseOrderID)
@@ -69,8 +68,7 @@ APP.delete(Links.PurchaseOrder, async function (req, res: express.Response) {
             res.status(500).send(rej);
         })
 })
-
-APP.get(Links.GetPurchaseOrder, async function (req: { params: { StreamerID: string } }, res: express.Response) {
+APP.get(GetPurchaseOrderRoute, async function (req: { params: { StreamerID: string } }, res: express.Response) {
     new dbPurchaseOrderManager(req.params.StreamerID).getAllPurchaseOrders()
         .then((result) => {
             res.status(200).send(<dbPurchaseOrder[]>result);

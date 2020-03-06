@@ -4,9 +4,10 @@ import dbStoreManager from "../modules/database/store/dbStoreManager";
 import StoreManagerRequest from "../models/store/StoreManagerRequest";
 import ControllerOfPermissions from "../controller/ControllerOfPermissions";
 import StoreItem from "../models/store/StoreItem";
-import Links from "../Links";
+import { StoreManagerRoute, GetStoreRoute } from "./routes";
+import del = require("del");
 
-APP.post(Links.StoreManager, async function (req, res: express.Response) {
+APP.post(StoreManagerRoute, async function (req, res: express.Response) {
     let Request: StoreManagerRequest = req.body;
 
     let ErrorList = CheckRequisition([
@@ -33,13 +34,16 @@ APP.post(Links.StoreManager, async function (req, res: express.Response) {
             res.status(200).send(result);
         })
         .catch((reject) => {
-            console.error(reject);
-
-            res.status(500).send(reject);
+            console.log(reject);
+            
+            if (reject.RequestError) {
+                res.status(400).send(reject);
+            } else {
+                res.status(500).send(reject);
+            }
         })
 })
-
-APP.delete(Links.StoreManager, async function (req, res: express.Response) {
+APP.delete(StoreManagerRoute, async function (req, res: express.Response) {
     let Request: StoreManagerRequest = req.body;
     let ErrorList = CheckRequisition([
         () => {
@@ -50,15 +54,16 @@ APP.delete(Links.StoreManager, async function (req, res: express.Response) {
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
 
     new dbStoreManager(Request.StreamerID).DeleteStoreItem(req.body.StoreItem)
-        .then((result) => {
+        .then(async (result) => {
+            await del('./uploads/'+Request.StreamerID+'/'+'Store Item '+Request.StoreItem.id);
+            //TODO Trasformar string 'Store Item em onjeto refatoravel'
             res.status(200).send(result);
         })
         .catch((reject) => {
             res.status(500).send(reject);
         })
 })
-
-APP.get(Links.GetStore, async function (req: { params: { StreamerID: string, StoreItemID: string } }, res: express.Response) {
+APP.get(GetStoreRoute, async function (req: { params: { StreamerID: string, StoreItemID: string } }, res: express.Response) {
     let dbStoreM = new dbStoreManager(req.params.StreamerID)
 
     if (req.params.StoreItemID === '-1') {
@@ -79,7 +84,9 @@ APP.get(Links.GetStore, async function (req: { params: { StreamerID: string, Sto
                 res.status(200).send(StoreItems);
             })
             .catch((rej) => {
-                res.status(500).send(rej)
+                res.status(500).send(rej);
+                console.log(rej);
+                
             })
 
     } else {

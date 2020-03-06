@@ -40,11 +40,11 @@ export default class SettingsController {
         this.ViewSettings.InputCoinImg.onchange = () => {
             let file = this.ViewSettings.InputCoinImg.files[0]
             if (file) {
-                BackendConnections.UploadFile(this.StreamerID, file.name, file
+                BackendConnections.UploadFile(this.StreamerID, 'CoinImage', file.name, file
                 ).then(async (UploadFileResponse: UploadFileResponse) => {
                     this.CoinsSettings.FileNameOfCoinImage = file.name;
                     BackendConnections.SendToCoinsSettingsManager(this.StreamerID, this.CoinsSettings)
-                    this.ViewSettings.setCoinIMG(BackendConnections.getUrlOfFile(this.StreamerID, this.CoinsSettings.FileNameOfCoinImage))
+                    this.ViewSettings.setCoinIMG(BackendConnections.getUrlOfFile(this.StreamerID, 'CoinImage', this.CoinsSettings.FileNameOfCoinImage))
                 }
                 ).catch(rej => console.log(rej))
             }
@@ -56,11 +56,11 @@ export default class SettingsController {
         this.CoinsSettings = await BackendConnections.GetCoinsSettings(this.StreamerID);
 
         this.ViewSettings.HourlyRewardInput.HTMLInput.value = (~~(this.MinerSettings.RewardPerMinute * 60)).toString();
-        
+
         this.ViewSettings.CoinNameInput.HTMLInput.value = this.CoinsSettings.CoinName;
-        
-        if(this.CoinsSettings.FileNameOfCoinImage)
-        this.ViewSettings.setCoinIMG(BackendConnections.getUrlOfFile(this.StreamerID, this.CoinsSettings.FileNameOfCoinImage))
+
+        if (this.CoinsSettings.FileNameOfCoinImage)
+            this.ViewSettings.setCoinIMG(BackendConnections.getUrlOfFile(this.StreamerID, 'CoinImage', this.CoinsSettings.FileNameOfCoinImage))
 
         this.EnbleAllCommands();
     }
