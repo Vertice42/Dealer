@@ -3,9 +3,9 @@ import PurchaseOrder from "../../../models/store/PurchaseOrder";
 import { dbPurchaseOrder } from "../../../models/store/dbPurchaseOrders";
 
 export default class dbPurchaseOrderManager {
-    StreamerID: string;
+    private StreamerID: string;
 
-    async getdbPurchaseOrderByStoreItemID(StoreItemID: number){
+    async getPurchaseOrderByStoreItemID(StoreItemID: number){
         let AccountData = dbManager.getAccountData(this.StreamerID);
         return await AccountData.dbPurchaseOrders.findOne({ where: {StoreItemID: StoreItemID} });
     }
@@ -24,6 +24,11 @@ export default class dbPurchaseOrderManager {
 
     async getAllPurchaseOrders() {
         return dbManager.getAccountData(this.StreamerID).dbPurchaseOrders.findAll();
+    }
+
+    async getPurchaseOrder(PurchaseOrderID:number) {
+        return dbManager.getAccountData(this.StreamerID).dbPurchaseOrders
+        .findOne({where:{id:PurchaseOrderID}});
     }
 
     constructor(StreamerID: string) {

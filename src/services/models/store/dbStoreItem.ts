@@ -3,20 +3,30 @@ import { Model } from "sequelize";
 import StoreItem from "./StoreItem";
 import ItemSettings from "./ItemSettings";
 
-export class dbStore extends Model implements StoreItem {
-    id: number;    
+export class dbStoreItem extends Model implements StoreItem {
+    id: number;
     Type: number;
     Description: string;
     ItemsSettings: ItemSettings[];
     ItemSettingsJson: string;
     FileName: string;
     Price: number;
+
+    static ToStoreItem(dbStoreItem: dbStoreItem) {
+        return new StoreItem(
+            dbStoreItem.id,
+            dbStoreItem.Type,
+            dbStoreItem.Description,
+            JSON.parse(dbStoreItem.ItemSettingsJson),
+            dbStoreItem.FileName,
+            dbStoreItem.Price)
+    }
 }
 
 export const StoreDefiner = {
     name: 'store',
     atributes: {
-        Type:{
+        Type: {
             type: sequelize.INTEGER
         },
         Description: {

@@ -1,10 +1,10 @@
 import { dbManager } from "../dbManager";
 import StoreItem, { StoreTypes } from "../../../models/store/StoreItem";
-import { dbStore as dbStoreIten, dbStore } from "../../../models/store/dbStore";
+import { dbStoreItem as dbStoreIten, dbStoreItem } from "../../../models/store/dbStoreItem";
 import { reject } from "bluebird";
 
 export default class dbStoreManger {
-    StreamerID: string;
+    private StreamerID: string;
 
     async getAllItens() {
         return dbManager.getAccountData(this.StreamerID).dbStore.findAll();

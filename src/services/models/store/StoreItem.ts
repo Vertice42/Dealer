@@ -9,6 +9,7 @@ export default class StoreItem {
     Type:number;
     Description: string;
     ItemsSettings: ItemSettings[];
+    ItemSettingsJson: string;
     FileName: string
     Price: number;
     /**
@@ -21,7 +22,5 @@ export default class StoreItem {
         this.FileName = FileName;
         this.ItemsSettings = ItemsSettings;
         this.Price = Price
-
     }
-
 }

@@ -4,6 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha 'build/test/main.test.js'",
+    "test_store": "mocha 'build/test/store.test.js'",
+    "test_settings": "mocha 'build/test/settings.test.js'",
+    "test_wallets": "mocha 'build/test/wallets.test.js'",
     "start": " nodemon build/services/index.js",
     "nw": "node build/services/index.js"
   },

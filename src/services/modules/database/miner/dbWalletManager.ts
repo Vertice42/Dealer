@@ -41,12 +41,12 @@ export class dbWalletManeger {
         return getWallet(this.StreamerID, this.TwitchUserID);
     }
 
-    async  deposit(deposit: number) {
+    async deposit(deposit: number) {
         let wallet = await getWallet(this.StreamerID, this.TwitchUserID);
         return wallet.update({ Coins: wallet.Coins + deposit });
     }
 
-    async  withdraw(withdraw: number) {
+    async withdraw(withdraw: number) {
         let wallet = await getWallet(this.StreamerID, this.TwitchUserID);
         return wallet.update({ Coins: wallet.Coins - withdraw });
     }
@@ -54,6 +54,11 @@ export class dbWalletManeger {
     async update(newValue: number) {
         let wallet = await getWallet(this.StreamerID, this.TwitchUserID);
         return wallet.update({ Coins: newValue });
+    }
+
+    async updateLastMiningAttemp() {
+        let wallet = await getWallet(this.StreamerID, this.TwitchUserID);
+        return wallet.update({ LastMiningAttemp: new Date });
     }
 }
 

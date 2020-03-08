@@ -6,6 +6,21 @@ import ViewPollManeger from "../view/ViewPollManeger";
 import TwitchListeners from "../../../services/TwitchListeners";
 
 export default class PollController {
+    getCurrentPoll() {
+        throw new Error("Method not implemented.");
+    }
+    AddBet(arg0: string, arg1: number, BetAmontForTest_I: number) {
+        throw new Error("Method not implemented.");
+    }
+    StartDistribuition(ButtonsToTestWithWinners: import("../../../services/models/poll/PollButton").PollButton[]): any {
+        throw new Error("Method not implemented.");
+    }
+    CreatePoll() {
+        throw new Error("Method not implemented.");
+    }
+    UpdatePoll(arg0: import("../../../services/models/poll/PollButton").PollButton[]) {
+        throw new Error("Method not implemented.");
+    }
     StreamerID: string;
     ViewPollManeger: ViewPollManeger;
 

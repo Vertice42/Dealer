@@ -20,7 +20,8 @@ export class ViewStoreItem implements StoreItem {
   id: number;
   Type: number;
   Description: string;
-  ItemsSettings: ItemSettings[];
+  ItemsSettings: ItemSettings[];  
+  ItemSettingsJson: string;
   FileName: string;
   Price: number;
 

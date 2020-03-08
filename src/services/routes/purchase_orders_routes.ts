@@ -5,12 +5,12 @@ import { dbWalletManeger } from "../modules/database/miner/dbWalletManager";
 import dbPurchaseOrderManager from "../modules/database/store/dbPurchaseOrderManager";
 import PurchaseOrder from "../models/store/PurchaseOrder";
 import IO_Listeners from "../IOListeners";
-import DeletePurchaseOrderRequest from "../modules/database/store/DeletePurchaseOrderRequest";
 import { dbPurchaseOrder } from "../models/store/dbPurchaseOrders";
-import PurchaseOrderRequest from "../modules/database/store/PurchaseOrderRequest";
+import PurchaseOrderRequest from "../models/store/PurchaseOrderRequest";
 import dbStoreManager from "../modules/database/store/dbStoreManager";
 import ItemSettings from "../models/store/ItemSettings";
 import { PurchaseOrderRoute, GetPurchaseOrderRoute } from "./routes";
+import DeletePurchaseOrderRequest from "../models/store/DeletePurchaseOrderRequest";
 
 APP.post(PurchaseOrderRoute, async function (req, res: express.Response) {
     let PurchaseOrderRequest: PurchaseOrderRequest = req.body;
@@ -35,7 +35,7 @@ APP.post(PurchaseOrderRoute, async function (req, res: express.Response) {
     let dbPurchaseOrderMan = new dbPurchaseOrderManager(PurchaseOrderRequest.StreamerID);
 
     if (SingleReproductionEnable) {
-        if (await dbPurchaseOrderMan.getdbPurchaseOrderByStoreItemID(PurchaseOrderRequest.StoreItemID)) {
+        if (await dbPurchaseOrderMan.getPurchaseOrderByStoreItemID(PurchaseOrderRequest.StoreItemID)) {
             return res.status(423).send({ PurchaseFailed: 'There can be only one item at a time in the order fight' })
         }
     }

@@ -1,6 +1,5 @@
 import { resolve, reject, } from "bluebird";
-import { Loading } from "../dbLoading";
-import { MinerSettings, MINIMUN_TIME_FOR_MINING } from "../../../models/miner/MinerSettings";
+import { MINIMUN_TIME_FOR_MINING } from "../../../models/miner/MinerSettings";
 import { dbWalletManeger } from "./dbWalletManager";
 import { MiningResponse } from "../../../models/miner/MiningResponse";
 import { dbManager } from "../dbManager";
@@ -24,10 +23,12 @@ export default class MinerManeger {
         let walletManeger = new dbWalletManeger(StreamerID, TwitchUserID)
 
         let wallet = await walletManeger.getWallet();
-        let TimeBetweenAttempts = Now - wallet.LastMiningAttemp;
-
+        let TimeBetweenAttempts = Now - wallet.LastMiningAttemp.getTime();
+        
         if (!TimeBetweenAttempts || TimeBetweenAttempts > MINIMUN_TIME_FOR_MINING)
-            await walletManeger.deposit(AccountData.MinerSettings.RewardPerMining)
+            await walletManeger.deposit(AccountData.MinerSettings.RewardPerMining);
+
+        walletManeger.updateLastMiningAttemp();
 
         return new MiningResponse(TimeBetweenAttempts, (await walletManeger.getWallet()).Coins, MINIMUN_TIME_FOR_MINING);
 

@@ -8,6 +8,13 @@ export class dbPurchaseOrder extends Model implements PurchaseOrder {
     TwitchUserID: string;
     StoreItemID: number;
     updatedAt: Date;
+
+    static toPurchaseOrder(dbPurchaseOrder:dbPurchaseOrder){
+        return new PurchaseOrder(
+            dbPurchaseOrder.SpentCoins,
+            dbPurchaseOrder.TwitchUserID,
+            dbPurchaseOrder.StoreItemID)
+    }
 }
 
 export const PurchaseOrdersDefiner = {

@@ -4,11 +4,36 @@ import { resolve } from "bluebird";
 import { MinerSettings } from "../../../models/miner/MinerSettings";
 import { CoinsSettings } from "../../../models/streamer_settings/CoinsSettings";
 
-export default class StreamerSettings {
+export default class StreamerSettingsManager {
+
     /**
      * 
      * @param StreamerID 
      */
+    static async getCoinsSettings(StreamerID: string) {
+        let accountData = dbManager.getAccountData(StreamerID);        
+
+        if (!accountData.CoinsSettings) return Loading.CoinsSettings(StreamerID);
+
+        return resolve(accountData.CoinsSettings);
+    }
+    /**
+     * 
+     * @param StreamerID 
+     * @param minerSettings 
+     */
+    static async UpdateCoinsSettings(StreamerID: string, NewCoinsSettings: CoinsSettings) {
+        let AccountData = dbManager.getAccountData(StreamerID);
+        AccountData.CoinsSettings = NewCoinsSettings;
+        return AccountData.dbSettings.update({ SettingsJson: NewCoinsSettings }, { where: { SettingName: CoinsSettings.name } })
+            .then(() => {
+                return resolve({ SuccessfullyUpdatedMinerSettings: AccountData.MinerSettings });
+            });
+    }
+    /**
+   * 
+   * @param StreamerID 
+   */
     static async getMinerSettings(StreamerID: string) {
         let accountData = dbManager.getAccountData(StreamerID);
 
@@ -16,18 +41,6 @@ export default class StreamerSettings {
 
         return resolve(accountData.MinerSettings);
     }
-    /**
-     * 
-     * @param StreamerID 
-     */
-    static async getCoinsSettings(StreamerID: string) {
-        let accountData = dbManager.getAccountData(StreamerID);
-
-        if (!accountData.CoinsSettings) return Loading.CoinsSettings(StreamerID);
-
-        return resolve(accountData.CoinsSettings);
-    }
-
     /**
      * 
      * @param StreamerID 
@@ -44,17 +57,4 @@ export default class StreamerSettings {
             })
     }
 
-    /**
-     * 
-     * @param StreamerID 
-     * @param minerSettings 
-     */
-    static async UpdateCoinsSettings(StreamerID: string, NewCoinsSettings: CoinsSettings) {
-        let AccountData = dbManager.getAccountData(StreamerID);
-        AccountData.CoinsSettings = NewCoinsSettings;
-        return AccountData.dbSettings.update({ SettingsJson: NewCoinsSettings }, { where: { SettingName: CoinsSettings.name } })
-            .then(() => {
-                return resolve({ SuccessfullyUpdatedMinerSettings: AccountData.MinerSettings });
-            });
-    }
 }

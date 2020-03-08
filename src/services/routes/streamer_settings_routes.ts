@@ -1,9 +1,9 @@
 import express = require("express");
 import { APP, CheckRequisition } from "..";
 import { CoinsSettingsManagerRequest } from "../models/streamer_settings/CoinsSettingsManagerRequest";
-import StreamerSettings from "../modules/database/streamer_settings/StreamerSettings";
 import { CoinsSettings } from "../models/streamer_settings/CoinsSettings";
 import { CoinsSettingsManagerRoute, GetCoinsSettingsRoute } from "./routes";
+import StreamerSettingsManager from "../modules/database/streamer_settings/StreamerSettingsManager";
 
 APP.post(CoinsSettingsManagerRoute, async function (req: CoinsSettingsManagerRequest, res: express.Response) {
     let ErrorList = CheckRequisition([
@@ -17,7 +17,7 @@ APP.post(CoinsSettingsManagerRoute, async function (req: CoinsSettingsManagerReq
         }
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
-    StreamerSettings.UpdateCoinsSettings(req.body.StreamerID, req.body.Setting)
+    StreamerSettingsManager.UpdateCoinsSettings(req.body.StreamerID, req.body.Setting)
         .then((reso) => { res.status(200).send(reso) })
         .catch((reje) => { res.status(500).send(reje) });
 });
@@ -29,7 +29,7 @@ APP.get(GetCoinsSettingsRoute, async function (req: { params: { StreamerID: stri
         }
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
-    StreamerSettings.getCoinsSettings(req.params.StreamerID)
+    StreamerSettingsManager.getCoinsSettings(req.params.StreamerID)
         .then((CoinsSettings: CoinsSettings) => {
             res.status(200).send(CoinsSettings);
         })

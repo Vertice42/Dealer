@@ -3,7 +3,7 @@ import { BettingsDefiner, dbBettings} from "../../models/poll/dbBettings";
 import { SettingsDefiner, dbSettings } from "../../models/streamer_settings/dbSettings";
 import { AccountData } from "../../models/AccountData";
 import { ButtonDefiner, dbButton } from "../../models/poll/dbButton";
-import { StoreDefiner, dbStore } from "../../models/store/dbStore";
+import { StoreDefiner, dbStoreItem } from "../../models/store/dbStoreItem";
 import { dbPurchaseOrder, PurchaseOrdersDefiner } from "../../models/store/dbPurchaseOrders";
     /**
      * Loads and / or creates sequelize models by defining them
@@ -16,7 +16,7 @@ export class Define {
     }
 
     static async Store(AccountData: AccountData) {                
-        AccountData.dbStore = <typeof dbStore> AccountData.dbStreamer
+        AccountData.dbStore = <typeof dbStoreItem> AccountData.dbStreamer
         .define(StoreDefiner.name, StoreDefiner.atributes, StoreDefiner.options);
         return AccountData.dbStore.sync();
     }
