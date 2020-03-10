@@ -34,6 +34,7 @@ export function addTwitchListeners(ListenerName: string, Listerner: (data) => an
 }
 window.Twitch.ext.listen('broadcast', Twitchbroadcast);
 
+
 window.Twitch.ext.onAuthorized(async (auth) => {
 
   StreamerID = auth.channelId.toLowerCase();
@@ -48,12 +49,11 @@ window.Twitch.ext.onAuthorized(async (auth) => {
 
   TwitchUserID = (await getUsername(TwitchUserID, auth.clientId)).name;
 
-  window.Twitch.ext.onContext((context) => {
+  window.Twitch.ext.onContext(async (context) => {
     console.log(context);
 
-    new AllertController(StreamerID,TwitchUserID);
+    await new AllertController(StreamerID,TwitchUserID).Loading();    
     var ControllerOfStoreDisplay = new StoreDisplayController(StreamerID, TwitchUserID);
-
     var UserMiner = new Miner(StreamerID, TwitchUserID);
     UserMiner.onMine = (CurrentCoinsOfUserNunber, BalanceChange) => {
       ControllerOfStoreDisplay.setViewBalance(CurrentCoinsOfUserNunber, BalanceChange)
@@ -61,4 +61,5 @@ window.Twitch.ext.onAuthorized(async (auth) => {
     UserMiner.startMining();
 
   });
+
 })

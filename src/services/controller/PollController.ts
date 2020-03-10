@@ -16,12 +16,12 @@ import { BettingsDefiner } from "../models/poll/dbBettings";
 
 import { PollStatus } from "../models/poll/PollStatus";
 
-import { Loading } from "../modules/database/dbLoading";
-
 import { Poll } from "../models/poll/Poll";
 import UpdateButtonGroupResult from "../models/poll/UpdateButtonGroupResult";
 import { PollBeat } from "../models/poll/PollBeat";
 import { dbPollMager } from "../modules/database/poll/dbPollManager";
+import IOListeners from "../IOListeners";
+import { getSoketOfStreamer } from "../SocketsManager";
 
 export class PollController {
 
@@ -75,7 +75,10 @@ export class PollController {
                     AccontResult,
                     timeOfDistribution: new Date().getTime() - startTime + ' ms'
                 }
-            });
+                let SoketOfStreamer = getSoketOfStreamer(this.StreamerID);
+                if (SoketOfStreamer)
+                    SoketOfStreamer.emit(IOListeners.onDistribuitionFinish);
+            })
 
         return resolve({ DistributionStarted: new Date() });
 
@@ -143,9 +146,9 @@ export class PollController {
     async dbUpdatePollStatus() {
         let AccountData = dbManager.getAccountData(this.StreamerID);
 
-        if (!AccountData.CurrentPollID)         
+        if (!AccountData.CurrentPollID)
             return resolve(AccountData.CurrentPollStatus);
-        
+
         let NewCurrentPollID = AccountData.CurrentPollID;
         let NewCurrentBettingsID = AccountData.CurrentBettingsID;
 
@@ -233,8 +236,6 @@ export class PollController {
      */
     async getCurrentPoll() {
         let AccountData = dbManager.getAccountData(this.StreamerID);
-        if (!AccountData) AccountData = await Loading.StreamerDatabase(this.StreamerID);
-
         let Buttons = [];
         let Bets: PollBeat[];
 

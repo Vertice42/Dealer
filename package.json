@@ -7,6 +7,8 @@
     "test_store": "mocha 'build/test/store.test.js'",
     "test_settings": "mocha 'build/test/settings.test.js'",
     "test_wallets": "mocha 'build/test/wallets.test.js'",
+    "test_mining": "mocha 'build/test/mining.test.js'",
+    "test_poll": "mocha 'build/test/poll.test.js'",
     "start": " nodemon build/services/index.js",
     "nw": "node build/services/index.js"
   },

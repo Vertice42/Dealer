@@ -4,9 +4,6 @@ export const getPollRoute = (StreamerID: string) => { return '/Poll/' + Streamer
 export const AddBeatRoute = '/addBeat/:StreamerID/:TwitchUserID';
 export const addBeatRoute = (StreamerID: string, TwitchUserID: string) => { return '/addBeat/' + StreamerID + '/' + TwitchUserID };
 //POLL
-export const MinerManagerRoute = '/MinerManager';
-export const getMinerSettingsRoute = (StreamerID: string) => { return '/MinerSettings/' + StreamerID }
-export const GetMinerSettingsRoute = '/MinerSettings/:StreamerID';
 export const MineCoinRoute = '/MinerCoin';
 //MINER
 export const PurchaseOrderRoute = '/BuyStoreItem'
@@ -17,6 +14,10 @@ export const StoreManagerRoute = '/StoreManager';
 export const GetStoreRoute = '/Store/:StreamerID/:StoreItemID';
 export const getStoreRoute = (StreamerID: string, StoreItemID: number) => { return '/Store/' + StreamerID + '/' + StoreItemID };
 //STORE
+export const MinerManagerRoute = '/MinerManager';
+export const GetMinerSettingsRoute = '/MinerSettings/:StreamerID';
+export const getMinerSettingsRoute = (StreamerID: string) => { return '/MinerSettings/' + StreamerID }
+
 export const CoinsSettingsManagerRoute = '/CoinsSettingsManager/';
 export const GetCoinsSettingsRoute = '/CoinsSettings/:StreamerID';
 export const getCoinsSettingsRoute = (StreamerID: String) => { return '/CoinsSettings/' + StreamerID }

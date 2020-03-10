@@ -1,13 +1,13 @@
 import { expect } from "chai";
 
-import { createStreamerDatabase, deleteStreamerDatabase, ID_FOR_WALLETS } from "./ForTests.test";
+import { createAndStartStreamerDatabase, deleteStreamerDatabase, ID_FOR_WALLETS } from "./ForTests.test";
 import { dbWalletManeger } from "../services/modules/database/miner/dbWalletManager";
 import { dbWallet } from "../services/models/poll/dbWallet";
 
 describe('Wallet', () => {
   let UserIdForTest = 'fin'
   before(async () => {
-    await createStreamerDatabase(ID_FOR_WALLETS);
+    await createAndStartStreamerDatabase(ID_FOR_WALLETS);
   })
   after(async () => {
     await deleteStreamerDatabase(ID_FOR_WALLETS)

@@ -1,4 +1,4 @@
-import ItemSettings from "./ItemSettings";
+import ItemSettings from "./item_settings/ItemSettings";
 
 export const StoreTypes = {
     Audio: 1

@@ -1,6 +1,6 @@
-import DonorFeatures from "../models/dealer/DonorFeatures";
+import DonorFeatures from "../models/store/item_settings/DonorFeatures";
 import dbDealerManager from "../modules/database/dbDealerManager";
-import ItemSettings from "../models/store/ItemSettings";
+import ItemSettings from "../models/store/item_settings/ItemSettings";
 import fs = require('fs');
 import path = require('path');
 

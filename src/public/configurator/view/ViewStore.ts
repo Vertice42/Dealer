@@ -1,6 +1,6 @@
 import StoreItem, { StoreTypes } from "../../../services/models/store/StoreItem";
 import { OrientedInput, ResponsiveLabelForInputFile } from "../../common/model/Inputs";
-import ItemSettings from "../../../services/models/store/ItemSettings";
+import ItemSettings from "../../../services/models/store/item_settings/ItemSettings";
 
 export class ViewItemSettings {
   id: number
@@ -96,10 +96,6 @@ export class ViewStoreItem implements StoreItem {
     FileName: string,
     Price: number
   ) {
-
-    console.log(ID);
-    
-
     this.id = ID;
     this.Type = Type;
     this.Description = Description;

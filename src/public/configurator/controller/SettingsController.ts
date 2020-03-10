@@ -1,5 +1,5 @@
 import BackendConnections = require("../../BackendConnection");
-import { MinerSettings } from "../../../services/models/miner/MinerSettings";
+import { MinerSettings } from "../../../services/models/streamer_settings/MinerSettings";
 import { sleep } from "../../../utils/utils";
 import UploadFileResponse from "../../../services/models/files_manager/UploadFileResponse";
 import { CoinsSettings } from "../../../services/models/streamer_settings/CoinsSettings";

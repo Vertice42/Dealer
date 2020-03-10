@@ -1,9 +1,10 @@
 import BackendConnections = require("../../BackendConnection");
 import { Poll } from "../../../services/models/poll/Poll";
 import { PollStatus } from "../../../services/models/poll/PollStatus";
-import { StatusObservation, NotifyViewers } from "./MainController";
+import { NotifyViewers, STREAMER_SOCKET } from "./MainController";
 import ViewPollManeger from "../view/ViewPollManeger";
 import TwitchListeners from "../../../services/TwitchListeners";
+import IOListeners from "../../../services/IOListeners";
 
 export default class PollController {
     getCurrentPoll() {
@@ -69,17 +70,23 @@ export default class PollController {
 
         }
         this.ViewPollManeger.onCommandToDistributeSent = async () => {
-            this.ViewPollManeger.PollStatus.InDistribution = true;
-            await BackendConnections.SendToPollManager(this.StreamerID, this.ViewPollManeger.getPollButtons(), this.ViewPollManeger.PollStatus);
-            new StatusObservation((Poll: Poll) => {
-                if (Poll.PollStatus.DistributionCompleted) {
-                    this.ViewPollManeger.PollStatus = Poll.PollStatus;
-                    this.ViewPollManeger.setDistributioFninished();
-                    return true;
-                }
-                return false;
+            STREAMER_SOCKET.on(IOListeners.onDistribuitionFinish, async () => {
+
+                let CurrentPoll = await BackendConnections.getCurrentPoll(this.StreamerID);
+                this.ViewPollManeger.PollStatus = CurrentPoll.PollStatus;
+                this.ViewPollManeger.setDistributioFninished();
+                
+                NotifyViewers({ListenerName:TwitchListeners.onPollChange,data:CurrentPoll});
+                
+                STREAMER_SOCKET.on(IOListeners.onDistribuitionFinish,null);
             });
+
+            await BackendConnections.SendToPollManager(
+                this.StreamerID, 
+                this.ViewPollManeger.getPollButtons(), 
+                this.ViewPollManeger.PollStatus.startDistribution());
         }
+
     }
     async LoadingCurrentPoll() {
         this.ViewPollManeger = new ViewPollManeger(await BackendConnections.getCurrentPoll(this.StreamerID));

@@ -34,7 +34,7 @@ APP.get(GetWalletRoute, async function (req: express.Request, res: express.Respo
             .then((wallet) => {
                 res.status(200).send(wallet);
             })
-            .catch((rej) => {
+            .catch((rej) => {                
                 res.status(500).send(rej);
             })
     }

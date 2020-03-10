@@ -2,7 +2,7 @@ import { reject, resolve, any } from 'bluebird';
 import ServerConfigs from '../services/configs/ServerConfigs';
 import { PollStatus } from '../services/models/poll/PollStatus';
 import { PollButton } from '../services/models/poll/PollButton';
-import { MinerSettings } from '../services/models/miner/MinerSettings';
+import { MinerSettings } from '../services/models/streamer_settings/MinerSettings';
 import StoreItem from '../services/models/store/StoreItem';
 import StoreManagerRequest from '../services/models/store/StoreManagerRequest';
 import PurchaseOrderRequest from '../services/models/store/PurchaseOrderRequest';
@@ -11,6 +11,7 @@ import PurchaseOrder from '../services/models/store/PurchaseOrder';
 import { WalletManagerRequest } from '../services/models/wallet/WalletManagerRequest';
 import { CoinsSettings } from '../services/models/streamer_settings/CoinsSettings';
 import { getPollRoute, PollManagerRoute, MinerManagerRoute, addBeatRoute, getMinerSettingsRoute, getCoinsSettingsRoute, CoinsSettingsManagerRoute, MineCoinRoute, getWalletRoute, WalletManager, getStoreRoute, StoreManagerRoute, PurchaseOrderRoute, getPurchaseOrderRoute, UploadFileRoute, getFilesRoute } from '../services/routes/routes';
+import { Poll } from '../services/models/poll/Poll';
 
 export const HOST = 'http://localhost:' + (ServerConfigs.Port || process.env.Port);
 
@@ -58,7 +59,7 @@ export class Watch {
     this.watch();
   }
 }
-export async function getCurrentPoll(StreamerID: string) {
+export async function getCurrentPoll(StreamerID: string):Promise<Poll> {
   /* Use fetch to communicate to backend and get current voting */
   return fetch(HOST + getPollRoute(StreamerID), {
     method: "GET"
@@ -152,7 +153,7 @@ export async function GetMinerSettings(StreamerID: string) {
     else return reject(res);
   }).then((res) => {
     return res.json();
-  }).catch((rej) => {
+  }).catch((rej) => {    
     return rej.json()
       .then((res) => {
         console.log(res);

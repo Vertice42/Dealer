@@ -1,5 +1,5 @@
 import { PollButton } from "../services/models/poll/PollButton";
-import { MinerSettings } from "../services/models/miner/MinerSettings";
+import { MinerSettings } from "../services/models/streamer_settings/MinerSettings";
 import { PollController } from "../services/controller/PollController";
 import { Loading } from "../services/modules/database/dbLoading";
 import { dbManager } from "../services/modules/database/dbManager";
@@ -26,9 +26,9 @@ export function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export async function createStreamerDatabase(StreamersID: string) {
-  let CreateResult = await dbManager.CreateIfNotExistStreamerDataBase(StreamersID);  
-  await Loading.StreamerDatabase(StreamersID);
+export async function createAndStartStreamerDatabase(StreamersID: string) {
+  let CreateResult = await dbManager.CreateIfNotExistStreamerDataBase(StreamersID);
+  dbManager.setAccountData(await Loading.StreamerAccountData(StreamersID));
   return CreateResult;
 }
 

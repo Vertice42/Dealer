@@ -2,7 +2,7 @@ import { Sequelize } from "sequelize";
 
 import DatabaseConfig from "../../configs/DatabseConfig";
 import { resolve, reject } from "bluebird";
-import { AccountData } from "../../models/AccountData";
+import { AccountData } from "../../models/dealer/AccountData";
 
 export const NOT_IN_STRING = -1;
 
@@ -35,7 +35,7 @@ export class dbManager {
     static getAccountData(StreamerID: string): AccountData {
         return AccountDataArray[StreamerID];
     }
-    static setAccountData(AccountData: AccountData) {
+    static setAccountData(AccountData: AccountData):AccountData {
         AccountDataArray[AccountData.StreamerID] = AccountData;
         return AccountDataArray[AccountData.StreamerID];
     }
@@ -73,7 +73,7 @@ export class dbManager {
             DatabaseConfig.Password,
             DatabaseConfig.SequelizeOptions)
     }
-    
+
     static async CreateIfNotExistSDataBase(DataBaseName: string) {
         await Mysql.query("CREATE DATABASE " + DataBaseName)
             .then(() => {
@@ -87,7 +87,7 @@ export class dbManager {
             })
         return this.getDataBase(DataBaseName);
     }
-    
+
     async DeleteDataBase(DataBaseName: string) {
         return Mysql.query("drop database " + DataBaseName)
             .then((res) => {

@@ -1,7 +1,7 @@
 import { dbWallet, WalletDefiner } from "../../models/poll/dbWallet";
 import { BettingsDefiner, dbBettings} from "../../models/poll/dbBettings";
 import { SettingsDefiner, dbSettings } from "../../models/streamer_settings/dbSettings";
-import { AccountData } from "../../models/AccountData";
+import { AccountData } from "../../models/dealer/AccountData";
 import { ButtonDefiner, dbButton } from "../../models/poll/dbButton";
 import { StoreDefiner, dbStoreItem } from "../../models/store/dbStoreItem";
 import { dbPurchaseOrder, PurchaseOrdersDefiner } from "../../models/store/dbPurchaseOrders";

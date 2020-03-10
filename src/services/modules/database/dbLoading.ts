@@ -1,21 +1,35 @@
 import { PollStatus } from "../../models/poll/PollStatus";
-import { MinerSettings } from "../../models/miner/MinerSettings";
+import { MinerSettings } from "../../models/streamer_settings/MinerSettings";
 import { Define } from "./dbDefine";
 import { POLL_WAXED, NOT_IN_STRING, POLL_STARTED, POLL_STOPED, dbManager } from "./dbManager";
-import { AccountData } from "../../models/AccountData";
+import { AccountData } from "../../models/dealer/AccountData";
 import { getTableName } from "./dbUtil";
-import { CoinsSettings } from "../../models/streamer_settings/CoinsSettings";
+import { resolve } from "bluebird";
 export class Loading {
     /**
      * Loads everything needed for all services to work properly
      * @returns AccountData
      * */
+    private static async MinerSettings(AccountData: AccountData) {
+        return AccountData.dbSettings
+            .findOne({ where: { SettingName: MinerSettings.name } })
+            .then(async (dbSetting) => {
+                if (!dbSetting) {
+                    dbSetting = await AccountData.dbSettings.create({
+                        SettingName: MinerSettings.name,
+                        SettingsJson: new MinerSettings(100)
+                    });
+                    return Loading.MinerSettings(AccountData);
+                }
+                AccountData.MinerSettings = <MinerSettings>dbSetting.SettingsJson;                
+                return resolve(dbSetting.SettingsJson);
+            })
+    }
 
-    static async StreamerDatabase(StreamerID: string) {
+    public static async StreamerAccountData(StreamerID: string) {
         await dbManager.CreateIfNotExistStreamerDataBase(StreamerID);
 
-        let accountData: AccountData = dbManager
-            .setAccountData(new AccountData(StreamerID));
+        let accountData: AccountData = new AccountData(StreamerID);
 
         accountData.CurrentPollStatus = new PollStatus();
 
@@ -27,14 +41,16 @@ export class Loading {
         ]
         await Promise.all(DefinitionPromises);
 
+        await Loading.MinerSettings(accountData);
+
         let tables = await accountData.dbStreamer.query("show tables");
         if (tables[0].length < DefinitionPromises.length + 2) {
             accountData.CurrentPollStatus.waxe();
             return accountData;
         }
         //If there are only 2 tables in the database, no poll has been created yet
-        accountData.CurrentPollID = getTableName(tables[0], tables[0].length - (DefinitionPromises.length+1));
-        accountData.CurrentBettingsID = getTableName(tables[0], tables[0].length - (DefinitionPromises.length + 2));
+        accountData.CurrentPollID = await getTableName(tables[0], tables[0].length - (DefinitionPromises.length + 1));
+        accountData.CurrentBettingsID = await getTableName(tables[0], tables[0].length - (DefinitionPromises.length + 2));
         /**
          * The wallet and settings table are in the same database and will always be
          * the first and second index, while the most recent Bettings poll tables will 
@@ -54,40 +70,7 @@ export class Loading {
 
             await Define.CurrentPollButtons(accountData);
             await Define.CurrentBettings(accountData);
-        }
-
+        }        
         return accountData;
-    }
-    static async MinerSettings(StreamerID: string) {
-        let accountData = dbManager.getAccountData(StreamerID);
-        return accountData.dbSettings
-            .findOne({ where: { SettingName: MinerSettings.name } })
-            .then(async (dbSettings) => {
-                if (dbSettings) {
-                    return accountData.MinerSettings = <MinerSettings>dbSettings.SettingsJson;
-                } else {
-                    await accountData.dbSettings.create({
-                        SettingName: MinerSettings.name,
-                        SettingsJson: new MinerSettings(100)
-                    });
-                    return Loading.MinerSettings(StreamerID);
-                }
-            })
-    }
-    static async CoinsSettings(StreamerID: string) {
-        let accountData = dbManager.getAccountData(StreamerID);
-        return accountData.dbSettings
-            .findOne({ where: { SettingName: CoinsSettings.name } })
-            .then(async (dbSettings) => {
-                if (dbSettings) {
-                    return accountData.CoinsSettings = <CoinsSettings>dbSettings.SettingsJson;
-                } else {
-                    await accountData.dbSettings.create({
-                        SettingName: CoinsSettings.name,
-                        SettingsJson: new CoinsSettings()
-                    });
-                    return Loading.CoinsSettings(StreamerID);
-                }
-            })
     }
 }

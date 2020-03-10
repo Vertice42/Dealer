@@ -6,6 +6,7 @@ import { PollStatus } from "../../../services/models/poll/PollStatus";
 import { PollButton } from "../../../services/models/poll/PollButton";
 import { addTwitchListeners } from "./MainController";
 import TwitchListeners from "../../../services/TwitchListeners";
+import { reject, resolve } from "bluebird";
 
 
 function IsWinner(PollButtons: PollButton[], ChosenButtonID: number) {
@@ -82,21 +83,41 @@ export default class AllertController {
             this.CurrentPollStatus = Poll.PollStatus;
         }
     }
+    private TryGetCurrentPoll = async () => {
+        return BackendConnections.getCurrentPoll(this.StreamerID)
+            .then((Poll) => {
 
-    async LoadingPoll() {
+                if (Poll) {
+                    return resolve(Poll);
+                } else {
+                    console.log('Poll == undfind', Poll.PollStatus);
+                    return reject(Poll)
+                }
 
-        this.updateAlerts(await BackendConnections.getCurrentPoll(this.StreamerID)
-        )
-        addTwitchListeners(TwitchListeners.onPollChange, async (Poll) => {
-            this.updateAlerts(Poll);
-        })
+            })
+            .catch(async (rej) => {
+                await sleep(500)
+                return this.TryGetCurrentPoll();
+            })
+    }
+    async Loading() {
+        return this.TryGetCurrentPoll()
+            .then((Poll: Poll) => {
+                this.updateAlerts(Poll);
 
-        this.EnbleAllCommands();
+                addTwitchListeners(TwitchListeners.onPollChange, async (Poll) => {
+                    this.updateAlerts(Poll);
+                })
+
+                this.EnbleAllCommands();
+
+                return this;
+            })
+
     }
 
     constructor(StreamerID: string, TwitchUserID: string) {
         this.StreamerID = StreamerID;
         this.TwitchUserID = TwitchUserID;
-        this.LoadingPoll()
     }
 }

@@ -6,7 +6,7 @@ import { reject } from "bluebird";
 export default class dbStoreManger {
     private StreamerID: string;
 
-    async getAllItens() {
+    async getAllItens() {        
         return dbManager.getAccountData(this.StreamerID).dbStore.findAll();
     }
 

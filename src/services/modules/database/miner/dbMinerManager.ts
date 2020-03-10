@@ -1,5 +1,5 @@
-import { resolve, reject, } from "bluebird";
-import { MINIMUN_TIME_FOR_MINING } from "../../../models/miner/MinerSettings";
+import { reject } from "bluebird";
+import { MINIMUN_TIME_FOR_MINING } from "../../../models/streamer_settings/MinerSettings";
 import { dbWalletManeger } from "./dbWalletManager";
 import { MiningResponse } from "../../../models/miner/MiningResponse";
 import { dbManager } from "../dbManager";
@@ -17,7 +17,7 @@ export default class MinerManeger {
     static async MineCoin(StreamerID: string, TwitchUserID: string) {
         let Now = new Date().getTime();
         let AccountData = dbManager.getAccountData(StreamerID);
-        if (!AccountData.MinerSettings) return reject({
+        if (!AccountData) return reject({
             RequestError: 'It was not possible to mine, as the streamer did not initiate an extension'});
 
         let walletManeger = new dbWalletManeger(StreamerID, TwitchUserID)

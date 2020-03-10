@@ -3,7 +3,7 @@ import { sleep } from "../../../utils/utils";
 import UploadFileResponse from "../../../services/models/files_manager/UploadFileResponse";
 import StoreItem, { StoreTypes } from "../../../services/models/store/StoreItem";
 import ViewStore, { ViewStoreItem } from "../view/ViewStore";
-import ItemSettings from "../../../services/models/store/ItemSettings";
+import ItemSettings from "../../../services/models/store/item_settings/ItemSettings";
 import TwitchListeners from "../../../services/TwitchListeners";
 import { NotifyViewers } from "./MainController";
 import { reject } from "bluebird";
@@ -79,8 +79,6 @@ export default class StoreController {
                     default:
                         break;
                 }
-                console.log('ViewStoreItem.id',ViewStoreItem.id);
-                
 
                 BackendConnections.UploadFile(this.StreamerID, 'Store Item ' + ViewStoreItem.id, file.name, file
                 ).then(async (UploadFileResponse: UploadFileResponse) => {

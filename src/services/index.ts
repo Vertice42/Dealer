@@ -2,8 +2,12 @@ import express = require("express");
 import cors = require("cors");
 import bodyParser = require("body-parser");
 import http = require('http')
-import Socket_io = require('socket.io')
 import ServerConfigs from "./configs/ServerConfigs";
+import Socket_io = require('socket.io')
+import { Loading } from "./modules/database/dbLoading";
+import IOListeners from "./IOListeners";
+import { dbManager } from "./modules/database/dbManager";
+import { Sockets } from "./SocketsManager";
 
 export function CheckRequisition(CheckList: (() => Object)[]) {
     let ErrorList = [];
@@ -13,12 +17,6 @@ export function CheckRequisition(CheckList: (() => Object)[]) {
     });
     return ErrorList
 }
-
-var Sockets: Socket_io.Socket[] = [];
-export function getSoketOfStreamer(StreamerID: string): Socket_io.Socket {
-    return Sockets[StreamerID];
-}
-
 export const APP = express();
 const SERVER = http.createServer(APP);
 
@@ -32,12 +30,20 @@ require('./routes/store_routes');
 require('./routes/purchase_orders_routes');
 require('./routes/wallets_routes');
 require('./routes/files_routes');
- 
+
 const IO = Socket_io(SERVER).listen(SERVER);
-IO.on('connect', (socket) => {
-    socket.on('registered', (StreamerID) => {
+IO.on('connection', (socket) => {
+    socket.on(IOListeners.RegisterStreamer, async (StreamerID) => {
         Sockets[StreamerID] = socket;
-    })
+
+        dbManager.setAccountData(await Loading.StreamerAccountData(StreamerID));
+        socket.emit(IOListeners.onStreamerAsRegistered);
+
+        socket.on('disconnect', () => {
+            dbManager.removeAccountData(StreamerID);
+        })
+    });
+
 });
 
 SERVER.on('listening', () => console.log('**** SERVER AS STARTDED ****'));

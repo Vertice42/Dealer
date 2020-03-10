@@ -28,6 +28,12 @@ export class PollStatus {
         return this;
 
     }
+
+    startDistribution() {
+        this.InDistribution = true;
+        return this;
+    }
+
     waxe() {
         this.PollWaxed = true;
         return this;

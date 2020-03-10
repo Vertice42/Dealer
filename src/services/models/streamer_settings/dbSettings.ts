@@ -2,7 +2,7 @@ import sequelize = require("sequelize");
 import { Model } from "sequelize";
 export class dbSettings extends Model {
     SettingName:string;
-    SettingsJson:unknown;
+    SettingsJson: unknown;
 }
 const SettingsDefiner = {
     name:'settings',

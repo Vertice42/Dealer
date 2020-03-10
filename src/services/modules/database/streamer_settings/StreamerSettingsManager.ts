@@ -1,7 +1,6 @@
 import { dbManager } from "../dbManager";
-import { Loading } from "../dbLoading";
 import { resolve } from "bluebird";
-import { MinerSettings } from "../../../models/miner/MinerSettings";
+import { MinerSettings } from "../../../models/streamer_settings/MinerSettings";
 import { CoinsSettings } from "../../../models/streamer_settings/CoinsSettings";
 
 export default class StreamerSettingsManager {
@@ -11,35 +10,34 @@ export default class StreamerSettingsManager {
      * @param StreamerID 
      */
     static async getCoinsSettings(StreamerID: string) {
-        let accountData = dbManager.getAccountData(StreamerID);        
-
-        if (!accountData.CoinsSettings) return Loading.CoinsSettings(StreamerID);
-
-        return resolve(accountData.CoinsSettings);
+        let accountData = dbManager.getAccountData(StreamerID);
+        return (await accountData.dbSettings.findOne({ where: { SettingName: CoinsSettings.name } })).SettingsJson;
     }
     /**
      * 
      * @param StreamerID 
      * @param minerSettings 
      */
-    static async UpdateCoinsSettings(StreamerID: string, NewCoinsSettings: CoinsSettings) {
-        let AccountData = dbManager.getAccountData(StreamerID);
-        AccountData.CoinsSettings = NewCoinsSettings;
+    static async UpdateOrCreateCoinsSettings(StreamerID: string, NewCoinsSettings: CoinsSettings) {
+        let AccountData = dbManager.getAccountData(StreamerID);        
         return AccountData.dbSettings.update({ SettingsJson: NewCoinsSettings }, { where: { SettingName: CoinsSettings.name } })
-            .then(() => {
-                return resolve({ SuccessfullyUpdatedMinerSettings: AccountData.MinerSettings });
+            .then(async (result) => {                
+                if (!result[0]) {                    
+                    result = await AccountData.dbSettings.create({
+                        SettingName: CoinsSettings.name,
+                        SettingsJson: NewCoinsSettings
+                    })[0];
+                }
+                return resolve({ SuccessfullyUpdateCoinsSettings: result })
+
             });
     }
     /**
    * 
    * @param StreamerID 
    */
-    static async getMinerSettings(StreamerID: string) {
-        let accountData = dbManager.getAccountData(StreamerID);
-
-        if (!accountData.MinerSettings) return Loading.MinerSettings(StreamerID);
-
-        return resolve(accountData.MinerSettings);
+    static async getMinerSettings(StreamerID: string) {        
+        return dbManager.getAccountData(StreamerID).MinerSettings;
     }
     /**
      * 

@@ -1,11 +1,11 @@
 import StoreItem from "../services/models/store/StoreItem";
 
-import ItemSettings from "../services/models/store/ItemSettings";
+import ItemSettings from "../services/models/store/item_settings/ItemSettings";
 
 import dbStoreManager from "../services/modules/database/store/dbStoreManager";
 
 import { expect } from "chai";
-import { createStreamerDatabase, ID_FOR_STORE, deleteStreamerDatabase, ID_FOR_PURCHASE_ORDER } from "./ForTests.test";
+import { createAndStartStreamerDatabase, ID_FOR_STORE, deleteStreamerDatabase, ID_FOR_PURCHASE_ORDER } from "./ForTests.test";
 import { dbStoreItem } from "../services/models/store/dbStoreItem";
 import dbPurchaseOrderManager from "../services/modules/database/store/dbPurchaseOrderManager";
 import PurchaseOrder from "../services/models/store/PurchaseOrder";
@@ -14,7 +14,7 @@ import { dbPurchaseOrder } from "../services/models/store/dbPurchaseOrders";
 describe('Store Manager', () => {
     let StoreItemForTest: StoreItem;
     before(async () => {
-        await createStreamerDatabase(ID_FOR_STORE);
+        await createAndStartStreamerDatabase(ID_FOR_STORE);
 
         StoreItemForTest = new StoreItem(1, 2, 'Descriptions test', new ItemSettings('ItemSettingstest', false), 'test.mp3', 2);
         let Manager = new dbStoreManager(ID_FOR_STORE);
@@ -75,7 +75,7 @@ describe('Purchase Order Manager', () => {
     let PurchaseOrderForTest_II: PurchaseOrder;
     let ItemIDForTest = 5;
     before(async () => {
-        await createStreamerDatabase(ID_FOR_PURCHASE_ORDER);
+        await createAndStartStreamerDatabase(ID_FOR_PURCHASE_ORDER);
 
         Manager = new dbPurchaseOrderManager(ID_FOR_PURCHASE_ORDER);
         PurchaseOrderForTest_I = new PurchaseOrder(20, ID_FOR_PURCHASE_ORDER, ItemIDForTest)
