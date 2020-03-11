@@ -1,6 +1,6 @@
 import { PollStatus } from "../poll/PollStatus";
 import { dbButton as dbButton } from "../poll/dbButton";
-import { dbBettings } from "../poll/dbBettings";
+import { dbBet } from "../poll/dbBettings";
 import { dbWallet } from "../poll/dbWallet";
 import { dbSettings } from "../streamer_settings/dbSettings";
 import { MinerSettings } from "../streamer_settings/MinerSettings";
@@ -17,7 +17,7 @@ export class AccountData {
 
     dbStreamer: Sequelize;
     dbCurrentPollButtons: typeof dbButton;
-    dbCurrentBettings: typeof dbBettings;
+    dbCurrentBettings: typeof dbBet;
     dbWallets: typeof dbWallet;
     dbSettings: typeof dbSettings;
     dbStore: typeof dbStoreItem;

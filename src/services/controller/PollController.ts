@@ -12,7 +12,7 @@ import { Define } from "../modules/database/dbDefine";
 
 import { ButtonDefiner } from "../models/poll/dbButton";
 
-import { BettingsDefiner } from "../models/poll/dbBettings";
+import { BettingsDefiner, Bet } from "../models/poll/dbBettings";
 
 import { PollStatus } from "../models/poll/PollStatus";
 
@@ -22,6 +22,8 @@ import { PollBeat } from "../models/poll/PollBeat";
 import { dbPollMager } from "../modules/database/poll/dbPollManager";
 import IOListeners from "../IOListeners";
 import { getSoketOfStreamer } from "../SocketsManager";
+import { dbBettingsManager } from "../modules/database/poll/dbBettingsManager";
+import { Wallet } from "../models/poll/dbWallet";
 
 export class PollController {
 
@@ -63,8 +65,6 @@ export class PollController {
 
                 if (dbPollMager.BetIsWinner(WinningButtons, Bettings.Bet))
                     DistributionPromises.push(walletManeger.deposit(Bettings.BetAmount * AccountData.LossDistributor))
-                else
-                    DistributionPromises.push(walletManeger.withdraw(Bettings.BetAmount))
             }
         });
 
@@ -86,36 +86,58 @@ export class PollController {
     /**
      * 
      * @param TwitchUserID 
-     * @param BetID 
-     * @param BetAmount 
+     * @param ChosenOppositeID 
+     * @param newBetAmount 
      */
-    async AddBet(TwitchUserID: string, BetID: number, BetAmount: number) {
-        let AccountData = dbManager.getAccountData(this.StreamerID);
+    async AddBet(TwitchUserID: string, ChosenBetID: number, newBetAmount: number) {
+        let BetsManager = new dbBettingsManager(this.StreamerID);
+        let WalletManager = new dbWalletManeger(this.StreamerID, TwitchUserID);
+        let UserWallet = await WalletManager.getWallet();
 
-        let Wallet = await new dbWalletManeger(this.StreamerID, TwitchUserID).getWallet();
-        if (BetAmount > Wallet.Coins) return reject({
-            RequestError: {
-                InsufficientFunds: {
-                    BetAmount: BetAmount,
-                    Coins: Wallet.Coins
-                }
+        let dbBet = await BetsManager.getdbBet(TwitchUserID);
+
+        if (dbBet) {
+            let DifferenceBetweenBets = dbBet.BetAmount - newBetAmount;
+            if (UserWallet.Coins < newBetAmount) {
+                return reject({
+                    RequestError: {
+                        InsufficientFunds: {
+                            BetAmount: newBetAmount,
+                            Coins: UserWallet.Coins
+                        }
+                    }
+                });
             }
-        });
+            console.log(DifferenceBetweenBets);
 
-        let UpdateRes = await AccountData.dbCurrentBettings.update({
-            Bet: BetID,
-            BetAmount: BetAmount
-        }, {
-            where: { TwitchUserID: TwitchUserID }
-        });
+            if (DifferenceBetweenBets > 0) {
+                console.log('deposit', DifferenceBetweenBets);
+                await WalletManager.deposit(DifferenceBetweenBets);
 
-        if (UpdateRes[0] == 0) await AccountData.dbCurrentBettings.create({
-            TwitchUserID: TwitchUserID,
-            Bet: BetID,
-            BetAmount: BetAmount
-        });
+            } else {
+                await WalletManager.withdraw(DifferenceBetweenBets);
 
-        return resolve({ BetAcepted: { Bet: BetAmount } });
+            }
+            await BetsManager.updateBet(dbBet, new Bet(TwitchUserID, ChosenBetID, newBetAmount));
+
+        } else {
+
+            if (UserWallet.Coins < newBetAmount) {
+                return reject({
+                    RequestError: {
+                        InsufficientFunds: {
+                            BetAmount: newBetAmount,
+                            Coins: UserWallet.Coins
+                        }
+                    }
+                });
+            }
+
+            await WalletManager.withdraw(newBetAmount);
+            await BetsManager.createBet(new Bet(TwitchUserID, ChosenBetID, newBetAmount));
+        }
+
+        return resolve({ BetAcepted: { Bet: newBetAmount } });
 
     }
     /**

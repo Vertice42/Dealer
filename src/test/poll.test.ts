@@ -213,11 +213,11 @@ describe('Poll', () => {
         })
     })
 
-    async function waitResult(pollController: PollController, onCompleted: { (): Promise<void>; (): Promise<void>; (): any; }) {
+    async function waitDistributionCompleted(pollController: PollController) {
       let Poll: any = await pollController.getCurrentPoll();
       if (Poll.PollStatus.DistributionCompleted) {
-        await onCompleted()
-      } else waitResult(pollController, onCompleted);
+        return resolve();
+      } else waitDistributionCompleted(pollController);
 
       await sleep(50);
     }
@@ -226,8 +226,8 @@ describe('Poll', () => {
 
       let pollController = new PollController(ID_FOR_DISTRIBUITION);
 
-      await pollController.AddBet(USERS_IDS_FOR_TESTS[0], 0, 25);
-      await pollController.AddBet(USERS_IDS_FOR_TESTS[1], 1, 25);
+      await pollController.AddBet(USERS_IDS_FOR_TESTS[0], 0, 10);
+      await pollController.AddBet(USERS_IDS_FOR_TESTS[1], 1, 5);
 
       let ButtonsToTestWithWinners = [
         new PollButton(0, 'wait', '#FFFFFF', false),
@@ -236,20 +236,20 @@ describe('Poll', () => {
 
       let wallet_I: dbWallet = await getWallet(ID_FOR_DISTRIBUITION, USERS_IDS_FOR_TESTS[0]);
       let wallet_II: dbWallet = await getWallet(ID_FOR_DISTRIBUITION, USERS_IDS_FOR_TESTS[1]);
-      expect(wallet_I.Coins).to.deep.equal(50);
-      expect(wallet_II.Coins).to.deep.equal(50);
+
+      expect(wallet_I.Coins).to.deep.equal(40);
+      expect(wallet_II.Coins).to.deep.equal(45);
 
       expect(await pollController.StartDistribuition(
         ButtonsToTestWithWinners)).to.include.keys('DistributionStarted');
 
-      await waitResult(pollController, async () => {
-        let wallet_I: dbWallet = await getWallet(ID_FOR_DISTRIBUITION, USERS_IDS_FOR_TESTS[0]);
-        let wallet_II: dbWallet = await getWallet(ID_FOR_DISTRIBUITION, USERS_IDS_FOR_TESTS[1]);
+      await waitDistributionCompleted(pollController);
 
-        expect(wallet_I.Coins).to.deep.equal(25);
-        expect(wallet_II.Coins).to.deep.equal(77);
+      wallet_I = await getWallet(ID_FOR_DISTRIBUITION, USERS_IDS_FOR_TESTS[0]);
+      wallet_II = await getWallet(ID_FOR_DISTRIBUITION, USERS_IDS_FOR_TESTS[1]);
 
-      });
+      expect(wallet_I.Coins).to.equal(40);
+      expect(wallet_II.Coins).to.equal(57);
 
     })
 
@@ -258,20 +258,20 @@ describe('Poll', () => {
 
       let pollController = new PollController(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS);
 
-      await pollController.AddBet(USERS_IDS_FOR_TESTS[0], 1, 25);
-      await pollController.AddBet(USERS_IDS_FOR_TESTS[1], 1, 25);
-      await pollController.AddBet(USERS_IDS_FOR_TESTS[2], 2, 50);
+      await pollController.AddBet(USERS_IDS_FOR_TESTS[0], 1, 10);
+      await pollController.AddBet(USERS_IDS_FOR_TESTS[1], 1, 15);
+      await pollController.AddBet(USERS_IDS_FOR_TESTS[2], 2, 20);
       await pollController.AddBet(USERS_IDS_FOR_TESTS[3], 3, 30);
 
-      let wallet = [];
+      let wallets = [];
       for (let i = 0; i < 4; i++) {
-        wallet[i] = await getWallet(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS, USERS_IDS_FOR_TESTS[i]);
+        wallets[i] = await getWallet(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS, USERS_IDS_FOR_TESTS[i]);
       }
 
-      expect(wallet[0].Coins).to.deep.equal(50);
-      expect(wallet[1].Coins).to.deep.equal(50);
-      expect(wallet[2].Coins).to.deep.equal(50);
-      expect(wallet[3].Coins).to.deep.equal(50);
+      expect(wallets[0].Coins).to.deep.equal(40);
+      expect(wallets[1].Coins).to.deep.equal(35);
+      expect(wallets[2].Coins).to.deep.equal(30);
+      expect(wallets[3].Coins).to.deep.equal(20);
 
       let ButtonsToTestWithWinners = [
         new PollButton(0, 'wait', '#FFFFFF', false),
@@ -282,18 +282,17 @@ describe('Poll', () => {
       expect(await pollController.StartDistribuition(
         ButtonsToTestWithWinners)).to.include.keys('DistributionStarted');
 
-      await waitResult(pollController, async () => {
+      await waitDistributionCompleted(pollController);
 
-        let wallet = [];
-        for (let i = 0; i < 4; i++) {
-          wallet[i] = await getWallet(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS, USERS_IDS_FOR_TESTS[i]);
-        }
-        expect(wallet[0].Coins).to.deep.equal(25);
-        expect(wallet[1].Coins).to.deep.equal(25);
-        expect(wallet[2].Coins).to.deep.equal(81.25);
-        expect(wallet[3].Coins).to.deep.equal(68.75);
+      wallets = [];
+      for (let i = 0; i < 4; i++) {
+        wallets[i] = await getWallet(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS, USERS_IDS_FOR_TESTS[i]);
+      }
+      expect(wallets[0].Coins).to.deep.equal(40);
+      expect(wallets[1].Coins).to.deep.equal(35);
+      expect(wallets[2].Coins).to.deep.equal(40);
+      expect(wallets[3].Coins).to.deep.equal(35);
 
-      });
     })
   })
 })

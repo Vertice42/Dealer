@@ -3,7 +3,7 @@ import { PollButton } from "../../../models/poll/PollButton";
 import { PollBeat } from "../../../models/poll/PollBeat"
 import { dbButton, dbButtonType } from "../../../models/poll/dbButton";
 import { dbManager } from "../dbManager";
-import { Bettings } from "../../../models/poll/dbBettings";
+import { Bet } from "../../../models/poll/dbBettings";
 import { sleep } from "../../../../utils/utils";
 
 export class dbPollMager {
@@ -70,7 +70,7 @@ export class dbPollMager {
      * LossDistributor:number}
      * 
      */
-    static CalculateDistribution(Bettings: Bettings[], WinningButtons: PollButton[]): any {
+    static CalculateDistribution(Bettings: Bet[], WinningButtons: PollButton[]): any {
         let WageredCoins: number = 0;
         let LostWageredCoins: number = 0;
 

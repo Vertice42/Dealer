@@ -1,5 +1,5 @@
 import { dbWallet, WalletDefiner } from "../../models/poll/dbWallet";
-import { BettingsDefiner, dbBettings} from "../../models/poll/dbBettings";
+import { BettingsDefiner, dbBet} from "../../models/poll/dbBettings";
 import { SettingsDefiner, dbSettings } from "../../models/streamer_settings/dbSettings";
 import { AccountData } from "../../models/dealer/AccountData";
 import { ButtonDefiner, dbButton } from "../../models/poll/dbButton";
@@ -38,7 +38,7 @@ export class Define {
         return AccountData.dbCurrentPollButtons.sync();
     }
     static async CurrentBettings(AccountData: AccountData) {
-        AccountData.dbCurrentBettings = <typeof dbBettings> AccountData.dbStreamer
+        AccountData.dbCurrentBettings = <typeof dbBet> AccountData.dbStreamer
         .define(AccountData.CurrentBettingsID, BettingsDefiner.atributes, BettingsDefiner.options);
         return AccountData.dbCurrentBettings.sync();
     }

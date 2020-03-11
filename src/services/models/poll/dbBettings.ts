@@ -1,13 +1,18 @@
 import sequelize = require("sequelize");
 import { Model } from "sequelize";
 
-export class Bettings {
+export class Bet {
     TwitchUserID: string;
     Bet: number;
     BetAmount: number;
+    constructor(TwitchUserID: string, ChosenBetID: number, BetAmount: number) {
+        this.TwitchUserID = TwitchUserID;
+        this.Bet = ChosenBetID;
+        this.BetAmount = BetAmount;
+    }
 }
 
-export class dbBettings extends Model implements Bettings {
+export class dbBet extends Model implements Bet {
     TwitchUserID: string
     Bet: number
     BetAmount: number

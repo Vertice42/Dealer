@@ -42,17 +42,19 @@ window.Twitch.ext.onAuthorized(async (auth) => {
 
   if (process.env.NODE_ENV === 'production') {
     TwitchUserID = auth.userId.toLowerCase();
+    TwitchUserID = (await getUsername(TwitchUserID, auth.clientId)).name;
   }
   else {
     TwitchUserID = auth.userId.toLowerCase().replace('u', '');
-  }
+    TwitchUserID = (await getUsername(TwitchUserID, auth.clientId)).name;
 
-  TwitchUserID = (await getUsername(TwitchUserID, auth.clientId)).name;
+    TwitchUserID = makeid(5);
+  }
 
   window.Twitch.ext.onContext(async (context) => {
     console.log(context);
 
-    await new AllertController(StreamerID,TwitchUserID).Loading();    
+    await new AllertController(StreamerID, TwitchUserID).Loading();
     var ControllerOfStoreDisplay = new StoreDisplayController(StreamerID, TwitchUserID);
     var UserMiner = new Miner(StreamerID, TwitchUserID);
     UserMiner.onMine = (CurrentCoinsOfUserNunber, BalanceChange) => {

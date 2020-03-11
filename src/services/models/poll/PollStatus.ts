@@ -6,13 +6,23 @@ export class PollStatus {
     DistributionCompleted: boolean;
     DistributionStarted: boolean;
     StatisticsOfDistribution: any;
-    constructor() {
-        this.PollWaxed = false;
-        this.PollStarted = false;
-        this.PollStoped = false;
-        this.DistributionStarted = false;
-        this.InDistribution = false;
-        this.DistributionCompleted = false;
+    constructor(PollStatus?: PollStatus) {
+        if (PollStatus) {
+            this.PollWaxed = PollStatus.PollWaxed;
+            this.PollStarted = PollStatus.PollStarted;
+            this.PollStoped = PollStatus.PollStoped;
+            this.DistributionStarted = PollStatus.DistributionStarted;
+            this.InDistribution = PollStatus.InDistribution;
+            this.DistributionCompleted = PollStatus.DistributionCompleted;
+        } else {
+            this.PollWaxed = false;
+            this.PollStarted = false;
+            this.PollStoped = false;
+            this.DistributionStarted = false;
+            this.InDistribution = false;
+            this.DistributionCompleted = false;
+        }
+
     }
     start() {
         this.PollStarted = true;

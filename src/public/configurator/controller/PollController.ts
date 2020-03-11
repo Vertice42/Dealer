@@ -1,5 +1,4 @@
 import BackendConnections = require("../../BackendConnection");
-import { Poll } from "../../../services/models/poll/Poll";
 import { PollStatus } from "../../../services/models/poll/PollStatus";
 import { NotifyViewers, STREAMER_SOCKET } from "./MainController";
 import ViewPollManeger from "../view/ViewPollManeger";
@@ -75,17 +74,18 @@ export default class PollController {
                 let CurrentPoll = await BackendConnections.getCurrentPoll(this.StreamerID);
                 this.ViewPollManeger.PollStatus = CurrentPoll.PollStatus;
                 this.ViewPollManeger.setDistributioFninished();
-                
-                NotifyViewers({ListenerName:TwitchListeners.onPollChange,data:CurrentPoll});
-                
-                STREAMER_SOCKET.on(IOListeners.onDistribuitionFinish,null);
+
+                NotifyViewers({ ListenerName: TwitchListeners.onPollChange, data: CurrentPoll });
+
+                STREAMER_SOCKET.on(IOListeners.onDistribuitionFinish, null);
             });
 
+
             await BackendConnections.SendToPollManager(
-                this.StreamerID, 
-                this.ViewPollManeger.getPollButtons(), 
-                this.ViewPollManeger.PollStatus.startDistribution());
-        }
+                this.StreamerID,
+                this.ViewPollManeger.getPollButtons(),
+                new PollStatus(this.ViewPollManeger.PollStatus).startDistribution()
+            )}
 
     }
     async LoadingCurrentPoll() {

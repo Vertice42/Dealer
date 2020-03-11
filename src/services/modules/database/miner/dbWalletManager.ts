@@ -43,12 +43,12 @@ export class dbWalletManeger {
 
     async deposit(deposit: number) {
         let wallet = await getWallet(this.StreamerID, this.TwitchUserID);
-        return wallet.update({ Coins: wallet.Coins + deposit });
+        return wallet.update({ Coins: wallet.Coins + ((deposit<0)? deposit*-1 : deposit)});
     }
 
     async withdraw(withdraw: number) {
-        let wallet = await getWallet(this.StreamerID, this.TwitchUserID);
-        return wallet.update({ Coins: wallet.Coins - withdraw });
+        let wallet = await getWallet(this.StreamerID, this.TwitchUserID);                
+        return wallet.update({ Coins: wallet.Coins - ((withdraw<0)? withdraw*-1 : withdraw) });
     }
 
     async update(newValue: number) {
