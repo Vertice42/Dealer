@@ -7,8 +7,12 @@ export const addBeatRoute = (StreamerID: string, TwitchUserID: string) => { retu
 export const MineCoinRoute = '/MinerCoin';
 //MINER
 export const PurchaseOrderRoute = '/BuyStoreItem'
-export const GetPurchaseOrderRoute = '/PurchaseOrder/:StreamerID';
-export const getPurchaseOrderRoute = (StreamerID: string) => { return '/PurchaseOrder/' + StreamerID }
+export const GetPurchaseOrderRoute = '/PurchaseOrder/:StreamerID/:StoreItemID';
+export const getPurchaseOrderRoute = (StreamerID: string, StoreItemID?: number) => {
+    let storeItemID: string | number = '*';
+    if (StoreItemID) storeItemID = StoreItemID;
+    return '/PurchaseOrder/' + StreamerID + '/' + storeItemID
+}
 //PURCHASE_ORDER
 export const StoreManagerRoute = '/StoreManager';
 export const GetStoreRoute = '/Store/:StreamerID/:StoreItemID';

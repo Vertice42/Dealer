@@ -101,7 +101,7 @@ describe('Purchase Order Manager', () => {
     })
 
     it('Get All Purchase Orders', async () => {
-        let dbPurchaseOrders = await Manager.getAllPurchaseOrders();
+        let dbPurchaseOrders = await Manager.getAllPurchaseOrders('*');
 
         let PurchaseOrders = [];
         for (const dbPurchaseOrderID in dbPurchaseOrders) {

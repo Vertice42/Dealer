@@ -1,6 +1,7 @@
 import StoreItem from "../../../services/models/store/StoreItem";
 import { EnableRelocatableElemente } from "../../common/model/viewerFeatures";
 import { sleep } from "../../../utils/utils";
+import PurchaseOrder from "../../../services/models/store/PurchaseOrder";
 
 class ViewStoreItemDisplay {
     HTML: HTMLDivElement
@@ -9,30 +10,42 @@ class ViewStoreItemDisplay {
     HTML_Price: HTMLSpanElement;
     HTML_BuyButton: HTMLButtonElement;
 
-    createTypeDisplay() {
+    private createTypeDisplay() {
         this.HTML_TypeDisplay = document.createElement('img');
         this.HTML_TypeDisplay.src = 'configurator/images/undefined-document.png';
         return this.HTML_TypeDisplay;
     }
 
-    createDescription(Description: string) {
+    private createDescription(Description: string) {
         this.HTML_Description = document.createElement('span');
         this.HTML_Description.classList.add('Description');
         this.HTML_Description.innerText = Description;
         return this.HTML_Description;
     }
 
-    createPrice(Price: number) {
+    private createPrice(Price: number) {
         this.HTML_Price = document.createElement('span');
         this.HTML_Price.classList.add('Price');
         this.HTML_Price.innerText = Price + '$';
         return this.HTML_Price;
     }
 
-    createBuyButton() {
+    private createBuyButton() {
         this.HTML_BuyButton = document.createElement('button');
         this.HTML_BuyButton.innerText = 'Buy';
         return this.HTML_BuyButton;
+    }
+
+    setUnavailable() {
+        this.HTML.classList.remove('StoreItemAvailable');
+        this.HTML.classList.add('StoreItemUnavailable');
+
+    }
+
+    setAvailable() {
+        this.HTML.classList.remove('StoreItemUnavailable');
+        this.HTML.classList.add('StoreItemAvailable');
+
     }
 
     constructor(Description: string, Price: number) {
@@ -47,8 +60,6 @@ class ViewStoreItemDisplay {
 }
 
 export default class ViewStoreDisplay {
-    public StoreItem: ViewStoreItemDisplay
-
     private WalletDiv = <HTMLDivElement>document.getElementById("WalletDiv");
     private Wallet = <HTMLDivElement>document.getElementById("Wallet");
     private StoreDiv = <HTMLDivElement>document.getElementById("StoreDiv");
@@ -120,11 +131,11 @@ export default class ViewStoreDisplay {
         await sleep(500 + CoinNumber * 500);
 
         Coin.style.left = '36%';
-        Coin.style.top = -40+(Math.random() * -20)+'%';
+        Coin.style.top = -40 + (Math.random() * -20) + '%';
 
         await sleep(500 + CoinNumber * 5);
         Coin.style.top = '-60%';
-        Coin.style.left = `${(CoinNumber%2 === 0) ? (Math.random() * -36) : (Math.random() * 80)}%`;
+        Coin.style.left = `${(CoinNumber % 2 === 0) ? (Math.random() * -36) : (Math.random() * 80)}%`;
         Coin.style.opacity = '0';
     }
 
@@ -171,12 +182,48 @@ export default class ViewStoreDisplay {
         this.StartCoinsAnimation(true, Withdrawal);
     }
 
-    setStoreItems(StoreItems: StoreItem[]) {
+    MakeSureItemIsAvailable(StoreItemID: number, PurchaseOrders: PurchaseOrder[]) {
+        for (const key in PurchaseOrders) {
+            if (PurchaseOrders[key].StoreItemID === StoreItemID)
+                return true;
+        }
+        return false;
+    }
+
+    updateStoreItems(StoreItems: StoreItem[], PurchaseOrders: PurchaseOrder[]) {
         this.ItemsList.innerHTML = '';
         StoreItems.forEach(StoreItem => {
             if (StoreItem.FileName && StoreItem.Description && StoreItem.Price) {
                 let viewStoreItem = new ViewStoreItemDisplay(StoreItem.Description, StoreItem.Price);
-                viewStoreItem.HTML_BuyButton.onclick = () => { this.onBuyItemButtonActive(StoreItem) }
+
+                let SingleReproductionEnable = (StoreItem.ItemsSettings.findIndex((Setting) => {
+                    return Setting.DonorFeatureName === 'SingleReproduction' && Setting.Enable;
+                }) !== -1);
+
+
+
+                let ThereAlreadyAnItemInList = false;
+
+                if (PurchaseOrders && SingleReproductionEnable) {
+                    ThereAlreadyAnItemInList = this.MakeSureItemIsAvailable(StoreItem.id, PurchaseOrders)
+                }
+
+                if (!ThereAlreadyAnItemInList) console.log(PurchaseOrders);
+
+
+                console.log(StoreItem.Description, SingleReproductionEnable, ThereAlreadyAnItemInList);
+
+
+
+                if (SingleReproductionEnable && ThereAlreadyAnItemInList) {
+                    viewStoreItem.setUnavailable();
+                }
+                else {
+                    viewStoreItem.setAvailable();
+                    viewStoreItem.HTML_BuyButton.onclick = () => { this.onBuyItemButtonActive(StoreItem) };
+                }
+
+
                 this.ItemsList.appendChild(viewStoreItem.HTML);
             }
         });

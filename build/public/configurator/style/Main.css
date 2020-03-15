@@ -28,7 +28,13 @@ body {
     display: none;
 }
 
-h1{
+.TitleButton{
+    display: flex;
+    border: none;
+
+    width: fit-content;
+
+    font-size: 5vw;
     background-color: rgb(255, 255, 255);
     margin: 1vw auto;
     padding: 0px 1vw;
@@ -66,4 +72,13 @@ input::-webkit-color-swatch {
     display: grid;
     background-color: rgb(54, 48, 68);
     margin: 1vw;
+}
+
+.ModuleHide{
+    height: 0px;
+    clip-path: inset(0% 0% 0% 0%);
+}
+
+.ModuleSample{
+
 }

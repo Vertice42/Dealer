@@ -38,20 +38,25 @@ export default class StoreDisplayController {
         let WalletOfUser: dbWallet = await BackendConnections.GetWallets(this.StreamerID, this.TwitchUserID);
         this.ViewStoreDisplay.CoinsOfUserView.innerText = (~~WalletOfUser.Coins).toString();
 
-        this.ViewStoreDisplay.setStoreItems(await BackendConnections.GetStore(this.StreamerID, -1));
+        this.ViewStoreDisplay.updateStoreItems(
+            await BackendConnections.GetStore(this.StreamerID, -1),
+            await BackendConnections.GetPurchaseOrders(this.StreamerID));
 
         addTwitchListeners(TwitchListeners.onStoreChaneg, async () => {
-            this.ViewStoreDisplay.setStoreItems(await BackendConnections.GetStore(this.StreamerID, -1));
+            this.ViewStoreDisplay.updateStoreItems(
+                await BackendConnections.GetStore(this.StreamerID, -1),
+                await BackendConnections.GetPurchaseOrders(this.StreamerID));        })
+
+        addTwitchListeners(TwitchListeners.onAddPurchasedItem, async () => {            
+            this.ViewStoreDisplay.updateStoreItems(
+                await BackendConnections.GetStore(this.StreamerID, -1),
+                await BackendConnections.GetPurchaseOrders(this.StreamerID));
         })
 
-        addTwitchListeners(TwitchListeners.onAddPurchasedItem, () => {
-            console.log('Add pude oirde');
-
-        })
-
-        addTwitchListeners(TwitchListeners.onDeletePurchaseOrder, () => {
-            console.log('deleted');
-
+        addTwitchListeners(TwitchListeners.onDeletePurchaseOrder, async () => {
+            this.ViewStoreDisplay.updateStoreItems(
+                await BackendConnections.GetStore(this.StreamerID, -1),
+                await BackendConnections.GetPurchaseOrders(this.StreamerID));
         })
 
         this.EnbleAllCommands();

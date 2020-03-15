@@ -11,6 +11,19 @@ button {
     border: none;
 }
 
+@keyframes {
+    0%{
+
+    },
+    100%{
+
+    }
+}
+
+div{
+
+}
+
 .FullScren {
     width: 100%;
     height: 100%;

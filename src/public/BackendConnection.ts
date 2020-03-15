@@ -381,8 +381,6 @@ export async function GetPurchaseOrders(StreamerID: string) {
   }).catch((rej) => {
     console.error(rej);
   })
-
-
 }
 
 export async function UploadFile(StreamerID: string, FolderName: string, FileName: string, File: File) {

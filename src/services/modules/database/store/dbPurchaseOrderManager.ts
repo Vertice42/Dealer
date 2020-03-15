@@ -5,9 +5,9 @@ import { dbPurchaseOrder } from "../../../models/store/dbPurchaseOrders";
 export default class dbPurchaseOrderManager {
     private StreamerID: string;
 
-    async getPurchaseOrderByStoreItemID(StoreItemID: number){
+    async getPurchaseOrderByStoreItemID(StoreItemID: number) {
         let AccountData = dbManager.getAccountData(this.StreamerID);
-        return await AccountData.dbPurchaseOrders.findOne({ where: {StoreItemID: StoreItemID} });
+        return await AccountData.dbPurchaseOrders.findOne({ where: { StoreItemID: StoreItemID } });
     }
 
     async addPurchaseOrder(PurchaseOrder: PurchaseOrder) {
@@ -22,13 +22,19 @@ export default class dbPurchaseOrderManager {
         return dbPurchaseOrder.destroy();
     }
 
-    async getAllPurchaseOrders() {
-        return dbManager.getAccountData(this.StreamerID).dbPurchaseOrders.findAll();
+    async getAllPurchaseOrders(StoreItemID: number | string) {
+        console.log(StoreItemID);
+        
+        if (StoreItemID === '*')
+            return dbManager.getAccountData(this.StreamerID).dbPurchaseOrders.findAll();
+        else
+            return dbManager.getAccountData(this.StreamerID).dbPurchaseOrders.findAll({ where: { StoreItemID: StoreItemID } });
+
     }
 
-    async getPurchaseOrder(PurchaseOrderID:number) {
+    async getPurchaseOrder(PurchaseOrderID: number) {
         return dbManager.getAccountData(this.StreamerID).dbPurchaseOrders
-        .findOne({where:{id:PurchaseOrderID}});
+            .findOne({ where: { id: PurchaseOrderID } });
     }
 
     constructor(StreamerID: string) {

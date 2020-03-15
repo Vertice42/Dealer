@@ -93,3 +93,12 @@
     background-color: rgb(157, 224, 22);
     transform: scale(0.9);
 }
+
+.StoreItemUnavailable {
+    opacity: 0.5;
+}
+
+.StoreItemAvailable {
+    opacity: 1;
+
+}

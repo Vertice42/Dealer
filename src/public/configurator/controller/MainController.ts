@@ -1,7 +1,5 @@
-import BackendConnections = require("../../BackendConnection");
 import io = require('socket.io-client');
 
-import { Poll } from "../../../services/models/poll/Poll";
 import PollController from "./PollController";
 import { HOST } from "../../BackendConnection";
 import SettingsController from "./SettingsController";
@@ -9,6 +7,7 @@ import StoreController from "./StoreController";
 import PurchaseOrderController from "./PurchaseOrderController";
 import WalletsController from "./WalletsController";
 import IOListeners from "../../../services/IOListeners";
+import { ViewMain } from "../view/ViewMain";
 
 export const STREAMER_SOCKET = io(HOST);
 
@@ -27,15 +26,16 @@ window.Twitch.ext.onAuthorized(async (auth) => {
   StreamerID = auth.channelId.toLowerCase();
   STREAMER_SOCKET.emit(IOListeners.RegisterStreamer, StreamerID);
 
-  STREAMER_SOCKET.on('connect',()=> {
+  STREAMER_SOCKET.on('connect', () => {
     STREAMER_SOCKET.emit(IOListeners.RegisterStreamer, StreamerID);
   })
 
   let Registered = false;
   STREAMER_SOCKET.on(IOListeners.onStreamerAsRegistered, () => {
-    
-    if(Registered) return;
-    else Registered = true
+
+    if (Registered) return;
+    else Registered = true;
+
 
     new PollController(StreamerID);
 
@@ -49,3 +49,4 @@ window.Twitch.ext.onAuthorized(async (auth) => {
   })
 });
 
+new ViewMain();

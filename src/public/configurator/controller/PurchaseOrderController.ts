@@ -108,8 +108,14 @@ export default class PurchaseOrderController {
         })
 
         this.socket.on(IO_Listeners.onAddPurchasedItem, async (PurchaseOrder: PurchaseOrder) => {
-            this.ViewPurchaseOrders.addViewPurchaseOrder(PurchaseOrder, await BackendConnections.GetStore(this.StreamerID, PurchaseOrder.StoreItemID));
-            NotifyViewers({ ListenerName: TwitchListeners.onAddPurchasedItem, data: PurchaseOrder })
+            let StoreItem: StoreItem = await BackendConnections.GetStore(this.StreamerID, PurchaseOrder.StoreItemID)
+            this.ViewPurchaseOrders.addViewPurchaseOrder(PurchaseOrder, StoreItem);
+            StoreItem.ItemsSettings = JSON.parse(StoreItem.ItemSettingsJson);
+            if ((StoreItem.ItemsSettings.findIndex((Setting) => {
+                return Setting.DonorFeatureName === 'SingleReproduction' && Setting.Enable;
+            }) !== -1)) {
+                NotifyViewers({ ListenerName: TwitchListeners.onAddPurchasedItem, data: PurchaseOrder })
+            }
         });
 
         this.EnbleAllCommands();
