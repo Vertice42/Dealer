@@ -1,13 +1,13 @@
 import sequelize = require("sequelize");
 import { Model } from "sequelize";
 import StoreItem from "./StoreItem";
-import ItemSettings from "./item_settings/ItemSettings";
+import ItemSetting from "./item_settings/ItemSettings";
 
 export class dbStoreItem extends Model implements StoreItem {
     id: number;
     Type: number;
     Description: string;
-    ItemsSettings: ItemSettings[];
+    ItemsSettings: ItemSetting[];
     ItemSettingsJson: string;
     FileName: string;
     Price: number;

@@ -18,7 +18,7 @@ export default class dbDealerManager {
         return dbStreamerDataTable.sync();
     }
     async getStreamerData() {
-        await this.PreparePromisse.catch(rej => console.log('rujes', rej));
+        await this.PreparePromisse;
         return dbStreamerDataTable.findOne({ where: { StreamerID: this.StreamerID } });
     }
     async setStreamerData(StreamerDate: StreamerDate) {

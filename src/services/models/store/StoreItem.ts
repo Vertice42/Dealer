@@ -1,4 +1,4 @@
-import ItemSettings from "./item_settings/ItemSettings";
+import ItemSetting from "./item_settings/ItemSettings";
 
 export const StoreTypes = {
     Audio: 1
@@ -8,7 +8,7 @@ export default class StoreItem {
     id: number;
     Type:number;
     Description: string;
-    ItemsSettings: ItemSettings[];
+    ItemsSettings: ItemSetting[];
     ItemSettingsJson: string;
     FileName: string
     Price: number;

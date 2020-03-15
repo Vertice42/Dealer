@@ -2,6 +2,7 @@ import { PollStatus } from "../../../services/models/poll/PollStatus";
 import { Poll } from "../../../services/models/poll/Poll";
 import { PollButton } from "../../../services/models/poll/PollButton";
 import { GenerateColor } from "../../common/model/ViewerFeatures";
+import { any } from "bluebird";
 
 export class PollItemViewer {
     ID: number;
@@ -259,6 +260,7 @@ export default class ViewPollManeger {
     AddItemButton = <HTMLButtonElement>document.getElementById("AddPollItemButton");
     StartPollButton = <HTMLButtonElement>document.getElementById("StartPollButton");
     ApplyChangesButton = <HTMLButtonElement>document.getElementById("ApplyChangesButton");
+    RevertChangesButton = <HTMLButtonElement>document.getElementById("RevertChangesButton");
     StopPollButton = <HTMLButtonElement>document.getElementById("StopPollButton");
     RestartButton = <HTMLButtonElement>document.getElementById("RestartButton");
     DistributeButton = <HTMLButtonElement>document.getElementById("DistributeButton");
@@ -290,13 +292,7 @@ export default class ViewPollManeger {
         };
         (): void;
     };
-    onCommandToApplyChangesSent: {
-        (): Promise<any>;
-        (): {
-            then: (arg0: (res: any) => void) => void;
-        };
-        (): void;
-    };
+    onCommandToApplyChangesSent: { (): Promise<any>; (): Promise<void>; };
     onCommandToRestartSent: {
         (): Promise<any>;
         (): {
@@ -318,6 +314,8 @@ export default class ViewPollManeger {
         };
         (): void;
     };
+    onCommandToRevertChanges: () => Promise<void>;
+
     IsStarted: boolean;
     setCreatedPoll() {
         this.ShowPoll();
@@ -366,33 +364,13 @@ export default class ViewPollManeger {
         this.CreatePollButton.onclick = this.onClickOfCreatePollButton;
         this.DeletePollButton.onclick = this.onClickOfWaxedPollButton;
     }
-    constructor(Poll: Poll) {
-        this.Initialize();
-        if (Poll.PollStatus.PollWaxed)
-            this.setWaxedPoll();
-        else {
-            this.setCreatedPoll();
-            if (Poll.PollStatus.PollStarted) {
-                this.setStartedPoll();
-                Poll.PollButtons.forEach(PollButton => {
-                    this.addItem(PollButton.ID, PollButton.Name, PollButton.Color, PollButton.IsWinner);
-                });
-            }
-            ;
-            if (Poll.PollStatus.PollStoped)
-                this.setStopedPoll();
-            if (Poll.PollStatus.InDistribution)
-                this.setInDestruction();
-            if (Poll.PollStatus.DistributionCompleted)
-                this.setDistributioFninished();
-        }
-    }
+
     private onClickOfCreatePollButton = () => {
         this.DisableButton(this.CreatePollButton);
         this.onCommandToCreateSent().then((res) => {
             this.setCreatedPoll();
         }).catch((rej) => {
-            console.log(rej);
+            console.error(rej);
         });
         return true;
     };
@@ -424,7 +402,17 @@ export default class ViewPollManeger {
         this.DisableButton(this.ApplyChangesButton);
         this.onCommandToApplyChangesSent().then((res) => {
             this.HideButton(this.ApplyChangesButton);
+            this.HideButton(this.RevertChangesButton);
         });
+        return true;
+    };
+    private onClickOfRevertChangesButton = async () => {
+        this.DisableButton(this.ApplyChangesButton);
+        await this.onCommandToRevertChanges();
+        this.HideButton(this.ApplyChangesButton);
+        this.HideButton(this.RevertChangesButton);
+        this.EnableButton(this.StopPollButton,this.onClickOfStopPollButton);
+
         return true;
     };
     private onClickOfStopPollButton = () => {
@@ -459,7 +447,10 @@ export default class ViewPollManeger {
     private onModified = () => {
         if (this.PollStatus.PollStarted) {
             this.ShowButton(this.ApplyChangesButton);
-        }
+            this.ShowButton(this.RevertChangesButton);
+        } 
+        
+        this.EnableButton(this.RevertChangesButton, this.onClickOfRevertChangesButton); 
         if (this.ThereAreEnoughElements()) {
             this.EnableButton(this.ApplyChangesButton, this.onClickOfApplyChangesButton);
             this.EnableButton(this.StartPollButton, this.onClickOfStartButton);
@@ -499,6 +490,7 @@ export default class ViewPollManeger {
         PollItem.onWinnersButtonsChange = this.onWinnerButtonsModified;
         this.PollItemsViewers.push(PollItem);
         this.PollItensDiv.appendChild(PollItem.HTMLElement);
+        return PollItem;
     }
     removeItem(PollItem: PollItemDesktopViewer) {
         if (!this.PollStatus.PollStoped) {
@@ -507,7 +499,7 @@ export default class ViewPollManeger {
             this.onModified();
         }
     }
-    uppdateAllItems(Poll: Poll) {
+    uppdateVotesOfAllItems(Poll: Poll) {
         this.PollItemsViewers.forEach(PollItem => {
             PollItem.setVoteCounterOutputValue(0);
             Poll.Bets.forEach(bet => {
@@ -517,6 +509,13 @@ export default class ViewPollManeger {
                 }
             });
         });
+    }
+    update(Poll: Poll) {
+        this.removeAllItems();
+        Poll.PollButtons.forEach(PollButton => {
+            this.addItem(PollButton.ID, PollButton.Name, PollButton.Color, PollButton.IsWinner);
+        });
+        this.uppdateVotesOfAllItems(Poll);
     }
     removeAllItems() {
         this.PollItensDiv.innerHTML = '';
@@ -577,4 +576,26 @@ export default class ViewPollManeger {
         });
         return Buttons;
     }
+
+    constructor(Poll: Poll) {
+        this.Initialize();
+        if (Poll.PollStatus.PollWaxed)
+            this.setWaxedPoll();
+        else {
+            this.setCreatedPoll();
+            if (Poll.PollStatus.PollStarted) {
+                this.setStartedPoll();
+                this.update(Poll);
+            }
+            ;
+            if (Poll.PollStatus.PollStoped)
+                this.setStopedPoll();
+            if (Poll.PollStatus.InDistribution)
+                this.setInDestruction();
+            if (Poll.PollStatus.DistributionCompleted)
+                this.setDistributioFninished();
+        }
+    }
 }
+
+//TODO refatorar 

@@ -10,14 +10,13 @@ import { Poll } from "../services/models/poll/Poll";
 
 import { sleep } from "../utils/utils";
 
-import { dbWalletManeger, getWallet } from "../services/modules/database/miner/dbWalletManager";
-
 import { PollBeat } from "../services/models/poll/PollBeat";
 
 import { dbWallet } from "../services/models/poll/dbWallet";
 import { PollController } from "../services/controller/PollController";
 import { resolve } from "bluebird";
 import { createAndStartStreamerDatabase, ID_FOR_MANAGER_POLL, deleteStreamerDatabase, db_PRE_CREATED, db_FOR_UPDATE_BUTTONS, createPoll, startPoll, ID_FOR_DISTRIBUITION, USERS_IDS_FOR_TESTS, ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS } from "./ForTests.test";
+import { dbWalletManeger, getWallet } from "../services/modules/database/wallet/dbWalletManager";
 
 describe('Poll', () => {
   before(async function () {

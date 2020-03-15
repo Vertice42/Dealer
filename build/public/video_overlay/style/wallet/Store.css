@@ -28,8 +28,21 @@
 
 #ItemsList {
     display: flow-root;
+    overflow: auto;
     margin: 1vw 1vw;
     background: rgb(74, 39, 156);
+    max-height:20vw;
+}
+
+#ItemsList::-webkit-scrollbar-track {
+    background: #513591;
+}
+#ItemsList::-webkit-scrollbar {
+    width: 6px;
+    background: rgb(70, 48, 131);
+}
+#ItemsList::-webkit-scrollbar-thumb {
+    background: #3d286d;
 }
 
 .StoreItem {

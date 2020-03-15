@@ -1,8 +1,8 @@
 import { expect } from "chai";
 
 import { createAndStartStreamerDatabase, deleteStreamerDatabase, ID_FOR_WALLETS } from "./ForTests.test";
-import { dbWalletManeger } from "../services/modules/database/miner/dbWalletManager";
 import { dbWallet } from "../services/models/poll/dbWallet";
+import { dbWalletManeger } from "../services/modules/database/wallet/dbWalletManager";
 
 describe('Wallet', () => {
   let UserIdForTest = 'fin'

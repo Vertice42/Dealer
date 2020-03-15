@@ -32,7 +32,7 @@ export class dbManager {
             DatabaseConfig.SequelizeOptions)
     }
 
-    static getAccountData(StreamerID: string): AccountData {
+    static getAccountData(StreamerID: string): AccountData {                
         return AccountDataArray[StreamerID];
     }
     static setAccountData(AccountData: AccountData):AccountData {

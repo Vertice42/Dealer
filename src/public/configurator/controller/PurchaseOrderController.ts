@@ -5,6 +5,7 @@ import ViewPurchaseOrders, { ViewPurchasedItem } from "../view/ViewPurchaseOrder
 import IO_Listeners from "../../../services/IOListeners";
 import { NotifyViewers } from "./MainController";
 import TwitchListeners from "../../../services/TwitchListeners";
+import FolderTypes from "../../../services/models/files_manager/FolderTypes";
 
 export class PurchaseOrderItem {
     ViewPurchasedItem: ViewPurchasedItem;
@@ -25,7 +26,9 @@ export default class PurchaseOrderController {
 
     ExecuteOrder(PurchaseOrderItemList: PurchaseOrderItem) {
 
-        this.ViewPurchaseOrders.HTML_AudioPlayer.src = BackendConnections.getUrlOfFile(this.StreamerID,'Store Item '+PurchaseOrderItemList.StoreItem.id, PurchaseOrderItemList.StoreItem.FileName);
+        this.ViewPurchaseOrders.HTML_AudioPlayer.src = BackendConnections.getUrlOfFile(this.StreamerID, FolderTypes.StoreItem + PurchaseOrderItemList.StoreItem.id, PurchaseOrderItemList.StoreItem.FileName);
+        PurchaseOrderItemList.StoreItem.ItemsSettings = JSON.parse(PurchaseOrderItemList.StoreItem.ItemSettingsJson);
+        this.ViewPurchaseOrders.HTML_AudioPlayer.volume = PurchaseOrderItemList.StoreItem.ItemsSettings[PurchaseOrderItemList.StoreItem.ItemsSettings.findIndex((ViewSettingsOfIten) => { return (ViewSettingsOfIten.DonorFeatureName === 'AudioVolume') })].value / 100;
 
         this.ViewPurchaseOrders.HTML_AudioPlayer.onplay = () => {
             this.ViewPurchaseOrders.removeViewPurchaseOrder(PurchaseOrderItemList.ViewPurchasedItem);
@@ -100,7 +103,7 @@ export default class PurchaseOrderController {
             if (StoreItem) {
                 this.ViewPurchaseOrders.addViewPurchaseOrder(PurchaseOrder, StoreItem);
             } else {
-                BackendConnections.DeletePurchaseOrder(this.StreamerID,PurchaseOrder,true);
+                BackendConnections.DeletePurchaseOrder(this.StreamerID, PurchaseOrder, true);
             }
         })
 

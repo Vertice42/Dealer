@@ -20,9 +20,7 @@ APP.post(MineCoinRoute, async function (req: MinerRequest, res: express.Response
 
     MinerManeger.MineCoin(req.body.StreamerID, req.body.TwitchUserID)
         .then((resolve: MiningResponse) => { res.status(200).send(resolve) })
-        .catch((reje) => {
-            console.log(reje);
-            
+        .catch((reje) => {            
             res.status(500).send(reje);
         });
     //TODO ADICINADO MINIRAÇÃO MACIMA

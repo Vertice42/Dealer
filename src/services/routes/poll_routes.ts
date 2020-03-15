@@ -74,6 +74,8 @@ APP.get(GetPollRoute, async function (req: { params: { StreamerID: string } }, r
             res.status(200).send(resolve);
         })
         .catch((reje) => {
+            console.error(reje);
+            
             res.status(500).send(reje)
         })
 });

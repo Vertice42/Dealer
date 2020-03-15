@@ -26,13 +26,7 @@ export default class StoreDisplayController {
 
     async EnbleAllCommands() {
         this.ViewStoreDisplay.onBuyItemButtonActive = (StoreItem: StoreItem) => {
-            BackendConnections.addPurchaseOrder(this.StreamerID, this.TwitchUserID, StoreItem)
-                .then((res) => {
-                    console.log(res);
-                })
-                .catch((rej) => {
-                    console.log(rej);
-                });
+            BackendConnections.addPurchaseOrder(this.StreamerID, this.TwitchUserID, StoreItem);
         }
     }
 

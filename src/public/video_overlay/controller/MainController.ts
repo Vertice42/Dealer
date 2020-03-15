@@ -48,11 +48,11 @@ window.Twitch.ext.onAuthorized(async (auth) => {
     TwitchUserID = auth.userId.toLowerCase().replace('u', '');
     TwitchUserID = (await getUsername(TwitchUserID, auth.clientId)).name;
 
-    TwitchUserID = makeid(5);
+    //TwitchUserID = makeid(5);
   }
 
   window.Twitch.ext.onContext(async (context) => {
-    console.log(context);
+    console.error(context);
 
     await new AllertController(StreamerID, TwitchUserID).Loading();
     var ControllerOfStoreDisplay = new StoreDisplayController(StreamerID, TwitchUserID);

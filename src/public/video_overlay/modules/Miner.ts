@@ -27,7 +27,7 @@ export class Miner {
                 this.onSuccessfullyMined(res);
             })
             .catch((error) => {
-                console.log('Error connecting to Mine Service, next attempt in 3s', error);
+                console.error('Error connecting to Mine Service, next attempt in 3s', error);
                 setTimeout(() => {
                     this.TryToMine();
                 }, 3000);

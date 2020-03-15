@@ -1,6 +1,6 @@
 import StoreItem from "../services/models/store/StoreItem";
 
-import ItemSettings from "../services/models/store/item_settings/ItemSettings";
+import ItemSetting from "../services/models/store/item_settings/ItemSettings";
 
 import dbStoreManager from "../services/modules/database/store/dbStoreManager";
 
@@ -16,7 +16,7 @@ describe('Store Manager', () => {
     before(async () => {
         await createAndStartStreamerDatabase(ID_FOR_STORE);
 
-        StoreItemForTest = new StoreItem(1, 2, 'Descriptions test', new ItemSettings('ItemSettingstest', false), 'test.mp3', 2);
+        StoreItemForTest = new StoreItem(1, 2, 'Descriptions test', new ItemSetting('ItemSettingstest', false), 'test.mp3', 2);
         let Manager = new dbStoreManager(ID_FOR_STORE);
         await Manager.UpdateOrCreateStoreItem(StoreItemForTest);
     })
@@ -26,7 +26,7 @@ describe('Store Manager', () => {
 
     it('Create and Get StoreItem', async function () {
         let Manager = new dbStoreManager(ID_FOR_STORE);
-        let StoreItemForTest = new StoreItem(2, 2, 'Descriptions test', new ItemSettings('ItemSettingstest', false), 'test.mp3', 2);
+        let StoreItemForTest = new StoreItem(2, 2, 'Descriptions test', new ItemSetting('ItemSettingstest', false), 'test.mp3', 2);
         let CreateRes = await Manager.UpdateOrCreateStoreItem(StoreItemForTest);
         expect(CreateRes).to.include.keys('SuccessfullyCreatedItem');
         let storeItem = dbStoreItem.ToStoreItem(await Manager.getIten(StoreItemForTest.id));
@@ -34,7 +34,7 @@ describe('Store Manager', () => {
         expect(storeItem).to.deep.equal(StoreItemForTest);
     })
     it('Delete Store Item', async function () {
-        StoreItemForTest = new StoreItem(1, 2, 'Descriptions test', new ItemSettings('ItemSettingstest', false), 'test.mp3', 2);
+        StoreItemForTest = new StoreItem(1, 2, 'Descriptions test', new ItemSetting('ItemSettingstest', false), 'test.mp3', 2);
         let Manager = new dbStoreManager(ID_FOR_STORE);
         await Manager.UpdateOrCreateStoreItem(StoreItemForTest);
         await Manager.DeleteStoreItem(StoreItemForTest);
@@ -46,10 +46,10 @@ describe('Store Manager', () => {
         let Manager = new dbStoreManager(ID_FOR_STORE);
 
         let StoreItemsForTest = [
-            new StoreItem(1, 2, 'Descriptions test', new ItemSettings('ItemSettingstest', false), 'test.mp3', 2),
-            new StoreItem(2, 2, 'Descriptions test', new ItemSettings('ItemSettingstest', false), 'test.mp3', 2),
-            new StoreItem(3, 2, 'Descriptions test', new ItemSettings('ItemSettingstest', false), 'test.mp3', 2),
-            new StoreItem(4, 2, 'Descriptions test', new ItemSettings('ItemSettingstest', false), 'test.mp3', 2)
+            new StoreItem(1, 2, 'Descriptions test', new ItemSetting('ItemSettingstest', false), 'test.mp3', 2),
+            new StoreItem(2, 2, 'Descriptions test', new ItemSetting('ItemSettingstest', false), 'test.mp3', 2),
+            new StoreItem(3, 2, 'Descriptions test', new ItemSetting('ItemSettingstest', false), 'test.mp3', 2),
+            new StoreItem(4, 2, 'Descriptions test', new ItemSetting('ItemSettingstest', false), 'test.mp3', 2)
 
         ]
         for (const index in StoreItemsForTest) {

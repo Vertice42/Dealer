@@ -6,25 +6,10 @@ import TwitchListeners from "../../../services/TwitchListeners";
 import IOListeners from "../../../services/IOListeners";
 
 export default class PollController {
-    getCurrentPoll() {
-        throw new Error("Method not implemented.");
-    }
-    AddBet(arg0: string, arg1: number, BetAmontForTest_I: number) {
-        throw new Error("Method not implemented.");
-    }
-    StartDistribuition(ButtonsToTestWithWinners: import("../../../services/models/poll/PollButton").PollButton[]): any {
-        throw new Error("Method not implemented.");
-    }
-    CreatePoll() {
-        throw new Error("Method not implemented.");
-    }
-    UpdatePoll(arg0: import("../../../services/models/poll/PollButton").PollButton[]) {
-        throw new Error("Method not implemented.");
-    }
     StreamerID: string;
     ViewPollManeger: ViewPollManeger;
 
-    EnbleAllCommands() {
+    setAllCommands() {
         this.ViewPollManeger.onCommandToCreateSent = async () => {
             this.ViewPollManeger.PollStatus = new PollStatus();
             return BackendConnections.SendToPollManager(this.StreamerID, null, this.ViewPollManeger.PollStatus)
@@ -68,6 +53,9 @@ export default class PollController {
                 })
 
         }
+        this.ViewPollManeger.onCommandToRevertChanges = async () => {
+            this.ViewPollManeger.update(await BackendConnections.getCurrentPoll(this.StreamerID));
+        }
         this.ViewPollManeger.onCommandToDistributeSent = async () => {
             STREAMER_SOCKET.on(IOListeners.onDistribuitionFinish, async () => {
 
@@ -85,16 +73,15 @@ export default class PollController {
                 this.StreamerID,
                 this.ViewPollManeger.getPollButtons(),
                 new PollStatus(this.ViewPollManeger.PollStatus).startDistribution()
-            )}
+            )
+        }
 
     }
     async LoadingCurrentPoll() {
-        this.ViewPollManeger = new ViewPollManeger(await BackendConnections.getCurrentPoll(this.StreamerID));
         let Poll = await BackendConnections.getCurrentPoll(this.StreamerID)
+        this.ViewPollManeger = new ViewPollManeger(Poll);
         this.ViewPollManeger.PollStatus = Poll.PollStatus;
-        this.ViewPollManeger.uppdateAllItems(Poll);
-
-        this.EnbleAllCommands();
+        this.setAllCommands();
     }
 
     constructor(StreamerID: string) {

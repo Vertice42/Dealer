@@ -46,7 +46,7 @@ export default class SettingsController {
                     BackendConnections.SendToCoinsSettingsManager(this.StreamerID, this.CoinsSettings)
                     this.ViewSettings.setCoinIMG(BackendConnections.getUrlOfFile(this.StreamerID, 'CoinImage', this.CoinsSettings.FileNameOfCoinImage))
                 }
-                ).catch(rej => console.log(rej))
+                ).catch(rej => console.error(rej))
             }
         }
     }

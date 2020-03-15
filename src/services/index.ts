@@ -34,12 +34,15 @@ require('./routes/files_routes');
 const IO = Socket_io(SERVER).listen(SERVER);
 IO.on('connection', (socket) => {
     socket.on(IOListeners.RegisterStreamer, async (StreamerID) => {
-        Sockets[StreamerID] = socket;
-
+        console.log('conectd',StreamerID);
+        
         dbManager.setAccountData(await Loading.StreamerAccountData(StreamerID));
         socket.emit(IOListeners.onStreamerAsRegistered);
+        Sockets[StreamerID] = socket;
 
         socket.on('disconnect', () => {
+            console.log('disconnect');
+            
             dbManager.removeAccountData(StreamerID);
         })
     });

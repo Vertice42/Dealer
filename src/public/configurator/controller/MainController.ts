@@ -19,12 +19,13 @@ export function NotifyViewers(TwitchListener: { ListenerName: string, data: any 
 }
 
 window.Twitch.ext.onContext((context) => {
-  console.log(context);
+  console.error(context);
 })
 
 window.Twitch.ext.onAuthorized(async (auth) => {
   token = auth.token;
   StreamerID = auth.channelId.toLowerCase();
+  STREAMER_SOCKET.emit(IOListeners.RegisterStreamer, StreamerID);
 
   STREAMER_SOCKET.on('connect',()=> {
     STREAMER_SOCKET.emit(IOListeners.RegisterStreamer, StreamerID);
@@ -32,6 +33,7 @@ window.Twitch.ext.onAuthorized(async (auth) => {
 
   let Registered = false;
   STREAMER_SOCKET.on(IOListeners.onStreamerAsRegistered, () => {
+    
     if(Registered) return;
     else Registered = true
 

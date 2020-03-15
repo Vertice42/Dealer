@@ -12,6 +12,7 @@ import { WalletManagerRequest } from '../services/models/wallet/WalletManagerReq
 import { CoinsSettings } from '../services/models/streamer_settings/CoinsSettings';
 import { getPollRoute, PollManagerRoute, MinerManagerRoute, addBeatRoute, getMinerSettingsRoute, getCoinsSettingsRoute, CoinsSettingsManagerRoute, MineCoinRoute, getWalletRoute, WalletManager, getStoreRoute, StoreManagerRoute, PurchaseOrderRoute, getPurchaseOrderRoute, UploadFileRoute, getFilesRoute } from '../services/routes/routes';
 import { Poll } from '../services/models/poll/Poll';
+import { sleep } from '../utils/utils';
 
 export const HOST = 'http://localhost:' + (ServerConfigs.Port || process.env.Port);
 
@@ -35,7 +36,11 @@ export class Watch {
   async start() {
     if (this.IsStop) {
       this.IsStop = false;
-      this.OnWaitch(await this.Watched());
+      this.OnWaitch(await this.Watched()
+        .catch(async () => {
+          await sleep(1000);
+          return resolve();
+        }));
       this.watch();
     }
   }
@@ -59,7 +64,7 @@ export class Watch {
     this.watch();
   }
 }
-export async function getCurrentPoll(StreamerID: string):Promise<Poll> {
+export async function getCurrentPoll(StreamerID: string): Promise<Poll> {
   /* Use fetch to communicate to backend and get current voting */
   return fetch(HOST + getPollRoute(StreamerID), {
     method: "GET"
@@ -67,7 +72,7 @@ export async function getCurrentPoll(StreamerID: string):Promise<Poll> {
     if (res.ok) return res.json();
     else return reject(res);
   }).catch((rej) => {
-    console.log(rej);
+    console.error(rej);
     return rej.json().then((res) => { console.error(res) });
   })
 }
@@ -120,7 +125,6 @@ export async function SendToMinerManager(StreamerID: string, Setting: MinerSetti
   }).catch((rej) => {
     return rej.json()
       .then((res) => {
-        console.log(res);
         return reject(res);
       })
   });
@@ -139,7 +143,6 @@ export async function addBet(StreamerID: string, TwitchUserID: string,
       BetAmount: Number(BetAmount)
     })
   }).then(async function (res) {
-    console.log(res.ok);
     if (res.ok) return resolve(await res.json())
     else return reject(await res.json());
   })
@@ -153,10 +156,9 @@ export async function GetMinerSettings(StreamerID: string) {
     else return reject(res);
   }).then((res) => {
     return res.json();
-  }).catch((rej) => {    
+  }).catch((rej) => {
     return rej.json()
       .then((res) => {
-        console.log(res);
         return reject(res);
       })
   });
@@ -173,7 +175,6 @@ export async function GetCoinsSettings(StreamerID: string): Promise<CoinsSetting
   }).catch((rej) => {
     return rej.json()
       .then((res) => {
-        console.log(res);
         return reject(res);
       })
   });
@@ -198,7 +199,6 @@ export async function SendToCoinsSettingsManager(StreamerID: String, Setting: Co
   }).catch((rej) => {
     return rej.json()
       .then((res) => {
-        console.log(res);
         return reject(res);
       })
   });
@@ -222,7 +222,6 @@ export async function MineCoin(StreamerID: string, TwitchUserID: string) {
   }).catch((rej) => {
     return rej.json()
       .then((res) => {
-        console.log(res);
         return reject(res);
       })
   });
@@ -237,7 +236,7 @@ export async function GetWallets(StreamerID: string, TwitchUserID = '*') {
     else
       return reject(res.json());
   }).catch((rej) => {
-    console.log(rej);
+    console.error(rej);
 
   })
 }
@@ -275,14 +274,12 @@ export async function GetStore(StreamerID: string, StoreItemID = -1) {
     else
       return reject(res.json());
   }).catch((rej) => {
-    console.log(rej);
+    console.error(rej);
   })
 }
 
 export async function SendToStoreManager(StreamerID: string, StoreItem: StoreItem): Promise<any> {
   /*Send current voting with your buttons and current poll status */
-  console.log(StoreItem);
-
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
@@ -382,7 +379,7 @@ export async function GetPurchaseOrders(StreamerID: string) {
     else
       return reject(res.json());
   }).catch((rej) => {
-    console.log(rej);
+    console.error(rej);
   })
 
 
@@ -401,7 +398,7 @@ export async function UploadFile(StreamerID: string, FolderName: string, FileNam
       headers: headers,
       body: File
     }).catch((rej) => {
-      console.log(rej);
+      console.error(rej);
       return rej.json()
     })
     .then((res) => {

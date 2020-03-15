@@ -1,6 +1,6 @@
 import DonorFeatures from "../models/store/item_settings/DonorFeatures";
 import dbDealerManager from "../modules/database/dbDealerManager";
-import ItemSettings from "../models/store/item_settings/ItemSettings";
+import ItemSetting from "../models/store/item_settings/ItemSettings";
 import fs = require('fs');
 import path = require('path');
 
@@ -17,7 +17,7 @@ export default class ControllerOfPermissions {
         return (StreamerData) ? (StreamerData.DonatedBeats >= DonorFeatures.price) : false;
     }
 
-    async AllItemsSettingsIsUnlocked(ItemsSettings: ItemSettings[]) {
+    async CheckForLockedSettings(ItemsSettings: ItemSetting[]) {
         return new Promise((resolve, reject) => {
             //TODO MDAR PATH EM MODO PRODUTION            
             fs.readFile(path.resolve('./src/services/configs/DonorFeatures.json'), "utf8", async (err, data) => {
@@ -26,11 +26,11 @@ export default class ControllerOfPermissions {
                 let DonorFeatures: DonorFeatures[] = JSON.parse(data);
                 let AllItemsSettingsIsUnlocked = true;
                 for (const ItemsSetting of ItemsSettings) { 
-                    let donorFeature = DonorFeatures[DonorFeatures.findIndex(DonorFeature => {
+                    let donorFeature = DonorFeatures[DonorFeatures.findIndex(DonorFeature => {                        
                         if (DonorFeature.name === ItemsSetting.DonorFeatureName) return true;
                     })]
                     
-                    if (await new ControllerOfPermissions(this.StreamerID).FeaturesIsUnlocked(donorFeature)&&ItemsSetting.Enable) {
+                    if (await this.FeaturesIsUnlocked(donorFeature) && ItemsSetting.Enable) {
                         AllItemsSettingsIsUnlocked = false;
                         return resolve(AllItemsSettingsIsUnlocked);
                     }

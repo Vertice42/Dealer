@@ -3,18 +3,16 @@ import { sleep } from "../../../utils/utils";
 import UploadFileResponse from "../../../services/models/files_manager/UploadFileResponse";
 import StoreItem, { StoreTypes } from "../../../services/models/store/StoreItem";
 import ViewStore, { ViewStoreItem } from "../view/ViewStore";
-import ItemSettings from "../../../services/models/store/item_settings/ItemSettings";
+import ItemSetting from "../../../services/models/store/item_settings/ItemSettings";
 import TwitchListeners from "../../../services/TwitchListeners";
 import { NotifyViewers } from "./MainController";
 import { reject } from "bluebird";
+import FolderTypes from "../../../services/models/files_manager/FolderTypes";
+import { Settings } from "http2";
 
 export default class StoreController {
     StreamerID: string;
-    ViewStore = new ViewStore([new ItemSettings(
-        'SingleReproduction',
-        false)
-    ]);
-
+    ViewStore = new ViewStore();
     //TODO CHANGE to josineditaleble file
     StoreItems: StoreItem[];
 
@@ -26,7 +24,26 @@ export default class StoreController {
         this.ViewStore.onAddStoreItemSondActive = async () => {
             await BackendConnections.SendToStoreManager(this.StreamerID,
                 this.ViewStore.addStoreItem(
-                    new StoreItem(null, StoreTypes.Audio, null, [new ItemSettings('SingleReproduction', false)], null, null)));
+                    new StoreItem(null, StoreTypes.Audio, null, [new ItemSetting('SingleReproduction', false)], null, null)));
+        }
+        this.ViewStore.onStoreTypeActive = async (ViewStoreItemActived, ViewStoreType) => {
+            this.ViewStore.ViewStoreItems.forEach(ViewStoreItem => {
+                if (ViewStoreItem !== ViewStoreItemActived) {
+                    ViewStoreItem.ViewStoreType.setHide();
+                }
+            });
+            if (ViewStoreType.InDemo) {
+                ViewStoreType.setHide();
+                this.ViewStore.HTML_DemoAudioPlayer.pause();
+            } else {
+                ViewStoreType.setInDemo();
+                this.ViewStore.HTML_DemoAudioPlayer.src = BackendConnections.getUrlOfFile(
+                    this.StreamerID,
+                    FolderTypes.StoreItem + ViewStoreItemActived.id,
+                    ViewStoreItemActived.FileName);
+
+                this.ViewStore.HTML_DemoAudioPlayer.play();
+            }
         }
         this.ViewStore.onDescriptionChange = (ViewStoreItem) => {
             ViewStoreItem.DescriptionInput.setChangedInput();
@@ -39,7 +56,7 @@ export default class StoreController {
 
                 })
                 .catch((rej) => {
-                    console.log(rej);
+                    console.error(rej);
                     ViewStoreItem.DescriptionInput.setInputSentError();
                 })
         }
@@ -53,20 +70,16 @@ export default class StoreController {
                     this.onStoreChange();
                 })
                 .catch((rej) => {
-                    console.log(rej);
+                    console.error(rej);
                     ViewStoreItem.PriceInput.setInputSentError();
                 })
         }
-        this.ViewStore.onSettingsChange = (ViewStoreItem, ViewSettingsOfIten) => {
-            ViewSettingsOfIten.ItemSettings.Enable = ViewSettingsOfIten.HTML.checked;
+        this.ViewStore.onSettingOfItemChange = (ViewStoreItem, ItemSettings) => {
+            if (ItemSettings.DonorFeatureName === 'AudioVolume') {
+                this.ViewStore.HTML_DemoAudioPlayer.volume = ItemSettings.value/100;
+            }
             BackendConnections.SendToStoreManager(this.StreamerID, ViewStoreItem)
-                .then(() => {
-                    this.onStoreChange();
-                })
-                .catch((rej) => {
-                    ViewSettingsOfIten.HTML.checked = (!ViewSettingsOfIten.HTML.checked);
-                    ViewSettingsOfIten.HTML.classList.add('Error');
-                })
+                .then(() => this.onStoreChange())
         }
         this.ViewStore.onFileInputChange = async (ViewStoreItem) => {
             let file = ViewStoreItem.HTML_InputFile.files[0];
@@ -80,7 +93,7 @@ export default class StoreController {
                         break;
                 }
 
-                BackendConnections.UploadFile(this.StreamerID, 'Store Item ' + ViewStoreItem.id, file.name, file
+                BackendConnections.UploadFile(this.StreamerID, FolderTypes.StoreItem + ViewStoreItem.id, file.name, file
                 ).then(async (UploadFileResponse: UploadFileResponse) => {
                     let StoreItem = <StoreItem>ViewStoreItem;
                     StoreItem.FileName = UploadFileResponse.FileName;
@@ -88,7 +101,7 @@ export default class StoreController {
                     ViewStoreItem.ResponsiveInputFile.setUpgradeable();
                     this.onStoreChange();
                 }
-                ).catch(rej => console.log(rej))
+                ).catch(rej => console.error(rej))
             }
         }
         this.ViewStore.onButtonDeleteActive = async (StoreItem) => {

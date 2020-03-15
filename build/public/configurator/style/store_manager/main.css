@@ -40,6 +40,47 @@
     background-image: linear-gradient(to right, rgb(44, 11, 54) 60%, rgb(66, 43, 85));
 }
 
+.TypeDisplayIMG{
+    width: 5vw;
+    height: 5vw;
+    margin: auto;
+}
+
+.ViewStoreTypeSond {
+    background-image: url(../../images/sond-document.png);
+    background-size: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.ViewStoreTypeDefault {
+    background-image: url(./configurator/images/undefined-document.png);
+}
+
+.ViewStoreTypeInDemo {
+    border: firebrick;
+}
+
+.AudioVolumeDiv  {
+    position: absolute;
+    left: 5vw;
+    transform: rotate(-90deg);
+    background-color: rgb(68, 50, 100);
+
+    transition: opacity cubic-bezier(0.86, 0, 0.07, 1) 250ms;
+}
+
+.AudioVolumeDivHide {
+    opacity: 0;
+}
+.AudioVolumeDivSample {
+    opacity: 1;
+}
+
+.AudioVolumeDiv input{
+    width: 10vw;
+}
+
 .StoreItem input {
     font-family: fantasy;
     font-size: 2vw;
@@ -69,10 +110,6 @@
 
 .InputNotUsed {
     color: gray;
-}
-
-.StoreItem img {
-    height: inherit;
 }
 
 .Setting input[type='file'] {

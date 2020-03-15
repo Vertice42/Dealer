@@ -8,9 +8,7 @@ export async function getUsername(TwitchUserID: string, Client_ID: string) {
     return fetch('https://api.twitch.tv/kraken/users/'+TwitchUserID, {
         method: "GET",
         headers: H,
-    }).then((res) => {
-        console.log(res);
-        
+    }).then((res) => {        
         if (res.ok) return resolve(res)
         else return reject(res);
     }).then((res) => {
@@ -28,9 +26,7 @@ export async function getUserIDByUsername(TwitchUserID: string, Client_ID: strin
     return fetch('https://api.twitch.tv/kraken/users?login='+TwitchUserID, {
         method: "GET",
         headers: H,
-    }).then((res) => {
-        console.log(res);
-        
+    }).then((res) => {        
         if (res.ok) return resolve(res)
         else return reject(res);
     }).then((res) => {

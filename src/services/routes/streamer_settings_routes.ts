@@ -35,7 +35,7 @@ APP.get(GetCoinsSettingsRoute, async function (req: { params: { StreamerID: stri
         .then((CoinsSettings: CoinsSettings) => {
             res.status(200).send(CoinsSettings);
         })
-        .catch((rej) => {
+        .catch((rej) => {            
             res.status(500).send(rej);            
         })
 });
@@ -70,7 +70,6 @@ APP.get(GetMinerSettingsRoute, async function (req: { params: { StreamerID: stri
             res.status(200).send(MinerSettings);
         })
         .catch((rej) => {
-            console.log(rej);
             res.status(500).send(rej);            
         })
 });

@@ -11,7 +11,10 @@ export default class StreamerSettingsManager {
      */
     static async getCoinsSettings(StreamerID: string) {
         let accountData = dbManager.getAccountData(StreamerID);
-        return (await accountData.dbSettings.findOne({ where: { SettingName: CoinsSettings.name } })).SettingsJson;
+        let dbSetting = await accountData.dbSettings.findOne({ where: { SettingName: CoinsSettings.name } })
+        if (dbSetting) return dbSetting.SettingsJson;
+
+        return {};
     }
     /**
      * 
@@ -19,10 +22,10 @@ export default class StreamerSettingsManager {
      * @param minerSettings 
      */
     static async UpdateOrCreateCoinsSettings(StreamerID: string, NewCoinsSettings: CoinsSettings) {
-        let AccountData = dbManager.getAccountData(StreamerID);        
+        let AccountData = dbManager.getAccountData(StreamerID);
         return AccountData.dbSettings.update({ SettingsJson: NewCoinsSettings }, { where: { SettingName: CoinsSettings.name } })
-            .then(async (result) => {                
-                if (!result[0]) {                    
+            .then(async (result) => {
+                if (!result[0]) {
                     result = await AccountData.dbSettings.create({
                         SettingName: CoinsSettings.name,
                         SettingsJson: NewCoinsSettings
@@ -36,7 +39,7 @@ export default class StreamerSettingsManager {
    * 
    * @param StreamerID 
    */
-    static async getMinerSettings(StreamerID: string) {        
+    static async getMinerSettings(StreamerID: string) {
         return dbManager.getAccountData(StreamerID).MinerSettings;
     }
     /**
@@ -47,12 +50,8 @@ export default class StreamerSettingsManager {
     static async UpdateMinerSettings(StreamerID: string, NewMinerSettings: MinerSettings) {
         let AccountData = dbManager.getAccountData(StreamerID);
         AccountData.MinerSettings = NewMinerSettings;
-        return AccountData.dbSettings.update({ SettingsJson: NewMinerSettings }, { where: { SettingName: MinerSettings.name } })
-            .then(() => {
-                return resolve({ SuccessfullyUpdatedMinerSettings: AccountData.MinerSettings });
-            }).catch((rej) => {
-                console.log(rej);
-            })
+        await AccountData.dbSettings.update({ SettingsJson: NewMinerSettings }, { where: { SettingName: MinerSettings.name } })
+        return resolve({ SuccessfullyUpdatedMinerSettings: AccountData.MinerSettings });
     }
 
 }

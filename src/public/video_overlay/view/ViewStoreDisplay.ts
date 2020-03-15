@@ -1,5 +1,6 @@
 import StoreItem from "../../../services/models/store/StoreItem";
 import { EnableRelocatableElemente } from "../../common/model/viewerFeatures";
+import { sleep } from "../../../utils/utils";
 
 class ViewStoreItemDisplay {
     HTML: HTMLDivElement
@@ -59,67 +60,72 @@ export default class ViewStoreDisplay {
 
     onBuyItemButtonActive = (StoreItem: StoreItem) => { };
 
-    DepositAnimation(Coin: HTMLDivElement, CoinNumber: number, onStart: () => void, onEnd: () => void) {
+    async DepositAnimation(Coin: HTMLDivElement, CoinNumber: number, onStart: () => void, onEnd: () => void) {
         Coin.classList.add('Coin');
         if (this.CoinImgURL) Coin.style.backgroundImage = 'url(' + this.CoinImgURL + ')';
 
-        Coin.style.left = -35 + (CoinNumber * 15) + '%';
-        Coin.style.top = -50 + '%';
+        Coin.style.left = `${((Math.random() >= 0.5) ? -36 : 70)}%`;
+        Coin.style.top = '-50%';
 
         this.CoinsDiv.appendChild(Coin);
 
-        setTimeout(() => {
-            Coin.style.opacity = '1';
-            Coin.style.left = '35%'
-            Coin.style.top = '-50%'
-            setTimeout(() => {
-                let ontransitionstart = function () {
-                    Coin.removeEventListener('transitionstart', ontransitionstart);
-                    if (onStart) onStart();
+        let ontransitionstart = () => {
+            Coin.removeEventListener('transitionstart', ontransitionstart);
+            if (onStart) onStart();
 
-                }
-                Coin.addEventListener('transitionstart', ontransitionstart);
+        }
+        Coin.addEventListener('transitionstart', ontransitionstart);
 
-                let ontransitionend = function () {
-                    Coin.removeEventListener('transitionend', ontransitionend);
-                    if (onEnd) onEnd();
+        let ontransitionend = () => {
+            Coin.removeEventListener('transitionend', ontransitionend);
+            if (onEnd) onEnd();
 
-                };
-                Coin.addEventListener('transitionend', ontransitionend);
+        };
+        Coin.addEventListener('transitionend', ontransitionend);
 
-                Coin.style.top = '10%'
-            }, 500 + CoinNumber * 10);
-        }, 500 + CoinNumber * 500);
+        await sleep(500 + CoinNumber * 250);
+
+        Coin.style.opacity = '1';
+        Coin.style.left = '36%';
+        Coin.style.top = '-50%';
+
+        await sleep(500 + CoinNumber * 5);
+        Coin.style.top = '15%';
     }
 
-    WithdrawalAnimation(Coin: HTMLDivElement, CoinNumber: number, onStart: () => void, onEnd: () => void) {
+    async WithdrawalAnimation(Coin: HTMLDivElement, CoinNumber: number, onStart: () => void, onEnd: () => void) {
         Coin.classList.add('Coin');
+        if (this.CoinImgURL) Coin.style.backgroundImage = 'url(' + this.CoinImgURL + ')';
+
+        Coin.style.left = '36%';
+        Coin.style.top = '15%';
+        Coin.style.opacity = '1';
+
         this.CoinsDiv.appendChild(Coin);
 
-        setTimeout(() => {
-            Coin.style.opacity = '1';
-            Coin.style.left = '35%'
-            Coin.style.top = '10%'
-            setTimeout(() => {
-                let ontransitionstart = function () {
-                    Coin.style.opacity = '0';
-                    Coin.removeEventListener('transitionstart', ontransitionstart);
-                    if (onStart) onStart();
+        let ontransitionstart = () => {
+            Coin.removeEventListener('transitionstart', ontransitionstart);
+            if (onStart) onStart();
 
-                }
-                Coin.addEventListener('transitionstart', ontransitionstart);
+        }
+        Coin.addEventListener('transitionstart', ontransitionstart);
 
-                let ontransitionend = function () {
-                    Coin.removeEventListener('transitionend', ontransitionend);
-                    if (onEnd) onEnd();
+        let ontransitionend = () => {
+            Coin.removeEventListener('transitionend', ontransitionend);
+            if (onEnd) onEnd();
 
-                };
-                Coin.addEventListener('transitionend', ontransitionend);
+        };
+        Coin.addEventListener('transitionend', ontransitionend);
 
-                Coin.style.top = '-50%'
+        await sleep(500 + CoinNumber * 500);
 
-            }, 500 + CoinNumber * 10);
-        }, 500 + CoinNumber * 500);
+        Coin.style.left = '36%';
+        Coin.style.top = -40+(Math.random() * -20)+'%';
+
+        await sleep(500 + CoinNumber * 5);
+        Coin.style.top = '-60%';
+        Coin.style.left = `${(CoinNumber%2 === 0) ? (Math.random() * -36) : (Math.random() * 80)}%`;
+        Coin.style.opacity = '0';
     }
 
     StartCoinsAnimation(reverse: boolean, CoinsNumber: number) {
@@ -133,14 +139,14 @@ export default class ViewStoreDisplay {
                 this.WithdrawalAnimation(document.createElement('div'), i,
                     () => {
                         if (i === 0)
-                            this.WalletDiv.classList.add('inAction');
+                            this.Wallet.classList.add('inAction');
                     },
                     () => {
-                        this.WalletDiv.style.transform = 'scale(' + (1 + addX * i) + ',' + (1 + addY * i) + ')';
+                        this.Wallet.style.transform = 'scale(' + (1 + addX * i) + ',' + (1 + addY * i) + ')';
                         setTimeout(() => {
                             if (i === CoinsNumber - 1)
-                                this.WalletDiv.classList.remove('inAction');
-                            this.WalletDiv.style.transform = 'scale(1)';
+                                this.Wallet.classList.remove('inAction');
+                            this.Wallet.style.transform = 'scale(1)';
                         }, 100);
                     })
             }
@@ -148,9 +154,9 @@ export default class ViewStoreDisplay {
             for (let i = 0; i < CoinsNumber; i++) {
                 this.DepositAnimation(document.createElement('div'), i, null,
                     () => {
-                        this.WalletDiv.style.transform = 'scale(' + (1 + addX * i) + ',' + (1 + addY * i) + ')';
+                        this.Wallet.style.transform = 'scale(' + (1 + addX * i) + ',' + (1 + addY * i) + ')';
                         setTimeout(() => {
-                            this.WalletDiv.style.transform = 'scale(1)';
+                            this.Wallet.style.transform = 'scale(1)';
                         }, 100);
                     })
             }
@@ -176,7 +182,7 @@ export default class ViewStoreDisplay {
         });
     }
 
-    constructor(){
+    constructor() {
         this.Wallet.addEventListener('click', () => {
             if (this.StoreDiv.classList.contains('StoreHide')) {
                 this.StoreDiv.classList.remove('StoreHide');

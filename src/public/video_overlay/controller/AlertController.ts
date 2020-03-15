@@ -90,7 +90,6 @@ export default class AllertController {
                 if (Poll) {
                     return resolve(Poll);
                 } else {
-                    console.log('Poll == undfind', Poll.PollStatus);
                     return reject(Poll)
                 }
 

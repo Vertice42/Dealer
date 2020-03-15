@@ -6,6 +6,7 @@ import ControllerOfPermissions from "../controller/ControllerOfPermissions";
 import StoreItem from "../models/store/StoreItem";
 import { StoreManagerRoute, GetStoreRoute } from "./routes";
 import del = require("del");
+import FolderTypes from "../models/files_manager/FolderTypes";
 
 APP.post(StoreManagerRoute, async function (req, res: express.Response) {
     let Request: StoreManagerRequest = req.body;
@@ -25,7 +26,7 @@ APP.post(StoreManagerRoute, async function (req, res: express.Response) {
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
     //TODO ADICIONAR dotenv
 
-    if (!(await new ControllerOfPermissions(Request.StreamerID).AllItemsSettingsIsUnlocked(Request.StoreItem.ItemsSettings))) {
+    if ((await new ControllerOfPermissions(Request.StreamerID).CheckForLockedSettings(Request.StoreItem.ItemsSettings))) {
         return res.status(423).send({ mensage: 'This feature is blocked for you' })
     }
 
@@ -33,9 +34,7 @@ APP.post(StoreManagerRoute, async function (req, res: express.Response) {
         .then((result) => {
             res.status(200).send(result);
         })
-        .catch((reject) => {
-            console.log(reject);
-            
+        .catch((reject) => {            
             if (reject.RequestError) {
                 res.status(400).send(reject);
             } else {
@@ -55,7 +54,7 @@ APP.delete(StoreManagerRoute, async function (req, res: express.Response) {
 
     new dbStoreManager(Request.StreamerID).DeleteStoreItem(req.body.StoreItem)
         .then(async (result) => {
-            await del('./uploads/'+Request.StreamerID+'/'+'Store Item '+Request.StoreItem.id);
+            await del('./uploads/'+Request.StreamerID+'/'+FolderTypes.StoreItem+Request.StoreItem.id);
             //TODO Trasformar string 'Store Item em onjeto refatoravel'
             res.status(200).send(result);
         })
@@ -84,9 +83,7 @@ APP.get(GetStoreRoute, async function (req: { params: { StreamerID: string, Stor
                 res.status(200).send(StoreItems);
             })
             .catch((rej) => {
-                res.status(500).send(rej);
-                console.log(rej);
-                
+                res.status(500).send(rej);                
             })
 
     } else {

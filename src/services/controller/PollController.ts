@@ -2,7 +2,7 @@ import { PollButton } from "../models/poll/PollButton";
 
 import { POLL_WAXED, NOT_IN_STRING, POLL_STOPED, POLL_STARTED, dbManager } from "../modules/database/dbManager";
 
-import { dbWalletManeger } from "../modules/database/miner/dbWalletManager";
+import { dbWalletManeger } from "../modules/database/wallet/dbWalletManager";
 
 import { reject, resolve } from "bluebird";
 
@@ -23,7 +23,6 @@ import { dbPollMager } from "../modules/database/poll/dbPollManager";
 import IOListeners from "../IOListeners";
 import { getSoketOfStreamer } from "../SocketsManager";
 import { dbBettingsManager } from "../modules/database/poll/dbBettingsManager";
-import { Wallet } from "../models/poll/dbWallet";
 
 export class PollController {
 
@@ -108,10 +107,7 @@ export class PollController {
                     }
                 });
             }
-            console.log(DifferenceBetweenBets);
-
             if (DifferenceBetweenBets > 0) {
-                console.log('deposit', DifferenceBetweenBets);
                 await WalletManager.deposit(DifferenceBetweenBets);
 
             } else {
@@ -257,24 +253,23 @@ export class PollController {
      * @returns Poll
      */
     async getCurrentPoll() {
-        let AccountData = dbManager.getAccountData(this.StreamerID);
+        let AccountData = dbManager.getAccountData(this.StreamerID);        
+
         let Buttons = [];
         let Bets: PollBeat[];
 
         let db_pollMager = new dbPollMager(this.StreamerID);
 
-        if (AccountData.dbCurrentPollButtons) {
-            //TODO erro de sincronia com o id gera server error // iqnorar ????
-            for (const dbButton of await db_pollMager.getAllButtonsOfCurrentPoll()) {
-                Buttons.push(new PollButton(
-                    dbButton.ID,
-                    dbButton.Name,
-                    dbButton.Color,
-                    dbButton.IsWinner))
-            }
-
-            Bets = await db_pollMager.getBeatsOfCurrentPoll();
+        //TODO erro de sincronia com o id gera server error // iqnorar ????
+        for (const dbButton of await db_pollMager.getAllButtonsOfCurrentPoll()) {
+            Buttons.push(new PollButton(
+                dbButton.ID,
+                dbButton.Name,
+                dbButton.Color,
+                dbButton.IsWinner))
         }
+
+        Bets = await db_pollMager.getBeatsOfCurrentPoll();
 
         return resolve(new Poll(
             AccountData.CurrentPollStatus,

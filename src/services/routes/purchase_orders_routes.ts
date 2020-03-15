@@ -1,17 +1,17 @@
 import express = require("express");
 
-import { dbWalletManeger } from "../modules/database/miner/dbWalletManager";
 import dbPurchaseOrderManager from "../modules/database/store/dbPurchaseOrderManager";
 import PurchaseOrder from "../models/store/PurchaseOrder";
 import IO_Listeners from "../IOListeners";
 import { dbPurchaseOrder } from "../models/store/dbPurchaseOrders";
 import PurchaseOrderRequest from "../models/store/PurchaseOrderRequest";
 import dbStoreManager from "../modules/database/store/dbStoreManager";
-import ItemSettings from "../models/store/item_settings/ItemSettings";
+import ItemSetting from "../models/store/item_settings/ItemSettings";
 import { PurchaseOrderRoute, GetPurchaseOrderRoute } from "./routes";
 import DeletePurchaseOrderRequest from "../models/store/DeletePurchaseOrderRequest";
 import { APP } from "..";
 import { getSoketOfStreamer } from "../SocketsManager";
+import { dbWalletManeger } from "../modules/database/wallet/dbWalletManager";
 
 APP.post(PurchaseOrderRoute, async function (req, res: express.Response) {
     let PurchaseOrderRequest: PurchaseOrderRequest = req.body;
@@ -25,7 +25,7 @@ APP.post(PurchaseOrderRoute, async function (req, res: express.Response) {
     }
 
     let dbStoreIten = await new dbStoreManager(PurchaseOrderRequest.StreamerID).getIten(PurchaseOrderRequest.StoreItemID);
-    let ItemSettings: ItemSettings[] = JSON.parse(dbStoreIten.ItemSettingsJson);
+    let ItemSettings: ItemSetting[] = JSON.parse(dbStoreIten.ItemSettingsJson);
 
     let SingleReproductionEnable = false;
     ItemSettings.forEach(ItemSetting => {
