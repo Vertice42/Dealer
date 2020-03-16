@@ -23,6 +23,7 @@ export default class PurchaseOrderController {
     socket: SocketIOClient.Socket;
     ViewPurchaseOrders = new ViewPurchaseOrders;
     PurchaseOrdersList: PurchaseOrderItem[] = [];
+    AudioPlayerIsUnlocked = true;
 
     ExecuteOrder(PurchaseOrderItemList: PurchaseOrderItem) {
 
@@ -56,9 +57,14 @@ export default class PurchaseOrderController {
         }
 
         this.ViewPurchaseOrders.HTML_AudioPlayer.play().catch(() => {
+            this.AudioPlayerIsUnlocked = false;
+            this.ViewPurchaseOrders.setPlaybackUnavailableMode(true);
+
             let onBodyClick = () => {
-                this.ViewPurchaseOrders.HTML_AudioPlayer.play()
-                document.body.removeEventListener('click', onBodyClick)
+                this.ViewPurchaseOrders.HTML_AudioPlayer.play();
+                document.body.removeEventListener('click', onBodyClick);
+                this.ViewPurchaseOrders.setPlaybackUnavailableMode(false);
+                this.AudioPlayerIsUnlocked = true;
             }
             document.body.addEventListener('click', onBodyClick)
         })
@@ -82,8 +88,9 @@ export default class PurchaseOrderController {
 
         }
     }
-    async EnbleAllCommands() {
+    async setAllCommands() {
         this.ViewPurchaseOrders.onButtonPurchaseOrderRefundActive = async (ViewPurchasedItem, PurchaseOrder) => {
+            if(!this.AudioPlayerIsUnlocked) return;
             this.ViewPurchaseOrders.removeViewPurchaseOrder(ViewPurchasedItem);
             this.PurchaseOrdersList.splice(ViewPurchasedItem.id, 1);
             await BackendConnections.DeletePurchaseOrder(this.StreamerID, PurchaseOrder, true);
@@ -118,8 +125,9 @@ export default class PurchaseOrderController {
             }
         });
 
-        this.EnbleAllCommands();
+        this.setAllCommands();
     }
+    
     constructor(StreamerID: string, socket: SocketIOClient.Socket) {
         this.StreamerID = StreamerID;
         this.socket = socket;

@@ -587,7 +587,6 @@ export default class ViewPollManeger {
                 this.setStartedPoll();
                 this.update(Poll);
             }
-            ;
             if (Poll.PollStatus.PollStoped)
                 this.setStopedPoll();
             if (Poll.PollStatus.InDistribution)

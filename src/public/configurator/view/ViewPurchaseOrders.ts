@@ -74,7 +74,9 @@ export class ViewPurchasedItem {
 }
 
 export default class ViewPurchaseOrders {
+    ResizeObserver: ResizeObserver;
     ViewPurchaseOrdersArray: ViewPurchasedItem[] = [];
+    private HTML_PurchaseOrdersDiv = <HTMLDivElement>document.getElementById('PurchaseOrdersDiv');
     private HTML_ReproducingMedia = <HTMLDivElement>document.getElementById('ReproducingMedia');
     private HTML_PlaybackUserName = <HTMLSpanElement>document.getElementById('PlaybackUserName');
     private HTML_PlaybackItemName = <HTMLSpanElement>document.getElementById('PlaybackItemName');
@@ -83,6 +85,11 @@ export default class ViewPurchaseOrders {
     HTML_ListOfPurchasedItems = <HTMLDivElement>document.getElementById('ListOfPurchasedItems');
     HTML_LoadingBarOfAudioPlayer = <HTMLDivElement>document.getElementById('LoadingBarOfAudioPlayer');
     HTML_AudioPlayer = <HTMLAudioElement>document.getElementById('AudioPlayer');
+    HTML_PlaybackUnavailableAlert: HTMLDivElement;
+
+    onButtonPurchaseOrderRefundActive = (ViewPurchasedItem: ViewPurchasedItem, PurchaseOrder: PurchaseOrder) => { };
+    onAddPuchaseOrder = (PurchaseOrderItem: PurchaseOrderItem) => { };
+
     IsStarted() {
         return this.HTML_PauseAudioPlayerButton.classList.contains('Started');
     }
@@ -108,8 +115,6 @@ export default class ViewPurchaseOrders {
         this.HTML_ReproducingMedia.classList.remove('PurchaseOrdersNotEmpty');
         this.HTML_ReproducingMedia.classList.add('PurchaseOrdersEmpty');
     }
-    onButtonPurchaseOrderRefundActive = (ViewPurchasedItem: ViewPurchasedItem, PurchaseOrder: PurchaseOrder) => { };
-    onAddPuchaseOrder = (PurchaseOrderItem: PurchaseOrderItem) => { };
     setAudioPlayerProgress(progres: number) {
         let left = progres;
         let rigth = progres;
@@ -120,7 +125,33 @@ export default class ViewPurchaseOrders {
         this.HTML_PlaybackUserName.innerText = TwitchUserName;
         this.HTML_PlaybackItemName.innerText = StoreItemName;
     }
-    addViewPurchaseOrder(PurchaseOrder: PurchaseOrder, StoreItem: StoreItem) {        
+    setPlaybackUnavailableMode(key: boolean) {
+        if (key) {
+            this.HTML_PlaybackUnavailableAlert = document.createElement('div');
+            this.HTML_PlaybackUnavailableAlert.classList.add('PlaybackUnavailableAlert');
+
+            this.HTML_PlaybackUnavailableAlert.style.width = this.HTML_PurchaseOrdersDiv.clientWidth + 'px';
+            this.HTML_PlaybackUnavailableAlert.style.height = this.HTML_PurchaseOrdersDiv.clientHeight + 'px';
+
+            this.ResizeObserver = new ResizeObserver(() => {
+
+                this.HTML_PlaybackUnavailableAlert.style.width = this.HTML_PurchaseOrdersDiv.clientWidth + 'px';
+                this.HTML_PlaybackUnavailableAlert.style.height = this.HTML_PurchaseOrdersDiv.clientHeight + 'px';
+
+            });
+
+            this.ResizeObserver.observe(this.HTML_PurchaseOrdersDiv);
+
+            this.HTML_PurchaseOrdersDiv.insertBefore(this.HTML_PlaybackUnavailableAlert, this.HTML_ReproducingMedia);
+
+        } else {
+            this.ResizeObserver.unobserve(this.HTML_PurchaseOrdersDiv);
+            this.ResizeObserver.disconnect();
+            this.HTML_PurchaseOrdersDiv.removeChild(this.HTML_PlaybackUnavailableAlert);
+        }
+    }
+
+    addViewPurchaseOrder(PurchaseOrder: PurchaseOrder, StoreItem: StoreItem) {
         let viewPurchasedItem = new ViewPurchasedItem(this.ViewPurchaseOrdersArray.length, PurchaseOrder.TwitchUserID, new Date(PurchaseOrder.updatedAt).getTime(), StoreItem.Description);
         this.ViewPurchaseOrdersArray.push(viewPurchasedItem);
         viewPurchasedItem.onRefundButtonActive = () => {

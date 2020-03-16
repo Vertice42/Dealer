@@ -24,7 +24,11 @@
 }
 
 .Enable#AlertOfLoser {
-    animation: ShowLoserAnimation 1s forwards;
+    animation: HideAnimation 2s 5s forwards, ShowLoserAnimation 1s forwards;
+}
+
+.FullScren:hover .Enable#AlertOfLoser {
+    animation: ShowAnimation 500ms forwards, ShowLoserAnimation 1s forwards;
 }
 
 .Disable#AlertOfLoser {

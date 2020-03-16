@@ -1,4 +1,5 @@
 export class ViewMain {
+
     HTML_PollModule = <HTMLDivElement>document.getElementById('PollModule');
     HTML_PollModuleTitle = <HTMLTitleElement>document.getElementById('PollModuleTitle');
 

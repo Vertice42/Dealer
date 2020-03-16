@@ -4,6 +4,23 @@
 @import url(AlertOfWinner.css);
 @import url(AlertOfLoser.css);
 
+@keyframes HideAnimation {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes ShowAnimation {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
 
 :focus {
     outline: 1px solid blanchedalmond;
@@ -30,4 +47,3 @@
 .Hidden {
     display: none;
 }
-

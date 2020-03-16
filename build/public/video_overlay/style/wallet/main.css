@@ -6,6 +6,13 @@
     bottom: 0px;
     width: 10vw;
     height: 10vw;
+    
+    transition: opacity 500ms 200ms;
+    opacity: 0;
+}
+
+.FullScren:hover .WalletDiv{
+    opacity: 1;
 }
 
 .Wallet {

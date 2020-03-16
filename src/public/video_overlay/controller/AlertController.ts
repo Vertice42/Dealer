@@ -55,33 +55,74 @@ export default class AllertController {
     }
 
     private async updateAlerts(Poll: Poll) {
+        console.log(Poll.PollStatus);
 
         if (isEquivalent(this.CurrentPollStatus, Poll.PollStatus)) {
-            this.ViewAlerts.setButtonsInPollDiv(Poll.PollButtons);
-        } else {
+            this.ViewAlerts.setButtonsInPollDiv(Poll.PollButtons)
+        }
+        else {
+            await this.ViewAlerts.HideAllAlerts();
             if (Poll.PollStatus.PollWaxed) {
-                await this.ViewAlerts.HideAllAlerts();
-            } else {
-                if (Poll.PollStatus.PollStarted) {
-                    if (Poll.PollStatus.DistributionCompleted) {
-                        if (isNaN(this.ViewAlerts.SelectedButtonID)) {
-                            await this.ViewAlerts.HideAllAlerts();
-                        } else {
-                            if (IsWinner(Poll.PollButtons, this.ViewAlerts.SelectedButtonID)) {
-                                this.ViewAlerts.setInWinnerMode(Poll.LossDistributorOfPoll);
-                            } else {
-                                this.ViewAlerts.setInLoserMode();
-                            }
-                        }
-                    } else if (Poll.PollStatus.PollStoped) {
-                        this.ViewAlerts.setInStopedMode();
-                    } else if (Poll.PollStatus.PollStarted) {
-                        this.ViewAlerts.setInBetMode(Poll.PollButtons);
+                return
+            }
+
+            if (Poll.PollStatus.DistributionCompleted) {
+                if (isNaN(this.ViewAlerts.SelectedButtonID)) {
+                } else {
+                    if (IsWinner(Poll.PollButtons, this.ViewAlerts.SelectedButtonID)) {
+                        this.ViewAlerts.setInWinnerMode(Poll.LossDistributorOfPoll);
+                    } else {
+                        this.ViewAlerts.setInLoserMode();
                     }
                 }
+                return
+            }
+            if (Poll.PollStatus.PollStoped) {
+                this.ViewAlerts.setInStopedMode();
+                return
+            }
+            if (Poll.PollStatus.PollStarted) {
+                this.ViewAlerts.setInBetMode(Poll.PollButtons);
+                return
+            }
+        }
+
+
+        /*
+        this.ViewAlerts.setButtonsInPollDiv(Poll.PollButtons);
+    } else {
+        if (Poll.PollStatus.PollWaxed) {
+            await this.ViewAlerts.HideAllAlerts();
+        } else {
+
+            if (Poll.PollStatus.PollStarted) {
+
+                if (Poll.PollStatus.DistributionCompleted) {
+                    if (isNaN(this.ViewAlerts.SelectedButtonID)) {
+                        await this.ViewAlerts.HideAllAlerts();
+                    } else {
+                        if (IsWinner(Poll.PollButtons, this.ViewAlerts.SelectedButtonID)) {
+                            this.ViewAlerts.setInWinnerMode(Poll.LossDistributorOfPoll);
+                        } else {
+                            this.ViewAlerts.setInLoserMode();
+                        }
+                    }
+                } else {
+                    this.ViewAlerts.setInBetMode(Poll.PollButtons);
+                }
+
+            } else {
+
+                if (Poll.PollStatus.PollStoped) {
+                    this.ViewAlerts.setInStopedMode();
+                }
+
             }
             this.CurrentPollStatus = Poll.PollStatus;
         }
+    }*/
+
+        this.CurrentPollStatus = Poll.PollStatus;
     }
     private TryGetCurrentPoll = async () => {
         return BackendConnections.getCurrentPoll(this.StreamerID)

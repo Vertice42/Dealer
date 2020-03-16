@@ -36,7 +36,6 @@ window.Twitch.ext.onAuthorized(async (auth) => {
     if (Registered) return;
     else Registered = true;
 
-
     new PollController(StreamerID);
 
     new SettingsController(StreamerID);

@@ -8,7 +8,6 @@ import TwitchListeners from "../../../services/TwitchListeners";
 import { NotifyViewers } from "./MainController";
 import { reject } from "bluebird";
 import FolderTypes from "../../../services/models/files_manager/FolderTypes";
-import { Settings } from "http2";
 
 export default class StoreController {
     StreamerID: string;
@@ -20,7 +19,7 @@ export default class StoreController {
         NotifyViewers({ ListenerName: TwitchListeners.onStoreChaneg, data: undefined })
     }
 
-    async EnbleAllCommands() {
+    async setAllCommands() {
         this.ViewStore.onAddStoreItemSondActive = async () => {
             await BackendConnections.SendToStoreManager(this.StreamerID,
                 this.ViewStore.addStoreItem(
@@ -120,7 +119,7 @@ export default class StoreController {
     async loadingStoreItems() {
         this.StoreItems = await BackendConnections.GetStore(this.StreamerID);
         this.StoreItems.forEach(StoreItem => this.ViewStore.addStoreItem(StoreItem));
-        this.EnbleAllCommands();
+        this.setAllCommands();
     }
     constructor(StreamerID: string) {
         this.StreamerID = StreamerID;

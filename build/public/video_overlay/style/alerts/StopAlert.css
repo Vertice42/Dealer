@@ -40,7 +40,11 @@
 }
 
 .Enable#StopAlert {
-    animation: ShowAnimationStopAlert 1s forwards;
+    animation: HideAnimation 2s 5s forwards, ShowAnimationStopAlert 1s forwards;
+}
+
+.FullScren:hover .Enable#StopAlert {
+    animation: ShowAnimation 500ms forwards, ShowAnimationStopAlert 1s forwards;
 }
 
 .Disable#StopAlert {
