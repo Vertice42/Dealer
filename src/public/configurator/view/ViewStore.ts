@@ -4,14 +4,28 @@ import ItemSetting from "../../../services/models/store/item_settings/ItemSettin
 
 export class SingleReproductionSettings {
   private ItemSettings: ItemSetting
-  HTML: HTMLInputElement
+  HTML: HTMLLabelElement
+  HTML_Input: HTMLInputElement;
+  HTML_span: HTMLSpanElement;
   constructor(ItemSettings: ItemSetting) {
     this.ItemSettings = ItemSettings;
 
-    this.HTML = document.createElement('input');
-    this.HTML.checked = this.ItemSettings.Enable;
-    this.HTML.type = 'checkbox';
-    this.HTML.innerText = 'connect to back end' ///ItemSettings.SettingName;
+    this.HTML = document.createElement('label');
+    this.HTML.classList.add('switch');
+
+    this.HTML_Input = document.createElement('input');
+    this.HTML_Input.checked = this.ItemSettings.Enable;
+    this.HTML_Input.type = 'checkbox';
+    this.HTML.appendChild(this.HTML_Input);
+
+    this.HTML_span = document.createElement('span');
+    this.HTML_span.classList.add('slider');
+    this.HTML_span.classList.add('round');
+    this.HTML.appendChild(this.HTML_span);
+
+    this.HTML_Input.innerText = 'connect to back end' ///TODO TRALATER ItemSettings.SettingName;
+
+
   }
 }
 
@@ -32,6 +46,8 @@ export class ViewStoreType {
 
     this.AudioVolumeDiv.classList.remove('AudioVolumeDivHide');
     this.AudioVolumeDiv.classList.add('AudioVolumeDivSample');
+
+    this.HTML_InputAudioVolume.style.display = '';
   }
 
   setHide() {
@@ -40,6 +56,7 @@ export class ViewStoreType {
     this.AudioVolumeDiv.classList.remove('AudioVolumeDivSample');
     this.AudioVolumeDiv.classList.add('AudioVolumeDivHide');
 
+    this.HTML_InputAudioVolume.style.display = 'none';
   }
 
   constructor(StoreType: number, ItemSetting: ItemSetting) {
@@ -52,6 +69,7 @@ export class ViewStoreType {
 
     this.HTML_InputAudioVolume = document.createElement('input');
     this.HTML_InputAudioVolume.type = 'range';
+    
     this.HTML_InputAudioVolume.value = ItemSetting.value;
     this.AudioVolumeDiv.appendChild(this.HTML_InputAudioVolume);
 
@@ -69,6 +87,7 @@ export class ViewStoreType {
     }
 
     this.Image.onclick = () => {
+      
       this.onStoreTypeActive(this);
     }
 
@@ -139,11 +158,10 @@ export class ViewStoreItem implements StoreItem {
 
     this.ElemeteHTML_ID = 'inputFile' + this.id;
 
-    this.ItemsSettings = ItemSettings;
-
     this.DescriptionInput = new OrientedInput('Incert Description', 'text', 'DescriptionInput');
     this.ResponsiveInputFile = new ResponsiveLabelForInputFile(this.ElemeteHTML_ID);
     this.PriceInput = new OrientedInput('Incert Price', 'number', 'PriceInput');
+    
     this.ViewStoreType = new ViewStoreType(this.Type, this.ItemsSettings[this.ItemsSettings.findIndex((ViewSettingsOfIten) => { return (ViewSettingsOfIten.DonorFeatureName === 'AudioVolume') })]);
     this.SingleReproductionSettings = new SingleReproductionSettings(this.ItemsSettings[this.ItemsSettings.findIndex((ViewSettingsOfIten) => { return (ViewSettingsOfIten.DonorFeatureName === 'SingleReproduction') })])
 
@@ -159,7 +177,7 @@ export class ViewStoreItem implements StoreItem {
 
     this.SingleReproductionSettings.HTML.onchange = () => {
       let ItemSetting = this.ItemsSettings[this.ItemsSettings.findIndex((ViewSettingsOfIten) => { return (ViewSettingsOfIten.DonorFeatureName === 'SingleReproduction') })];
-      ItemSetting.Enable = this.SingleReproductionSettings.HTML.checked;
+      ItemSetting.Enable = this.SingleReproductionSettings.HTML_Input.checked;
       this.onSettingChange(this, ItemSetting);
     }
 

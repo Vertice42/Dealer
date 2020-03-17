@@ -22,9 +22,7 @@ export default class dbPurchaseOrderManager {
         return dbPurchaseOrder.destroy();
     }
 
-    async getAllPurchaseOrders(StoreItemID: number | string) {
-        console.log(StoreItemID);
-        
+    async getAllPurchaseOrders(StoreItemID: number | string) {        
         if (StoreItemID === '*')
             return dbManager.getAccountData(this.StreamerID).dbPurchaseOrders.findAll();
         else

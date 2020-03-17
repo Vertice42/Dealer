@@ -69,9 +69,7 @@ APP.delete(PurchaseOrderRoute, async function (req, res: express.Response) {
             res.status(500).send(rej);
         })
 })
-APP.get(GetPurchaseOrderRoute, async function (req: { params: { StreamerID: string,StoreItemID: string } }, res: express.Response) {
-    console.log(req.params);
-    
+APP.get(GetPurchaseOrderRoute, async function (req: { params: { StreamerID: string,StoreItemID: string } }, res: express.Response) {    
     new dbPurchaseOrderManager(req.params.StreamerID).getAllPurchaseOrders(req.params.StoreItemID)
         .then((result) => {
             res.status(200).send(<dbPurchaseOrder[]>result);

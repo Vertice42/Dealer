@@ -200,20 +200,11 @@ export default class ViewStoreDisplay {
                     return Setting.DonorFeatureName === 'SingleReproduction' && Setting.Enable;
                 }) !== -1);
 
-
-
                 let ThereAlreadyAnItemInList = false;
 
                 if (PurchaseOrders && SingleReproductionEnable) {
                     ThereAlreadyAnItemInList = this.MakeSureItemIsAvailable(StoreItem.id, PurchaseOrders)
                 }
-
-                if (!ThereAlreadyAnItemInList) console.log(PurchaseOrders);
-
-
-                console.log(StoreItem.Description, SingleReproductionEnable, ThereAlreadyAnItemInList);
-
-
 
                 if (SingleReproductionEnable && ThereAlreadyAnItemInList) {
                     viewStoreItem.setUnavailable();
@@ -222,7 +213,6 @@ export default class ViewStoreDisplay {
                     viewStoreItem.setAvailable();
                     viewStoreItem.HTML_BuyButton.onclick = () => { this.onBuyItemButtonActive(StoreItem) };
                 }
-
 
                 this.ItemsList.appendChild(viewStoreItem.HTML);
             }

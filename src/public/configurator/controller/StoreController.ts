@@ -23,9 +23,10 @@ export default class StoreController {
         this.ViewStore.onAddStoreItemSondActive = async () => {
             await BackendConnections.SendToStoreManager(this.StreamerID,
                 this.ViewStore.addStoreItem(
-                    new StoreItem(null, StoreTypes.Audio, null, [new ItemSetting('SingleReproduction', false)], null, null)));
+                    new StoreItem(null, StoreTypes.Audio, null, [new ItemSetting('SingleReproduction', false), new ItemSetting('AudioVolume', false, 100)], null, null)));
         }
         this.ViewStore.onStoreTypeActive = async (ViewStoreItemActived, ViewStoreType) => {
+            if (!ViewStoreItemActived.FileName) return;
             this.ViewStore.ViewStoreItems.forEach(ViewStoreItem => {
                 if (ViewStoreItem !== ViewStoreItemActived) {
                     ViewStoreItem.ViewStoreType.setHide();
@@ -75,7 +76,7 @@ export default class StoreController {
         }
         this.ViewStore.onSettingOfItemChange = (ViewStoreItem, ItemSettings) => {
             if (ItemSettings.DonorFeatureName === 'AudioVolume') {
-                this.ViewStore.HTML_DemoAudioPlayer.volume = ItemSettings.value/100;
+                this.ViewStore.HTML_DemoAudioPlayer.volume = ItemSettings.value / 100;
             }
             BackendConnections.SendToStoreManager(this.StreamerID, ViewStoreItem)
                 .then(() => this.onStoreChange())

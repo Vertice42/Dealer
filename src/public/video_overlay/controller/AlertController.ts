@@ -55,8 +55,6 @@ export default class AllertController {
     }
 
     private async updateAlerts(Poll: Poll) {
-        console.log(Poll.PollStatus);
-
         if (isEquivalent(this.CurrentPollStatus, Poll.PollStatus)) {
             this.ViewAlerts.setButtonsInPollDiv(Poll.PollButtons)
         }

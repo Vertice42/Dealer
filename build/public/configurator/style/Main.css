@@ -3,8 +3,6 @@
 @import url(./store_manager/main.css);
 @import url(./wallets_manager/main.css);
 @import url(../../common/style/common.css);
-
-
 @font-face {
     font-family: Heroes;
     src: url(../../common/fonts/Heroes\ Legend.ttf);
@@ -28,20 +26,18 @@ body {
     display: none;
 }
 
-.TitleButton{
+.TitleButton {
     display: flex;
     border: none;
-
     width: fit-content;
-
     font-size: 5vw;
     background-color: rgb(255, 255, 255);
     margin: 1vw auto;
     padding: 0px 1vw;
-
     font-family: fantasy;
     text-transform: uppercase;
 }
+
 h3 {
     display: flex;
     text-align: center;
@@ -57,28 +53,32 @@ input[type='color'] {
     border: none;
     outline: none;
     -webkit-appearance: none;
-
     margin: auto;
 }
-input::-webkit-color-swatch-wrapper{
+
+input::-webkit-color-swatch-wrapper {
     padding: 0;
 }
+
 input::-webkit-color-swatch {
     border: none;
     border-radius: 100%;
 }
 
-.Module{
+.Module {
     display: grid;
     background-color: rgb(54, 48, 68);
     margin: 1vw;
+    transition: all 500ms;    
+    max-height: 10000px;
+
 }
 
-.ModuleHide{
-    height: 0px;
+.ModuleHide {
+    max-height: 0px;
+    clip-path: inset(0% 0% 100% 0%);
+}
+
+.ModuleSample {
     clip-path: inset(0% 0% 0% 0%);
-}
-
-.ModuleSample{
-
 }
