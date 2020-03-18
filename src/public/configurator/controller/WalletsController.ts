@@ -6,7 +6,7 @@ import ViewWallets from "../view/ViewWallets";
 export default class WalletsController {
     StreamerID: string;
     ViewWallets = new ViewWallets;
-    WatchWallets: BackendConnections.Watch;
+    WatchWallets: BackendConnections.Observer;
 
     async EnbleAllCommands() {
         let Search = async () => {
@@ -56,7 +56,7 @@ export default class WalletsController {
     }
 
     loadingWallets() {
-        this.WatchWallets = new BackendConnections.Watch(() => BackendConnections.GetWallets(this.StreamerID), 200);
+        this.WatchWallets = new BackendConnections.Observer(() => BackendConnections.GetWallets(this.StreamerID), 200);
         this.WatchWallets.OnWaitch = (Wallets: Wallet[]) => this.ViewWallets.uptate(Wallets);
 
         this.EnbleAllCommands();

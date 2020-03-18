@@ -4,6 +4,8 @@ import { sleep } from "../../../utils/utils";
 import UploadFileResponse from "../../../services/models/files_manager/UploadFileResponse";
 import { CoinsSettings } from "../../../services/models/streamer_settings/CoinsSettings";
 import ViewSettings from "../view/ViewSettings";
+import { NotifyViewers } from "./MainController";
+import TwitchListeners from "../../../services/TwitchListeners";
 
 
 export default class SettingsController {
@@ -12,7 +14,7 @@ export default class SettingsController {
     MinerSettings: MinerSettings;
     CoinsSettings: CoinsSettings;
 
-    EnbleAllCommands() {
+    setAllCommands() {
         this.ViewSettings.HourlyRewardInput.HTMLInput.onchange = () => {
             this.ViewSettings.HourlyRewardInput.setChangedInput();
             BackendConnections.SendToMinerManager(this.StreamerID,
@@ -21,7 +23,8 @@ export default class SettingsController {
                     this.ViewSettings.HourlyRewardInput.setInputSentSuccessfully();
                     await sleep(100);
                     this.ViewSettings.HourlyRewardInput.setUnchangedInput();
-                }).catch(() => {
+                })
+                .catch(() => {
                     this.ViewSettings.HourlyRewardInput.setInputSentError();
                 })
         }
@@ -33,20 +36,22 @@ export default class SettingsController {
                     this.ViewSettings.CoinNameInput.setInputSentSuccessfully();
                     await sleep(100);
                     this.ViewSettings.CoinNameInput.setUnchangedInput();
-                }).catch(() => {
+                    NotifyViewers({ ListenerName: TwitchListeners.onCoinNameChange, data: this.CoinsSettings.CoinName })
+                })
+                .catch(() => {
                     this.ViewSettings.CoinNameInput.setInputSentError();
                 })
         }
         this.ViewSettings.InputCoinImg.onchange = () => {
             let file = this.ViewSettings.InputCoinImg.files[0]
             if (file) {
-                BackendConnections.UploadFile(this.StreamerID, 'CoinImage', file.name, file
-                ).then(async (UploadFileResponse: UploadFileResponse) => {
-                    this.CoinsSettings.FileNameOfCoinImage = file.name;
-                    BackendConnections.SendToCoinsSettingsManager(this.StreamerID, this.CoinsSettings)
-                    this.ViewSettings.setCoinIMG(BackendConnections.getUrlOfFile(this.StreamerID, 'CoinImage', this.CoinsSettings.FileNameOfCoinImage))
-                }
-                ).catch(rej => console.error(rej))
+                BackendConnections.UploadFile(this.StreamerID, 'CoinImage', file.name, file)
+                    .then(async (UploadFileResponse: UploadFileResponse) => {
+                        this.CoinsSettings.FileNameOfCoinImage = file.name;
+                        BackendConnections.SendToCoinsSettingsManager(this.StreamerID, this.CoinsSettings)
+                        this.ViewSettings.setCoinIMG(BackendConnections.getUrlOfFile(this.StreamerID, 'CoinImage', this.CoinsSettings.FileNameOfCoinImage))
+                    })
+                    .catch(rej => console.error(rej))
             }
         }
     }
@@ -62,7 +67,7 @@ export default class SettingsController {
         if (this.CoinsSettings.FileNameOfCoinImage)
             this.ViewSettings.setCoinIMG(BackendConnections.getUrlOfFile(this.StreamerID, 'CoinImage', this.CoinsSettings.FileNameOfCoinImage))
 
-        this.EnbleAllCommands();
+        this.setAllCommands();
     }
 
     constructor(StreamerID: string) {

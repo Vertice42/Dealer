@@ -13,7 +13,9 @@
 }
 
 .Information {
-    margin: 0;
+    display: flex;
+    
+    margin: 0 auto;
     font-family: fantasy;
     text-transform: uppercase;
     font-size: 4vw;
@@ -24,6 +26,8 @@
 
 #CoinsOfUserView {
     color: white;
+    font-size: 3vw;
+    margin: auto;
 }
 
 #ItemsList {
@@ -31,7 +35,7 @@
     overflow: auto;
     margin: 1vw 1vw;
     background: rgb(74, 39, 156);
-    max-height:20vw;
+    max-height: 19vw;
 }
 
 #ItemsList::-webkit-scrollbar-track {

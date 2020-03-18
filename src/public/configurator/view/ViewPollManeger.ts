@@ -251,7 +251,20 @@ export class PollItemDesktopViewer extends PollItemViewer {
 export default class ViewPollManeger {
     IsStarted: boolean;
 
-    PollStatus: PollStatus = null;
+    private pollStatus: PollStatus;
+    
+    public onStatusChange = (PollStatus : PollStatus) => {};
+
+    public get PollStatus() : PollStatus {
+        return  this.pollStatus;
+    }
+    
+    public set PollStatus(pollStatus : PollStatus) {
+        this.pollStatus = pollStatus;
+        this.onStatusChange(pollStatus);
+    }
+    
+    
     PollItemsViewers: PollItemViewer[] = [];
 
     public get ThereAreSelectedWinners(): boolean {
@@ -285,7 +298,6 @@ export default class ViewPollManeger {
     onCloseButtonClick: () => Promise<void>;
     onCommandToDistributeSent: () => Promise<void>;
     onCommandToRevertChanges: () => Promise<void>;
-
 
     setCreatedPoll() {
         this.ShowPoll();
@@ -363,7 +375,7 @@ export default class ViewPollManeger {
             ID++;
         }
         this.addItem(ID, null, GenerateColor(), false);
-        this.onModified();
+        this.onPollItemModified();
         return true;
     };
     private onClickOfStartButton = () => {
@@ -419,8 +431,8 @@ export default class ViewPollManeger {
         this.ShowButton(this.CloseButton);
         this.EnableButton(this.CloseButton, this.onClickOfCloseButton);
     }
-    private onModified = () => {
-        if (this.PollStatus.PollStarted) {
+    private onPollItemModified = () => {
+        if (this.pollStatus.PollStarted) {
             this.ShowButton(this.ApplyChangesButton);
             this.ShowButton(this.RevertChangesButton);
         }
@@ -454,17 +466,17 @@ export default class ViewPollManeger {
         if (IsWinner) {
             PollItem.setWinner();
         }
-        PollItem.onChange = this.onModified;
+        PollItem.onChange = this.onPollItemModified;
         PollItem.onWinnersButtonsChange = this.onWinnerButtonsModified;
         this.PollItemsViewers.push(PollItem);
         this.PollItensDiv.appendChild(PollItem.HTMLElement);
         return PollItem;
     }
     removeItem(PollItem: PollItemDesktopViewer) {
-        if (!this.PollStatus.PollStoped) {
+        if (!this.pollStatus.PollStoped) {
             this.PollItemsViewers.splice(this.PollItemsViewers.indexOf(PollItem), 1);
             this.PollItensDiv.removeChild(PollItem.HTMLElement);
-            this.onModified();
+            this.onPollItemModified();
         }
     }
     uppdateVotesOfAllItems(Poll: Poll) {
@@ -478,7 +490,7 @@ export default class ViewPollManeger {
             });
         });
     }
-    update(Poll: Poll) {
+    updateItems(Poll: Poll) {
         this.removeAllItems();
         Poll.PollButtons.forEach(PollButton => {
             this.addItem(PollButton.ID, PollButton.Name, PollButton.Color, PollButton.IsWinner);
@@ -553,7 +565,7 @@ export default class ViewPollManeger {
             this.setCreatedPoll();
             if (Poll.PollStatus.PollStarted) {
                 this.setStartedPoll();
-                this.update(Poll);
+                this.updateItems(Poll);
             }
             if (Poll.PollStatus.PollStoped)
                 this.setStopedPoll();

@@ -16,7 +16,7 @@ export default class StoreController {
     StoreItems: StoreItem[];
 
     private onStoreChange() {
-        NotifyViewers({ ListenerName: TwitchListeners.onStoreChaneg, data: undefined })
+        NotifyViewers({ ListenerName: TwitchListeners.onStoreChange, data: undefined })
     }
 
     async setAllCommands() {
@@ -78,11 +78,13 @@ export default class StoreController {
             if (ItemSettings.DonorFeatureName === 'AudioVolume') {
                 this.ViewStore.HTML_DemoAudioPlayer.volume = ItemSettings.value / 100;
             }
+            
             BackendConnections.SendToStoreManager(this.StreamerID, ViewStoreItem)
                 .then(() => this.onStoreChange())
                 .catch((rej)=>{
                     if (ItemSettings.DonorFeatureName === 'SingleReproduction') {
                         ViewStoreItem.SingleReproductionSetting.HTML_Input.checked = false;
+                        ItemSettings.Enable = false;
                         //TODO adicionar mesagem de erro com propaganda
                     }
                 })

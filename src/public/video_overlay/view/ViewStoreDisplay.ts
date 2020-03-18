@@ -2,7 +2,6 @@ import StoreItem from "../../../services/models/store/StoreItem";
 import { EnableRelocatableElemente } from "../../common/model/viewerFeatures";
 import { sleep } from "../../../utils/utils";
 import PurchaseOrder from "../../../services/models/store/PurchaseOrder";
-
 class ViewStoreItemDisplay {
     HTML: HTMLDivElement
     HTML_TypeDisplay: HTMLImageElement;
@@ -12,7 +11,7 @@ class ViewStoreItemDisplay {
 
     private createTypeDisplay() {
         this.HTML_TypeDisplay = document.createElement('img');
-        this.HTML_TypeDisplay.src = 'configurator/images/undefined-document.png';
+        this.HTML_TypeDisplay.src = 'video_overlay/images/sond-document.png';
         return this.HTML_TypeDisplay;
     }
 

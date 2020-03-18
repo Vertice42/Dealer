@@ -16,8 +16,8 @@ import { sleep } from '../utils/utils';
 
 export const HOST = 'http://localhost:' + (ServerConfigs.Port || process.env.Port);
 
-export class Watch {
-  private Watched: () => Promise<any>;
+export class Observer {
+  private Observation: () => Promise<any>;
   public WaitingTime: number;
   public OnWaitch = (_result: any) => { };
   private PromiseToStop: () => any;
@@ -36,7 +36,7 @@ export class Watch {
   async start() {
     if (this.IsStop) {
       this.IsStop = false;
-      this.OnWaitch(await this.Watched()
+      this.OnWaitch(await this.Observation()
         .catch(async () => {
           await sleep(1000);
           return resolve();
@@ -51,14 +51,14 @@ export class Watch {
       if (this.IsStop) {
         this.PromiseToStop();
       } else {
-        this.OnWaitch(await this.Watched());
+        this.OnWaitch(await this.Observation());
         this.watch();
       }
     }, this.WaitingTime);
   }
 
-  constructor(Watched: () => Promise<any>, WaitingTime = 100) {
-    this.Watched = Watched;
+  constructor(Observation: () => Promise<any>, WaitingTime = 100) {
+    this.Observation = Observation;
     this.WaitingTime = WaitingTime;
 
     this.watch();

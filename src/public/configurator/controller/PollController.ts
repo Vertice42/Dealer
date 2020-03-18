@@ -4,6 +4,8 @@ import { NotifyViewers, STREAMER_SOCKET } from "./MainController";
 import ViewPollManeger from "../view/ViewPollManeger";
 import TwitchListeners from "../../../services/TwitchListeners";
 import IOListeners from "../../../services/IOListeners";
+import { Observer } from "../../BackendConnection";
+import { Poll } from "../../../services/models/poll/Poll";
 
 export default class PollController {
     StreamerID: string;
@@ -54,7 +56,7 @@ export default class PollController {
 
         }
         this.ViewPollManeger.onCommandToRevertChanges = async () => {
-            this.ViewPollManeger.update(await BackendConnections.getCurrentPoll(this.StreamerID));
+            this.ViewPollManeger.updateItems(await BackendConnections.getCurrentPoll(this.StreamerID));
         }
         this.ViewPollManeger.onCommandToDistributeSent = async () => {
             STREAMER_SOCKET.on(IOListeners.onDistribuitionFinish, async () => {
@@ -68,7 +70,6 @@ export default class PollController {
                 STREAMER_SOCKET.on(IOListeners.onDistribuitionFinish, null);
             });
 
-
             await BackendConnections.SendToPollManager(
                 this.StreamerID,
                 this.ViewPollManeger.getPollButtons(),
@@ -80,6 +81,21 @@ export default class PollController {
     async LoadingCurrentPoll() {
         let Poll = await BackendConnections.getCurrentPoll(this.StreamerID)
         this.ViewPollManeger = new ViewPollManeger(Poll);
+
+        let observer = new Observer(async () => BackendConnections.getCurrentPoll(this.StreamerID), 500);
+        observer.OnWaitch = (Poll: Poll) => {
+            this.ViewPollManeger.uppdateVotesOfAllItems(Poll);
+        }
+
+        this.ViewPollManeger.onStatusChange = (PollStatus) => {
+            if (PollStatus.PollStarted && !PollStatus.PollStoped) {
+                observer.start();
+            }
+            else {
+                observer.stop();
+            }
+
+        };
         this.ViewPollManeger.PollStatus = Poll.PollStatus;
         this.setAllCommands();
     }

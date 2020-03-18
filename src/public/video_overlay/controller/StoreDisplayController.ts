@@ -9,6 +9,7 @@ import { addTwitchListeners } from "./MainController";
 export default class StoreDisplayController {
     StreamerID: string;
     TwitchUserID: string;
+    CoinName: string;
     ViewStoreDisplay = new ViewStoreDisplay();
 
 
@@ -21,7 +22,7 @@ export default class StoreDisplayController {
                 this.ViewStoreDisplay.startWithdrawalAnimation((~~BalanceChange + 1) * -1);
             }
         }
-        this.ViewStoreDisplay.CoinsOfUserView.innerText = (~~Balance).toString();
+        this.ViewStoreDisplay.CoinsOfUserView.innerText = (~~Balance).toString() +'$ '+ this.CoinName+'s';
     }
 
     async EnbleAllCommands() {
@@ -38,16 +39,23 @@ export default class StoreDisplayController {
         let WalletOfUser: dbWallet = await BackendConnections.GetWallet(this.StreamerID, this.TwitchUserID);
         this.ViewStoreDisplay.CoinsOfUserView.innerText = (~~WalletOfUser.Coins).toString();
 
+        this.CoinName = (await BackendConnections.GetCoinsSettings(this.StreamerID)).CoinName;
+
         this.ViewStoreDisplay.updateStoreItems(
             await BackendConnections.GetStore(this.StreamerID, -1),
             await BackendConnections.GetPurchaseOrders(this.StreamerID));
 
-        addTwitchListeners(TwitchListeners.onStoreChaneg, async () => {
+        addTwitchListeners(TwitchListeners.onCoinNameChange, async (newCoinName) => {
+            this.CoinName = newCoinName;
+        })
+
+        addTwitchListeners(TwitchListeners.onStoreChange, async () => {
             this.ViewStoreDisplay.updateStoreItems(
                 await BackendConnections.GetStore(this.StreamerID, -1),
-                await BackendConnections.GetPurchaseOrders(this.StreamerID));        })
+                await BackendConnections.GetPurchaseOrders(this.StreamerID));
+        })
 
-        addTwitchListeners(TwitchListeners.onAddPurchasedItem, async () => {            
+        addTwitchListeners(TwitchListeners.onAddPurchasedItem, async () => {
             this.ViewStoreDisplay.updateStoreItems(
                 await BackendConnections.GetStore(this.StreamerID, -1),
                 await BackendConnections.GetPurchaseOrders(this.StreamerID));

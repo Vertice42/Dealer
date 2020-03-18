@@ -26,12 +26,12 @@ APP.post(UploadFileRoute, async function (req, res: express.Response) {
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
         
     let dir = `./uploads/${req.headers["streamer-id"]}/${req.headers["folder-name"]}`;
+
     if (fs.existsSync(dir)) await del(dir);
-    fs.mkdirSync(dir)
+
+    await fs.promises.mkdir(dir);
 
     let file = fs.createWriteStream(dir + '/' + req.headers["file-name"]);
-
-
     req.on('data', chunk => {
         file.write(chunk);
     })
