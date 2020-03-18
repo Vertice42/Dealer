@@ -25,8 +25,10 @@ import { getSoketOfStreamer } from "../SocketsManager";
 import { dbBettingsManager } from "../modules/database/poll/dbBettingsManager";
 
 export class PollController {
-
     StreamerID: string;
+
+    OnDistribuitionEnd = (StatisticsOfDistribution: {}) => { };
+
     /**
      * 
      * @param StreamerID 
@@ -41,16 +43,13 @@ export class PollController {
      */
     async StartDistribuition(Buttons: PollButton[]) {
         let AccountData = dbManager.getAccountData(this.StreamerID);
-        let startTime = new Date().getTime();
+        let StartTime = new Date().getTime();
 
         let WinningButtons = dbPollMager.getWinningButtons(Buttons);
 
         let Bettings = await new dbPollMager(this.StreamerID).getAllBettings();
 
-        if (Bettings.length < 1) {
-            AccountData.CurrentPollStatus.DistributionCompleted = true;
-            return resolve({ DistributionStarted: new Date(), mensage: 'just hear a bet' });
-        }
+        if (Bettings.length < 3) return reject({ DistributionStartedError: 'insufficient number of bets' })
 
         let AccontResult = dbPollMager.CalculateDistribution(Bettings, WinningButtons);
 
@@ -58,26 +57,22 @@ export class PollController {
 
         let DistributionPromises = [];
 
-        Bettings.forEach(async Bettings => {
-            if (Bettings) {
-                let walletManeger = new dbWalletManeger(this.StreamerID, Bettings.TwitchUserID);
+        Bettings.forEach(async Betting => {
+            if (Betting) {
+                let walletManeger = new dbWalletManeger(this.StreamerID, Betting.TwitchUserID);
 
-                if (dbPollMager.BetIsWinner(WinningButtons, Bettings.Bet))
-                    DistributionPromises.push(walletManeger.deposit(Bettings.BetAmount * AccountData.LossDistributor))
+                if (dbPollMager.BetIsWinner(WinningButtons, Betting.Bet))
+                    DistributionPromises.push(walletManeger.deposit(Betting.BetAmount * AccountData.LossDistributor))
             }
         });
 
-        Promise.all(DistributionPromises)
-            .then(() => {
-                AccountData.CurrentPollStatus.DistributionCompleted = true
-                AccountData.CurrentPollStatus.StatisticsOfDistribution = {
-                    AccontResult,
-                    timeOfDistribution: new Date().getTime() - startTime + ' ms'
-                }
-                let SoketOfStreamer = getSoketOfStreamer(this.StreamerID);
-                if (SoketOfStreamer)
-                    SoketOfStreamer.emit(IOListeners.onDistribuitionFinish);
-            })
+
+        Promise.all(DistributionPromises).then(() => {
+            this.OnDistribuitionEnd({
+                AccontResult,
+                timeOfDistribution: new Date().getTime() - StartTime + ' ms'
+            });
+        })
 
         return resolve({ DistributionStarted: new Date() });
 
@@ -161,7 +156,7 @@ export class PollController {
     /**
      * @returns {CurrentPollStatus:PollStatus}
      */
-    async dbUpdatePollStatus() {
+    async dbUpdatePollStatus(): Promise<PollStatus> {
         let AccountData = dbManager.getAccountData(this.StreamerID);
 
         if (!AccountData.CurrentPollID)
@@ -212,7 +207,7 @@ export class PollController {
      * @param Buttons 
      * @returns {UpdatePollStatusRes:PollStatus, UpdateButtonGroupRes:UpdateButtonGroupResult}
      */
-    async UpdatePoll(Buttons: PollButton[]) {
+    async UpdatePoll(Buttons: PollButton[]): Promise<any> {
         let AccountData = dbManager.getAccountData(this.StreamerID);
 
         let UpdatePollStatusRes: PollStatus = null;
@@ -231,7 +226,7 @@ export class PollController {
     /**
      * @returns { PollCreated: new Date }
      */
-    async CreatePoll() {
+    async CreatePoll(): Promise<any> {
         /**Generate a handle with the current time
          * to create the tables
          */
@@ -253,7 +248,7 @@ export class PollController {
      * @returns Poll
      */
     async getCurrentPoll() {
-        let AccountData = dbManager.getAccountData(this.StreamerID);        
+        let AccountData = dbManager.getAccountData(this.StreamerID);
 
         let Buttons = [];
         let Bets: PollBeat[];

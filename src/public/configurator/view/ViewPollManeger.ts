@@ -2,7 +2,6 @@ import { PollStatus } from "../../../services/models/poll/PollStatus";
 import { Poll } from "../../../services/models/poll/Poll";
 import { PollButton } from "../../../services/models/poll/PollButton";
 import { GenerateColor } from "../../common/model/ViewerFeatures";
-import { any } from "bluebird";
 
 export class PollItemViewer {
     ID: number;
@@ -250,8 +249,19 @@ export class PollItemDesktopViewer extends PollItemViewer {
     }
 }
 export default class ViewPollManeger {
+    IsStarted: boolean;
+
     PollStatus: PollStatus = null;
     PollItemsViewers: PollItemViewer[] = [];
+
+    public get ThereAreSelectedWinners(): boolean {
+        for (const key in this.PollItemsViewers) {
+            if (this.PollItemsViewers[key].IsWinner())
+            return true;
+        }
+        return false;
+    }
+
     DistributionDiv = <HTMLDivElement>document.getElementById("DistributionDiv");
     PollManagerDiv = <HTMLDivElement>document.getElementById("PollManagerDiv");
     PollItensDiv = <HTMLDivElement>document.getElementById("PollItensDiv");
@@ -265,58 +275,18 @@ export default class ViewPollManeger {
     RestartButton = <HTMLButtonElement>document.getElementById("RestartButton");
     DistributeButton = <HTMLButtonElement>document.getElementById("DistributeButton");
     CloseButton = <HTMLButtonElement>document.getElementById("CloseButton");
-    onCommandToCreateSent: {
-        (): Promise<any>;
-        (): {
-            then: (arg0: () => void) => void;
-        };
-    };
-    onCommandToWaxSent: {
-        (): Promise<any>;
-        (): {
-            then: (arg0: (res: any) => void) => void;
-        };
-        (): void;
-    };
-    onCommandToStartSent: {
-        (): Promise<any>;
-        (): {
-            then: (arg0: (res: any) => void) => void;
-        };
-        (): void;
-    };
-    onCommandToStopSent: {
-        (): Promise<any>;
-        (): {
-            then: (arg0: (res: any) => void) => void;
-        };
-        (): void;
-    };
+
+    onCommandToCreateSent: () => Promise<void>;
+    onCommandToWaxSent: () => Promise<void>;
+    onCommandToStartSent: () => Promise<void>;
+    onCommandToStopSent: () => Promise<void>;
     onCommandToApplyChangesSent: { (): Promise<any>; (): Promise<void>; };
-    onCommandToRestartSent: {
-        (): Promise<any>;
-        (): {
-            then: (arg0: (res: any) => void) => void;
-        };
-        (): void;
-    };
-    onCloseButtonClick: {
-        (): Promise<any>;
-        (): {
-            then: (arg0: (res: any) => void) => void;
-        };
-        (): void;
-    };
-    onCommandToDistributeSent: {
-        (): Promise<any>;
-        (): {
-            then: (arg0: (res: any) => void) => void;
-        };
-        (): void;
-    };
+    onCommandToRestartSent: () => Promise<void>;
+    onCloseButtonClick: () => Promise<void>;
+    onCommandToDistributeSent: () => Promise<void>;
     onCommandToRevertChanges: () => Promise<void>;
 
-    IsStarted: boolean;
+
     setCreatedPoll() {
         this.ShowPoll();
         this.EnableButton(this.AddItemButton, this.onClickOfAddItemButton);
@@ -342,9 +312,13 @@ export default class ViewPollManeger {
     setStopedPoll() {
         this.ShwoWinnersPicks();
         this.HideButton(this.StopPollButton);
+
         this.ShowButton(this.DistributeButton);
+        if(this.ThereAreSelectedWinners) this.EnableButton(this.DistributeButton,this.onClickOfDistributeButton);
+
         this.ShowButton(this.RestartButton);
         this.EnableButton(this.RestartButton, this.onClickOfRestartButton);
+
         this.DisableButton(this.AddItemButton);
         this.IsStarted = false;
     }
@@ -411,7 +385,7 @@ export default class ViewPollManeger {
         await this.onCommandToRevertChanges();
         this.HideButton(this.ApplyChangesButton);
         this.HideButton(this.RevertChangesButton);
-        this.EnableButton(this.StopPollButton,this.onClickOfStopPollButton);
+        this.EnableButton(this.StopPollButton, this.onClickOfStopPollButton);
 
         return true;
     };
@@ -439,6 +413,7 @@ export default class ViewPollManeger {
         });
         return true;
     };
+
     //TODO ADD canell distribuition 
     setDistributioFninished() {
         this.ShowButton(this.CloseButton);
@@ -448,9 +423,9 @@ export default class ViewPollManeger {
         if (this.PollStatus.PollStarted) {
             this.ShowButton(this.ApplyChangesButton);
             this.ShowButton(this.RevertChangesButton);
-        } 
-        
-        this.EnableButton(this.RevertChangesButton, this.onClickOfRevertChangesButton); 
+        }
+
+        this.EnableButton(this.RevertChangesButton, this.onClickOfRevertChangesButton);
         if (this.ThereAreEnoughElements()) {
             this.EnableButton(this.ApplyChangesButton, this.onClickOfApplyChangesButton);
             this.EnableButton(this.StartPollButton, this.onClickOfStartButton);
@@ -463,20 +438,12 @@ export default class ViewPollManeger {
         }
     };
     private onWinnerButtonsModified = () => {
-        if (this.ThereAreWinners())
+        if (this.ThereAreSelectedWinners)
             this.EnableButton(this.DistributeButton, this.onClickOfDistributeButton);
         else
             this.DisableButton(this.DistributeButton);
         return true;
     };
-    private ThereAreWinners() {
-        let ThereAreWinners = false;
-        this.PollItemsViewers.forEach(PollItemViewer => {
-            if (PollItemViewer.IsWinner())
-                ThereAreWinners = true;
-        });
-        return ThereAreWinners;
-    }
     private ThereAreEnoughElements() {
         return (this.PollItemsViewers.length > 1);
     }
@@ -484,8 +451,9 @@ export default class ViewPollManeger {
         let PollItem = new PollItemDesktopViewer(ID, this);
         PollItem.setNameInputValue(Name);
         PollItem.setColorInputValue(Color);
-        if (IsWinner)
+        if (IsWinner) {
             PollItem.setWinner();
+        }
         PollItem.onChange = this.onModified;
         PollItem.onWinnersButtonsChange = this.onWinnerButtonsModified;
         this.PollItemsViewers.push(PollItem);
@@ -579,9 +547,9 @@ export default class ViewPollManeger {
 
     constructor(Poll: Poll) {
         this.Initialize();
-        if (Poll.PollStatus.PollWaxed)
+        if (Poll.PollStatus.PollWaxed) {
             this.setWaxedPoll();
-        else {
+        } else {
             this.setCreatedPoll();
             if (Poll.PollStatus.PollStarted) {
                 this.setStartedPoll();

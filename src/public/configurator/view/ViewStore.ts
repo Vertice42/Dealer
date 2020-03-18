@@ -104,7 +104,7 @@ export class ViewStoreItem implements StoreItem {
   ItemSettingsJson: string;
   FileName: string;
   Price: number;
-  SingleReproductionSettings: SingleReproductionSettings;
+  SingleReproductionSetting: SingleReproductionSettings;
 
   public HTML: HTMLDivElement
 
@@ -163,21 +163,21 @@ export class ViewStoreItem implements StoreItem {
     this.PriceInput = new OrientedInput('Incert Price', 'number', 'PriceInput');
     
     this.ViewStoreType = new ViewStoreType(this.Type, this.ItemsSettings[this.ItemsSettings.findIndex((ViewSettingsOfIten) => { return (ViewSettingsOfIten.DonorFeatureName === 'AudioVolume') })]);
-    this.SingleReproductionSettings = new SingleReproductionSettings(this.ItemsSettings[this.ItemsSettings.findIndex((ViewSettingsOfIten) => { return (ViewSettingsOfIten.DonorFeatureName === 'SingleReproduction') })])
+    this.SingleReproductionSetting = new SingleReproductionSettings(this.ItemsSettings[this.ItemsSettings.findIndex((ViewSettingsOfIten) => { return (ViewSettingsOfIten.DonorFeatureName === 'SingleReproduction') })])
 
     this.HTML = document.createElement('div');
     this.HTML.classList.add('StoreItem');
     this.HTML.appendChild(this.ViewStoreType.HTML);
     this.HTML.appendChild(this.DescriptionInput.HTMLInput);
     this.HTML.appendChild(this.PriceInput.HTMLInput);
-    this.HTML.appendChild(this.SingleReproductionSettings.HTML);
+    this.HTML.appendChild(this.SingleReproductionSetting.HTML);
     this.HTML.appendChild(this.createInputFile());
     this.HTML.appendChild(this.ResponsiveInputFile.HTMLInput);
     this.HTML.appendChild(this.createDeletebutton());
 
-    this.SingleReproductionSettings.HTML.onchange = () => {
+    this.SingleReproductionSetting.HTML.onchange = () => {
       let ItemSetting = this.ItemsSettings[this.ItemsSettings.findIndex((ViewSettingsOfIten) => { return (ViewSettingsOfIten.DonorFeatureName === 'SingleReproduction') })];
-      ItemSetting.Enable = this.SingleReproductionSettings.HTML_Input.checked;
+      ItemSetting.Enable = this.SingleReproductionSetting.HTML_Input.checked;
       this.onSettingChange(this, ItemSetting);
     }
 
@@ -207,7 +207,7 @@ export default class ViewStore {
   onDescriptionChange = (ViewStoreItem: ViewStoreItem) => { };
   onPriceChange = (ViewStoreItem: ViewStoreItem) => { };
   onButtonDeleteActive = (ViewStoreItem: ViewStoreItem) => { };
-  onSettingOfItemChange = (ViewStoreItem: StoreItem, ItemSettings: ItemSetting) => { };
+  onSettingOfItemChange = (ViewStoreItem: ViewStoreItem, ItemSettings: ItemSetting) => { };
   onFileInputChange = (ViewStoreItem: ViewStoreItem) => { };
 
   addStoreItem(StoreItem: StoreItem) {

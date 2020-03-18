@@ -26,8 +26,11 @@ export const CoinsSettingsManagerRoute = '/CoinsSettingsManager/';
 export const GetCoinsSettingsRoute = '/CoinsSettings/:StreamerID';
 export const getCoinsSettingsRoute = (StreamerID: String) => { return '/CoinsSettings/' + StreamerID }
 //SETTINGS
-export const GetWalletRoute = '/Wallets/:StreamerID/:TwitchUserID'
-export const getWalletRoute = (StreamerID: string, TwitchUserID = '*') => { return '/Wallets/' + StreamerID + '/' + TwitchUserID };
+export const GetWalletsRoute = '/Wallets/:StreamerID/:TwitchUserID'
+export const getWallestRoute = (StreamerID: string, TwitchUserID = '*') => { return '/Wallets/' + StreamerID + '/' + TwitchUserID };
+
+export const GetWalletRoute = '/Wallet/:StreamerID/:TwitchUserID'
+export const getWalletRoute = (StreamerID: string, TwitchUserID: string) => { return '/Wallet/' + StreamerID + '/' + TwitchUserID };
 export const WalletManager = '/Wallets/';
 //WALLETS
 export const UploadFileRoute = '/UploadFile';

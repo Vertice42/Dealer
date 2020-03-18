@@ -9,6 +9,8 @@ import { AddBetRequest } from "../models/poll/AddBetRequest";
 import { PollController } from "../controller/PollController";
 import { PollButton } from "../models/poll/PollButton";
 import { PollManagerRoute, AddBeatRoute, GetPollRoute } from "./routes";
+import { getSoketOfStreamer } from "../SocketsManager";
+import IOListeners from "../IOListeners";
 
 function ThereWinningButtonsInArray(PollButtons: PollButton[]): boolean {
     for (let i = 0; i < PollButtons.length; i++)
@@ -33,7 +35,7 @@ APP.post(PollManagerRoute, async function (req: PollRequest, res: express.Respon
     let pollController = new PollController(req.body.StreamerID);
 
     let PoolUpdateResult: { UpdatePollStatusRes: PollStatus, UpdateButtonGroupRes: UpdateButtonGroupResult };
-    let DistribuitionResult: { DistributionStarted: Date; };
+    let SrartDistribuitionResult: { DistributionStarted: Date; };
 
     let AccountData = dbManager.getAccountData(req.body.StreamerID);
     if (AccountData.CurrentPollStatus.PollWaxed)
@@ -48,14 +50,29 @@ APP.post(PollManagerRoute, async function (req: PollRequest, res: express.Respon
                 !AccountData.CurrentPollStatus.PollWaxed &&
                 !AccountData.CurrentPollStatus.DistributionStarted
             ) {
-                if (ThereWinningButtonsInArray(req.body.PollButtons))
-                    DistribuitionResult = await pollController.StartDistribuition(req.body.PollButtons);
-                else
+                if (ThereWinningButtonsInArray(req.body.PollButtons)) {
+                    pollController.OnDistribuitionEnd = (StatisticsOfDistribution) => {
+
+                        AccountData.CurrentPollStatus.DistributionCompleted = true
+                        AccountData.CurrentPollStatus.StatisticsOfDistribution = StatisticsOfDistribution;
+
+                        let SoketOfStreamer = getSoketOfStreamer(this.StreamerID);
+                        if (SoketOfStreamer)
+                            SoketOfStreamer.emit(IOListeners.onDistribuitionFinish);
+
+                    }
+                    try {
+                        SrartDistribuitionResult = await pollController.StartDistribuition(req.body.PollButtons);
+                    } catch (error) {
+                        return res.status(500).send(error);
+                    }
+                } else {
                     return res.status(500).send({ RequestError: 'There is no winning button' });
+                }
             }
         }
     }
-    return res.status(200).send({ PoolUpdateResult, DistribuitionResult });
+    return res.status(200).send({ PoolUpdateResult, DistribuitionResult: SrartDistribuitionResult });
 
 });
 APP.get(GetPollRoute, async function (req: { params: { StreamerID: string } }, res: express.Response) {
@@ -75,7 +92,7 @@ APP.get(GetPollRoute, async function (req: { params: { StreamerID: string } }, r
         })
         .catch((reje) => {
             console.error(reje);
-            
+
             res.status(500).send(reje)
         })
 });
@@ -110,7 +127,7 @@ APP.post(AddBeatRoute, async function (req: AddBetRequest, res: express.Response
 
             if (mensage) return { RequestError: mensage };
         }
-    ])    
+    ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
 
     let pollController = new PollController(req.body.StreamerID);

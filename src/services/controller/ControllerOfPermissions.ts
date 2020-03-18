@@ -10,32 +10,36 @@ export default class ControllerOfPermissions {
         let StreamerData = await new dbDealerManager(this.StreamerID).getStreamerData();
         return (StreamerData) ? (StreamerData.DonatedBeats > 0) : false;
     }
-    async FeaturesIsUnlocked(DonorFeatures: DonorFeatures) {        
-        if(DonorFeatures.itIsfree) return true;
+    async FeaturesIsLocked(DonorFeatures: DonorFeatures) {
+        if (DonorFeatures.itIsfree) return false;
 
         let StreamerData = await new dbDealerManager(this.StreamerID).getStreamerData();
-        return (StreamerData) ? (StreamerData.DonatedBeats >= DonorFeatures.price) : false;
+        
+        return (StreamerData) ? (StreamerData.DonatedBeats >= DonorFeatures.price) : true;
     }
 
-    async CheckForLockedSettings(ItemsSettings: ItemSetting[]) {
+    async AllSettingsISLocked(ItemsSettings: ItemSetting[]) {
         return new Promise((resolve, reject) => {
             //TODO MDAR PATH EM MODO PRODUTION            
-            fs.readFile(path.resolve('./src/services/configs/DonorFeatures.json'), "utf8", async (err, data) => {
-                if (err) return reject(err);
-    
+            fs.readFile(path.resolve('./src/services/configs/DonorFeatures.json'), "utf8", async (ERROR, data) => {
+                if (ERROR) return reject(ERROR);
+
                 let DonorFeatures: DonorFeatures[] = JSON.parse(data);
-                let AllItemsSettingsIsUnlocked = true;
-                for (const ItemsSetting of ItemsSettings) { 
-                    let donorFeature = DonorFeatures[DonorFeatures.findIndex(DonorFeature => {                        
+                let AllSettingsISLocked = false;
+
+                for (const ItemsSetting of ItemsSettings) {
+
+                    let donorFeature = DonorFeatures[DonorFeatures.findIndex(DonorFeature => {
                         if (DonorFeature.name === ItemsSetting.DonorFeatureName) return true;
                     })]
-                    
-                    if (await this.FeaturesIsUnlocked(donorFeature) && ItemsSetting.Enable) {
-                        AllItemsSettingsIsUnlocked = false;
-                        return resolve(AllItemsSettingsIsUnlocked);
+
+                    if (await this.FeaturesIsLocked(donorFeature) && ItemsSetting.Enable) {
+                        AllSettingsISLocked = true;
+                        return resolve(AllSettingsISLocked);
                     }
                 }
-                return resolve(AllItemsSettingsIsUnlocked);
+
+                return resolve(AllSettingsISLocked);
             })
         })
     }

@@ -26,7 +26,7 @@ APP.post(StoreManagerRoute, async function (req, res: express.Response) {
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
     //TODO ADICIONAR dotenv
 
-    if ((await new ControllerOfPermissions(Request.StreamerID).CheckForLockedSettings(Request.StoreItem.ItemsSettings))) {
+    if ((await new ControllerOfPermissions(Request.StreamerID).AllSettingsISLocked(Request.StoreItem.ItemsSettings))) {
         return res.status(423).send({ mensage: 'This feature is blocked for you' })
     }
 

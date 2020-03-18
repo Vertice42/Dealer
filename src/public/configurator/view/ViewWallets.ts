@@ -23,7 +23,14 @@ export class ViewWallet {
         this.HTML = document.createElement('div');
         this.HTML.classList.add('WalletOfUser');
 
-        this.InputOfCoinsOfWalletOfUser = new ResponsiveInput();
+        let input = document.createElement('input');
+        input.classList.add('CoinsOfWalletOfUser');
+        input.type = 'number';
+
+        input.maxLength = 7;
+        input.max = '9999999';
+
+        this.InputOfCoinsOfWalletOfUser = new ResponsiveInput(input);
         this.InputOfCoinsOfWalletOfUser.setUnchangedInput();
         this.InputOfCoinsOfWalletOfUser.HTMLInput.value = CoinsOfWalletOfUser.toString();
 
@@ -52,9 +59,9 @@ export default class ViewWallets {
                 this.onWalletInputInFocus(Wallet.TwitchUserID, viewWallet);
             }
 
-            viewWallet.InputOfCoinsOfWalletOfUser.HTMLInput.addEventListener('focusout',() => {
+            viewWallet.InputOfCoinsOfWalletOfUser.HTMLInput.addEventListener('focusout', () => {
                 this.onWalletInputFocusOut(Wallet.TwitchUserID, viewWallet);
-            }) 
+            })
 
             this.HTML_DivOfWallets.appendChild(viewWallet.HTML);
         });

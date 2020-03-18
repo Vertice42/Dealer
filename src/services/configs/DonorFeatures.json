@@ -2,7 +2,7 @@
     {
         "name": "SingleReproduction",
         "description": "Only addo one item to the list at a time",
-        "itIsfree": true,
+        "itIsfree": false,
         "price": 10
     },
     {

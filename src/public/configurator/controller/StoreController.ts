@@ -80,6 +80,12 @@ export default class StoreController {
             }
             BackendConnections.SendToStoreManager(this.StreamerID, ViewStoreItem)
                 .then(() => this.onStoreChange())
+                .catch((rej)=>{
+                    if (ItemSettings.DonorFeatureName === 'SingleReproduction') {
+                        ViewStoreItem.SingleReproductionSetting.HTML_Input.checked = false;
+                        //TODO adicionar mesagem de erro com propaganda
+                    }
+                })
         }
         this.ViewStore.onFileInputChange = async (ViewStoreItem) => {
             let file = ViewStoreItem.HTML_InputFile.files[0];

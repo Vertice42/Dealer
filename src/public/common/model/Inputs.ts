@@ -29,17 +29,21 @@ export class ResponsiveInput {
 
     this.HTMLInput.classList.add('InputSentError');
   }
-  constructor(HTMLInput ?: HTMLInputElement) {
-    if(HTMLInput){
-          this.HTMLInput = HTMLInput;
-    }else{
+  constructor(HTMLInput?: HTMLInputElement) {
+    if (HTMLInput) {
+      this.HTMLInput = HTMLInput;
+    } else {
       this.HTMLInput = document.createElement('input');
     }
   }
 }
 
 export class OrientedInput extends ResponsiveInput {
+  private Type: string;
+
   setUsed() {
+    this.HTMLInput.type = this.Type;
+
     this.HTMLInput.classList.add('InputUsed');
     this.HTMLInput.classList.remove('InputNotUsed');
   }
@@ -47,31 +51,37 @@ export class OrientedInput extends ResponsiveInput {
     this.HTMLInput.classList.add('UnchangedInput');
     this.HTMLInput.classList.add('InputNotUsed');
   }
-  constructor(Guidance: string, type: string, ClassCSS: string) {
-
+  constructor(Guidance: string, Type: string, ClassCSS: string) {
     super(<HTMLInputElement>document.createElement('input'));
-    this.HTMLInput.classList.add(ClassCSS)
+    this.Type = Type;
+    this.HTMLInput.classList.add(ClassCSS);
 
-    this.HTMLInput.setAttribute('type', 'text');
+    if (Type === 'number') {
+      this.HTMLInput.maxLength = 7;
+      this.HTMLInput.max = '9999999';
+    }
+
+    this.HTMLInput.type = 'text';
     this.setNotUsed();
     this.HTMLInput.value = Guidance;//TODO ADD TRALATE
 
     this.HTMLInput.addEventListener('focusout', () => {
       if (this.HTMLInput.value === '') {
-        this.HTMLInput.setAttribute('type', 'text');
+        this.HTMLInput.type = 'text';
         this.HTMLInput.classList.add('InputNotUsed');
         this.HTMLInput.classList.remove('InputUsed');
         this.HTMLInput.value = Guidance;//ADD TRALATE
       }
-    })
+    });
     this.HTMLInput.onfocus = () => {
       if (this.HTMLInput.classList.contains('InputNotUsed')) {
-        this.HTMLInput.setAttribute('type', type);
+        this.HTMLInput.type = Type;
+        window.Twitch.ext.rig.log(this.HTMLInput.type);
+
         this.setUsed();
         this.HTMLInput.value = '';
       }
     }
-
   }
 }
 
@@ -81,7 +91,7 @@ export class ResponsiveLabelForInputFile {
     this.HTMLInput = HTMLInput;
     this.HTMLInput.classList.add('AddUpdateFileIcon');
     this.HTMLInput.classList.add('Default');
-    this.HTMLInput.htmlFor = id|| HTMLInput.id;
+    this.HTMLInput.htmlFor = id || HTMLInput.id;
   }
   setDefault() {
     this.HTMLInput.classList.remove('Upgradeable');

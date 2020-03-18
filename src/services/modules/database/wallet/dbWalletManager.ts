@@ -12,7 +12,7 @@ export async function getWallet(StreamerID: string, TwitchUserID: string) {
 export async function getAllWallets(StreamerID: string, TwitchUserID: string) {
     let AccountData = dbManager.getAccountData(StreamerID);
     if (AccountData) {
-
+        
         if (TwitchUserID === '*') {
             return AccountData.dbWallets.findAll({ order: [['Coins', 'DESC']], limit: 20 });
         } else {

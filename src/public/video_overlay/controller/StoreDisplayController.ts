@@ -35,7 +35,7 @@ export default class StoreDisplayController {
         if (CoinsSettings.FileNameOfCoinImage)
             this.ViewStoreDisplay.CoinImgURL = BackendConnections.getUrlOfFile(this.StreamerID, 'CoinImage', CoinsSettings.FileNameOfCoinImage);
 
-        let WalletOfUser: dbWallet = await BackendConnections.GetWallets(this.StreamerID, this.TwitchUserID);
+        let WalletOfUser: dbWallet = await BackendConnections.GetWallet(this.StreamerID, this.TwitchUserID);
         this.ViewStoreDisplay.CoinsOfUserView.innerText = (~~WalletOfUser.Coins).toString();
 
         this.ViewStoreDisplay.updateStoreItems(

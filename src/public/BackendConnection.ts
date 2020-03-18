@@ -10,7 +10,7 @@ import DeletePurchaseOrderRequest from '../services/models/store/DeletePurchaseO
 import PurchaseOrder from '../services/models/store/PurchaseOrder';
 import { WalletManagerRequest } from '../services/models/wallet/WalletManagerRequest';
 import { CoinsSettings } from '../services/models/streamer_settings/CoinsSettings';
-import { getPollRoute, PollManagerRoute, MinerManagerRoute, addBeatRoute, getMinerSettingsRoute, getCoinsSettingsRoute, CoinsSettingsManagerRoute, MineCoinRoute, getWalletRoute, WalletManager, getStoreRoute, StoreManagerRoute, PurchaseOrderRoute, getPurchaseOrderRoute, UploadFileRoute, getFilesRoute } from '../services/routes/routes';
+import { getPollRoute, PollManagerRoute, MinerManagerRoute, addBeatRoute, getMinerSettingsRoute, getCoinsSettingsRoute, CoinsSettingsManagerRoute, MineCoinRoute, getWalletRoute, WalletManager, getStoreRoute, StoreManagerRoute, PurchaseOrderRoute, getPurchaseOrderRoute, UploadFileRoute, getFilesRoute, GetWalletsRoute, getWallestRoute } from '../services/routes/routes';
 import { Poll } from '../services/models/poll/Poll';
 import { sleep } from '../utils/utils';
 
@@ -227,8 +227,23 @@ export async function MineCoin(StreamerID: string, TwitchUserID: string) {
   });
 }
 
-export async function GetWallets(StreamerID: string, TwitchUserID = '*') {
+export async function GetWallet(StreamerID: string, TwitchUserID:string) {
   return fetch(HOST + getWalletRoute(StreamerID, TwitchUserID), {
+    method: "GET"
+  }).then(function (res) {
+    if (res.ok)
+      return resolve(res.json())
+    else
+      return reject(res.json());
+  }).catch((rej) => {
+    console.error(rej);
+
+  })
+}
+
+
+export async function GetWallets(StreamerID: string, TwitchUserID = '*') {
+  return fetch(HOST + getWallestRoute(StreamerID, TwitchUserID), {
     method: "GET"
   }).then(function (res) {
     if (res.ok)
