@@ -2,16 +2,53 @@ import StoreItem from "../../../services/models/store/StoreItem";
 import PurchaseOrder from "../../../services/models/store/PurchaseOrder";
 import { PurchaseOrderItem } from "../controller/PurchaseOrderController";
 
+class ViewPurchaseTime {
+    HTML: HTMLSpanElement;
+    PurchaseTime: number;
+
+    updateTime() {
+        let time = new Date().getTime() - this.PurchaseTime;
+
+        time = time / 1000;
+        if (time < 60) {
+            let TimeRound  = Math.round(time);
+            return this.HTML.innerText = `${TimeRound} second${(TimeRound > 1) ? 's' : ''} ago`;
+        }
+        time = time / 60;
+        if (time < 60) {
+            let TimeRound  = Math.round(time);
+            return this.HTML.innerText = `${TimeRound} minute${(TimeRound > 1) ? 's' : ''} ago`;
+        }
+        time = time / 60;
+        if (time < 60) {
+            let TimeRound  = Math.round(time);
+            return this.HTML.innerText = `${TimeRound} hour${(TimeRound > 1) ? 's' : ''} ago`;
+        }
+
+        let TimeRound  = Math.round(time);
+        return this.HTML.innerText = `${TimeRound} days ago`;
+
+    }
+
+    constructor(PurchaseTime: number) {
+        this.PurchaseTime = PurchaseTime;
+
+        this.HTML = document.createElement('span');
+        this.HTML.classList.add('PurchaseTime');
+        this.updateTime();
+    }
+}
+
 export class ViewPurchasedItem {
     private ID: number
     HTML: HTMLDivElement
     private HTML_ItemPlacement: HTMLSpanElement
     private HTML_UserName: HTMLSpanElement
-    private HTML_PurchaseTime: HTMLSpanElement
     private HTML_ItemName: HTMLSpanElement
     private HTML_RefundButton: HTMLSpanElement
 
     onRefundButtonActive = () => { }
+    ViewPurchaseTime: ViewPurchaseTime;
 
     private CreateHTML_ItemPlacement(ItemPlacement: number) {
         this.HTML_ItemPlacement = document.createElement('span');
@@ -25,14 +62,6 @@ export class ViewPurchasedItem {
         this.HTML_UserName.classList.add('UserName');
         this.HTML_UserName.innerText = '@' + UserName;
         return this.HTML_UserName;
-    }
-
-    private CreatePurchaseTime(PurchaseTime: number) {
-        this.HTML_PurchaseTime = document.createElement('span');
-        this.HTML_PurchaseTime.classList.add('PurchaseTime');
-        //add ,ecanica de tempo dinamico
-        this.HTML_PurchaseTime.innerText = PurchaseTime + '';
-        return this.HTML_PurchaseTime;
     }
 
     private CreateHTML_ItemName(ItemName: string) {
@@ -65,9 +94,12 @@ export class ViewPurchasedItem {
         this.ID = id;
         this.HTML = document.createElement('div');
         this.HTML.classList.add('PurchasedItem');
+
+        this.ViewPurchaseTime = new ViewPurchaseTime(PurchaseTime);
+
         this.HTML.appendChild(this.CreateHTML_ItemPlacement(id + 1))
         this.HTML.appendChild(this.CreateHTML_UserName(UserName))
-        this.HTML.appendChild(this.CreatePurchaseTime(PurchaseTime))
+        this.HTML.appendChild(this.ViewPurchaseTime.HTML);
         this.HTML.appendChild(this.CreateHTML_ItemName(ItemDescription))
         this.HTML.appendChild(this.CreateHTML_RefundButton())
     }
@@ -167,6 +199,16 @@ export default class ViewPurchaseOrders {
             viewPurchasedItem.id = index;
         });
     }
+
+    private updateViewPurchaseOrdersTime(){
+        setTimeout(() => {
+            this.ViewPurchaseOrdersArray.forEach(ViewPurchaseOrder => {
+                ViewPurchaseOrder.ViewPurchaseTime.updateTime();
+            })
+            this.updateViewPurchaseOrdersTime();
+        }, (this.ViewPurchaseOrdersArray.length > 1)? 1000 : 10000);
+    }
     constructor() {
+        this.updateViewPurchaseOrdersTime();
     }
 }
