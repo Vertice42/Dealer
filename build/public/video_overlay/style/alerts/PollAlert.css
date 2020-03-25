@@ -69,7 +69,7 @@
     animation: HideAnimation 2s 5s  forwards, ShowPoll 1s forwards;
 }
 
-.FullScren:hover .Enable#PollAlert {
+.MainDiv:hover .Enable#PollAlert {
     animation: ShowAnimation 500ms forwards, ShowPoll 1s forwards;
 }
 

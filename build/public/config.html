@@ -6,114 +6,145 @@
   <link rel="stylesheet" href="./configurator/style/Main.css" />
 </head>
 
-<body style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
-  <button id="PollModuleTitle" class="TitleButton">Gereciador de Apostas</button>
-  <div id="PollModule" class="Module ModuleSample">
+<body>
+  <div id="AdvertisementDiv" class="AdvertisementHide" style="display: none;">
 
-    <div class="PollDiv Hidden" id="PollManagerDiv">
+    <div class="ObstructionDiv"></div>
 
-      <div id="PollItensDiv"></div>
-      <button class="VoteManagementButton" id="AddPollItemButton">+</button>
+    <img id="DiamondLayer0" class="Diamond" src="./configurator/images/Diamond.png">
+    <img id="DiamondLayer1" class="Diamond" src="./configurator/images/Diamond.png">
 
-      <div style="display: flex;">
+    <div id="AdvertisementTable"> </div>
 
-        <button class="VoteManagementButton ButtonEnable" id="DeletePollButton"></button>
+    <span id="AdvertisementText">
+      Torne-se um doador para
+      acessar todas as
+      Funcionalidades
+    </span>
 
-        <div class="PollButtonsDiv ">
-          <button class="VoteManagementButton ButtonHide ButtonDisable" id="StartPollButton">Iniciar</button>
-          <button class="VoteManagementButton ButtonHide ButtonDisable" id="StopPollButton">Parar votação</button>
-          <button class="VoteManagementButton ButtonHide ButtonDisable" id="RestartButton">Reiniciar votação</button>
-          <button class="VoteManagementButton ButtonHide ButtonDisable" id="ApplyChangesButton">Aplicar</button>
-          <button class="VoteManagementButton ButtonHide ButtonDisable" id="RevertChangesButton">Desfazer</button>
-          <button class="VoteManagementButton ButtonHide ButtonDisable" id="DistributeButton">Distribuir</button>
+    <div id="AuraOfButton"></div>
+    <button id="AdvertisementButton">Seja um Doador</button>
+    <button id="CloaseAdvertisementButton"></button>
+
+    <img id="DiamondStar1" class="DiamondStar" src="./configurator/images/star.png">
+    <img id="DiamondStar2" class="DiamondStar" src="./configurator/images/star.png">
+    <img id="DiamondStar3" class="DiamondStar" src="./configurator/images/star.png">
+
+    <img src="configurator/images/bit_100.gif" class="BitImage" id="bitImage100">
+    <img src="configurator/images/bit_1000.gif" class="BitImage" id="bitImage1000">
+
+  </div>
+
+  <div id="MainDiv">
+
+    <button id="PollModuleTitle" class="TitleButton">Gereciador de Apostas</button>
+    <div id="PollModule" class="Module ModuleSample">
+
+      <div class="PollDiv Hidden" id="PollManagerDiv">
+
+        <div id="PollItensDiv"></div>
+        <button class="VoteManagementButton" id="AddPollItemButton">+</button>
+
+        <div style="display: flex;">
+
+          <button class="VoteManagementButton ButtonEnable" id="DeletePollButton"></button>
+
+          <div class="PollButtonsDiv ">
+            <button class="VoteManagementButton ButtonHide ButtonDisable" id="StartPollButton">Iniciar</button>
+            <button class="VoteManagementButton ButtonHide ButtonDisable" id="StopPollButton">Parar votação</button>
+            <button class="VoteManagementButton ButtonHide ButtonDisable" id="RestartButton">Reiniciar votação</button>
+            <button class="VoteManagementButton ButtonHide ButtonDisable" id="ApplyChangesButton">Aplicar</button>
+            <button class="VoteManagementButton ButtonHide ButtonDisable" id="RevertChangesButton">Desfazer</button>
+            <button class="VoteManagementButton ButtonHide ButtonDisable" id="DistributeButton">Distribuir</button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div id="DistributionDiv" class="Hidden">
-      <h2>Distribuindo ganhos e perdas</h2>
-      <img src="https://pixelpapa.com/wp-content/uploads/2018/11/10.gif" alt="">
-      <button class="VoteManagementButton ButtonHide" id="CloseButton">Fexar</button>
-    </div>
+      <div id="DistributionDiv" class="Hidden">
+        <h2>Distribuindo ganhos e perdas</h2>
+        <img src="https://pixelpapa.com/wp-content/uploads/2018/11/10.gif" alt="">
+        <button class="VoteManagementButton ButtonHide" id="CloseButton">Fexar</button>
+      </div>
 
-    <div style="display: flex; margin-bottom: 5%;">
-      <button class="VoteManagementButton ButtonEnable" id="CreatePollButton">Criar Aposta</button>
-    </div>
-  </div>
-
-  <button id="SettingModuleTitle" class="TitleButton">Configuraçoes</button>
-  <div id="SettingModule" class="Module ModuleSample">
-
-    <div class="MinerDiv Setting">
-      <div class="SettingDiv">
-        <h2>Mineração por hora </h2>
-        <input id="HourlyRewardInput" type="number" class="UnchangedInput">
+      <div style="display: flex; margin-bottom: 5%;">
+        <button class="VoteManagementButton ButtonEnable" id="CreatePollButton">Criar Aposta</button>
       </div>
     </div>
 
-    <div class="CoinsDiv Setting">
-      <div class="SettingDiv">
-        <h2>Nome da Moeda</h2><input id="CoinNameInput" type="text">
-      </div>
-      <div class="SettingDiv">
-        <h2>Imagem da Moeda</h2>
-      </div>
-      <div class="SettingDiv">
-        <input type="file" accept="image/png, image/jpeg" class="inputfile" name="file" id="InputCoinImg">
-        <label id="LabeForInputCoinImg" for="InputCoinImg"></label>
-      </div>
+    <button id="SettingModuleTitle" class="TitleButton">Configuraçoes</button>
+    <div id="SettingModule" class="Module ModuleSample">
 
-    </div>
-
-  </div>
-
-  <button id="StoreModuleTitle" class="TitleButton">Gerenciador da Loja</button>
-  <div id="StoreModule" class="Module ModuleSample">
-
-    <div id="StoreManeger">
-      <audio id="DemoAudioPlayer"></audio>
-      <div id="StoreItems"></div>
-      <button id="AddStoreItem">+</button>
-    </div>
-
-    <div id="PurchaseOrdersDiv">
-      <div id="ReproducingMedia" class="PurchaseOrdersEmpty">
-        <audio id="AudioPlayer"></audio>
-
-        <div class="LoadingBar" id="LoadingBarOfAudioPlayer">
-          <span id="PlaybackUserName"></span>
-          <span id="PlaybackItemName"></span>
+      <div class="MinerDiv Setting">
+        <div class="SettingDiv">
+          <h2>Mineração por hora </h2>
+          <input id="HourlyRewardInput" type="number" class="UnchangedInput">
         </div>
+      </div>
 
-        <div class="PlayerButtonsDiv">
-          <button id="PauseAudioPlayerButton" class="Disable PlayerButton"></button>
-          <button id="RefundCurrentAudioButton" class="Disable PlayerButton">Refund</button>
+      <div class="CoinsDiv Setting">
+        <div class="SettingDiv">
+          <h2>Nome da Moeda</h2><input id="CoinNameInput" type="text">
+        </div>
+        <div class="SettingDiv">
+          <h2>Imagem da Moeda</h2>
+        </div>
+        <div class="SettingDiv">
+          <input type="file" accept="image/png, image/jpeg" class="inputfile" name="file" id="InputCoinImg">
+          <label id="LabeForInputCoinImg" for="InputCoinImg"></label>
         </div>
 
       </div>
 
-      <div id="ListOfPurchasedItems">
+    </div>
+
+    <button id="StoreModuleTitle" class="TitleButton">Gerenciador da Loja</button>
+    <div id="StoreModule" class="Module ModuleSample">
+
+      <div id="StoreManeger">
+        <audio id="DemoAudioPlayer"></audio>
+        <div id="StoreItems"></div>
+        <button id="AddStoreItem">+</button>
+      </div>
+
+      <div id="PurchaseOrdersDiv">
+        <div id="ReproducingMedia" class="PurchaseOrdersEmpty">
+          <audio id="AudioPlayer"></audio>
+
+          <div class="LoadingBar" id="LoadingBarOfAudioPlayer">
+            <span id="PlaybackUserName"></span>
+            <span id="PlaybackItemName"></span>
+          </div>
+
+          <div class="PlayerButtonsDiv">
+            <button id="PauseAudioPlayerButton" class="Disable PlayerButton"></button>
+            <button id="RefundCurrentAudioButton" class="Disable PlayerButton">Refund</button>
+          </div>
+
+        </div>
+
+        <div id="ListOfPurchasedItems">
+        </div>
+
+      </div>
+    </div>
+
+    <button id="WalletsModuleTitle" class="TitleButton">Wallets</button>
+    <div id="WalletsModule" class="Module ModuleSample">
+
+      <div class="Search">
+        <input id="SearchInput" type="text">
+        <button id="SearchInputButton"></button>
+      </div>
+
+      <div id="DivOfWallets">
       </div>
 
     </div>
-  </div>
 
-  <button id="WalletsModuleTitle" class="TitleButton">Wallets</button>
-  <div id="WalletsModule" class="Module ModuleSample">
-
-    <div class="Search">
-      <input id="SearchInput" type="text">
-      <button id="SearchInputButton"></button>
-    </div>
-
-    <div id="DivOfWallets">
-    </div>
+    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
+    <script src="./configurator/bundle.js"></script>
 
   </div>
-
-  <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
-  <script src="./configurator/bundle.js"></script>
-
 </body>
 
 </html>

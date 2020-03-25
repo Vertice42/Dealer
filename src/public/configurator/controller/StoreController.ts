@@ -8,10 +8,12 @@ import TwitchListeners from "../../../services/TwitchListeners";
 import { NotifyViewers } from "./MainController";
 import { reject } from "bluebird";
 import FolderTypes from "../../../services/models/files_manager/FolderTypes";
+import { ViewAdvertisement } from "../view/ViewAdvertising";
 
 export default class StoreController {
     StreamerID: string;
     ViewStore = new ViewStore();
+    ViewAdvertisement = new ViewAdvertisement();
     //TODO CHANGE to josineditaleble file
     StoreItems: StoreItem[];
 
@@ -85,7 +87,8 @@ export default class StoreController {
                     if (ItemSettings.DonorFeatureName === 'SingleReproduction') {
                         ViewStoreItem.SingleReproductionSetting.HTML_Input.checked = false;
                         ItemSettings.Enable = false;
-                        //TODO adicionar mesagem de erro com propaganda
+
+                        ViewAdvertisement.Show();
                     }
                 })
         }
@@ -132,6 +135,6 @@ export default class StoreController {
     }
     constructor(StreamerID: string) {
         this.StreamerID = StreamerID;
-        this.loadingStoreItems()
+        this.loadingStoreItems();
     }
 }

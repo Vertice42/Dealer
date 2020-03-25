@@ -27,7 +27,7 @@
     animation: HideAnimation 2s 5s forwards, ShowLoserAnimation 1s forwards;
 }
 
-.FullScren:hover .Enable#AlertOfLoser {
+.MainDiv:hover .Enable#AlertOfLoser {
     animation: ShowAnimation 500ms forwards, ShowLoserAnimation 1s forwards;
 }
 

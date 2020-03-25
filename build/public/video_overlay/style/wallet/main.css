@@ -11,7 +11,7 @@
     opacity: 0;
 }
 
-.FullScren:hover .WalletDiv{
+.MainDiv:hover .WalletDiv{
     opacity: 1;
 }
 

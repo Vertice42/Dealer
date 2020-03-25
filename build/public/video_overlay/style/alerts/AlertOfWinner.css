@@ -48,7 +48,7 @@
     animation: HideAnimation 2s 5s forwards, ShowWinnerAnimation 1s forwards;
 }
 
-.FullScren:hover .Enable#AlertOfWinner {
+.MainDiv:hover .Enable#AlertOfWinner {
     animation: ShowAnimation 500ms forwards, ShowWinnerAnimation 1s forwards;
 }
 

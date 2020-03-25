@@ -1,4 +1,5 @@
 export class ViewMain {
+    private static HTML = <HTMLDivElement> document.getElementById('MainDiv');
 
     HTML_PollModule = <HTMLDivElement>document.getElementById('PollModule');
     HTML_PollModuleTitle = <HTMLTitleElement>document.getElementById('PollModuleTitle');
@@ -44,6 +45,14 @@ export class ViewMain {
                 this.setModuleHide(Module);
             }
         }
+    }
+
+    static Hide(){
+        this.HTML.classList.add('MainDivHidden');
+    }
+
+    static Show(){
+        this.HTML.classList.remove('MainDivHidden');
     }
 
     constructor() {

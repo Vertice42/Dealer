@@ -43,7 +43,7 @@
     animation: HideAnimation 2s 5s forwards, ShowAnimationStopAlert 1s forwards;
 }
 
-.FullScren:hover .Enable#StopAlert {
+.MainDiv:hover .Enable#StopAlert {
     animation: ShowAnimation 500ms forwards, ShowAnimationStopAlert 1s forwards;
 }
 

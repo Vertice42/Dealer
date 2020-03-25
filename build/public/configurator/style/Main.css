@@ -3,19 +3,28 @@
 @import url(./store_manager/main.css);
 @import url(./wallets_manager/main.css);
 @import url(../../common/style/common.css);
+@import url(./advertisement/main.css);
 @font-face {
     font-family: Heroes;
     src: url(../../common/fonts/Heroes\ Legend.ttf);
+    font-family: Anton;
+    src: url(../../common/fonts/Anton-Regular.ttf);
 }
 
 body {
     background: rgb(54, 54, 73);
 }
 
-.FullScren {
+#MainDiv {
     width: 100%;
     height: 100%;
     margin: 0;
+    
+    transition: filter 1s;
+}
+
+.MainDivHidden {
+    filter: blur(10px)
 }
 
 .Sample {
@@ -27,15 +36,16 @@ body {
 }
 
 .TitleButton {
-    display: flex;
+    display: block;
     border: none;
-    width: fit-content;
+    min-width: 60vw;
     font-size: 5vw;
     background-color: rgb(255, 255, 255);
     margin: 1vw auto;
     padding: 0px 1vw;
     font-family: fantasy;
     text-transform: uppercase;
+    text-align: center;
 }
 
 h3 {
@@ -69,9 +79,8 @@ input::-webkit-color-swatch {
     display: grid;
     background-color: rgb(54, 48, 68);
     margin: 1vw;
-    transition: all 500ms;    
+    transition: all 500ms;
     max-height: 10000px;
-
 }
 
 .ModuleHide {

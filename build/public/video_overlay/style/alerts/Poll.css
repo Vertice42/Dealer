@@ -38,7 +38,7 @@
     animation: HideAnimation 2s 5s forwards, ShowAnimationPoll 1s forwards cubic-bezier(0.645, 0.045, 0.355, 1);
 }
 
-.FullScren:hover .Enable#PollDiv {
+.MainDiv:hover .Enable#PollDiv {
     animation: ShowAnimation 500ms forwards, ShowAnimationPoll 1s forwards;
 }
 
