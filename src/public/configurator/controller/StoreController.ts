@@ -5,10 +5,11 @@ import StoreItem, { StoreTypes } from "../../../services/models/store/StoreItem"
 import ViewStore, { ViewStoreItem } from "../view/ViewStore";
 import ItemSetting from "../../../services/models/store/item_settings/ItemSettings";
 import TwitchListeners from "../../../services/TwitchListeners";
-import { NotifyViewers } from "./MainController";
+import { NotifyViewers, STREAMER_SOCKET } from "./MainController";
 import { reject } from "bluebird";
 import FolderTypes from "../../../services/models/files_manager/FolderTypes";
 import { ViewAdvertisement } from "../view/ViewAdvertising";
+import IOListeners from "../../../services/IOListeners";
 
 export default class StoreController {
     StreamerID: string;
@@ -80,10 +81,10 @@ export default class StoreController {
             if (ItemSettings.DonorFeatureName === 'AudioVolume') {
                 this.ViewStore.HTML_DemoAudioPlayer.volume = ItemSettings.value / 100;
             }
-            
+
             BackendConnections.SendToStoreManager(this.StreamerID, ViewStoreItem)
                 .then(() => this.onStoreChange())
-                .catch((rej)=>{
+                .catch((rej) => {
                     if (ItemSettings.DonorFeatureName === 'SingleReproduction') {
                         ViewStoreItem.SingleReproductionSetting.HTML_Input.checked = false;
                         ItemSettings.Enable = false;
@@ -103,13 +104,23 @@ export default class StoreController {
                     default:
                         break;
                 }
+                ViewStoreItem.ResponsiveInputFile.setInUpload();
+
+                let ioListener = (UploadPercentage: number) => {
+                    ViewStoreItem.ResponsiveInputFile.setUploadPorcentage(UploadPercentage);
+                }
+
+                STREAMER_SOCKET.addEventListener(IOListeners.UploadProgress, ioListener);
 
                 BackendConnections.UploadFile(this.StreamerID, FolderTypes.StoreItem + ViewStoreItem.id, file.name, file
                 ).then(async (UploadFileResponse: UploadFileResponse) => {
                     let StoreItem = <StoreItem>ViewStoreItem;
                     StoreItem.FileName = UploadFileResponse.FileName;
                     await BackendConnections.SendToStoreManager(this.StreamerID, StoreItem);
+                    
                     ViewStoreItem.ResponsiveInputFile.setUpgradeable();
+                    STREAMER_SOCKET.removeEventListener(IOListeners.UploadProgress,ioListener);
+
                     this.onStoreChange();
                 }
                 ).catch(rej => console.error(rej))

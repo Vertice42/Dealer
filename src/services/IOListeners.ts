@@ -6,5 +6,6 @@ export default {
     onItensChange:'ItensChange',
     onAddPurchasedItem:'PurchasedItem',
     onDeletePurchasedItem:'DeletePurchasedItem',
-    onDistribuitionFinish:'DistribuitionFinish'
+    onDistribuitionFinish:'DistribuitionFinish',
+    UploadProgress: 'UploadProgress'
 }

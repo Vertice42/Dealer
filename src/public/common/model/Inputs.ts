@@ -86,26 +86,51 @@ export class OrientedInput extends ResponsiveInput {
 }
 
 export class ResponsiveLabelForInputFile {
-  HTMLInput: HTMLLabelElement;
+  HTML: HTMLDivElement;
+  HTML_LabelForInput: HTMLLabelElement;
+  HTML_PercentageSpan: HTMLSpanElement;
   constructor(id?: string, HTMLInput = document.createElement('label')) {
-    this.HTMLInput = HTMLInput;
-    this.HTMLInput.classList.add('AddUpdateFileIcon');
-    this.HTMLInput.classList.add('Default');
-    this.HTMLInput.htmlFor = id || HTMLInput.id;
+    this.HTML = document.createElement('div');
+    this.HTML.classList.add('AddUpdateFileIcondiv');
+
+    this.HTML_LabelForInput = HTMLInput;
+    this.HTML_LabelForInput.classList.add('AddUpdateFileIcon');
+    this.HTML_LabelForInput.classList.add('Default');
+    this.HTML_LabelForInput.htmlFor = id || HTMLInput.id;
+    this.HTML.appendChild(this.HTML_LabelForInput);
+
+    this.HTML_PercentageSpan = document.createElement('span');
+    this.HTML_PercentageSpan.classList.add('PercentageSpan');
+    this.HTML.appendChild(this.HTML_PercentageSpan);
   }
   setDefault() {
-    this.HTMLInput.classList.remove('Upgradeable');
-    this.HTMLInput.classList.remove('InUpload');
-    this.HTMLInput.classList.add('Default');
+    this.HTML_LabelForInput.classList.remove('Upgradeable');
+    this.HTML_LabelForInput.classList.remove('InUpload');
+    this.HTML_LabelForInput.classList.add('Default');
   }
   setUpgradeable() {
-    this.HTMLInput.classList.remove('Default')
-    this.HTMLInput.classList.remove('InUpload');
-    this.HTMLInput.classList.add('Upgradeable');
+    this.HTML_LabelForInput.classList.remove('Default')
+    this.HTML_LabelForInput.classList.remove('InUpload');
+    this.HTML_LabelForInput.classList.add('Upgradeable');
+
+    this.HTML_LabelForInput.style.backgroundImage = '';
+    this.HTML_PercentageSpan.style.display = 'none';
   }
   setInUpload() {
-    this.HTMLInput.classList.remove('Default')
-    this.HTMLInput.classList.remove('Upgradeable');
-    this.HTMLInput.classList.add('InUpload');
+    this.HTML_LabelForInput.classList.remove('Default')
+    this.HTML_LabelForInput.classList.remove('Upgradeable');
+    this.HTML_LabelForInput.classList.add('InUpload');
+
+    this.HTML_LabelForInput.style.backgroundImage = '';
+    this.HTML_PercentageSpan.style.display = 'none';
+  }
+  UploadPorcentage: number
+  setUploadPorcentage(UploadPorcentage: number) {
+    if (this.UploadPorcentage !== UploadPorcentage) {
+      this.UploadPorcentage = UploadPorcentage;
+      this.HTML_LabelForInput.style.backgroundImage = `url(../configurator/images/circle.png), conic-gradient(rgb(255, 255, 255) 3% ,#fff ${this.UploadPorcentage}% ,rgb(0, 102, 255) ${this.UploadPorcentage + 2}% )`;
+      this.HTML_PercentageSpan.innerText = Math.round(UploadPorcentage)+'%';
+      this.HTML_PercentageSpan.style.display = '';
+    }
   }
 }

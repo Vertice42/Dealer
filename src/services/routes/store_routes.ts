@@ -54,7 +54,7 @@ APP.delete(StoreManagerRoute, async function (req, res: express.Response) {
 
     new dbStoreManager(Request.StreamerID).DeleteStoreItem(req.body.StoreItem)
         .then(async (result) => {
-            await del('./uploads/'+Request.StreamerID+'/'+FolderTypes.StoreItem+Request.StoreItem.id);
+            await del('./uploads/'+Request.StreamerID+'/'+FolderTypes.StoreItem+Request.StoreItem.id+'/*');
             //TODO Trasformar string 'Store Item em onjeto refatoravel'
             res.status(200).send(result);
         })

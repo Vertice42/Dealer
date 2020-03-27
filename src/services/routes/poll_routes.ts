@@ -85,7 +85,7 @@ APP.get(GetPollRoute, async function (req: { params: { StreamerID: string } }, r
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
 
     let pollController = new PollController(req.params.StreamerID);
-
+        
     pollController.getCurrentPoll()
         .then((resolve: Poll) => {
             res.status(200).send(resolve);

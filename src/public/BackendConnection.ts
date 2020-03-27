@@ -404,13 +404,14 @@ export async function UploadFile(StreamerID: string, FolderName: string, FileNam
   headers.append("Accept", "application/json");
   headers.append('streamer-id', StreamerID);
   headers.append("file-name", FileName);
-  headers.append("folder-name", FolderName);
+  headers.append("file-id", FolderName);
   return fetch(HOST + UploadFileRoute,
     {
       method: "POST",
       headers: headers,
       body: File
-    }).catch((rej) => {
+    })
+    .catch((rej) => {
       console.error(rej);
       return rej.json()
     })

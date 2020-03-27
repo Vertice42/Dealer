@@ -172,7 +172,7 @@ export class ViewStoreItem implements StoreItem {
     this.HTML.appendChild(this.PriceInput.HTMLInput);
     this.HTML.appendChild(this.SingleReproductionSetting.HTML);
     this.HTML.appendChild(this.createInputFile());
-    this.HTML.appendChild(this.ResponsiveInputFile.HTMLInput);
+    this.HTML.appendChild(this.ResponsiveInputFile.HTML);
     this.HTML.appendChild(this.createDeletebutton());
 
     this.SingleReproductionSetting.HTML.onchange = () => {
@@ -266,7 +266,7 @@ export default class ViewStore {
     this.HTML_StoreItemsDiv.appendChild(viewStoreItem.HTML);
     return viewStoreItem;
   }
-  removeStoreItem(StoreItem: ViewStoreItem) {
+  removeStoreItem(StoreItem: ViewStoreItem) {    
     this.HTML_StoreItemsDiv.removeChild(StoreItem.HTML);
     this.ViewStoreItems.splice(this.ViewStoreItems.indexOf(StoreItem), 1);
   }

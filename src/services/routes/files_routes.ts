@@ -6,42 +6,54 @@ import path = require('path');
 import { APP, CheckRequisition } from "..";
 import UploadFileResponse from "../models/files_manager/UploadFileResponse";
 import { UploadFileRoute, GetFileRoute } from "./routes";
+import { getSoketOfStreamer } from "../SocketsManager";
+import IOListeners from "../IOListeners";
 
-APP.post(UploadFileRoute, async function (req, res: express.Response) {    
+APP.post(UploadFileRoute, async function (req, res: express.Response) {
+
     let ErrorList = CheckRequisition([
         () => {
-            if (!req.headers["streamer-id"])
-                return ({ RequestError: "StreamerID is no defined" })
+            if (!(typeof req.headers["streamer-id"] === 'string'))
+                return ({ RequestError: "StreamerID is no a string" })
         },
         () => {
-            if (!req.headers["folder-name"])
-                return ({ RequestError: "Folder Name is no defined" })
+            if (!(typeof req.headers["file-id"] === 'string'))
+                return ({ RequestError: "Folder Name is no a string" })
         },
         () => {
-            if (!req.headers["file-name"])
-                return ({ RequestError: "File Name is no defined" })
+            if (!(typeof req.headers["file-name"] === 'string'))
+                return ({ RequestError: "File Name is no a string" })
         }
     ])
-    
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
-        
-    let dir = `./uploads/${req.headers["streamer-id"]}/${req.headers["folder-name"]}`;
 
-    if (fs.existsSync(dir)) await del(dir);
+    const StreamerID = <string>req.headers["streamer-id"];
+    const FileID = <string>req.headers["file-id"];
+    const FileName = <string>req.headers["file-name"];
 
-    await fs.promises.mkdir(dir);
+    let dir = `uploads/${StreamerID}/${FileID}`;
 
-    let file = fs.createWriteStream(dir + '/' + req.headers["file-name"]);
+    if (fs.existsSync(dir)) {
+        del.sync(dir + '/*');
+    } else {
+        await fs.promises.mkdir('./' + dir);
+    }
+
+    let fileSize = Number(req.headers['content-length']);
+
+    let file = fs.createWriteStream('./' + dir + '/' + FileName);
+
     req.on('data', chunk => {
         file.write(chunk);
+        let UploadPercentage = (file.bytesWritten / fileSize) * 100;
+        getSoketOfStreamer(StreamerID).emit(IOListeners.UploadProgress, UploadPercentage);
     })
-    req.on('end', () => {
-        file.end();
-        res.status(200).send(new UploadFileResponse(<string>req.headers["file-name"], new Date));
+    req.on('end', async () => {
+        res.status(200).send(new UploadFileResponse(FileName, new Date));
     })
 })
 
-APP.get(GetFileRoute, async function (req, res: express.Response) {    
+APP.get(GetFileRoute, async function (req, res: express.Response) {
     res.status(200).sendFile(path.resolve(`./uploads/${req.params.StreamerID}/${req.params.Folder}/${req.params.FileName}`))
 })
 

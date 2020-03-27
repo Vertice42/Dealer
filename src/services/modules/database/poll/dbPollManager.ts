@@ -17,6 +17,9 @@ export class dbPollMager {
      * @returns {dbBettings[]}
      */
     getAllBettings() {
+        if(!dbManager.getAccountData(this.StreamerID).dbCurrentBettings)
+        return [];
+        
         return dbManager.getAccountData(this.StreamerID).dbCurrentBettings.findAll();
     }
 
@@ -40,6 +43,10 @@ export class dbPollMager {
      * @returns Promise<dbButton[]>
      */
     async getAllButtonsOfCurrentPoll() {
+
+        if (!dbManager.getAccountData(this.StreamerID).dbCurrentPollButtons)
+        return [];
+
         return dbManager.getAccountData(this.StreamerID).dbCurrentPollButtons.findAll()
             .catch(async (rej) => {
                 if (rej.parent.errno === 1146) {
