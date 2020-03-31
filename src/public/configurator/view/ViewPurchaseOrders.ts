@@ -1,6 +1,7 @@
 import StoreItem from "../../../services/models/store/StoreItem";
 import PurchaseOrder from "../../../services/models/store/PurchaseOrder";
 import { PurchaseOrderItem } from "../controller/PurchaseOrderController";
+import { LinerAnimation } from "../../common/model/ViewerFeatures";
 
 class ViewPurchaseTime {
     HTML: HTMLSpanElement;
@@ -11,21 +12,21 @@ class ViewPurchaseTime {
 
         time = time / 1000;
         if (time < 60) {
-            let TimeRound  = Math.round(time);
+            let TimeRound = Math.round(time);
             return this.HTML.innerText = `${TimeRound} second${(TimeRound > 1) ? 's' : ''} ago`;
         }
         time = time / 60;
         if (time < 60) {
-            let TimeRound  = Math.round(time);
+            let TimeRound = Math.round(time);
             return this.HTML.innerText = `${TimeRound} minute${(TimeRound > 1) ? 's' : ''} ago`;
         }
         time = time / 60;
         if (time < 60) {
-            let TimeRound  = Math.round(time);
+            let TimeRound = Math.round(time);
             return this.HTML.innerText = `${TimeRound} hour${(TimeRound > 1) ? 's' : ''} ago`;
         }
 
-        let TimeRound  = Math.round(time);
+        let TimeRound = Math.round(time);
         return this.HTML.innerText = `${TimeRound} days ago`;
 
     }
@@ -107,6 +108,8 @@ export class ViewPurchasedItem {
 
 export default class ViewPurchaseOrders {
     ResizeObserver: ResizeObserver;
+    AudioProgress: number;
+
     ViewPurchaseOrdersArray: ViewPurchasedItem[] = [];
     private HTML_PurchaseOrdersDiv = <HTMLDivElement>document.getElementById('PurchaseOrdersDiv');
     private HTML_ReproducingMedia = <HTMLDivElement>document.getElementById('ReproducingMedia');
@@ -147,11 +150,16 @@ export default class ViewPurchaseOrders {
         this.HTML_ReproducingMedia.classList.remove('PurchaseOrdersNotEmpty');
         this.HTML_ReproducingMedia.classList.add('PurchaseOrdersEmpty');
     }
-    setAudioPlayerProgress(progres: number) {
-        let left = progres;
-        let rigth = progres;
-        this.HTML_LoadingBarOfAudioPlayer.style.backgroundImage =
-            `linear-gradient(to left, rgb(86, 128, 219) ${rigth}%, rgb(93, 144, 255) ${left}%)`;
+
+    setAudioPlayerProgress(newProgres: number) {        
+        LinerAnimation(this.AudioProgress, newProgres, 200, (newProgres) => {
+            let left = newProgres;
+            let rigth = newProgres;
+            this.HTML_LoadingBarOfAudioPlayer.style.backgroundImage =
+                `linear-gradient(to left, rgb(80, 40, 134) ${rigth}%, rgb(116, 30, 251) ${left}%,rgb(87, 47, 148) 90%)`;
+        })
+
+        this.AudioProgress = newProgres;
     }
     setRunningOrder(TwitchUserName: string, StoreItemName: string) {
         this.HTML_PlaybackUserName.innerText = TwitchUserName;
@@ -200,13 +208,13 @@ export default class ViewPurchaseOrders {
         });
     }
 
-    private updateViewPurchaseOrdersTime(){
+    private updateViewPurchaseOrdersTime() {
         setTimeout(() => {
             this.ViewPurchaseOrdersArray.forEach(ViewPurchaseOrder => {
                 ViewPurchaseOrder.ViewPurchaseTime.updateTime();
             })
             this.updateViewPurchaseOrdersTime();
-        }, (this.ViewPurchaseOrdersArray.length > 1)? 1000 : 10000);
+        }, (this.ViewPurchaseOrdersArray.length > 1) ? 1000 : 10000);
     }
     constructor() {
         this.updateViewPurchaseOrdersTime();

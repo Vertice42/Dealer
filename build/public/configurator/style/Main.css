@@ -7,6 +7,9 @@
 @font-face {
     font-family: Heroes;
     src: url(../../common/fonts/Heroes\ Legend.ttf);
+}
+
+@font-face {
     font-family: Anton;
     src: url(../../common/fonts/Anton-Regular.ttf);
 }
@@ -19,7 +22,6 @@ body {
     width: 100%;
     height: 100%;
     margin: 0;
-    
     transition: filter 1s;
 }
 
@@ -46,6 +48,12 @@ body {
     font-family: fantasy;
     text-transform: uppercase;
     text-align: center;
+    transition: min-width 200ms;
+}
+
+.TitleButton:focus, .TitleButton:hover {
+    outline: none;
+    min-width: 65vw;
 }
 
 h3 {
@@ -89,5 +97,6 @@ input::-webkit-color-swatch {
 }
 
 .ModuleSample {
-    clip-path: inset(0% 0% 0% 0%);
+    max-height: 10000px;
+    clip-path: inset(-10% -10% -10% -10%);
 }

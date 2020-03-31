@@ -55,13 +55,13 @@ window.Twitch.ext.onAuthorized(async (auth) => {
     console.error(context);
 
     await new AllertController(StreamerID, TwitchUserID).Loading();
+
     var ControllerOfStoreDisplay = new StoreDisplayController(StreamerID, TwitchUserID);
     var UserMiner = new Miner(StreamerID, TwitchUserID);
     UserMiner.onMine = (CurrentCoinsOfUserNunber, BalanceChange) => {
       ControllerOfStoreDisplay.setViewBalance(CurrentCoinsOfUserNunber, BalanceChange)
     };
     UserMiner.startMining();
-
   });
 
 })

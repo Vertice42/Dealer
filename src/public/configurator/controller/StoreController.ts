@@ -45,6 +45,7 @@ export default class StoreController {
                     FolderTypes.StoreItem + ViewStoreItemActived.id,
                     ViewStoreItemActived.FileName);
 
+                this.ViewStore.HTML_DemoAudioPlayer.volume = ViewStoreItemActived.ItemsSettings[ViewStoreItemActived.ItemsSettings.findIndex((ViewSettingsOfIten) => { return (ViewSettingsOfIten.DonorFeatureName === 'AudioVolume') })].value / 100;
                 this.ViewStore.HTML_DemoAudioPlayer.play();
             }
         }
@@ -80,6 +81,7 @@ export default class StoreController {
         this.ViewStore.onSettingOfItemChange = (ViewStoreItem, ItemSettings) => {
             if (ItemSettings.DonorFeatureName === 'AudioVolume') {
                 this.ViewStore.HTML_DemoAudioPlayer.volume = ItemSettings.value / 100;
+                this.ViewStore.HTML_DemoAudioPlayer.currentTime = 0;
             }
 
             BackendConnections.SendToStoreManager(this.StreamerID, ViewStoreItem)
@@ -94,7 +96,7 @@ export default class StoreController {
                 })
         }
         this.ViewStore.onFileInputChange = async (ViewStoreItem) => {
-            let file = ViewStoreItem.HTML_InputFile.files[0];
+            let file = ViewStoreItem.ResponsiveInputFile.HTML_InputFile.files[0];
             if (file) {
                 switch (ViewStoreItem.Type) {
                     case StoreTypes.Audio:

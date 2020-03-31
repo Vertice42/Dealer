@@ -5,7 +5,7 @@
   "certificateExceptions": [],
   "extensionViews": [
     {
-      "id": "1",
+      "id": "3",
       "label": "",
       "channelId": "97848974",
       "configurationAnchor": "panel",
@@ -28,7 +28,7 @@
       }
     },
     {
-      "id": "2",
+      "id": "4",
       "label": "",
       "channelId": "97848974",
       "configurationAnchor": "panel",
@@ -46,8 +46,77 @@
       "role": "Broadcaster",
       "orientation": "Portrait",
       "frameSize": {
-        "width": 854,
-        "height": 480
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "id": "5",
+      "label": "",
+      "channelId": "97848974",
+      "configurationAnchor": "panel",
+      "displayChannelName": "vertise5x",
+      "type": "mobile",
+      "features": {
+        "isBitsEnabled": false,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": false
+      },
+      "linked": false,
+      "linkedUserId": "",
+      "mode": "viewer",
+      "isPopout": false,
+      "role": "Broadcaster",
+      "orientation": "Portrait",
+      "frameSize": {
+        "width": 360,
+        "height": 740
+      }
+    },
+    {
+      "id": "6",
+      "label": "",
+      "channelId": "97848974",
+      "configurationAnchor": "panel",
+      "displayChannelName": "vertise5x",
+      "type": "dashboard",
+      "features": {
+        "isBitsEnabled": false,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": false
+      },
+      "linked": true,
+      "linkedUserId": "265737932",
+      "mode": "dashboard",
+      "isPopout": false,
+      "role": "Broadcaster",
+      "orientation": "Portrait",
+      "frameSize": {
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "id": "7",
+      "label": "",
+      "channelId": "97848974",
+      "configurationAnchor": "panel",
+      "displayChannelName": "vertise5x",
+      "type": "mobile",
+      "features": {
+        "isBitsEnabled": true,
+        "isChatEnabled": true,
+        "isSubscriptionStatusAvailable": true
+      },
+      "linked": false,
+      "linkedUserId": "",
+      "mode": "viewer",
+      "isPopout": false,
+      "role": "Broadcaster",
+      "orientation": "Portrait",
+      "frameSize": {
+        "width": 375,
+        "height": 822
       }
     }
   ],

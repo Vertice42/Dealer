@@ -1,5 +1,7 @@
+import { sleep } from "../../../utils/utils";
+
 export class ViewMain {
-    private static HTML = <HTMLDivElement> document.getElementById('MainDiv');
+    private static HTML = <HTMLDivElement>document.getElementById('MainDiv');
 
     HTML_PollModule = <HTMLDivElement>document.getElementById('PollModule');
     HTML_PollModuleTitle = <HTMLTitleElement>document.getElementById('PollModuleTitle');
@@ -13,28 +15,34 @@ export class ViewMain {
     HTML_WalletsModule = <HTMLDivElement>document.getElementById('WalletsModule');
     HTML_WalletsModuleTitle = <HTMLTitleElement>document.getElementById('WalletsModuleTitle');
 
-    private setModuleHide(HTMLDivElement: HTMLDivElement) {
+    private async setModuleHide(HTMLDivElement: HTMLDivElement) {
         HTMLDivElement.classList.remove('ModuleSample');
         HTMLDivElement.classList.add('ModuleHide');
-        localStorage.setItem(HTMLDivElement.id,'0');
+        localStorage.setItem(HTMLDivElement.id, '0');
+
+        await sleep(500);
+        HTMLDivElement.style.display = 'none';
     }
 
-    private setModuleSample(HTMLDivElement: HTMLDivElement) {
+    private async setModuleSample(HTMLDivElement: HTMLDivElement) {
+        HTMLDivElement.style.display = '';
+        await sleep(100);
+
         HTMLDivElement.classList.remove('ModuleHide');
         HTMLDivElement.classList.add('ModuleSample');
 
-        localStorage.setItem(HTMLDivElement.id,'1');
+        localStorage.setItem(HTMLDivElement.id, '1');
     }
 
     private ModuleIsHide(HTMLDivElement: HTMLDivElement) {
         let ISHide = localStorage.getItem(HTMLDivElement.id);
-        
-        return (HTMLDivElement.classList.contains('ModuleHide') || (ISHide)? (ISHide === '0') : false)
+
+        return (HTMLDivElement.classList.contains('ModuleHide') || (ISHide) ? (ISHide === '0') : false)
 
     }
 
     private setHideble(button: HTMLElement, Module: HTMLDivElement) {
-        if(this.ModuleIsHide(Module)){
+        if (this.ModuleIsHide(Module)) {
             this.setModuleHide(Module);
         }
 
@@ -47,11 +55,11 @@ export class ViewMain {
         }
     }
 
-    static Hide(){
+    static Hide() {
         this.HTML.classList.add('MainDivHidden');
     }
 
-    static Show(){
+    static Show() {
         this.HTML.classList.remove('MainDivHidden');
     }
 

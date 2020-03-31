@@ -1,0 +1,95 @@
+#SkinsPageDiv {
+    height: 100%;
+}
+
+#PromoteTextDiv {
+    background-color: rgb(65, 24, 104);
+}
+
+#PromoteText {
+    width: fit-content;
+    display: flex;
+    margin: auto;
+    font-family: Heroes;
+    font-size: 80%;
+    color: white;
+    text-align: center;
+}
+
+#SkinsListDiv {
+    display: flex;
+    width: 100%;
+    overflow-y: auto;
+}
+
+#SkinsListDiv::-webkit-scrollbar-track {
+    background: #3144ee;
+}
+#SkinsListDiv::-webkit-scrollbar {
+    width: 6px;
+    background: rgb(66, 27, 173);
+}
+#SkinsListDiv::-webkit-scrollbar-thumb {
+    background: #094aac;
+}
+
+.WalletSkinDiv {
+    display: inline-grid;
+    min-width: 10vw;
+    margin: 1vw;
+    background:url(../../images/lock_icon.png),
+    linear-gradient(45deg ,rgba(99, 139, 248, 0.815), rgba(40, 94, 241, 0.815));
+
+    background-repeat: no-repeat;
+    background-size: 0%, 100%;
+    background-position: right bottom;
+}
+
+.WalletSkinDiv.WalletSkinLock{
+    background-size: 20%, 100%;
+}
+
+.WalletSkinDiv.WalletSkinSelected{
+    border: solid white;
+}
+
+.WalletSkinImg {
+    width: 8vw;
+    height: 7vw;
+    margin: 10% 10%;
+    margin-bottom: 0vw;
+}
+
+.WalletSkinPrice {
+    display: none;
+    margin: 0 auto;
+    width: fit-content;
+    height: fit-content;
+    font-family: heroes;
+    font-size: 50%;
+    color: rgb(30, 28, 131);
+}
+
+.WalletSkinPrice.WalletSkinLock{
+    display: block;
+}
+
+.DonatebuttonDiv {
+    display: flex;
+    margin-top: 1vw;
+    width: 100%;
+}
+
+#Donatebutton {
+    width: fit-content;
+    margin: auto;
+    padding: 0 3vw;
+    background-color: #efb043;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-size: 3vw;
+    color: white;
+}
+
+#Donatebutton:active{
+    transform: scale(1.1);
+}

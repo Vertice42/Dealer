@@ -1,7 +1,10 @@
-import StoreItem from "../../../services/models/store/StoreItem";
-import { EnableRelocatableElemente } from "../../common/model/viewerFeatures";
-import { sleep } from "../../../utils/utils";
-import PurchaseOrder from "../../../services/models/store/PurchaseOrder";
+import { sleep } from "../../../../utils/utils";
+import PurchaseOrder from "../../../../services/models/store/PurchaseOrder";
+import StoreItem from "../../../../services/models/store/StoreItem";
+import { EnableRelocatableElemente } from "../../../common/model/ViewerFeatures";
+import { NONAME } from "dns";
+import { WalletSkin } from "../../../../services/models/wallet/WalletSkin";
+
 class ViewStoreItemDisplay {
     HTML: HTMLDivElement
     HTML_TypeDisplay: HTMLImageElement;
@@ -58,17 +61,101 @@ class ViewStoreItemDisplay {
     }
 }
 
-export default class ViewStoreDisplay {
+class ViewWalletSkin {
+    HTML: HTMLDivElement;
+    HTML_WalletSkinImg: HTMLImageElement;
+    HTML_WalletSkinPrice: HTMLSpanElement;
+
+    WalletSkin: WalletSkin;
+
+    public get IsLock() : boolean {
+        return this.HTML.classList.contains('WalletSkinLock');
+    }
+
+    setSelected() {
+        this.HTML.classList.add('WalletSkinSelected');
+    }
+
+    setUnSelected() {
+        this.HTML.classList.remove('WalletSkinSelected');
+    }
+
+    setLock() {
+        this.HTML.classList.add('WalletSkinLock');
+        this.HTML_WalletSkinPrice.classList.add('WalletSkinLock');
+    }
+
+    setUnlock() {
+        this.HTML.classList.remove('WalletSkinLock');
+        this.HTML_WalletSkinPrice.classList.remove('WalletSkinLock');
+
+    }
+
+    constructor(WalletSkin: WalletSkin, URLOfWalletSkinImg: string) {
+        this.WalletSkin = WalletSkin;
+
+        this.HTML = document.createElement('div');
+        this.HTML.classList.add('WalletSkinDiv');
+
+        this.HTML_WalletSkinImg = document.createElement('img');
+        this.HTML_WalletSkinImg.classList.add('WalletSkinImg');
+        this.HTML_WalletSkinImg.src = URLOfWalletSkinImg;
+        this.HTML.appendChild(this.HTML_WalletSkinImg);
+
+        this.HTML_WalletSkinPrice = document.createElement('span');
+        this.HTML_WalletSkinPrice.classList.add('WalletSkinPrice');
+        this.HTML_WalletSkinPrice.innerText = WalletSkin.Price + ' bits';
+        this.HTML.appendChild(this.HTML_WalletSkinPrice);
+    }
+}
+
+export default class ViewWalletDisplay {
     private WalletDiv = <HTMLDivElement>document.getElementById("WalletDiv");
     private Wallet = <HTMLDivElement>document.getElementById("Wallet");
-    private StoreDiv = <HTMLDivElement>document.getElementById("StoreDiv");
+
+    private NavStoreButtom = <HTMLButtonElement>document.getElementById("NavStoreButtom");
+    private NavSkinsButtom = <HTMLButtonElement>document.getElementById("NavSkinsButtom");
+
+    private InsideOfWalletDiv = <HTMLDivElement>document.getElementById("InsideOfWalletDiv");
+
+    private StreamerStorePageDiv = <HTMLDivElement>document.getElementById("StreamerStorePageDiv");
     private ItemsList = <HTMLDivElement>document.getElementById("ItemsList");
 
     private CoinsDiv = <HTMLDivElement>document.getElementById("CoinsDiv");
     public CoinsOfUserView = <HTMLElement>document.getElementById("CoinsOfUserView");
     public CoinImgURL: string;
 
+    private SkinsPageDiv = <HTMLDivElement>document.getElementById("SkinsPageDiv");
+    private SkinsListDiv = <HTMLDivElement>document.getElementById("SkinsListDiv");
+
+    onNavStoreButtomActive = () => { };
+    onNavSkinsButtomActive = () => { };
+
+    onWalletSkinSelected = (ViewWalletSkin:ViewWalletSkin) => { };
+
     onBuyItemButtonActive = (StoreItem: StoreItem) => { };
+
+    setNavSelected(navButton: HTMLButtonElement) {
+        this.NavStoreButtom.classList.remove('NavButtonEnable');
+        this.NavSkinsButtom.classList.remove('NavButtonEnable');
+
+        navButton.classList.add('NavButtonEnable');
+    }
+
+    setSkins(WalletSkins: WalletSkin[], BitsDonatedByViewer: number, getWalletSkinsURl: (WalletSkinsID: string) => string) {
+        this.SkinsListDiv.innerHTML = '';
+
+        WalletSkins.forEach(WalletSkin => {
+            let viewWalletSkin = new ViewWalletSkin(WalletSkin, getWalletSkinsURl(WalletSkin.Name));
+            if (BitsDonatedByViewer < WalletSkin.Price) viewWalletSkin.setLock();
+
+            viewWalletSkin.HTML.onclick = () => {
+                this.onWalletSkinSelected(viewWalletSkin);
+            }
+
+            this.SkinsListDiv.appendChild(viewWalletSkin.HTML);
+        });
+    }
 
     async DepositAnimation(Coin: HTMLDivElement, CoinNumber: number, onStart: () => void, onEnd: () => void) {
         Coin.classList.add('Coin');
@@ -218,16 +305,43 @@ export default class ViewStoreDisplay {
         });
     }
 
+    setPageHide(Page: HTMLDivElement) {
+        Page.classList.add('PageHiden');
+        Page.classList.remove('PageSample');
+    }
+
+    setPageSample(Page: HTMLDivElement) {
+        Page.classList.add('PageSample');
+        Page.classList.remove('PageHiden');
+    }
+
     constructor() {
         this.Wallet.addEventListener('click', () => {
-            if (this.StoreDiv.classList.contains('StoreHide')) {
-                this.StoreDiv.classList.remove('StoreHide');
-                this.StoreDiv.classList.add('StoreSample');
+            if (this.InsideOfWalletDiv.classList.contains('StoreHide')) {
+                this.InsideOfWalletDiv.classList.remove('StoreHide');
+                this.InsideOfWalletDiv.classList.add('StoreSample');
             } else {
-                this.StoreDiv.classList.remove('StoreSample');
-                this.StoreDiv.classList.add('StoreHide');
+                this.InsideOfWalletDiv.classList.remove('StoreSample');
+                this.InsideOfWalletDiv.classList.add('StoreHide');
             }
         })
         EnableRelocatableElemente(this.WalletDiv, 0, 0);
+
+        this.NavStoreButtom.onclick = () => {
+            this.setNavSelected(this.NavStoreButtom);
+
+            this.onNavStoreButtomActive();
+            this.setPageSample(this.StreamerStorePageDiv);
+            this.setPageHide(this.SkinsPageDiv);
+        }
+
+        this.NavSkinsButtom.onclick = () => {
+            this.setNavSelected(this.NavSkinsButtom);
+
+            this.onNavSkinsButtomActive();
+            this.setPageSample(this.SkinsPageDiv);
+            this.setPageHide(this.StreamerStorePageDiv);
+
+        }
     }
 }

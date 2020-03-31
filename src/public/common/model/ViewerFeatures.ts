@@ -1,3 +1,5 @@
+import { sleep } from "../../../utils/utils";
+
 export function EnableRelocatableElemente(Element: HTMLElement, StartingLocationX, StartingLocationY) {
     var moveX = 0;
     var moveY = 0;
@@ -61,7 +63,18 @@ export function GenerateColor() {
     var hexadecimais = "0123456789ABCDEF";
     var color = "#";
     for (var i = 0; i < 6; i++) {
-      color += hexadecimais[Math.floor(Math.random() * 16)];
+        color += hexadecimais[Math.floor(Math.random() * 16)];
     }
     return color;
-  }
+}
+
+export async function LinerAnimation(initial: number, end: number, time: number, onFrameChange: (progres: number) => any) {
+    let incrementer = (end - initial) / (time / 16);
+
+    for (let progres = initial; progres < end; progres += incrementer) {
+        onFrameChange(progres);
+        console.log(progres, 'incremente ' + incrementer);
+
+        await sleep(16);
+    }
+}

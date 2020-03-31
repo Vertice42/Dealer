@@ -113,7 +113,6 @@ export class ViewStoreItem implements StoreItem {
   public ViewStoreType: ViewStoreType
   public DescriptionInput: OrientedInput
   public PriceInput: OrientedInput
-  public HTML_InputFile: HTMLInputElement
   public ResponsiveInputFile: ResponsiveLabelForInputFile
 
   private HTML_DeleteButton: HTMLButtonElement
@@ -123,16 +122,6 @@ export class ViewStoreItem implements StoreItem {
   public onSettingChange = (ViewStoreItem: ViewStoreItem, ItemSettings: ItemSetting) => { };
   public onButtonDeleteActived = (ViewStoreItem: ViewStoreItem) => { };
 
-  private createInputFile() {
-    this.HTML_InputFile = document.createElement('input');
-    this.HTML_InputFile.setAttribute('type', 'file');
-    this.HTML_InputFile.classList.add('inputfile');
-    this.HTML_InputFile.name = 'file';
-    this.HTML_InputFile.accept = '.mp3,.wav';
-
-    this.HTML_InputFile.id = this.ElemeteHTML_ID;
-    return this.HTML_InputFile;
-  }
 
   private createDeletebutton() {
     this.HTML_DeleteButton = document.createElement('button');
@@ -171,7 +160,6 @@ export class ViewStoreItem implements StoreItem {
     this.HTML.appendChild(this.DescriptionInput.HTMLInput);
     this.HTML.appendChild(this.PriceInput.HTMLInput);
     this.HTML.appendChild(this.SingleReproductionSetting.HTML);
-    this.HTML.appendChild(this.createInputFile());
     this.HTML.appendChild(this.ResponsiveInputFile.HTML);
     this.HTML.appendChild(this.createDeletebutton());
 
@@ -249,7 +237,7 @@ export default class ViewStore {
       viewStoreItem.Price = Number(ViewStoreItem.PriceInput.HTMLInput.value);
       this.onPriceChange(ViewStoreItem);
     };
-    viewStoreItem.HTML_InputFile.addEventListener('change', () => {
+    viewStoreItem.ResponsiveInputFile.HTML_InputFile.addEventListener('change', () => {
       this.onFileInputChange(viewStoreItem); //TODO > 0)
     });
     viewStoreItem.onSettingChange = (ViewStoreItem, ItemSettings) => {

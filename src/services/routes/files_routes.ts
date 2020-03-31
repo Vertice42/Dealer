@@ -49,6 +49,9 @@ APP.post(UploadFileRoute, async function (req, res: express.Response) {
         getSoketOfStreamer(StreamerID).emit(IOListeners.UploadProgress, UploadPercentage);
     })
     req.on('end', async () => {
+        file.end();
+        file = null;
+
         res.status(200).send(new UploadFileResponse(FileName, new Date));
     })
 })
