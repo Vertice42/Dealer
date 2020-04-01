@@ -35,7 +35,8 @@
 
 .WalletSkinDiv {
     display: inline-grid;
-    min-width: 10vw;
+    width: 10vw;
+    height: 9vw;
     margin: 1vw;
     background:url(../../images/lock_icon.png),
     linear-gradient(45deg ,rgba(99, 139, 248, 0.815), rgba(40, 94, 241, 0.815));
@@ -54,8 +55,8 @@
 }
 
 .WalletSkinImg {
-    width: 8vw;
-    height: 7vw;
+    width: 7vw;
+    height: 6vw;
     margin: 10% 10%;
     margin-bottom: 0vw;
 }

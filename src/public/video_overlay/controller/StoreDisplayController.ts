@@ -23,7 +23,14 @@ export default class StoreDisplayController {
                 this.ViewStoreDisplay.startWithdrawalAnimation((~~BalanceChange + 1) * -1);
             }
         }
-        this.ViewStoreDisplay.CoinsOfUserView.innerText = (~~Balance).toString() +'$ '+ this.CoinName+'s';
+        this.ViewStoreDisplay.CoinsOfUserView.innerText = (~~Balance).toString() + '$ ' + this.CoinName + 's';
+    }
+
+    setSkinOfWallet(WalletSkinsSelectedName){
+        
+        this.ViewStoreDisplay.Wallet_Mask_0.style.backgroundImage = 'url(' + BackendConnections.getURLOfWalletSkinsImage(WalletSkinsSelectedName, 0) + ')'
+        this.ViewStoreDisplay.Wallet_Mask_1.style.backgroundImage = 'url(' + BackendConnections.getURLOfWalletSkinsImage(WalletSkinsSelectedName, 1) + ')'
+
     }
 
     async EnbleAllCommands() {
@@ -31,12 +38,19 @@ export default class StoreDisplayController {
             BackendConnections.addPurchaseOrder(this.StreamerID, this.TwitchUserID, StoreItem);
         }
 
-        this.ViewStoreDisplay.onNavSkinsButtomActive = () => {
-            this.ViewStoreDisplay.setSkins([new WalletSkin('charles',0),new WalletSkin('charles',200)],100,()=>{
-                return 'http://127.0.0.1:5500/build/public/video_overlay/images/piggy_bank/mask_0.png';
+        this.ViewStoreDisplay.onNavSkinsButtomActive = async () => {
+            let WalletSkins = <WalletSkin[]>await BackendConnections.getWalletSkins();
+            this.ViewStoreDisplay.setWalletSkins(WalletSkins, 100, (WalletSkinsName: string) => {
+                return BackendConnections.getURLOfWalletSkinsImage(WalletSkinsName, 0);
             })
         }
 
+        this.ViewStoreDisplay.onWalletSkinSelected = (ViewWalletSkins) => {
+            this.setSkinOfWallet(ViewWalletSkins.WalletSkin.Name);
+            this.ViewStoreDisplay.UnSelectedAllWallets();
+            window.localStorage['WalletSkinsSelectedName'] = ViewWalletSkins.WalletSkin.Name;
+            ViewWalletSkins.setSelected();
+        }
     }
 
     async LoadingStore() {
@@ -52,6 +66,16 @@ export default class StoreDisplayController {
         this.ViewStoreDisplay.updateStoreItems(
             await BackendConnections.GetStore(this.StreamerID, -1),
             await BackendConnections.GetPurchaseOrders(this.StreamerID));
+
+        let WalletSkins = <WalletSkin[]>await BackendConnections.getWalletSkins();
+
+        let WalletSkinsSelectedName = window.localStorage['WalletSkinsSelectedName'];
+        if (!WalletSkinsSelectedName) {
+            WalletSkinsSelectedName = WalletSkins[0].Name;
+            window.localStorage['WalletSkinsSelectedName'] = WalletSkinsSelectedName;
+        }
+
+        this.setSkinOfWallet(WalletSkinsSelectedName);
 
         addTwitchListeners(TwitchListeners.onCoinNameChange, async (newCoinName) => {
             this.CoinName = newCoinName;

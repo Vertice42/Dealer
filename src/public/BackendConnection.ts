@@ -10,9 +10,10 @@ import DeletePurchaseOrderRequest from '../services/models/store/DeletePurchaseO
 import PurchaseOrder from '../services/models/store/PurchaseOrder';
 import { WalletManagerRequest } from '../services/models/wallet/WalletManagerRequest';
 import { CoinsSettings } from '../services/models/streamer_settings/CoinsSettings';
-import { getPollRoute, PollManagerRoute, MinerManagerRoute, addBeatRoute, getMinerSettingsRoute, getCoinsSettingsRoute, CoinsSettingsManagerRoute, MineCoinRoute, getWalletRoute, WalletManager, getStoreRoute, StoreManagerRoute, PurchaseOrderRoute, getPurchaseOrderRoute, UploadFileRoute, getFilesRoute, GetWalletsRoute, getWallestRoute } from '../services/routes/routes';
+import { getPollRoute, PollManagerRoute, MinerManagerRoute, addBeatRoute, getMinerSettingsRoute, getCoinsSettingsRoute, CoinsSettingsManagerRoute, MineCoinRoute, getWalletRoute, WalletManager, getStoreRoute, StoreManagerRoute, PurchaseOrderRoute, getPurchaseOrderRoute, UploadFileRoute, getFilesRoute, GetWalletsRoute, getWallestRoute, getWalletSkinImage, GetWalletSkins } from '../services/routes/routes';
 import { Poll } from '../services/models/poll/Poll';
 import { sleep } from '../utils/utils';
+import { WalletSkin } from '../services/models/wallet/WalletSkin';
 
 export const HOST = 'http://localhost:' + (ServerConfigs.Port || process.env.Port);
 
@@ -227,7 +228,7 @@ export async function MineCoin(StreamerID: string, TwitchUserID: string) {
   });
 }
 
-export async function GetWallet(StreamerID: string, TwitchUserID:string) {
+export async function GetWallet(StreamerID: string, TwitchUserID: string) {
   return fetch(HOST + getWalletRoute(StreamerID, TwitchUserID), {
     method: "GET"
   }).then(function (res) {
@@ -423,3 +424,21 @@ export async function UploadFile(StreamerID: string, FolderName: string, FileNam
 export function getUrlOfFile(StreamerID: string, Folder: string, FileName: string) {
   return HOST + getFilesRoute(StreamerID, Folder, FileName);
 }
+
+export function getURLOfWalletSkinsImage(SkinImageName: string, MaskNumber: number) {
+  return HOST + getWalletSkinImage(SkinImageName, MaskNumber);
+}
+
+export async function getWalletSkins() {
+  return fetch(HOST + GetWalletSkins, {
+    method: "GET"
+  }).then(function (res) {    
+    if (res.ok)
+      return resolve(res.json())
+    else
+      return reject(res.json());
+  })
+    .catch((rej) => {
+      console.error(rej);
+    })
+} 

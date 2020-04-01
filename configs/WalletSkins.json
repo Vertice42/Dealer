@@ -1,0 +1,18 @@
+[
+    {
+        "Name": "piggy_bank",
+        "Price": 100
+    },
+    {
+        "Name": "classic_wallet",
+        "Price": 1000
+    },
+    {
+        "Name": "minecraft_chest",
+        "Price": 5000
+    },
+    {
+        "Name": "pepe_monkas",
+        "Price": 10000
+    }
+]

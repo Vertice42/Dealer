@@ -11,75 +11,76 @@
 
   <div class="WalletDiv" id="WalletDiv">
 
-    <div class="Wallet" id="Wallet">
+    <div class="Wallet" id="Wallet_Mask_0">
       <div id="CoinsDiv"></div>
-    </div>
-
-    <div id="InsideOfWalletDiv" class="StoreSample">
-      <div class="Information">
-        <span>Saldo</span> <span id="CoinsOfUserView"> </span>
+      <div class="Wallet" id="Wallet_Mask_1">
       </div>
 
-      <div id="StoreMenuDiv">
-        <nav>
-          <button class="NavButton NavButtonEnable" id="NavStoreButtom">Store</button> 
-          <button class="NavButton" id="NavSkinsButtom">Skins</button>
-        </nav>
-      </div>
-
-      <div id="StreamerStorePageDiv" class="PageSample">
-        <div id="ItemsList"> </div>
-      </div>
-
-      <div id="SkinsPageDiv" class="PageHiden">
-
-        <div id="PromoteTextDiv">
-          <span id="PromoteText">Apoie a manter a extensão <br> e desbloqueie Skins para da carteira</span>
+      <div id="InsideOfWalletDiv" class="StoreSample">
+        <div class="Information">
+          <span>Saldo</span> <span id="CoinsOfUserView"> </span>
         </div>
 
-        <div id="SkinsListDiv">
+        <div id="StoreMenuDiv">
+          <nav>
+            <button class="NavButton NavButtonEnable" id="NavStoreButtom">Store</button>
+            <button class="NavButton" id="NavSkinsButtom">Skins</button>
+          </nav>
         </div>
 
-        <div class="DonatebuttonDiv">
-          <button id="Donatebutton">Doar Bits</button>
+        <div id="StreamerStorePageDiv" class="PageSample">
+          <div id="ItemsList"> </div>
         </div>
+
+        <div id="SkinsPageDiv" class="PageHiden">
+
+          <div id="PromoteTextDiv">
+            <span id="PromoteText">Apoie a manter a extensão <br> e desbloqueie Skins para da carteira</span>
+          </div>
+
+          <div id="SkinsListDiv">
+          </div>
+
+          <div class="DonatebuttonDiv">
+            <button id="Donatebutton">Doar Bits</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="AlertsDiv">
+
+      <div class="Disable Hidden" id="PollAlert">
+        <h2>Votação em andamento</h2>
+        <button class="ParticipatePollButton" id="ParticipatePollButton">Participar</button>
       </div>
 
-    </div>
-  </div>
-
-  <div id="AlertsDiv">
-
-    <div class="Disable Hidden" id="PollAlert">
-      <h2>Votação em andamento</h2>
-      <button class="ParticipatePollButton" id="ParticipatePollButton">Participar</button>
-    </div>
-
-    <div class="Disable Hidden" id="PollDiv">
-      <div class="AddBetValueDiv">
-        <h2>Aposta <input class="UnchangedInput" id="BetAmountInput" value="2" min="2" step="2" type="number"></h2>
+      <div class="Disable Hidden" id="PollDiv">
+        <div class="AddBetValueDiv">
+          <h2>Aposta <input class="UnchangedInput" id="BetAmountInput" value="2" min="2" step="2" type="number"></h2>
+        </div>
+        <div class="ButtonsDiv" id="ButtonsDiv"></div>
       </div>
-      <div class="ButtonsDiv" id="ButtonsDiv"></div>
+
+      <div class="Disable Hidden" id="StopAlert">
+        <h2>Aquarde o &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspResultado</h2>
+      </div>
+
+      <div class="Disable Hidden" id="AlertOfWinner">
+        <h2>Parabéns</h2>
+        <h3>Você ganhou &nbsp<span id='EarningsView'></span> </h3>
+        </h2>
+      </div>
+
+      <div class="Disable Hidden" id='AlertOfLoser'>
+        <h2>Que Pena</h2>
+        <h3>Você Perdeu &nbsp <span id="LossView"></span> </h3>
+      </div>
     </div>
 
-    <div class="Disable Hidden" id="StopAlert">
-      <h2>Aquarde o &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspResultado</h2>
-    </div>
-
-    <div class="Disable Hidden" id="AlertOfWinner">
-      <h2>Parabéns</h2>
-      <h3>Você ganhou &nbsp<span id='EarningsView'></span> </h3>
-      </h2>
-    </div>
-
-    <div class="Disable Hidden" id='AlertOfLoser'>
-      <h2>Que Pena</h2>
-      <h3>Você Perdeu &nbsp <span id="LossView"></span> </h3>
-    </div>
-  </div>
-
-  <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
-  <script src="./video_overlay/bundle.js"></script>
+    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
+    <script src="./video_overlay/bundle.js"></script>
 
 </body>
 

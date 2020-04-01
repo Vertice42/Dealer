@@ -21,7 +21,7 @@ export default class ControllerOfPermissions {
     async AllSettingsISLocked(ItemsSettings: ItemSetting[]) {
         return new Promise((resolve, reject) => {
             //TODO MDAR PATH EM MODO PRODUTION            
-            fs.readFile(path.resolve('./src/services/configs/DonorFeatures.json'), "utf8", async (ERROR, data) => {
+            fs.readFile(path.resolve('./configs/DonorFeatures.json'), "utf8", async (ERROR, data) => {
                 if (ERROR) return reject(ERROR);
 
                 let DonorFeatures: DonorFeatures[] = JSON.parse(data);

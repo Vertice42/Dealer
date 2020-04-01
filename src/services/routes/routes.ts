@@ -33,7 +33,14 @@ export const GetWalletRoute = '/Wallet/:StreamerID/:TwitchUserID'
 export const getWalletRoute = (StreamerID: string, TwitchUserID: string) => { return '/Wallet/' + StreamerID + '/' + TwitchUserID };
 export const WalletManager = '/Wallets/';
 //WALLETS
-export const UploadFileRoute = '/UploadFile';
-export const GetFileRoute = '/File/:StreamerID/:Folder/:FileName';
-export const getFilesRoute = (StreamerID: string, Folder: string, FileName: string) => { return '/File/' + StreamerID + '/' + Folder + '/' + FileName }
+export const UploadFileRoute = '/UploadFiles';
+export const GetFileRoute = '/UploadFiles/:StreamerID/:Folder/:FileName';
+export const getFilesRoute = (StreamerID: string, Folder: string, FileName: string) => { return '/UploadFiles/' + StreamerID + '/' + Folder + '/' + FileName }
+
+export const GetWalletSkins = '/GetWalletSkins';
+export const GetWalletSkinImage = '/WalletSkinImages/:SkinImageName/:MaskNumber';
+export const getWalletSkinImage = (SkinImageName:string,MaskNumber:number) => {
+   return '/WalletSkinImages/'+SkinImageName+'/'+MaskNumber.toString();
+} 
+
 //FILES

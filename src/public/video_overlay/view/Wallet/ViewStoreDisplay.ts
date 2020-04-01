@@ -68,7 +68,7 @@ class ViewWalletSkin {
 
     WalletSkin: WalletSkin;
 
-    public get IsLock() : boolean {
+    public get IsLock(): boolean {
         return this.HTML.classList.contains('WalletSkinLock');
     }
 
@@ -110,8 +110,11 @@ class ViewWalletSkin {
 }
 
 export default class ViewWalletDisplay {
+    public ViewWalletSkins:ViewWalletSkin[];
+
     private WalletDiv = <HTMLDivElement>document.getElementById("WalletDiv");
-    private Wallet = <HTMLDivElement>document.getElementById("Wallet");
+    public Wallet_Mask_0 = <HTMLDivElement>document.getElementById("Wallet_Mask_0");
+    public Wallet_Mask_1 = <HTMLDivElement>document.getElementById("Wallet_Mask_1");
 
     private NavStoreButtom = <HTMLButtonElement>document.getElementById("NavStoreButtom");
     private NavSkinsButtom = <HTMLButtonElement>document.getElementById("NavSkinsButtom");
@@ -131,9 +134,15 @@ export default class ViewWalletDisplay {
     onNavStoreButtomActive = () => { };
     onNavSkinsButtomActive = () => { };
 
-    onWalletSkinSelected = (ViewWalletSkin:ViewWalletSkin) => { };
+    onWalletSkinSelected = (ViewWalletSkin: ViewWalletSkin) => { };
 
     onBuyItemButtonActive = (StoreItem: StoreItem) => { };
+
+    UnSelectedAllWallets(){
+        this.ViewWalletSkins.forEach(viewWalletSkins => {
+            viewWalletSkins.setUnSelected();
+        });
+    }
 
     setNavSelected(navButton: HTMLButtonElement) {
         this.NavStoreButtom.classList.remove('NavButtonEnable');
@@ -142,12 +151,16 @@ export default class ViewWalletDisplay {
         navButton.classList.add('NavButtonEnable');
     }
 
-    setSkins(WalletSkins: WalletSkin[], BitsDonatedByViewer: number, getWalletSkinsURl: (WalletSkinsID: string) => string) {
+    setWalletSkins(WalletSkins: WalletSkin[], BitsDonatedByViewer: number, getWalletSkinsURl: (WalletSkinsName: string) => string) {
         this.SkinsListDiv.innerHTML = '';
+        this.ViewWalletSkins = [];
 
         WalletSkins.forEach(WalletSkin => {
             let viewWalletSkin = new ViewWalletSkin(WalletSkin, getWalletSkinsURl(WalletSkin.Name));
             if (BitsDonatedByViewer < WalletSkin.Price) viewWalletSkin.setLock();
+            if (window.localStorage['WalletSkinsSelectedName'] === WalletSkin.Name) viewWalletSkin.setSelected();
+
+            this.ViewWalletSkins.push(viewWalletSkin);
 
             viewWalletSkin.HTML.onclick = () => {
                 this.onWalletSkinSelected(viewWalletSkin);
@@ -187,7 +200,7 @@ export default class ViewWalletDisplay {
         Coin.style.top = '-50%';
 
         await sleep(500 + CoinNumber * 5);
-        Coin.style.top = '15%';
+        Coin.style.top = '30%';
     }
 
     async WithdrawalAnimation(Coin: HTMLDivElement, CoinNumber: number, onStart: () => void, onEnd: () => void) {
@@ -236,14 +249,14 @@ export default class ViewWalletDisplay {
                 this.WithdrawalAnimation(document.createElement('div'), i,
                     () => {
                         if (i === 0)
-                            this.Wallet.classList.add('inAction');
+                            this.Wallet_Mask_0.classList.add('inAction');
                     },
                     () => {
-                        this.Wallet.style.transform = 'scale(' + (1 + addX * i) + ',' + (1 + addY * i) + ')';
+                        this.Wallet_Mask_0.style.transform = 'scale(' + (1 + addX * i) + ',' + (1 + addY * i) + ')';
                         setTimeout(() => {
                             if (i === CoinsNumber - 1)
-                                this.Wallet.classList.remove('inAction');
-                            this.Wallet.style.transform = 'scale(1)';
+                                this.Wallet_Mask_0.classList.remove('inAction');
+                            this.Wallet_Mask_0.style.transform = 'scale(1)';
                         }, 100);
                     })
             }
@@ -251,9 +264,9 @@ export default class ViewWalletDisplay {
             for (let i = 0; i < CoinsNumber; i++) {
                 this.DepositAnimation(document.createElement('div'), i, null,
                     () => {
-                        this.Wallet.style.transform = 'scale(' + (1 + addX * i) + ',' + (1 + addY * i) + ')';
+                        this.Wallet_Mask_0.style.transform = 'scale(' + (1 + addX * i) + ',' + (1 + addY * i) + ')';
                         setTimeout(() => {
-                            this.Wallet.style.transform = 'scale(1)';
+                            this.Wallet_Mask_0.style.transform = 'scale(1)';
                         }, 100);
                     })
             }
@@ -316,7 +329,9 @@ export default class ViewWalletDisplay {
     }
 
     constructor() {
-        this.Wallet.addEventListener('click', () => {
+        this.Wallet_Mask_1.addEventListener('click', () => {
+            console.log('hideee');
+            
             if (this.InsideOfWalletDiv.classList.contains('StoreHide')) {
                 this.InsideOfWalletDiv.classList.remove('StoreHide');
                 this.InsideOfWalletDiv.classList.add('StoreSample');
@@ -325,6 +340,7 @@ export default class ViewWalletDisplay {
                 this.InsideOfWalletDiv.classList.add('StoreHide');
             }
         })
+
         EnableRelocatableElemente(this.WalletDiv, 0, 0);
 
         this.NavStoreButtom.onclick = () => {

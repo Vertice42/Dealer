@@ -5,7 +5,7 @@ import path = require('path');
 
 import { APP, CheckRequisition } from "..";
 import UploadFileResponse from "../models/files_manager/UploadFileResponse";
-import { UploadFileRoute, GetFileRoute } from "./routes";
+import { UploadFileRoute, GetFileRoute as GetUploadedFile, GetWalletSkinImage, GetWalletSkins } from "./routes";
 import { getSoketOfStreamer } from "../SocketsManager";
 import IOListeners from "../IOListeners";
 
@@ -56,7 +56,14 @@ APP.post(UploadFileRoute, async function (req, res: express.Response) {
     })
 })
 
-APP.get(GetFileRoute, async function (req, res: express.Response) {
+APP.get(GetUploadedFile, async function (req, res: express.Response) {
     res.status(200).sendFile(path.resolve(`./uploads/${req.params.StreamerID}/${req.params.Folder}/${req.params.FileName}`))
 })
 
+APP.get(GetWalletSkinImage, async function (req, res: express.Response) {
+    res.status(200).sendFile(path.resolve(`./configs/WalletSkins/${req.params.SkinImageName}/mask_${req.params.MaskNumber}.png`))
+})
+
+APP.get(GetWalletSkins, async function (req, res: express.Response) {
+    res.status(200).sendFile(path.resolve(`./configs/WalletSkins.json`))
+})
