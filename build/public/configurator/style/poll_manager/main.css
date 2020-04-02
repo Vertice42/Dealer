@@ -1,17 +1,21 @@
-.PollDiv {
-
-}
+.PollDiv {}
 
 .PollItem {
     background: rgb(255, 255, 255);
     font-family: sans-serif;
-    margin: 10px;
+    margin: 1vw;
     filter: blur(0px);
-    transition: filter 500ms,transform 200ms;
+    transition: filter 500ms, transform 200ms;
 }
 
-.PollItem:hover{
+.PollItem:hover {
     transform: scale(1.02, 1.02);
+}
+
+.PollItem input {
+    max-width: 19vw;
+    font-size: 2vw;
+    font-family: Heroes;
 }
 
 .PollItemInChoose {
@@ -37,9 +41,12 @@
     width: fit-content;
 }
 
+.ItemInputDiv {
+    display: contents;
+}
+
 .DeletePollItemButton {
-    width: 5vw;
-    margin: -1px;
+    width: 7vw;
     border: none;
     background-image: url(../../images/X_mark.png);
     background-size: 80% 80%;
@@ -65,13 +72,13 @@
     box-shadow: 5px 5px #0000002a;
     transition: all 100ms;
     width: 25vw;
-    height: 10vw;    
+    height: 10vw;
     font-size: 4vw;
     margin: 1%;
     transition: transform 500ms;
 }
 
-.VoteManagementButton:hover{
+.VoteManagementButton:hover {
     transform: scale(1.1);
 }
 
@@ -80,7 +87,7 @@
     background-color: white;
     font-size: 5vw;
     width: 40vw;
-    height: 10vw; 
+    height: 10vw;
 }
 
 #DistributeEarningsButton {

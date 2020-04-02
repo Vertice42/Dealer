@@ -5,7 +5,7 @@ import { EnableRelocatableElemente, DisableRelocatableElemente } from "../../com
 
 const GRADIENT_DARKENING_RATE = 1.5;
 
-export class ViewPollButton{
+export class ViewPollButton {
     HTMLElement: HTMLButtonElement
     ID: number;
 
@@ -33,11 +33,39 @@ export class ViewPollButton{
         };
 
         let RGBcolor = hexToRgb(Button.Color);
-        if (RGBcolor)
+        if (RGBcolor) {
+            ViewButton.style.border = `border: 1px solid 
+            rgb(${RGBcolor.r / GRADIENT_DARKENING_RATE * 1.3}, 
+                ${RGBcolor.g / GRADIENT_DARKENING_RATE * 1.3},
+                ${RGBcolor.b / GRADIENT_DARKENING_RATE * 1.3})`;
+
             ViewButton.style.backgroundImage = `linear-gradient(${Button.Color},
-                rgb(${RGBcolor.r / GRADIENT_DARKENING_RATE}, 
-                    ${RGBcolor.g / GRADIENT_DARKENING_RATE},
-                    ${RGBcolor.b / GRADIENT_DARKENING_RATE}))`;
+            rgb(${RGBcolor.r / GRADIENT_DARKENING_RATE}, 
+                ${RGBcolor.g / GRADIENT_DARKENING_RATE},
+                ${RGBcolor.b / GRADIENT_DARKENING_RATE}))`;
+
+            ViewButton.style.boxShadow = `0px 6px 0px 
+            rgb(${RGBcolor.r / GRADIENT_DARKENING_RATE * 1.4}, 
+                ${RGBcolor.g / GRADIENT_DARKENING_RATE * 1.4},
+                ${RGBcolor.b / GRADIENT_DARKENING_RATE * 1.4}),
+                0px 3px 10px rgba(0, 0, 0, 0.4), inset 0px 1px 0px rgba(255, 255, 255, 0.288), inset 0px 0px 3px rgba(255, 255, 255, 0.411)`
+
+            ViewButton.addEventListener('mousedown', () => {
+                ViewButton.style.boxShadow = `0px 2px 0px 
+                rgb(${RGBcolor.r / GRADIENT_DARKENING_RATE * 1.4}, 
+                        ${RGBcolor.g / GRADIENT_DARKENING_RATE * 1.4},
+                        ${RGBcolor.b / GRADIENT_DARKENING_RATE * 1.4}),
+                        0px 3px 10px rgba(0, 0, 0, 0.4), inset 0px 1px 0px rgba(255, 255, 255, 0.288), inset 0px 0px 3px rgba(255, 255, 255, 0.411)`
+            });
+            ViewButton.addEventListener('mouseup', () => {
+                ViewButton.style.boxShadow = `0px 6px 0px 
+                rgb(${RGBcolor.r / GRADIENT_DARKENING_RATE * 1.4}, 
+                    ${RGBcolor.g / GRADIENT_DARKENING_RATE * 1.4},
+                    ${RGBcolor.b / GRADIENT_DARKENING_RATE * 1.4}),
+                    0px 3px 10px rgba(0, 0, 0, 0.4), inset 0px 1px 0px rgba(255, 255, 255, 0.288), inset 0px 0px 3px rgba(255, 255, 255, 0.411)`
+
+            })
+        }
 
         let Name = document.createElement("h4");
         Name.innerHTML = Button.Name;
@@ -59,7 +87,7 @@ export default class ViewAlerts {
     public onBeatIDSelected = () => { };
     public SelectedButtonID: number = null;
     public BetAmountInput = new ResponsiveInput(<HTMLInputElement>document.getElementById("BetAmountInput"));
-        
+
     private ParticipatePollButton = <HTMLInputElement>document.getElementById("ParticipatePollButton");
     private AlertsDiv = <HTMLDivElement>document.getElementById("AlertsDiv");
     private PollAlert = <HTMLDivElement>document.getElementById("PollAlert");

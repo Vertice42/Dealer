@@ -38,9 +38,10 @@
   <div id="MainDiv">
 
     <div id="PurchaseOrdersDiv">
+
+
       <div id="ReproducingMedia" class="PurchaseOrdersEmpty">
         <audio id="AudioPlayer"></audio>
-
         <div class="LoadingBar" id="LoadingBarOfAudioPlayer">
           <span id="PlaybackUserName"></span>
           <span id="PlaybackItemName"></span>
@@ -50,7 +51,6 @@
           <button id="PauseAudioPlayerButton" class="Disable PlayerButton"></button>
           <button id="RefundCurrentAudioButton" class="Disable PlayerButton">Refund</button>
         </div>
-
       </div>
 
       <div id="ListOfPurchasedItems">
@@ -61,24 +61,22 @@
     <button id="PollModuleTitle" class="TitleButton">Gereciador de Apostas</button>
     <div id="PollModule" class="Module ModuleSample">
 
-      <div class="PollDiv Hidden" id="PollManagerDiv">
+      <div class="Hidden" id="PollManagerDiv">
 
         <div id="PollItensDiv"></div>
+
         <button class="VoteManagementButton" id="AddPollItemButton">+</button>
+        <button class="VoteManagementButton ButtonEnable" id="DeletePollButton"></button>
 
-        <div style="display: flex;">
-
-          <button class="VoteManagementButton ButtonEnable" id="DeletePollButton"></button>
-
-          <div class="PollButtonsDiv ">
-            <button class="VoteManagementButton ButtonHide ButtonDisable" id="StartPollButton">Iniciar</button>
-            <button class="VoteManagementButton ButtonHide ButtonDisable" id="StopPollButton">Parar votação</button>
-            <button class="VoteManagementButton ButtonHide ButtonDisable" id="RestartButton">Reiniciar votação</button>
-            <button class="VoteManagementButton ButtonHide ButtonDisable" id="ApplyChangesButton">Aplicar</button>
-            <button class="VoteManagementButton ButtonHide ButtonDisable" id="RevertChangesButton">Desfazer</button>
-            <button class="VoteManagementButton ButtonHide ButtonDisable" id="DistributeButton">Distribuir</button>
-          </div>
+        <div class="PollButtonsDiv ">
+          <button class="VoteManagementButton ButtonHide ButtonDisable" id="StartPollButton">Iniciar</button>
+          <button class="VoteManagementButton ButtonHide ButtonDisable" id="StopPollButton">Parar votação</button>
+          <button class="VoteManagementButton ButtonHide ButtonDisable" id="RestartButton">Reiniciar votação</button>
+          <button class="VoteManagementButton ButtonHide ButtonDisable" id="ApplyChangesButton">Aplicar</button>
+          <button class="VoteManagementButton ButtonHide ButtonDisable" id="RevertChangesButton">Desfazer</button>
+          <button class="VoteManagementButton ButtonHide ButtonDisable" id="DistributeButton">Distribuir</button>
         </div>
+
       </div>
 
       <div id="DistributionDiv" class="Hidden">
@@ -87,10 +85,9 @@
         <button class="VoteManagementButton ButtonHide" id="CloseButton">Fexar</button>
       </div>
 
-      <div style="display: flex; margin-bottom: 5%;">
-        <button class="VoteManagementButton ButtonEnable" id="CreatePollButton">Criar Aposta</button>
-      </div>
+      <button class="VoteManagementButton ButtonEnable" id="CreatePollButton">Criar Aposta</button>
     </div>
+
 
     <button id="SettingModuleTitle" class="TitleButton">Configuraçoes</button>
     <div id="SettingModule" class="Module ModuleSample">
@@ -140,11 +137,11 @@
       </div>
 
     </div>
-
-    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
-    <script src="./configurator/bundle.js"></script>
-
   </div>
+
+  <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
+  <script src="./configurator/bundle.js"></script>
+
 </body>
 
 </html>

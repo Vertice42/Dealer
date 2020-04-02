@@ -56,7 +56,7 @@ APP.post(PollManagerRoute, async function (req: PollRequest, res: express.Respon
                         AccountData.CurrentPollStatus.DistributionCompleted = true
                         AccountData.CurrentPollStatus.StatisticsOfDistribution = StatisticsOfDistribution;
 
-                        let SoketOfStreamer = getSoketOfStreamer(this.StreamerID);
+                        let SoketOfStreamer = getSoketOfStreamer(req.body.StreamerID);
                         if (SoketOfStreamer)
                             SoketOfStreamer.emit(IOListeners.onDistribuitionFinish);
 

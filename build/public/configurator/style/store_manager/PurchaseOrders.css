@@ -12,7 +12,7 @@
 }
 
 #PurchaseOrdersDiv {
-    display: table;
+    display: grid;
     width: 100%;
 }
 
@@ -51,19 +51,20 @@
 
 #ListOfPurchasedItems {
     display: flow-root;
-    max-height: 23vw;
+    max-height: 24vw;
     overflow: auto;
-
     background-color: #392e5c;
 }
 
 #ListOfPurchasedItems::-webkit-scrollbar-track {
     background: rgb(70, 48, 131);
 }
+
 #ListOfPurchasedItems::-webkit-scrollbar {
     width: 6px;
     background: #35108b;
 }
+
 #ListOfPurchasedItems::-webkit-scrollbar-thumb {
     background: #8e5dff;
 }
@@ -72,7 +73,7 @@
     display: flex;
     background-color: rgb(81, 59, 145);
     width: fit-content;
-    margin: 1vw auto;
+    margin: auto;
     animation: ShowOrder 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
@@ -100,6 +101,10 @@
     text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.411);
     border-radius: 5px;
     transition: all 100ms;
+}
+
+.PlayerButton:active {
+    transform: translateY(2px);
 }
 
 .PlayerButton:focus {
@@ -168,13 +173,13 @@
     background-color: orangered;
     border: none;
     font-family: fantasy;
-    font-size: 4vw;
+    font-size: 3vw;
     text-transform: uppercase;
     transition: font-size 50ms;
 }
 
 .RefundButton:hover {
-    font-size: 5vw;
+    font-size: 2.5vw;
 }
 
 .PlaybackUnavailableAlert {

@@ -61,7 +61,7 @@ h3 {
     text-align: center;
     min-width: fit-content;
     font-size: 3vw;
-    margin: auto 10px auto 10px;
+    margin: auto 1vw auto 1vw;
 }
 
 input[type='color'] {

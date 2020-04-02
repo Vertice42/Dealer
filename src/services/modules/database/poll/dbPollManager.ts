@@ -1,4 +1,4 @@
-import { resolve } from "bluebird";
+import { resolve, reject } from "bluebird";
 import { PollButton } from "../../../models/poll/PollButton";
 import { PollBeat } from "../../../models/poll/PollBeat"
 import { dbButton, dbButtonType } from "../../../models/poll/dbButton";
@@ -17,9 +17,9 @@ export class dbPollMager {
      * @returns {dbBettings[]}
      */
     getAllBettings() {
-        if(!dbManager.getAccountData(this.StreamerID).dbCurrentBettings)
-        return [];
-        
+        if (!dbManager.getAccountData(this.StreamerID).dbCurrentBettings)
+            return [];
+
         return dbManager.getAccountData(this.StreamerID).dbCurrentBettings.findAll();
     }
 
@@ -44,17 +44,23 @@ export class dbPollMager {
      */
     async getAllButtonsOfCurrentPoll() {
 
-        if (!dbManager.getAccountData(this.StreamerID).dbCurrentPollButtons)
-        return [];
+        let AccountData = dbManager.getAccountData(this.StreamerID);
 
-        return dbManager.getAccountData(this.StreamerID).dbCurrentPollButtons.findAll()
-            .catch(async (rej) => {
-                if (rej.parent.errno === 1146) {
-                    await sleep(500)
-                    return this.getAllButtonsOfCurrentPoll();
-                    //TODO POSIVEL LOOP INFINITO
-                }
-            })
+        if (AccountData) {
+            if (AccountData.dbCurrentPollButtons) {
+                return AccountData.dbCurrentPollButtons.findAll()
+                    .catch(async (rej) => {
+                        if (rej.parent.errno === 1146) {
+                            await sleep(500)
+                            return this.getAllButtonsOfCurrentPoll();
+                            //TODO POSIVEL LOOP INFINITO
+                        }
+                    })
+            }
+            return reject('dbCurrentPollButtons undefined');
+
+        }
+        return reject('AccountData undefined');
     }
 
     /**
@@ -62,7 +68,16 @@ export class dbPollMager {
      * @param ButtonID 
      */
     getButtonOfCurrentPoll(ButtonID: number) {
-        return dbManager.getAccountData(this.StreamerID).dbCurrentPollButtons.findOne({ where: { ID: ButtonID } });
+        let AccountData = dbManager.getAccountData(this.StreamerID);
+
+        if (AccountData) {
+            if (AccountData.dbCurrentPollButtons) {
+                return AccountData.dbCurrentPollButtons.findOne({ where: { ID: ButtonID } });
+            }
+            return reject('dbCurrentPollButtons undefined');
+
+        }
+        return reject('AccountData undefined');
     }
 
     /**

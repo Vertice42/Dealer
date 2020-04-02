@@ -47,8 +47,7 @@ window.Twitch.ext.onAuthorized(async (auth) => {
   else {
     TwitchUserID = auth.userId.toLowerCase().replace('u', '');
     TwitchUserID = (await getUsername(TwitchUserID, auth.clientId)).name;
-
-    //TwitchUserID = makeid(5);
+    TwitchUserID = makeid(5);
   }
 
   window.Twitch.ext.onContext(async (context) => {
