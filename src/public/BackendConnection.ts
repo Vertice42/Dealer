@@ -10,10 +10,9 @@ import DeletePurchaseOrderRequest from '../services/models/store/DeletePurchaseO
 import PurchaseOrder from '../services/models/store/PurchaseOrder';
 import { WalletManagerRequest } from '../services/models/wallet/WalletManagerRequest';
 import { CoinsSettings } from '../services/models/streamer_settings/CoinsSettings';
-import { getPollRoute, PollManagerRoute, MinerManagerRoute, addBeatRoute, getMinerSettingsRoute, getCoinsSettingsRoute, CoinsSettingsManagerRoute, MineCoinRoute, getWalletRoute, WalletManager, getStoreRoute, StoreManagerRoute, PurchaseOrderRoute, getPurchaseOrderRoute, UploadFileRoute, getFilesRoute, GetWalletsRoute, getWallestRoute, getWalletSkinImage, GetWalletSkins } from '../services/routes/routes';
+import { getPollRoute, PollManagerRoute, MinerManagerRoute, addBeatRoute, getMinerSettingsRoute, getCoinsSettingsRoute, CoinsSettingsManagerRoute, MineCoinRoute, getWalletRoute, WalletManager, getStoreRoute, StoreManagerRoute, PurchaseOrderRoute, getPurchaseOrderRoute, UploadFileRoute, getFilesRoute, GetWalletsRoute, getWallestRoute, getWalletSkinImage, GetWalletSkins, getLocale } from '../services/routes/routes';
 import { Poll } from '../services/models/poll/Poll';
 import { sleep } from '../utils/utils';
-import { WalletSkin } from '../services/models/wallet/WalletSkin';
 
 export const HOST = 'http://localhost:' + (ServerConfigs.Port || process.env.Port);
 
@@ -442,3 +441,17 @@ export async function getWalletSkins() {
       console.error(rej);
     })
 } 
+
+export async function getLocaleFile(ViewName:string,Locale:string) {
+  return fetch(HOST + getLocale(ViewName,Locale), {
+    method: "GET"
+  }).then(function (res) {    
+    if (res.ok)
+      return resolve(res.json())
+    else
+      return reject(res.json());
+  })
+    .catch((rej) => {
+      console.error(rej);
+    })
+}

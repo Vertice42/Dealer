@@ -12,6 +12,7 @@ import DeletePurchaseOrderRequest from "../models/store/DeletePurchaseOrderReque
 import { APP } from "..";
 import { getSoketOfStreamer } from "../SocketsManager";
 import { dbWalletManeger } from "../modules/database/wallet/dbWalletManager";
+import { Socket } from "dgram";
 
 APP.post(PurchaseOrderRoute, async function (req, res: express.Response) {
     let PurchaseOrderRequest: PurchaseOrderRequest = req.body;
@@ -44,8 +45,10 @@ APP.post(PurchaseOrderRoute, async function (req, res: express.Response) {
     dbPurchaseOrderMan.addPurchaseOrder(new PurchaseOrder(ItemPrice, PurchaseOrderRequest.TwitchUserID, PurchaseOrderRequest.StoreItemID)
     )
         .then(async (dbPurchaseOrder) => {
-            await dbWalletM.withdraw(ItemPrice);
-            getSoketOfStreamer(PurchaseOrderRequest.StreamerID).emit(IO_Listeners.onAddPurchasedItem, <PurchaseOrder>dbPurchaseOrder)
+            await dbWalletM.withdraw(ItemPrice);            
+            getSoketOfStreamer(PurchaseOrderRequest.StreamerID).forEach(socket => {
+                socket.emit(IO_Listeners.onAddPurchasedItem, <PurchaseOrder>dbPurchaseOrder);
+            })
             res.status(200).send({ PurchaseOrderWasSentSuccessfully: new Date })
         })
         .catch((rej) => {
@@ -69,7 +72,7 @@ APP.delete(PurchaseOrderRoute, async function (req, res: express.Response) {
             res.status(500).send(rej);
         })
 })
-APP.get(GetPurchaseOrderRoute, async function (req: { params: { StreamerID: string,StoreItemID: string } }, res: express.Response) {    
+APP.get(GetPurchaseOrderRoute, async function (req: { params: { StreamerID: string, StoreItemID: string } }, res: express.Response) {
     new dbPurchaseOrderManager(req.params.StreamerID).getAllPurchaseOrders(req.params.StoreItemID)
         .then((result) => {
             res.status(200).send(<dbPurchaseOrder[]>result);

@@ -1,0 +1,67 @@
+[
+    {
+        "id": "BalanceText",
+        "Text": "Saldo",
+        "Instruction": ""
+    },
+    {
+        "id": "NavStoreButtom",
+        "Text": "Loja",
+        "Instruction": ""
+    },
+    {
+        "id": "NavSkinsButtom",
+        "Text": "Skins",
+        "Instruction": ""
+    },
+    {
+        "id": "PromoteText",
+        "Text": "Apoie a manter a extensão <br> e desbloqueie Skins para da carteira",
+        "Instruction": ""
+    },
+    {
+        "id": "Donatebutton",
+        "Text": "Doar Bits",
+        "Instruction": ""
+    },
+    {
+        "id": "PollAlertText",
+        "Text": "Aposta em progresso",
+        "Instruction": ""
+    },
+    {
+        "id": "ParticipatePollButton",
+        "Text": "Participar",
+        "Instruction": ""
+    },
+    {
+        "id": "BetAmountInputText",
+        "Text": "Aposta",
+        "Instruction": ""
+    },
+    {
+        "id": "StopAlertText",
+        "Text": "Aguarde pelo resultado",
+        "Instruction": ""
+    },
+    {
+        "id": "AlertOfWinnerText",
+        "Text": "Parabéns",
+        "Instruction": ""
+    },
+    {
+        "id": "PreEarningsView",
+        "Text": "Você ganhou ",
+        "Instruction": ""
+    },
+    {
+        "id": "AlertOfLoserText",
+        "Text": "Que pena",
+        "Instruction": ""
+    },
+    {
+        "id": "PreLossView",
+        "Text": "Você perdeu ",
+        "Instruction": ""
+    }
+]

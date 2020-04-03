@@ -100,3 +100,33 @@ input::-webkit-color-swatch {
     max-height: 10000px;
     clip-path: inset(-10% -10% -10% -10%);
 }
+
+[aria-label] {
+    position: relative;
+}
+
+[aria-label] {
+    position: relative;
+}
+
+[aria-label]:after {
+    content: attr(aria-label);
+    display: none;
+    position: absolute;
+    z-index: 5000;
+    pointer-events: none;
+    padding: 1vw;
+    font-size: 3vw;
+    color: #fff;
+    text-shadow: 1px 0 1px #888;
+    background-color: #412917;
+    border-left: 6px solid #d37092;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    -webkit-box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.3);
+    box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+[aria-label]:hover:after, [aria-label]:focus:after {
+    display: flex;
+}

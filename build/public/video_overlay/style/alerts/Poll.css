@@ -47,20 +47,22 @@
 }
 
 .AddBetValueDiv {
-    display: block;
-    height: fit-content;
+    display: inline-flex;
+    width: fit-content;
+    margin: auto;
+    margin-top: 1vw;
 }
 
 .AddBetValueDiv h2 {
     width: fit-content;
-    margin: 25px auto;
+    margin: 1vw;
     color: white;
     font: 10pt Heroes;
     text-transform: uppercase;
 }
 
 .AddBetValueDiv input[type=number] {
-    margin-left: 10px;
+    margin: auto;
     background: rgba(255, 255, 255, 0.089);
     width: 60px;
     height: 20px;
@@ -94,6 +96,9 @@
     height: 4vw;
     text-decoration: none;
     color: #fff;
+
+    background-color: #65656521;
+
     font-family: Heroes;
     text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.411);
     border-radius: 5px;

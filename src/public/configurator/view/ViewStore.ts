@@ -23,9 +23,6 @@ export class SingleReproductionSettings {
     this.HTML_span.classList.add('round');
     this.HTML.appendChild(this.HTML_span);
 
-    this.HTML_Input.innerText = 'connect to back end' ///TODO TRALATER ItemSettings.SettingName;
-
-
   }
 }
 

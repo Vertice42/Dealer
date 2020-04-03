@@ -18,13 +18,13 @@
 
       <div id="InsideOfWalletDiv" class="StoreSample">
         <div class="Information">
-          <span>Saldo</span> <span id="CoinsOfUserView"> </span>
+          <span id="BalanceText"></span> <span id="CoinsOfUserView"> </span>
         </div>
 
         <div id="StoreMenuDiv">
           <nav>
-            <button class="NavButton NavButtonEnable" id="NavStoreButtom">Store</button>
-            <button class="NavButton" id="NavSkinsButtom">Skins</button>
+            <button class="NavButton NavButtonEnable" id="NavStoreButtom"></button>
+            <button class="NavButton" id="NavSkinsButtom"></button>
           </nav>
         </div>
 
@@ -35,14 +35,14 @@
         <div id="SkinsPageDiv" class="PageHiden">
 
           <div id="PromoteTextDiv">
-            <span id="PromoteText">Apoie a manter a extensão <br> e desbloqueie Skins para da carteira</span>
+            <span id="PromoteText"></span>
           </div>
 
           <div id="SkinsListDiv">
           </div>
 
           <div class="DonatebuttonDiv">
-            <button id="Donatebutton">Doar Bits</button>
+            <button id="Donatebutton"></button>
           </div>
         </div>
 
@@ -52,30 +52,31 @@
     <div id="AlertsDiv">
 
       <div class="Disable Hidden" id="PollAlert">
-        <h2>Votação em andamento</h2>
-        <button class="ParticipatePollButton" id="ParticipatePollButton">Participar</button>
+        <h2 id="PollAlertText"></h2>
+        <button class="ParticipatePollButton" id="ParticipatePollButton"></button>
       </div>
 
       <div class="Disable Hidden" id="PollDiv">
         <div class="AddBetValueDiv">
-          <h2>Aposta <input class="UnchangedInput" id="BetAmountInput" value="2" min="2" step="2" type="number"></h2>
+            <h2 id="BetAmountInputText"> </h2>
+            <input class="UnchangedInput" id="BetAmountInput" value="2" min="2" step="2" type="number">
         </div>
         <div class="ButtonsDiv" id="ButtonsDiv"></div>
       </div>
 
       <div class="Disable Hidden" id="StopAlert">
-        <h2>Aquarde o &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspResultado</h2>
+        <h2 id="StopAlertText"></h2>
       </div>
 
       <div class="Disable Hidden" id="AlertOfWinner">
-        <h2>Parabéns</h2>
-        <h3>Você ganhou &nbsp<span id='EarningsView'></span> </h3>
+        <h2 id="AlertOfWinnerText"></h2>
+        <h3 id="PreEarningsView"><span id='EarningsView'></span> </h3>
         </h2>
       </div>
 
       <div class="Disable Hidden" id='AlertOfLoser'>
-        <h2>Que Pena</h2>
-        <h3>Você Perdeu &nbsp <span id="LossView"></span> </h3>
+        <h2 id="AlertOfLoserText"></h2>
+        <h3 id="PreLossView"><span id="LossView"></span> </h3>
       </div>
     </div>
 

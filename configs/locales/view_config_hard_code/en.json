@@ -1,0 +1,98 @@
+[
+    {
+        "id": "AdvertisementText",
+        "Text": "Become a donor to access all Functionalities",
+        "Instruction": ""
+    },
+    {
+        "id": "AdvertisementButton",
+        "Text": "Become a Donor",
+        "Instruction": ""
+    },
+    {
+        "id": "PollModuleTitle",
+        "Text": "Bet Manager",
+        "Instruction": ""
+    },
+    {
+        "id": "StartPollButton",
+        "Text": "Start",
+        "Instruction": "Start bets for items created"
+    },
+    {
+        "id": "StopPollButton",
+        "Text": "Stop",
+        "Instruction": "Closes bets so you can choose the winner or winners"
+    },
+    {
+        "id": "RestartButton",
+        "Text": "Restart",
+        "Instruction": "Resets bets from where they keep the folders already created"
+    },
+    {
+        "id": "RevertChangesButton",
+        "Text": "Revert",
+        "Instruction": "Reverse all changes made to items"
+    },
+    {
+        "id": "DistributeButton",
+        "Text": "Start Distribution",
+        "Instruction": "starts distribution of winnings to winners"
+    },
+    {
+        "id": "DistributionText",
+        "Text": "Distributing earnings",
+        "Instruction": ""
+    },
+    {
+        "id": "CloseButton",
+        "Text": "Wax",
+        "Instruction": "Wax and arrow the bet"
+    },
+    {
+        "id": "CreatePollButton",
+        "Text": "Create Bet",
+        "Instruction": "Create the Bet, allowing the creation of the bet items"
+    },
+    {
+        "id": "SettingModuleTitle",
+        "Text": "Settings",
+        "Instruction": ""
+    },
+    {
+        "id": "MinerSettingText",
+        "Text": "Mining per hour",
+        "Instruction": ""
+    },
+    {
+        "id": "CoinNameTitle",
+        "Text": "Currency Name",
+        "Instruction": ""
+    },
+    {
+        "id": "CoinImageTitle",
+        "Text": "Currency Image",
+        "Instruction": ""
+    },
+    {
+        "id": "StoreModuleTitle",
+        "Text": "Store Manager",
+        "Instruction": ""
+    },
+    {
+        "id": "WalletsModuleTitle",
+        "Text": "Wallets",
+        "Instruction": ""
+    },
+    {
+        "id": "DeletePollButton",
+        "Text": "",
+        "Instruction": "Completely end bets and delete the votes"
+    },
+    {
+        "id": "AddPollItemButton",
+        "Text": "+",
+        "Instruction": "Adds a new item to be wagered"
+    }
+    
+]

@@ -7,7 +7,7 @@ import Socket_io = require('socket.io')
 import { Loading } from "./modules/database/dbLoading";
 import IOListeners from "./IOListeners";
 import { dbManager } from "./modules/database/dbManager";
-import { Sockets } from "./SocketsManager";
+import { addSoketOfStreamer, removeSoketOfStreamer } from "./SocketsManager";
 
 export function CheckRequisition(CheckList: (() => Object)[]) {
     let ErrorList = [];
@@ -40,13 +40,16 @@ IO.on('connection', (socket) => {
 
         console.log('conectd', StreamerID);
         socket.emit(IOListeners.onStreamerAsRegistered);
-        Sockets[StreamerID] = socket;
+        addSoketOfStreamer(StreamerID, socket);
 
         socket.on('disconnect', () => {
-            if (dbManager.getAccountData(StreamerID)) {
-                console.log('disconnect');
-                dbManager.removeAccountData(StreamerID);
-            }
+            console.log('disconnect');
+            removeSoketOfStreamer(StreamerID, socket, () => {
+                if (dbManager.getAccountData(StreamerID)) {
+                    dbManager.removeAccountData(StreamerID);
+                    console.log('empty');
+                }
+            })
         })
     });
 

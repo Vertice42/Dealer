@@ -2,6 +2,7 @@ import { PollStatus } from "../../../services/models/poll/PollStatus";
 import { Poll } from "../../../services/models/poll/Poll";
 import { PollButton } from "../../../services/models/poll/PollButton";
 import { GenerateColor } from "../../common/model/ViewerFeatures";
+import { Texts } from "../controller/MainController";
 
 export class PollItemViewer {
     ID: number;
@@ -27,7 +28,9 @@ class NameInput {
         let name_input_div = document.createElement("div");
         name_input_div.classList.add('ItemInputDiv')
         let text_name = document.createElement("h3");
-        text_name.innerText = "NOME |";
+        Texts.onLocaleChange = () => {
+            text_name.innerText = Texts.get("Name") + " |";
+        }
         name_input_div.appendChild(text_name);
         // name to indicate input function
         this.HTMLNameInput = document.createElement("input");
@@ -54,7 +57,9 @@ class ColorInput {
         let color_input_div = document.createElement("div");
         color_input_div.classList.add('ItemInputDiv')
         let text_color = document.createElement("h3");
-        text_color.innerText = "COR |";
+        Texts.onLocaleChange = () => {
+            text_color.innerText = Texts.get("Color") + " |";
+        }
         color_input_div.appendChild(text_color);
         // name to indicate input function
         this.HTMLColorInput = document.createElement("input");
@@ -80,7 +85,9 @@ class VoteCounterOutput {
         let vote_output_div = document.createElement('div');
         vote_output_div.classList.add('ItemInputDiv');
         let text_Vote = document.createElement("h3");
-        text_Vote.innerText = "VOTOS |";
+        Texts.onLocaleChange = () => {
+            text_Vote.innerText = Texts.get("WISHES") + " |";
+        }
         vote_output_div.appendChild(text_Vote);
         //name to indicate output function
         this.HTMLVoteOutput = document.createElement("h3");

@@ -16,14 +16,10 @@
 
     <div id="AdvertisementTable"> </div>
 
-    <span id="AdvertisementText">
-      Torne-se um doador para
-      acessar todas as
-      Funcionalidades
-    </span>
+    <span id="AdvertisementText"></span>
 
     <div id="AuraOfButton"></div>
-    <button id="AdvertisementButton">Seja um Doador</button>
+    <button id="AdvertisementButton"></button>
     <button id="CloaseAdvertisementButton"></button>
 
     <img id="DiamondStar1" class="DiamondStar" src="./configurator/images/star.png">
@@ -58,7 +54,7 @@
 
     </div>
 
-    <button id="PollModuleTitle" class="TitleButton">Gereciador de Apostas</button>
+    <button id="PollModuleTitle" class="TitleButton"></button>
     <div id="PollModule" class="Module ModuleSample">
 
       <div class="Hidden" id="PollManagerDiv">
@@ -69,43 +65,46 @@
         <button class="VoteManagementButton ButtonEnable" id="DeletePollButton"></button>
 
         <div class="PollButtonsDiv ">
-          <button class="VoteManagementButton ButtonHide ButtonDisable" id="StartPollButton">Iniciar</button>
-          <button class="VoteManagementButton ButtonHide ButtonDisable" id="StopPollButton">Parar votação</button>
-          <button class="VoteManagementButton ButtonHide ButtonDisable" id="RestartButton">Reiniciar votação</button>
-          <button class="VoteManagementButton ButtonHide ButtonDisable" id="ApplyChangesButton">Aplicar</button>
-          <button class="VoteManagementButton ButtonHide ButtonDisable" id="RevertChangesButton">Desfazer</button>
-          <button class="VoteManagementButton ButtonHide ButtonDisable" id="DistributeButton">Distribuir</button>
+          <button class="VoteManagementButton ButtonHide ButtonDisable" id="StartPollButton"></button>
+          <button class="VoteManagementButton ButtonHide ButtonDisable" id="StopPollButton"></button>
+          <button class="VoteManagementButton ButtonHide ButtonDisable" id="RestartButton"></button>
+          <button class="VoteManagementButton ButtonHide ButtonDisable" id="ApplyChangesButton"></button>
+          <button class="VoteManagementButton ButtonHide ButtonDisable" id="RevertChangesButton"></button>
+          <button class="VoteManagementButton ButtonHide ButtonDisable" id="DistributeButton"></button>
         </div>
 
       </div>
 
       <div id="DistributionDiv" class="Hidden">
-        <h2>Distribuindo ganhos e perdas</h2>
+        <h2 id="DistributionText"></h2>
         <img src="https://pixelpapa.com/wp-content/uploads/2018/11/10.gif" alt="">
-        <button class="VoteManagementButton ButtonHide" id="CloseButton">Fexar</button>
+        <button class="VoteManagementButton ButtonHide" id="CloseButton"></button>
       </div>
 
-      <button class="VoteManagementButton ButtonEnable" id="CreatePollButton">Criar Aposta</button>
+      <button class="VoteManagementButton ButtonEnable" id="CreatePollButton"></button>
     </div>
 
 
-    <button id="SettingModuleTitle" class="TitleButton">Configuraçoes</button>
+    <button id="SettingModuleTitle" class="TitleButton"></button>
     <div id="SettingModule" class="Module ModuleSample">
 
       <div class="MinerDiv Setting">
         <div class="SettingDiv">
-          <h2>Mineração por hora </h2>
+          <h2 id="MinerSettingText"></h2>
           <input id="HourlyRewardInput" type="number" class="UnchangedInput">
         </div>
       </div>
 
       <div class="CoinsDiv Setting">
+
         <div class="SettingDiv">
-          <h2>Nome da Moeda</h2><input id="CoinNameInput" type="text">
+          <h2 id="CoinNameTitle"></h2><input id="CoinNameInput" type="text">
         </div>
+
         <div class="SettingDiv">
-          <h2>Imagem da Moeda</h2>
+          <h2 id="CoinImageTitle"></h2>
         </div>
+
         <div class="SettingDiv">
           <input type="file" accept="image/png, image/jpeg" class="inputfile" name="file" id="InputCoinImg">
           <label id="LabeForInputCoinImg" for="InputCoinImg"></label>
@@ -115,7 +114,7 @@
 
     </div>
 
-    <button id="StoreModuleTitle" class="TitleButton">Gerenciador da Loja</button>
+    <button id="StoreModuleTitle" class="TitleButton"></button>
     <div id="StoreModule" class="Module ModuleSample">
 
       <div id="StoreManeger">
@@ -125,7 +124,7 @@
       </div>
     </div>
 
-    <button id="WalletsModuleTitle" class="TitleButton">Wallets</button>
+    <button id="WalletsModuleTitle" class="TitleButton"></button>
     <div id="WalletsModule" class="Module ModuleSample">
 
       <div class="Search">

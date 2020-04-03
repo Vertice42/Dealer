@@ -56,10 +56,13 @@ APP.post(PollManagerRoute, async function (req: PollRequest, res: express.Respon
                         AccountData.CurrentPollStatus.DistributionCompleted = true
                         AccountData.CurrentPollStatus.StatisticsOfDistribution = StatisticsOfDistribution;
 
-                        let SoketOfStreamer = getSoketOfStreamer(req.body.StreamerID);
-                        if (SoketOfStreamer)
-                            SoketOfStreamer.emit(IOListeners.onDistribuitionFinish);
+                        let SoketsOfStreamer = getSoketOfStreamer(req.body.StreamerID);
 
+                        if (SoketsOfStreamer) {
+                            SoketsOfStreamer.forEach(socket => {
+                                socket.emit(IOListeners.onDistribuitionFinish);
+                            });
+                        }
                     }
                     try {
                         SrartDistribuitionResult = await pollController.StartDistribuition(req.body.PollButtons);
@@ -85,7 +88,7 @@ APP.get(GetPollRoute, async function (req: { params: { StreamerID: string } }, r
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
 
     let pollController = new PollController(req.params.StreamerID);
-        
+
     pollController.getCurrentPoll()
         .then((resolve: Poll) => {
             res.status(200).send(resolve);

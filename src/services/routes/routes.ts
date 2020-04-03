@@ -42,5 +42,8 @@ export const GetWalletSkinImage = '/WalletSkinImages/:SkinImageName/:MaskNumber'
 export const getWalletSkinImage = (SkinImageName:string,MaskNumber:number) => {
    return '/WalletSkinImages/'+SkinImageName+'/'+MaskNumber.toString();
 } 
-
+export const GetLocale = '/Locales/:ViewName/:Language'
+export const getLocale = (ViewName:string,Language:string) => {
+    return '/Locales/'+ViewName+'/'+Language;
+}
 //FILES

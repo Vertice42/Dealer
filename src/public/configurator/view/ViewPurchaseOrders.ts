@@ -2,6 +2,7 @@ import StoreItem from "../../../services/models/store/StoreItem";
 import PurchaseOrder from "../../../services/models/store/PurchaseOrder";
 import { PurchaseOrderItem } from "../controller/PurchaseOrderController";
 import { LinerAnimation } from "../../common/model/ViewerFeatures";
+import { Texts } from "../controller/MainController";
 
 class ViewPurchaseTime {
     HTML: HTMLSpanElement;
@@ -13,21 +14,21 @@ class ViewPurchaseTime {
         time = time / 1000;
         if (time < 60) {
             let TimeRound = Math.round(time);
-            return this.HTML.innerText = `${TimeRound} second${(TimeRound > 1) ? 's' : ''} ago`;
+            return this.HTML.innerText = `${TimeRound} ${Texts.get('Second')}${(TimeRound > 1) ? 's' : ''}`;
         }
         time = time / 60;
         if (time < 60) {
             let TimeRound = Math.round(time);
-            return this.HTML.innerText = `${TimeRound} minute${(TimeRound > 1) ? 's' : ''} ago`;
+            return this.HTML.innerText = `${TimeRound} ${Texts.get('Minute')}${(TimeRound > 1) ? 's' : ''}`;
         }
         time = time / 60;
         if (time < 60) {
             let TimeRound = Math.round(time);
-            return this.HTML.innerText = `${TimeRound} hour${(TimeRound > 1) ? 's' : ''} ago`;
+            return this.HTML.innerText = `${TimeRound} ${Texts.get('Hour')}${(TimeRound > 1) ? 's' : ''}`;
         }
 
         let TimeRound = Math.round(time);
-        return this.HTML.innerText = `${TimeRound} days ago`;
+        return this.HTML.innerText = `${TimeRound} ${Texts.get('Days')}`;
 
     }
 
@@ -75,7 +76,9 @@ export class ViewPurchasedItem {
     private CreateHTML_RefundButton() {
         this.HTML_RefundButton = document.createElement('button');
         this.HTML_RefundButton.classList.add('RefundButton');
-        this.HTML_RefundButton.innerText = 'Refund';
+        Texts.onLocaleChange = () => {
+            this.HTML_RefundButton.innerText = Texts.get('Refund');
+        }
         this.HTML_RefundButton.onclick = () => {
             this.onRefundButtonActive();
         }
@@ -151,7 +154,7 @@ export default class ViewPurchaseOrders {
         this.HTML_ReproducingMedia.classList.add('PurchaseOrdersEmpty');
     }
 
-    setAudioPlayerProgress(newProgres: number) {        
+    setAudioPlayerProgress(newProgres: number) {
         LinerAnimation(this.AudioProgress, newProgres, 200, (newProgres) => {
             let left = newProgres;
             let rigth = newProgres;

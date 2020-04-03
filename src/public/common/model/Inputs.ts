@@ -76,7 +76,6 @@ export class OrientedInput extends ResponsiveInput {
     this.HTMLInput.onfocus = () => {
       if (this.HTMLInput.classList.contains('InputNotUsed')) {
         this.HTMLInput.type = Type;
-        window.Twitch.ext.rig.log(this.HTMLInput.type);
 
         this.setUsed();
         this.HTMLInput.value = '';

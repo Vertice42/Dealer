@@ -73,8 +73,6 @@ export async function LinerAnimation(initial: number, end: number, time: number,
 
     for (let progres = initial; progres < end; progres += incrementer) {
         onFrameChange(progres);
-        console.log(progres, 'incremente ' + incrementer);
-
         await sleep(16);
     }
 }

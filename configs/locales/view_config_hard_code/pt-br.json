@@ -1,0 +1,97 @@
+[
+    {
+        "id": "AdvertisementText",
+        "Text": "Torne-se um doador para acessar todas as funcionalidades",
+        "Instruction": ""
+    },
+    {
+        "id": "AdvertisementButton",
+        "Text": "Torne-se um doador",
+        "Instruction": ""
+    },
+    {
+        "id": "PollModuleTitle",
+        "Text": "Gerenciador de apostas",
+        "Instruction": ""
+    },
+    {
+        "id": "StartPollButton",
+        "Text": "Iniciar",
+        "Instruction": "Iniciar apostas para itens criados"
+    },
+    {
+        "id": "StopPollButton",
+        "Text": "Parar",
+        "Instruction": "Fecha as apostas para que você possa escolher o vencedor ou os vencedores"
+    },
+    {
+        "id": "RestartButton",
+        "Text": "Reiniciar",
+        "Instruction": "Redefine as apostas de onde elas mantêm as pastas já criadas"
+    },
+    {
+        "id": "RevertChangesButton",
+        "Text": "Reverter",
+        "Instruction": "Inverta todas as alterações feitas nos itens"
+    },
+    {
+        "id": "DistributeButton",
+        "Text": "Iniciar distribuição",
+        "Instruction": "inicia a distribuição dos ganhos aos vencedores"
+    },
+    {
+        "id": "DistributionText",
+        "Text": "Distribuição de ganhos",
+        "Instruction": ""
+    },
+    {
+        "id": "CloseButton",
+        "Text": "Cera",
+        "Instruction": "Cera e flecha na aposta"
+    },
+    {
+        "id": "CreatePollButton",
+        "Text": "Criar aposta",
+        "Instruction": "Crie a aposta, permitindo a criação dos itens da aposta"
+    },
+    {
+        "id": "SettingModuleTitle",
+        "Text": "Configurações",
+        "Instruction": ""
+    },
+    {
+        "id": "MinerSettingText",
+        "Text": "Mineração por hora",
+        "Instruction": ""
+    },
+    {
+        "id": "CoinNameTitle",
+        "Text": "Nome da moeda",
+        "Instruction": ""
+    },
+    {
+        "id": "CoinImageTitle",
+        "Text": "Imagem da moeda",
+        "Instruction": ""
+    },
+    {
+        "id": "StoreModuleTitle",
+        "Text": "Gerente da loja",
+        "Instruction": ""
+    },
+    {
+        "id": "WalletsModuleTitle",
+        "Text": "Carteiras",
+        "Instruction": ""
+    },
+    {
+        "id": "DeletePollButton",
+        "Text": "",
+        "Instruction": "Finalize as apostas completamente e apague os votos"
+    },
+    {
+        "id": "AddPollItemButton",
+        "Text": "+",
+        "Instruction": "Adiciona um novo item a ser apostado"
+    }
+]

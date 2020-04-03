@@ -1,0 +1,34 @@
+[
+    {
+        "id": "Name",
+        "Text": "Nome"
+    },
+    {
+        "id": "Color",
+        "Text": "Cor"
+    },
+    {
+        "id": "WISHES",
+        "Text": "Desejos"
+    },
+    {
+        "id": "Second",
+        "Text": "segundo"
+    },
+    {
+        "id": "Minuto",
+        "Text": "minuto"
+    },
+    {
+        "id": "Hour",
+        "Text": "hora"
+    },
+    {
+        "id": "Days",
+        "Text": "dias"
+    },
+    {
+        "id": "Refund",
+        "Text": "Reembolso"
+    }
+]

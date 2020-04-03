@@ -5,7 +5,7 @@ import path = require('path');
 
 import { APP, CheckRequisition } from "..";
 import UploadFileResponse from "../models/files_manager/UploadFileResponse";
-import { UploadFileRoute, GetFileRoute as GetUploadedFile, GetWalletSkinImage, GetWalletSkins } from "./routes";
+import { UploadFileRoute, GetFileRoute as GetUploadedFile, GetWalletSkinImage, GetWalletSkins, GetLocale } from "./routes";
 import { getSoketOfStreamer } from "../SocketsManager";
 import IOListeners from "../IOListeners";
 
@@ -46,7 +46,9 @@ APP.post(UploadFileRoute, async function (req, res: express.Response) {
     req.on('data', chunk => {
         file.write(chunk);
         let UploadPercentage = (file.bytesWritten / fileSize) * 100;
-        getSoketOfStreamer(StreamerID).emit(IOListeners.UploadProgress, UploadPercentage);
+        getSoketOfStreamer(StreamerID).forEach(socket => {
+            socket.emit(IOListeners.UploadProgress, UploadPercentage);
+        })
     })
     req.on('end', async () => {
         file.end();
@@ -66,4 +68,23 @@ APP.get(GetWalletSkinImage, async function (req, res: express.Response) {
 
 APP.get(GetWalletSkins, async function (req, res: express.Response) {
     res.status(200).sendFile(path.resolve(`./configs/WalletSkins.json`))
+})
+
+APP.get(GetLocale, async function (req, res: express.Response) {    
+    let Path = path.resolve(`./configs/locales/${req.params.ViewName}/${req.params.Language}.json`);
+    
+    fs.open(Path, 'r', (err, fd) => {
+        if (err) {
+            if (err.code === 'ENOENT') {
+                console.log(Path);
+                
+                Path = path.resolve(`./configs/locales/${req.params.ViewName}/en.json`);
+                res.status(200).sendFile(Path);
+            } else {
+                throw err;
+            }
+        } else {
+            res.status(200).sendFile(Path);
+        }
+    });
 })

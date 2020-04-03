@@ -2,6 +2,8 @@ import { Miner } from "../modules/Miner";
 import AllertController from "./AlertController";
 import StoreDisplayController from "./StoreDisplayController";
 import { getUsername } from "../../TwitchConnections";
+import { IncertTextInHardCode as IncertTextInElements, LocalizedTexts } from "../../common/model/IncertText";
+import { getLocaleFile } from "../../BackendConnection";
 
 function makeid(length: number) {
   var result = "";
@@ -13,6 +15,7 @@ function makeid(length: number) {
   }
   return result;
 }
+export var Texts: LocalizedTexts;
 
 var token: string, StreamerID: string, TwitchUserID: string;
 
@@ -50,11 +53,14 @@ window.Twitch.ext.onAuthorized(async (auth) => {
     TwitchUserID = makeid(5);
   }
 
+  Texts = new LocalizedTexts(await getLocaleFile('view_video_overlay', 'en'));
+
   window.Twitch.ext.onContext(async (context) => {
     console.error(context);
+    IncertTextInElements(await getLocaleFile('view_video_overlay_hard_code', context.language));
+    Texts.update(await getLocaleFile('view_video_overlay',context.language));
 
     await new AllertController(StreamerID, TwitchUserID).Loading();
-
     var ControllerOfStoreDisplay = new StoreDisplayController(StreamerID, TwitchUserID);
     var UserMiner = new Miner(StreamerID, TwitchUserID);
     UserMiner.onMine = (CurrentCoinsOfUserNunber, BalanceChange) => {

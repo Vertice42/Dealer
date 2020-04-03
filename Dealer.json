@@ -28,29 +28,6 @@
       }
     },
     {
-      "id": "4",
-      "label": "",
-      "channelId": "97848974",
-      "configurationAnchor": "video_overlay",
-      "displayChannelName": "vertise5x",
-      "type": "dashboard",
-      "features": {
-        "isBitsEnabled": false,
-        "isChatEnabled": false,
-        "isSubscriptionStatusAvailable": false
-      },
-      "linked": true,
-      "linkedUserId": "265737932",
-      "mode": "dashboard",
-      "isPopout": true,
-      "role": "Broadcaster",
-      "orientation": "Portrait",
-      "frameSize": {
-        "width": 1280,
-        "height": 720
-      }
-    },
-    {
       "id": "5",
       "label": "",
       "channelId": "97848974",

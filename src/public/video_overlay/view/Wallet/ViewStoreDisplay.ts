@@ -2,8 +2,8 @@ import { sleep } from "../../../../utils/utils";
 import PurchaseOrder from "../../../../services/models/store/PurchaseOrder";
 import StoreItem from "../../../../services/models/store/StoreItem";
 import { EnableRelocatableElemente } from "../../../common/model/ViewerFeatures";
-import { NONAME } from "dns";
 import { WalletSkin } from "../../../../services/models/wallet/WalletSkin";
+import { Texts } from "../../controller/MainController";
 
 class ViewStoreItemDisplay {
     HTML: HTMLDivElement
@@ -34,7 +34,9 @@ class ViewStoreItemDisplay {
 
     private createBuyButton() {
         this.HTML_BuyButton = document.createElement('button');
-        this.HTML_BuyButton.innerText = 'Buy';
+        Texts.onLocaleChange = () => {
+            this.HTML_BuyButton.innerText = Texts.get('Buy');
+        }
         return this.HTML_BuyButton;
     }
 
@@ -110,7 +112,7 @@ class ViewWalletSkin {
 }
 
 export default class ViewWalletDisplay {
-    public ViewWalletSkins:ViewWalletSkin[];
+    public ViewWalletSkins: ViewWalletSkin[];
 
     private WalletDiv = <HTMLDivElement>document.getElementById("WalletDiv");
     public Wallet_Mask_0 = <HTMLDivElement>document.getElementById("Wallet_Mask_0");
@@ -138,7 +140,7 @@ export default class ViewWalletDisplay {
 
     onBuyItemButtonActive = (StoreItem: StoreItem) => { };
 
-    UnSelectedAllWallets(){
+    UnSelectedAllWallets() {
         this.ViewWalletSkins.forEach(viewWalletSkins => {
             viewWalletSkins.setUnSelected();
         });
@@ -330,8 +332,7 @@ export default class ViewWalletDisplay {
 
     constructor() {
         this.Wallet_Mask_1.addEventListener('click', () => {
-            console.log('hideee');
-            
+
             if (this.InsideOfWalletDiv.classList.contains('StoreHide')) {
                 this.InsideOfWalletDiv.classList.remove('StoreHide');
                 this.InsideOfWalletDiv.classList.add('StoreSample');

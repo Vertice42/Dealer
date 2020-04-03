@@ -1,0 +1,67 @@
+[
+    {
+        "id": "BalanceText",
+        "Text": "Balance",
+        "Instruction": ""
+    },
+    {
+        "id": "NavStoreButtom",
+        "Text": "Store",
+        "Instruction": ""
+    },
+    {
+        "id": "NavSkinsButtom",
+        "Text": "Skins",
+        "Instruction": ""
+    },
+    {
+        "id": "PromoteText",
+        "Text": "Support to keep the extension <br> and unlock Skins for the wallet",
+        "Instruction": ""
+    },
+    {
+        "id": "Donatebutton",
+        "Text": "Donate Bits",
+        "Instruction": ""
+    },
+    {
+        "id": "PollAlertText",
+        "Text": "Bet in progress",
+        "Instruction": ""
+    },
+    {
+        "id": "ParticipatePollButton",
+        "Text": "Participate",
+        "Instruction": ""
+    },
+    {
+        "id": "BetAmountInputText",
+        "Text": "Bet",
+        "Instruction": ""
+    },
+    {
+        "id": "StopAlertText",
+        "Text": "Wait for the Result",
+        "Instruction": ""
+    },
+    {
+        "id": "AlertOfWinnerText",
+        "Text": "Congratulations",
+        "Instruction": ""
+    },
+    {
+        "id": "PreEarningsView",
+        "Text": "You won ",
+        "Instruction": ""
+    },
+    {
+        "id": "AlertOfLoserText",
+        "Text": "What a pity",
+        "Instruction": ""
+    },
+    {
+        "id": "PreLossView",
+        "Text": "You Lost ",
+        "Instruction": ""
+    }
+]
