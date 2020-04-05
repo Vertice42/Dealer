@@ -1,7 +1,7 @@
 {
   "allowHttpBackend": false,
-  "backendCommand": "node index.js",
-  "backendFolderName": "build\\services",
+  "backendCommand": "node build/services/index.js",
+  "backendFolderName": "C:\\Users\\ADM\\Documents\\Projetos Git\\Dealer",
   "certificateExceptions": [],
   "extensionViews": [
     {

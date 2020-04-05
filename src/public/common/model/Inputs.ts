@@ -29,12 +29,8 @@ export class ResponsiveInput {
 
     this.HTMLInput.classList.add('InputSentError');
   }
-  constructor(HTMLInput?: HTMLInputElement) {
-    if (HTMLInput) {
-      this.HTMLInput = HTMLInput;
-    } else {
-      this.HTMLInput = document.createElement('input');
-    }
+  constructor(HTMLInput: HTMLInputElement) {
+    this.HTMLInput = HTMLInput;
   }
 }
 
@@ -106,10 +102,10 @@ export class ResponsiveLabelForInputFile {
     this.HTML_LabelForInput.classList.add('AddUpdateFileIcon');
     this.HTML_LabelForInput.classList.add('Default');
     this.HTML_LabelForInput.htmlFor = id;
-    this.HTML_InputFile.addEventListener('focus',()=>{      
+    this.HTML_InputFile.addEventListener('focus', () => {
       this.HTML_LabelForInput.classList.add('AddUpdateFileIconInfocus');
     })
-    this.HTML_InputFile.addEventListener('focusout',()=>{
+    this.HTML_InputFile.addEventListener('focusout', () => {
       this.HTML_LabelForInput.classList.remove('AddUpdateFileIconInfocus');
     })
 

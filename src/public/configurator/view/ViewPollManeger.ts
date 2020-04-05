@@ -33,7 +33,8 @@ class NameInput {
         }
         name_input_div.appendChild(text_name);
         // name to indicate input function
-        this.HTMLNameInput = document.createElement("input");
+        this.HTMLNameInput = document.createElement('input');
+        this.HTMLNameInput.maxLength = 13;
         this.HTMLNameInput.type = "text";
         this.HTMLNameInput.onchange = () => { this.onChange(); }
         name_input_div.appendChild(this.HTMLNameInput);
@@ -62,7 +63,7 @@ class ColorInput {
         }
         color_input_div.appendChild(text_color);
         // name to indicate input function
-        this.HTMLColorInput = document.createElement("input");
+        this.HTMLColorInput = document.createElement('input');
         this.HTMLColorInput.type = "color";
         this.HTMLColorInput.onchange = () => { this.onChange(); };
         color_input_div.appendChild(this.HTMLColorInput);
@@ -86,7 +87,7 @@ class VoteCounterOutput {
         vote_output_div.classList.add('ItemInputDiv');
         let text_Vote = document.createElement("h3");
         Texts.onLocaleChange = () => {
-            text_Vote.innerText = Texts.get("WISHES") + " |";
+            text_Vote.innerText = Texts.get("Betting") + " |";
         }
         vote_output_div.appendChild(text_Vote);
         //name to indicate output function

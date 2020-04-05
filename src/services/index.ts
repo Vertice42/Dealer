@@ -8,6 +8,7 @@ import { Loading } from "./modules/database/dbLoading";
 import IOListeners from "./IOListeners";
 import { dbManager } from "./modules/database/dbManager";
 import { addSoketOfStreamer, removeSoketOfStreamer } from "./SocketsManager";
+import path = require('path');
 
 export function CheckRequisition(CheckList: (() => Object)[]) {
     let ErrorList = [];

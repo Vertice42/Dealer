@@ -29,11 +29,8 @@ export class LocalizedTexts {
     update(LocalizedTexts: LocalizedText[]) {
         LocalizedTexts.forEach(localizedText => {
             this.Texts[localizedText.id] = localizedText.Text;
-        });
-        console.log(this.Listerners);
-        
+        });        
         this.Listerners.forEach(Listerner => Listerner());
-
     }
 
     constructor(LocalizedTexts: LocalizedText[]) {

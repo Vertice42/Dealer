@@ -19,12 +19,15 @@ export function NotifyViewers(TwitchListener: { ListenerName: string, data: any 
   window.Twitch.ext.send("broadcast", "json", JSON.stringify(TwitchListener));
 }
 
+
 window.Twitch.ext.onContext(async (context) => {
   console.error(context);
-  new ViewMain();
-  IncertTextInHardCode(await getLocalizedTextsFile('view_config_hard_code',context.language));
 
-  if(!Texts)Texts = new LocalizedTexts(await getLocalizedTextsFile('view_config', context.language));
+  new ViewMain();
+
+  IncertTextInHardCode(await getLocalizedTextsFile('view_config_hard_code', context.language));
+
+  if (!Texts) Texts = new LocalizedTexts(await getLocalizedTextsFile('view_config', context.language));
   else Texts.update(await getLocalizedTextsFile('view_config', context.language));
 
 })

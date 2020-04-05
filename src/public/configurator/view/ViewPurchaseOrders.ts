@@ -14,22 +14,33 @@ class ViewPurchaseTime {
         time = time / 1000;
         if (time < 60) {
             let TimeRound = Math.round(time);
-            return this.HTML.innerText = `${TimeRound} ${Texts.get('Second')}${(TimeRound > 1) ? 's' : ''}`;
+            Texts.onLocaleChange = () => {
+                this.HTML.innerText = `${TimeRound} ${Texts.get('Second')}${(TimeRound > 1) ? 's' : ''}`;
+            };
+            return this.HTML.innerText;
         }
         time = time / 60;
         if (time < 60) {
             let TimeRound = Math.round(time);
-            return this.HTML.innerText = `${TimeRound} ${Texts.get('Minute')}${(TimeRound > 1) ? 's' : ''}`;
+            Texts.onLocaleChange = () => {
+                this.HTML.innerText = `${TimeRound} ${Texts.get('Minute')}${(TimeRound > 1) ? 's' : ''}`;
+            };
+            return this.HTML.innerText
         }
         time = time / 60;
         if (time < 60) {
             let TimeRound = Math.round(time);
-            return this.HTML.innerText = `${TimeRound} ${Texts.get('Hour')}${(TimeRound > 1) ? 's' : ''}`;
+            Texts.onLocaleChange = () => {
+                this.HTML.innerText = `${TimeRound} ${Texts.get('Hour')}${(TimeRound > 1) ? 's' : ''}`;
+            }
+            return this.HTML.innerText
         }
 
         let TimeRound = Math.round(time);
-        return this.HTML.innerText = `${TimeRound} ${Texts.get('Days')}`;
-
+        Texts.onLocaleChange = () => {
+            this.HTML.innerText = `${TimeRound} ${Texts.get('Days')}`;
+        }
+        return this.HTML.innerText
     }
 
     constructor(PurchaseTime: number) {

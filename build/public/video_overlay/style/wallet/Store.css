@@ -80,9 +80,10 @@
 .StoreItem button {
     background-color: yellowgreen;
     font-family: fantasy;
+    width: 100%;
     text-transform: uppercase;
     color: white;
-    font-size: 2vw;
+    font-size: 1.6vw;
     transition: all 200ms;
 }
 

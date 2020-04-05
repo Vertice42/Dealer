@@ -23,11 +23,13 @@ export default class StoreDisplayController {
                 this.ViewStoreDisplay.startWithdrawalAnimation((~~BalanceChange + 1) * -1);
             }
         }
-        this.ViewStoreDisplay.CoinsOfUserView.innerText = (~~Balance).toString() + '$ ' + this.CoinName + 's';
+        let lastChar = this.CoinName.charAt(this.CoinName.length-1)
+        this.ViewStoreDisplay.CoinsOfUserView.innerText = 
+        ` ${(~~Balance).toString()}$${this.CoinName}${(lastChar === 's'|| lastChar === 'S') ? '' : 's'}`;
     }
 
-    setSkinOfWallet(WalletSkinsSelectedName){
-        
+    setSkinOfWallet(WalletSkinsSelectedName) {
+
         this.ViewStoreDisplay.Wallet_Mask_0.style.backgroundImage = 'url(' + BackendConnections.getURLOfWalletSkinsImage(WalletSkinsSelectedName, 0) + ')'
         this.ViewStoreDisplay.Wallet_Mask_1.style.backgroundImage = 'url(' + BackendConnections.getURLOfWalletSkinsImage(WalletSkinsSelectedName, 1) + ')'
 

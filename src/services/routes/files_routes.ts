@@ -75,9 +75,7 @@ APP.get(GetLocale, async function (req, res: express.Response) {
     
     fs.open(Path, 'r', (err, fd) => {
         if (err) {
-            if (err.code === 'ENOENT') {
-                console.log(Path);
-                
+            if (err.code === 'ENOENT') {                
                 Path = path.resolve(`./configs/locales/${req.params.ViewName}/en.json`);
                 res.status(200).sendFile(Path);
             } else {

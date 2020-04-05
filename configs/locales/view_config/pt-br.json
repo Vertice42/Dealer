@@ -8,8 +8,8 @@
         "Text": "Cor"
     },
     {
-        "id": "WISHES",
-        "Text": "Desejos"
+        "id": "Betting",
+        "Text": "Apostas"
     },
     {
         "id": "Second",
@@ -29,6 +29,6 @@
     },
     {
         "id": "Refund",
-        "Text": "Reembolso"
+        "Text": "Reembolsar"
     }
 ]
