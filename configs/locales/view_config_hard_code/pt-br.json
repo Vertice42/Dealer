@@ -45,6 +45,16 @@
         "Instruction": ""
     },
     {
+        "id": "DistributionText",
+        "Text": "Distribuição concluída",
+        "Instruction": ""
+    },
+    {
+        "id": "EmptyPurchaseOrdersText",
+        "Text": "Não há itens em reprodução",
+        "Instruction": ""
+    },
+    {
         "id": "CloseButton",
         "Text": "Cera",
         "Instruction": "Cera e flecha na aposta"

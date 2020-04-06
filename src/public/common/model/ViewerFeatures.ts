@@ -1,4 +1,4 @@
-import { sleep } from "../../../utils/utils";
+import { sleep } from "../../../utils/funtions";
 
 export function EnableRelocatableElemente(Element: HTMLElement, StartingLocationX, StartingLocationY) {
     var moveX = 0;
@@ -58,6 +58,23 @@ export function DisableRelocatableElemente(Element: HTMLElement) {
     Element.onmouseup = null;
 }
 
+export function EnableHideWhenMouseIsInactive(FatherElement: HTMLElement, Element: HTMLElement) {
+    let move = true;
+    FatherElement.addEventListener('mousemove', async (event) => {
+        if (move) {
+            move = false;
+            console.log(Element.id);
+
+            if (!Element.classList.contains('Visible'))
+                Element.classList.add('Visible');
+            await sleep(500);
+            if (Element.classList.contains('Visible'))
+                Element.classList.remove('Visible');
+            move = true;
+        }
+    })
+}
+
 export function GenerateColor() {
     /**Generate random hex color*/
     var hexadecimais = "0123456789ABCDEF";
@@ -68,7 +85,7 @@ export function GenerateColor() {
     return color;
 }
 
-export async function LinerAnimation(initial: number, end: number, time: number, onFrameChange: (progres: number) => any) {
+export async function CrateLinerAnimation(initial: number, end: number, time: number, onFrameChange: (progres: number) => any) {
     let incrementer = (end - initial) / (time / 16);
 
     for (let progres = initial; progres < end; progres += incrementer) {

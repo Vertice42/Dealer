@@ -235,7 +235,7 @@ export default class ViewStore {
       this.onPriceChange(ViewStoreItem);
     };
     viewStoreItem.ResponsiveInputFile.HTML_InputFile.addEventListener('change', () => {
-      this.onFileInputChange(viewStoreItem); //TODO > 0)
+      this.onFileInputChange(viewStoreItem);
     });
     viewStoreItem.onSettingChange = (ViewStoreItem, ItemSettings) => {
       this.onSettingOfItemChange(ViewStoreItem, ItemSettings);

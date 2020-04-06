@@ -1,4 +1,4 @@
-@keyframes ShowPoll {
+@keyframes ShowPollAlert {
     0% {
         transform: scale(0, 0) translateY(-200px);
     }
@@ -16,7 +16,7 @@
     }
 }
 
-@keyframes HidePoll {
+@keyframes HidePollAlert {
     30% {
         transform: scale(1);
     }
@@ -66,15 +66,15 @@
 
 .Enable#PollAlert {
     transform: scale(0, 0) translateY(-200px);
-    animation: HideAnimation 2s 5s  forwards, ShowPoll 1s forwards;
+    animation: HideAnimation 2s 5s  forwards, ShowPollAlert 1s forwards;
 }
 
-.MainDiv:hover .Enable#PollAlert {
-    animation: ShowAnimation 500ms forwards, ShowPoll 1s forwards;
+.MainDiv:hover .Visible.Enable#PollAlert {
+    animation: ShowAnimation 500ms forwards, ShowPollAlert 1s forwards;
 }
 
 .Disable#PollAlert {
-    animation: HidePoll 1s forwards;
+    animation: HidePollAlert 1s forwards;
 }
 
 .ParticipatePollButton {

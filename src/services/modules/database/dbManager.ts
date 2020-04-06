@@ -24,7 +24,6 @@ var AccountDataArray: AccountData[] = [];
  */
 export class dbManager {
     static getStreamerDataBase(StreamerID: string) {
-        //TODO add username end pasword of the streme
         return new Sequelize(
             STREAMER_DATABASE_NAME + StreamerID,
             DatabaseConfig.User,
@@ -66,7 +65,6 @@ export class dbManager {
     }
 
     static async getDataBase(DataBaseName: string) {
-        //TODO add username end pasword of the streme
         return new Sequelize(
             DataBaseName
             , DatabaseConfig.User,

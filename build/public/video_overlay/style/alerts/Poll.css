@@ -1,4 +1,4 @@
-@keyframes ShowAnimationPoll {
+@keyframes ShowPoll {
     0% {
         transform: rotate(50deg) scale(0, 0.1) translate(0px, -250px);
     }
@@ -16,7 +16,7 @@
     }
 }
 
-@keyframes HideAnimationPoll {
+@keyframes HidePoll {
     20% {
         transform: translate(-200px, -100px) rotate(25deg) scale(0.7, 1);
     }
@@ -35,15 +35,15 @@
 }
 
 .Enable#PollDiv {
-    animation: HideAnimation 2s 5s forwards, ShowAnimationPoll 1s forwards cubic-bezier(0.645, 0.045, 0.355, 1);
+    animation: HideAnimation 2s 5s forwards, ShowPoll 1s forwards cubic-bezier(0.645, 0.045, 0.355, 1);
 }
 
-.MainDiv:hover .Enable#PollDiv {
-    animation: ShowAnimation 500ms forwards, ShowAnimationPoll 1s forwards;
+.MainDiv:hover .Visible.Enable#PollDiv {
+    animation: ShowAnimation 500ms forwards, ShowPoll 1s forwards;
 }
 
 .Disable#PollDiv {
-    animation: HideAnimationPoll 1s forwards cubic-bezier(0.785, 0.135, 0.15, 0.86);
+    animation: HidePoll 1s forwards cubic-bezier(0.785, 0.135, 0.15, 0.86);
 }
 
 .AddBetValueDiv {
@@ -57,7 +57,7 @@
     width: fit-content;
     margin: 1vw;
     color: white;
-    font: 10pt Heroes;
+    font: 1vw Heroes;
     text-transform: uppercase;
 }
 
@@ -67,7 +67,7 @@
     width: 60px;
     height: 20px;
     text-align: center;
-    font: 10pt Heroes;
+    font: 1vw Heroes;
     border-style: solid;
     border-spacing: 0.1px;
 }

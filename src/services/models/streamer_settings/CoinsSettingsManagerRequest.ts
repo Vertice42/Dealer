@@ -1,8 +1,10 @@
 import { CoinsSettings } from "./CoinsSettings";
 
 export class CoinsSettingsManagerRequest {
-    body: {
-        StreamerID: string;
-        Setting: CoinsSettings;
-    };
+    StreamerID: string;
+    Setting: CoinsSettings;
+    constructor(StreamerID: string, Setting: CoinsSettings) {
+        this.StreamerID = StreamerID;
+        this.Setting = Setting;
+    }
 }

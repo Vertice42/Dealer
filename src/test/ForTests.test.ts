@@ -22,10 +22,6 @@ export const ID_FOR_WALLETS = 'rahast'
 export const HOURLY_REWARD_FOR_TEST = 102;
 export const REWARD_FOR_TEST_ATTEMPT = new MinerSettings(HOURLY_REWARD_FOR_TEST).RewardPerMining;
 
-export function sleep(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 export async function createAndStartStreamerDatabase(StreamersID: string) {
   let CreateResult = await dbManager.CreateIfNotExistStreamerDataBase(StreamersID);
   dbManager.setAccountData(await Loading.StreamerAccountData(StreamersID));

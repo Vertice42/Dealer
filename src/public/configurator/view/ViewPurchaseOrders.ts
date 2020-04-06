@@ -1,7 +1,7 @@
 import StoreItem from "../../../services/models/store/StoreItem";
 import PurchaseOrder from "../../../services/models/store/PurchaseOrder";
 import { PurchaseOrderItem } from "../controller/PurchaseOrderController";
-import { LinerAnimation } from "../../common/model/ViewerFeatures";
+import { CrateLinerAnimation } from "../../common/model/ViewerFeatures";
 import { Texts } from "../controller/MainController";
 
 class ViewPurchaseTime {
@@ -166,7 +166,7 @@ export default class ViewPurchaseOrders {
     }
 
     setAudioPlayerProgress(newProgres: number) {
-        LinerAnimation(this.AudioProgress, newProgres, 200, (newProgres) => {
+        CrateLinerAnimation(this.AudioProgress, newProgres, 200, (newProgres) => {
             let left = newProgres;
             let rigth = newProgres;
             this.HTML_LoadingBarOfAudioPlayer.style.backgroundImage =

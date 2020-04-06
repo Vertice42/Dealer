@@ -1,7 +1,7 @@
 import { PollButton } from "../../../services/models/poll/PollButton";
 import { ResponsiveInput } from "../../common/model/Inputs";
-import { hexToRgb } from "../../../utils/utils";
-import { EnableRelocatableElemente, DisableRelocatableElemente } from "../../common/model/viewerFeatures";
+import { hexToRgb, sleep } from "../../../utils/funtions";
+import { EnableRelocatableElemente, DisableRelocatableElemente, EnableHideWhenMouseIsInactive } from "../../common/model/viewerFeatures";
 
 const GRADIENT_DARKENING_RATE = 1.5;
 
@@ -90,12 +90,14 @@ export default class ViewAlerts {
 
     private ParticipatePollButton = <HTMLInputElement>document.getElementById("ParticipatePollButton");
     private AlertsDiv = <HTMLDivElement>document.getElementById("AlertsDiv");
+    
     private PollAlert = <HTMLDivElement>document.getElementById("PollAlert");
     private StopAlert = <HTMLDivElement>document.getElementById("StopAlert");
     private AlertOfWinner = <HTMLDivElement>document.getElementById("AlertOfWinner");
-    private EarningsView = <HTMLDivElement>document.getElementById("EarningsView");
     private AlertOfLoser = <HTMLDivElement>document.getElementById("AlertOfLoser");
+
     private LossView = <HTMLDivElement>document.getElementById("LossView");
+    private EarningsView = <HTMLDivElement>document.getElementById("EarningsView");
     private PollDiv = <HTMLDivElement>document.getElementById("PollDiv");
     private ButtonsDiv = <HTMLDivElement>document.getElementById("ButtonsDiv");
 
@@ -123,7 +125,7 @@ export default class ViewAlerts {
         div.classList.add("Alert");
     }
     public async HideAllert(div: HTMLDivElement) {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             if (div.classList.contains("Disable")) {
                 return resolve();
             }
@@ -138,6 +140,9 @@ export default class ViewAlerts {
                 div.addEventListener('animationend', onEnd);
                 div.classList.remove("Enable");
                 div.classList.add("Disable");
+
+                await sleep(1100);
+                onEnd();
             }
         });
     }
@@ -186,6 +191,15 @@ export default class ViewAlerts {
         EnableRelocatableElemente(this.AlertsDiv, X / 2.5, Y / 1.9);
         this.BetAmountInput.HTMLInput.onmouseenter = () => DisableRelocatableElemente(this.AlertsDiv);
         this.BetAmountInput.HTMLInput.onmouseleave = () => EnableRelocatableElemente(this.AlertsDiv, undefined, undefined);
+
+
+        EnableHideWhenMouseIsInactive(document.body, this.PollAlert);
+        EnableHideWhenMouseIsInactive(document.body, this.PollDiv);
+        EnableHideWhenMouseIsInactive(document.body, this.StopAlert);
+        EnableHideWhenMouseIsInactive(document.body, this.AlertOfWinner);
+        EnableHideWhenMouseIsInactive(document.body, this.AlertOfLoser);
+
+
         this.ParticipatePollButton.onclick = () => this.onclickOfParticipatePollButton();
         this.getBetValue = () => { return Number(this.BetAmountInput.HTMLInput.value); };
     }

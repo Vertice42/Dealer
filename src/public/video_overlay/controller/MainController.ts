@@ -1,7 +1,7 @@
 import { Miner } from "../modules/Miner";
 import AllertController from "./AlertController";
 import StoreDisplayController from "./StoreDisplayController";
-import { getUsername } from "../../TwitchConnections";
+import { getUsername, getID } from "../../TwitchConnections";
 import { IncertTextInHardCode as IncertTextInElements, LocalizedTexts } from "../../common/model/IncertText";
 import { getLocaleFile } from "../../BackendConnection";
 
@@ -15,6 +15,7 @@ function makeid(length: number) {
   }
   return result;
 }
+
 export var Texts: LocalizedTexts;
 
 var token: string, StreamerID: string, TwitchUserID: string;
@@ -45,12 +46,22 @@ window.Twitch.ext.onAuthorized(async (auth) => {
 
   if (process.env.NODE_ENV === 'production') {
     TwitchUserID = auth.userId.toLowerCase();
+
+    TwitchUserID = TwitchUserID.replace(/[^\d]+/g, '')
     TwitchUserID = (await getUsername(TwitchUserID, auth.clientId)).name;
   }
   else {
-    TwitchUserID = auth.userId.toLowerCase().replace('u', '');
+    TwitchUserID = auth.userId;
+    TwitchUserID = TwitchUserID.replace(/[^\d]+/g, '')
+    console.log(await getID('cellbit', auth.clientId));
     TwitchUserID = (await getUsername(TwitchUserID, auth.clientId)).name;
-    TwitchUserID = makeid(5);
+
+    //TwitchUserID = makeid(5);
+  }
+
+  if (!TwitchUserID) {
+    document.body.style.display = 'none';
+    return 'TwitchUserID undefined';
   }
 
   Texts = new LocalizedTexts(await getLocaleFile('view_video_overlay', 'en'));
@@ -58,7 +69,7 @@ window.Twitch.ext.onAuthorized(async (auth) => {
   window.Twitch.ext.onContext(async (context) => {
     console.error(context);
     IncertTextInElements(await getLocaleFile('view_video_overlay_hard_code', context.language));
-    Texts.update(await getLocaleFile('view_video_overlay',context.language));
+    Texts.update(await getLocaleFile('view_video_overlay', context.language));
 
     await new AllertController(StreamerID, TwitchUserID).Loading();
     var ControllerOfStoreDisplay = new StoreDisplayController(StreamerID, TwitchUserID);

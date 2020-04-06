@@ -6,7 +6,7 @@ import { WalletManagerRequest } from "../models/wallet/WalletManagerRequest";
 import { GetWalletRoute, WalletManager, GetWalletsRoute } from "./routes";
 import { getAllWallets, dbWalletManeger } from "../modules/database/wallet/dbWalletManager";
 
-APP.get(GetWalletRoute, async function (req: express.Request, res: express.Response) {
+APP.get(GetWalletRoute, async function (req, res: express.Response) {
     var Request = <{ StreamerID: string, TwitchUserID: string }>req.params;
     let ErrorList = CheckRequisition([
         () => {

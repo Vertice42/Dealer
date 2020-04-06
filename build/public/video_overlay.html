@@ -10,78 +10,79 @@
 <body class="MainDiv" id="display">
 
   <div class="WalletDiv" id="WalletDiv">
-
     <div class="Wallet" id="Wallet_Mask_0">
       <div id="CoinsDiv"></div>
       <div class="Wallet" id="Wallet_Mask_1">
       </div>
-
-      <div id="InsideOfWalletDiv" class="StoreSample">
-        <div class="Information">
-          <span id="BalanceText"></span> <span id="CoinsOfUserView"> </span>
-        </div>
-
-        <div id="StoreMenuDiv">
-          <nav>
-            <button class="NavButton NavButtonEnable" id="NavStoreButtom"></button>
-            <button class="NavButton" id="NavSkinsButtom"></button>
-          </nav>
-        </div>
-
-        <div id="StreamerStorePageDiv" class="PageSample">
-          <div id="ItemsList"> </div>
-        </div>
-
-        <div id="SkinsPageDiv" class="PageHiden">
-
-          <div id="PromoteTextDiv">
-            <span id="PromoteText"></span>
-          </div>
-
-          <div id="SkinsListDiv">
-          </div>
-
-          <div class="DonatebuttonDiv">
-            <button id="Donatebutton"></button>
-          </div>
-        </div>
-
-      </div>
     </div>
 
-    <div id="AlertsDiv">
-
-      <div class="Disable Hidden" id="PollAlert">
-        <h2 id="PollAlertText"></h2>
-        <button class="ParticipatePollButton" id="ParticipatePollButton"></button>
+    <div id="InsideOfWalletDiv" class="StoreSample">
+      <div class="Information">
+        <span id="BalanceText"></span> <span id="CoinsOfUserView"> </span>
       </div>
 
-      <div class="Disable Hidden" id="PollDiv">
-        <div class="AddBetValueDiv">
-            <h2 id="BetAmountInputText"> </h2>
-            <input class="UnchangedInput" id="BetAmountInput" value="1" min="1" type="number">
+      <div id="StoreMenuDiv">
+        <nav>
+          <button class="NavButton NavButtonEnable" id="NavStoreButtom"></button>
+          <button class="NavButton" id="NavSkinsButtom"></button>
+        </nav>
+      </div>
+
+      <div id="StreamerStorePageDiv" class="PageSample">
+        <div id="ItemsList"> </div>
+      </div>
+
+      <div id="SkinsPageDiv" class="PageHiden">
+
+        <div id="PromoteTextDiv">
+          <span id="PromoteText"></span>
         </div>
-        <div class="ButtonsDiv" id="ButtonsDiv"></div>
+
+        <div id="SkinsListDiv">
+        </div>
+
+        <div class="DonatebuttonDiv">
+          <button id="Donatebutton"></button>
+        </div>
       </div>
 
-      <div class="Disable Hidden" id="StopAlert">
-        <h2 id="StopAlertText"></h2>
-      </div>
+    </div>
+  </div>
+  </div>
 
-      <div class="Disable Hidden" id="AlertOfWinner">
-        <h2 id="AlertOfWinnerText"></h2>
-        <h3 id="PreEarningsView"><span id='EarningsView'></span> </h3>
-        </h2>
-      </div>
+  <div id="AlertsDiv">
 
-      <div class="Disable Hidden" id='AlertOfLoser'>
-        <h2 id="AlertOfLoserText"></h2>
-        <h3 id="PreLossView"><span id="LossView"></span> </h3>
-      </div>
+    <div class="Disable Hidden Visible" id="PollAlert">
+      <h2 id="PollAlertText"></h2>
+      <button class="ParticipatePollButton" id="ParticipatePollButton"></button>
     </div>
 
-    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
-    <script src="./video_overlay/bundle.js"></script>
+    <div class="Disable Hidden Visible" id="PollDiv">
+      <div class="AddBetValueDiv">
+        <h2 id="BetAmountInputText"> </h2>
+        <input class="UnchangedInput" id="BetAmountInput" value="1" min="1" step="1" type="number">
+      </div>
+      <div class="ButtonsDiv" id="ButtonsDiv"></div>
+    </div>
+
+    <div class="Disable Hidden Visible" id="StopAlert">
+      <h2 id="StopAlertText"></h2>
+    </div>
+
+    <div class="Disable Hidden Visible" id="AlertOfWinner">
+      <h2 id="AlertOfWinnerText"></h2>
+      <h3 id="PreEarningsView"><span id='EarningsView'></span> </h3>
+      </h2>
+    </div>
+
+    <div class="Disable Hidden Visible" id='AlertOfLoser'>
+      <h2 id="AlertOfLoserText"></h2>
+      <h3 id="PreLossView"><span id="LossView"></span> </h3>
+    </div>
+  </div>
+
+  <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
+  <script src="./video_overlay/bundle.js"></script>
 
 </body>
 

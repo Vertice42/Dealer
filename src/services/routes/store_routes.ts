@@ -7,6 +7,7 @@ import StoreItem from "../models/store/StoreItem";
 import { StoreManagerRoute, GetStoreRoute } from "./routes";
 import del = require("del");
 import FolderTypes from "../models/files_manager/FolderTypes";
+import { isEquivalent } from "../../utils/funtions";
 
 APP.post(StoreManagerRoute, async function (req, res: express.Response) {
     let Request: StoreManagerRequest = req.body;
@@ -19,12 +20,20 @@ APP.post(StoreManagerRoute, async function (req, res: express.Response) {
         () => {
             if (!Request.StoreItem) {
                 return ({ RequestError: "StoreItem is no defined" })
-                //TODO ADD CHEKES
+            }
+        },
+        () => {
+            if (!Request.StoreItem ) {
+                return ({ RequestError: "StoreItem is no defined" })
+            }
+        },
+        () => {
+            if (!Request.StoreItem.id ) {
+                return ({ RequestError: "StoreItem ID is no defined" })
             }
         }
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
-    //TODO ADICIONAR dotenv    
 
     if ((await new ControllerOfPermissions(Request.StreamerID).AllSettingsISLocked(Request.StoreItem.ItemsSettings))) {
         return res.status(423).send({ mensage: 'This feature is blocked for you' })
@@ -55,7 +64,6 @@ APP.delete(StoreManagerRoute, async function (req, res: express.Response) {
     new dbStoreManager(Request.StreamerID).DeleteStoreItem(req.body.StoreItem)
         .then(async (result) => {
             await del('./uploads/'+Request.StreamerID+'/'+FolderTypes.StoreItem+Request.StoreItem.id+'/*');
-            //TODO Trasformar string 'Store Item em onjeto refatoravel'
             res.status(200).send(result);
         })
         .catch((reject) => {

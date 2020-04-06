@@ -49,6 +49,30 @@
         "width": 854,
         "height": 480
       }
+    },
+    {
+      "id": "6",
+      "label": "",
+      "channelId": "97848974",
+      "configurationAnchor": "panel",
+      "displayChannelName": "vertise5x",
+      "type": "video_overlay",
+      "features": {
+        "isBitsEnabled": false,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": false
+      },
+      "linked": true,
+      "linkedUserId": "265737932",
+      "opaqueId": "28579002",
+      "mode": "viewer",
+      "isPopout": false,
+      "role": "Logged-In Viewer",
+      "orientation": "Portrait",
+      "frameSize": {
+        "width": 854,
+        "height": 480
+      }
     }
   ],
   "manifest": {

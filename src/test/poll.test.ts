@@ -8,7 +8,6 @@ import { dbManager } from "../services/modules/database/dbManager";
 
 import { Poll } from "../services/models/poll/Poll";
 
-import { sleep } from "../utils/utils";
 
 import { PollBeat } from "../services/models/poll/PollBeat";
 
@@ -17,6 +16,7 @@ import { PollController } from "../services/controller/PollController";
 import { resolve } from "bluebird";
 import { createAndStartStreamerDatabase, ID_FOR_MANAGER_POLL, deleteStreamerDatabase, db_PRE_CREATED, db_FOR_UPDATE_BUTTONS, createPoll, startPoll, ID_FOR_DISTRIBUITION, USERS_IDS_FOR_TESTS, ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS } from "./ForTests.test";
 import { dbWalletManeger, getWallet } from "../services/modules/database/wallet/dbWalletManager";
+import { sleep } from "../utils/funtions";
 
 describe('Poll', () => {
   before(async function () {
@@ -239,7 +239,7 @@ describe('Poll', () => {
       expect(wallet_I.Coins).to.deep.equal(40);
       expect(wallet_II.Coins).to.deep.equal(45);
 
-      expect(await pollController.StartDistribuition(
+      expect(await pollController.startDistribuition(
         ButtonsToTestWithWinners)).to.include.keys('DistributionStarted');
 
       await waitDistributionCompleted(pollController);
@@ -278,7 +278,7 @@ describe('Poll', () => {
         new PollButton(2, 'yelow', '#000000', true),
         new PollButton(3, 'blue', '#000000', true)
       ];
-      expect(await pollController.StartDistribuition(
+      expect(await pollController.startDistribuition(
         ButtonsToTestWithWinners)).to.include.keys('DistributionStarted');
 
       await waitDistributionCompleted(pollController);

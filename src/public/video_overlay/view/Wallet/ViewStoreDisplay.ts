@@ -1,7 +1,7 @@
-import { sleep } from "../../../../utils/utils";
+import { sleep } from "../../../../utils/funtions";
 import PurchaseOrder from "../../../../services/models/store/PurchaseOrder";
 import StoreItem from "../../../../services/models/store/StoreItem";
-import { EnableRelocatableElemente } from "../../../common/model/ViewerFeatures";
+import { EnableRelocatableElemente, EnableHideWhenMouseIsInactive } from "../../../common/model/ViewerFeatures";
 import { WalletSkin } from "../../../../services/models/wallet/WalletSkin";
 import { Texts } from "../../controller/MainController";
 
@@ -312,7 +312,8 @@ export default class ViewWalletDisplay {
                 }
                 else {
                     viewStoreItem.setAvailable();
-                    viewStoreItem.HTML_BuyButton.onclick = () => { this.onBuyItemButtonActive(StoreItem) };
+                    viewStoreItem.HTML_BuyButton.onclick = () => { console.log(new Date);
+                     this.onBuyItemButtonActive(StoreItem) };
                 }
 
                 this.ItemsList.appendChild(viewStoreItem.HTML);
@@ -343,6 +344,8 @@ export default class ViewWalletDisplay {
         })
 
         EnableRelocatableElemente(this.WalletDiv, 0, 0);
+        
+        EnableHideWhenMouseIsInactive(document.body,this.WalletDiv);
 
         this.NavStoreButtom.onclick = () => {
             this.setNavSelected(this.NavStoreButtom);

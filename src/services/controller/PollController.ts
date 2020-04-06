@@ -23,9 +23,12 @@ import { dbPollMager } from "../modules/database/poll/dbPollManager";
 import IOListeners from "../IOListeners";
 import { getSoketOfStreamer } from "../SocketsManager";
 import { dbBettingsManager } from "../modules/database/poll/dbBettingsManager";
+import { AccountData } from "../models/dealer/AccountData";
+import { throws } from "assert";
 
 export class PollController {
-    StreamerID: string;
+    public StreamerID: string;
+    private StopDistribuition = false;
 
     OnDistribuitionEnd = (StatisticsOfDistribution: {}) => { };
 
@@ -41,7 +44,8 @@ export class PollController {
      * 
      * @param Buttons 
      */
-    async StartDistribuition(Buttons: PollButton[]) {
+    async startDistribuition(Buttons: PollButton[]) {
+        this.StopDistribuition = false;
         let AccountData = dbManager.getAccountData(this.StreamerID);
         let StartTime = new Date().getTime();
 
@@ -49,7 +53,7 @@ export class PollController {
 
         let Bettings = await new dbPollMager(this.StreamerID).getAllBettings();
 
-        if (Bettings.length < 3) return reject({ DistributionStartedError: 'insufficient number of bets' })
+        if (Bettings.length < 2) return reject({ DistributionStartedError: 'insufficient number of bets' })
 
         let AccontResult = dbPollMager.CalculateDistribution(Bettings, WinningButtons);
 
@@ -58,6 +62,7 @@ export class PollController {
         let DistributionPromises = [];
 
         Bettings.forEach(async Betting => {
+            if (this.StopDistribuition) throw 'DistribuitionAsStoped';
             if (Betting) {
                 let walletManeger = new dbWalletManeger(this.StreamerID, Betting.TwitchUserID);
 
@@ -67,15 +72,28 @@ export class PollController {
         });
 
 
-        Promise.all(DistributionPromises).then(() => {
-            this.OnDistribuitionEnd({
-                AccontResult,
-                timeOfDistribution: new Date().getTime() - StartTime + ' ms'
-            });
-        })
+        Promise.all(DistributionPromises)
+            .catch((erro) => {
+                if (erro === 'DistribuitionAsStoped') {
+                    this.OnDistribuitionEnd({
+                        AccontResult,
+                        message:'DistribuitionAsStoped',
+                        timeOfDistribution: new Date().getTime() - StartTime + ' ms'
+                    });
+                }
+            })
+            .then(() => {
+                this.OnDistribuitionEnd({
+                    AccontResult,
+                    timeOfDistribution: new Date().getTime() - StartTime + ' ms'
+                });
+            })
 
         return resolve({ DistributionStarted: new Date() });
 
+    }
+    async stopDistribuition() {
+        this.StopDistribuition = true;
     }
     /**
      * 
@@ -91,23 +109,26 @@ export class PollController {
         let dbBet = await BetsManager.getdbBet(TwitchUserID);
 
         if (dbBet) {
-            let DifferenceBetweenBets = dbBet.BetAmount - newBetAmount;
-            if (UserWallet.Coins < newBetAmount) {
-                return reject({
-                    RequestError: {
-                        InsufficientFunds: {
-                            BetAmount: newBetAmount,
-                            Coins: UserWallet.Coins
+            if (dbBet.BetAmount !== newBetAmount) {
+                let DifferenceBetweenBets = dbBet.BetAmount - newBetAmount;
+
+                if (UserWallet.Coins < newBetAmount) {
+                    return reject({
+                        RequestError: {
+                            InsufficientFunds: {
+                                BetAmount: newBetAmount,
+                                Coins: UserWallet.Coins
+                            }
                         }
-                    }
-                });
-            }
-            if (DifferenceBetweenBets > 0) {
-                await WalletManager.deposit(DifferenceBetweenBets);
+                    });
+                }
 
-            } else {
-                await WalletManager.withdraw(DifferenceBetweenBets);
+                if (DifferenceBetweenBets > 0) {
+                    await WalletManager.deposit(DifferenceBetweenBets);
 
+                } else {
+                    await WalletManager.withdraw(DifferenceBetweenBets);
+                }
             }
             await BetsManager.updateBet(dbBet, new Bet(TwitchUserID, ChosenBetID, newBetAmount));
 
@@ -255,7 +276,6 @@ export class PollController {
 
         let db_pollMager = new dbPollMager(this.StreamerID);
 
-        //TODO erro de sincronia com o id gera server error // iqnorar ????
         for (const dbButton of await db_pollMager.getAllButtonsOfCurrentPoll()) {
             Buttons.push(new PollButton(
                 dbButton.ID,

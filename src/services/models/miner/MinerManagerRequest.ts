@@ -1,7 +1,10 @@
 import { MinerSettings } from "../streamer_settings/MinerSettings";
 export class MinerManagerRequest {
-    body: {
-        StreamerID: string;
-        Setting: MinerSettings;
-    };
+    StreamerID: string;
+    Setting: MinerSettings;
+
+    constructor(StreamerID: string,Setting: MinerSettings) {
+        this.StreamerID = StreamerID;
+        this.Setting = Setting;
+    }
 }

@@ -1,12 +1,10 @@
-import { sleep } from "../../../utils/utils";
+import { sleep } from "../../../utils/funtions";
 import { ViewMain } from "./ViewMain";
 
 export class ViewAdvertisement {
     private static HTML_AdvertisementDiv = <HTMLDivElement> document.getElementById('AdvertisementDiv');
     private static HTML_CloaseAdvertisementButton = <HTMLButtonElement> document.getElementById('CloaseAdvertisementButton');
     private static HTML_AdvertisementButton = <HTMLButtonElement> document.getElementById('AdvertisementButton');
-
-    //TODO REMOVER HARD CODE html ?
 
     static Show() {
         ViewAdvertisement.HTML_AdvertisementDiv.style.display = '';

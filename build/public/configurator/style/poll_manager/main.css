@@ -99,7 +99,6 @@
 }
 
 #DeletePollButton {
-    display: inline-block;
     margin-bottom: 5%;
     width: 10vw;
     height: 10vw;
@@ -176,13 +175,36 @@
     height: 4vw;
 }
 
-#DistributionDiv {
+.DistributionDiv {
+    display: block;
     background: white;
     text-align: center;
 }
 
+.DistributionDiv img{
+    width: 50%;
+    display: block;
+    margin: auto;
+}
+
+.DistributionDiv h3{
+    color: black;
+    font-size: 2vw;
+    font-family: fantasy;
+    text-transform: uppercase;
+}
+
+.DistributionDiv.DistributioFninished h3{
+    display: none;
+}
+
+.DistributioFninished img {
+    display: none;
+}
+
 #DistributionDiv h2 {
     color: black;
-    font-size: 20pt;
+    font-size: 5vw;
+    font-family: fantasy;
     text-transform: uppercase;
 }

@@ -1,6 +1,6 @@
 import BackendConnections = require("../../BackendConnection");
 import ViewAlerts from "../view/ViewAlerts";
-import { sleep, isEquivalent } from "../../../utils/utils";
+import { sleep, isEquivalent } from "../../../utils/funtions";
 import { Poll } from "../../../services/models/poll/Poll";
 import { PollStatus } from "../../../services/models/poll/PollStatus";
 import { PollButton } from "../../../services/models/poll/PollButton";
@@ -84,41 +84,6 @@ export default class AllertController {
                 return
             }
         }
-
-
-        /*
-        this.ViewAlerts.setButtonsInPollDiv(Poll.PollButtons);
-    } else {
-        if (Poll.PollStatus.PollWaxed) {
-            await this.ViewAlerts.HideAllAlerts();
-        } else {
-
-            if (Poll.PollStatus.PollStarted) {
-
-                if (Poll.PollStatus.DistributionCompleted) {
-                    if (isNaN(this.ViewAlerts.SelectedButtonID)) {
-                        await this.ViewAlerts.HideAllAlerts();
-                    } else {
-                        if (IsWinner(Poll.PollButtons, this.ViewAlerts.SelectedButtonID)) {
-                            this.ViewAlerts.setInWinnerMode(Poll.LossDistributorOfPoll);
-                        } else {
-                            this.ViewAlerts.setInLoserMode();
-                        }
-                    }
-                } else {
-                    this.ViewAlerts.setInBetMode(Poll.PollButtons);
-                }
-
-            } else {
-
-                if (Poll.PollStatus.PollStoped) {
-                    this.ViewAlerts.setInStopedMode();
-                }
-
-            }
-            this.CurrentPollStatus = Poll.PollStatus;
-        }
-    }*/
 
         this.CurrentPollStatus = Poll.PollStatus;
     }

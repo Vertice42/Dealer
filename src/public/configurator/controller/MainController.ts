@@ -1,7 +1,7 @@
 import io = require('socket.io-client');
 
 import PollController from "./PollController";
-import { HOST, getLocaleFile as getLocalizedTextsFile } from "../../BackendConnection";
+import { HOST, getLocaleFile } from "../../BackendConnection";
 import SettingsController from "./SettingsController";
 import StoreController from "./StoreController";
 import PurchaseOrderController from "./PurchaseOrderController";
@@ -25,10 +25,10 @@ window.Twitch.ext.onContext(async (context) => {
 
   new ViewMain();
 
-  IncertTextInHardCode(await getLocalizedTextsFile('view_config_hard_code', context.language));
+  IncertTextInHardCode(await getLocaleFile('view_config_hard_code', context.language));
 
-  if (!Texts) Texts = new LocalizedTexts(await getLocalizedTextsFile('view_config', context.language));
-  else Texts.update(await getLocalizedTextsFile('view_config', context.language));
+  if (!Texts) Texts = new LocalizedTexts(await getLocaleFile('view_config', context.language));
+  else Texts.update(await getLocaleFile('view_config', context.language));
 
 })
 

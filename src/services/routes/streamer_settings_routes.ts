@@ -7,19 +7,20 @@ import StreamerSettingsManager from "../modules/database/streamer_settings/Strea
 import { MinerManagerRequest } from "../models/miner/MinerManagerRequest";
 import { MinerSettings } from "../models/streamer_settings/MinerSettings";
 
-APP.post(CoinsSettingsManagerRoute, async function (req: CoinsSettingsManagerRequest, res: express.Response) {
+APP.post(CoinsSettingsManagerRoute, async function (req, res: express.Response) {
+    let CoinsSettingsManagerRequest: CoinsSettingsManagerRequest = req.body;
     let ErrorList = CheckRequisition([
         () => {
-            if (!req.body.StreamerID)
+            if (!CoinsSettingsManagerRequest.StreamerID)
                 return ({ RequestError: "StreamerID is no defined" })
         },
         () => {
-            if (!req.body.Setting)
+            if (!CoinsSettingsManagerRequest.Setting)
                 return ({ RequestError: "Setting is no defined" })
         }
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
-    StreamerSettingsManager.UpdateOrCreateCoinsSettings(req.body.StreamerID, req.body.Setting)
+    StreamerSettingsManager.UpdateOrCreateCoinsSettings(CoinsSettingsManagerRequest.StreamerID, CoinsSettingsManagerRequest.Setting)
         .then((reso) => { res.status(200).send(reso) })
         .catch((reje) => { res.status(500).send(reje) });
 });
@@ -35,28 +36,30 @@ APP.get(GetCoinsSettingsRoute, async function (req: { params: { StreamerID: stri
         .then((CoinsSettings: CoinsSettings) => {
             res.status(200).send(CoinsSettings);
         })
-        .catch((rej) => {            
-            res.status(500).send(rej);            
+        .catch((rej) => {
+            res.status(500).send(rej);
         })
 });
 
-APP.post(MinerManagerRoute, async function (req: MinerManagerRequest, res: express.Response) {
+APP.post(MinerManagerRoute, async function (req, res: express.Response) {
+    let MinerManagerRequest: MinerManagerRequest = req.body;
     let ErrorList = CheckRequisition([
         () => {
-            if (!req.body.StreamerID)
+            if (!MinerManagerRequest.StreamerID)
                 return ({ RequestError: "StreamerID is no defined" })
         },
         () => {
-            if (!req.body.Setting)
+            if (!MinerManagerRequest.Setting)
                 return ({ RequestError: "Setting is no defined" })
         }
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
 
-    StreamerSettingsManager.UpdateMinerSettings(req.body.StreamerID, req.body.Setting)
+    StreamerSettingsManager.UpdateMinerSettings(MinerManagerRequest.StreamerID, MinerManagerRequest.Setting)
         .then((reso) => { res.status(200).send(reso) })
         .catch((reje) => { res.status(500).send(reje) });
 });
+
 APP.get(GetMinerSettingsRoute, async function (req: { params: { StreamerID: string } }, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
@@ -70,6 +73,6 @@ APP.get(GetMinerSettingsRoute, async function (req: { params: { StreamerID: stri
             res.status(200).send(MinerSettings);
         })
         .catch((rej) => {
-            res.status(500).send(rej);            
+            res.status(500).send(rej);
         })
 });

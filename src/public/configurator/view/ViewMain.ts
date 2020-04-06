@@ -1,4 +1,4 @@
-import { sleep } from "../../../utils/utils";
+import { sleep } from "../../../utils/funtions";
 
 export class ViewMain {
     private static HTML = <HTMLDivElement>document.getElementById('MainDiv');

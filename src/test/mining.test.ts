@@ -1,9 +1,8 @@
 import { expect } from "chai";
-import { sleep } from "../utils/utils";
 
-import { MINIMUN_TIME_FOR_MINING } from "../services/models/streamer_settings/MinerSettings";
 import MinerManeger from "../services/modules/database/miner/dbMinerManager";
 import { createAndStartStreamerDatabase, ID_FOR_MINIG, deleteStreamerDatabase, USERS_IDS_FOR_TESTS, REWARD_FOR_TEST_ATTEMPT } from "./ForTests.test";
+import { sleep } from "../utils/funtions";
 
 describe('Mining', () => {
 

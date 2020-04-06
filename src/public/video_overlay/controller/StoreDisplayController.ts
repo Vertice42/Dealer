@@ -23,6 +23,7 @@ export default class StoreDisplayController {
                 this.ViewStoreDisplay.startWithdrawalAnimation((~~BalanceChange + 1) * -1);
             }
         }
+        if(this.CoinName === undefined) this.CoinName = 'Coins';
         let lastChar = this.CoinName.charAt(this.CoinName.length-1)
         this.ViewStoreDisplay.CoinsOfUserView.innerText = 
         ` ${(~~Balance).toString()}$${this.CoinName}${(lastChar === 's'|| lastChar === 'S') ? '' : 's'}`;

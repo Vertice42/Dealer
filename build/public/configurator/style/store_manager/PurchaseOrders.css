@@ -14,12 +14,21 @@
 #PurchaseOrdersDiv {
     display: grid;
     width: 100%;
+    background-color: #4b496d;
 }
+
+#PurchaseOrdersDiv h2{
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-family: sans-serif;
+}
+
 
 #ReproducingMedia {
     display: flex;
     height: 10vw;
-    margin-left: 1vw;
     font-family: fantasy;
     font-size: 5vw;
     background-color: rgb(61, 15, 80);

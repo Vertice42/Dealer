@@ -43,6 +43,14 @@
         "id": "DistributionText",
         "Text": "Distributing earnings",
         "Instruction": ""
+    },{
+        "id": "DistributionText",
+        "Text": "Distribution Finished",
+        "Instruction": ""
+    },{
+        "id": "EmptyPurchaseOrdersText",
+        "Text": "No items playing",
+        "Instruction": ""
     },
     {
         "id": "CloseButton",

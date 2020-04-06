@@ -35,6 +35,7 @@
 
     <div id="PurchaseOrdersDiv">
 
+      <h2 id="EmptyPurchaseOrdersText"></h2>
 
       <div id="ReproducingMedia" class="PurchaseOrdersEmpty">
         <audio id="AudioPlayer"></audio>
@@ -57,12 +58,12 @@
     <button id="PollModuleTitle" class="TitleButton"></button>
     <div id="PollModule" class="Module ModuleSample">
 
+
       <div class="Hidden" id="PollManagerDiv">
-
         <div id="PollItensDiv"></div>
-
+        
         <button class="VoteManagementButton" id="AddPollItemButton">+</button>
-        <button class="VoteManagementButton ButtonEnable" id="DeletePollButton"></button>
+        <button class="VoteManagementButton ButtonHide" id="DeletePollButton"></button>
 
         <div class="PollButtonsDiv ">
           <button class="VoteManagementButton ButtonHide ButtonDisable" id="StartPollButton"></button>
@@ -75,8 +76,10 @@
 
       </div>
 
-      <div id="DistributionDiv" class="Hidden">
+      <div id="DistributionDiv" class="DistributionDiv Hidden">
         <h2 id="DistributionText"></h2>
+        <h3 id="DistributioFninishedText"></h3>
+
         <img src="https://pixelpapa.com/wp-content/uploads/2018/11/10.gif" alt="">
         <button class="VoteManagementButton ButtonHide" id="CloseButton"></button>
       </div>

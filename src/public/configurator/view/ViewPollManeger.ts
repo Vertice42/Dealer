@@ -3,6 +3,7 @@ import { Poll } from "../../../services/models/poll/Poll";
 import { PollButton } from "../../../services/models/poll/PollButton";
 import { GenerateColor } from "../../common/model/ViewerFeatures";
 import { Texts } from "../controller/MainController";
+import { sleep } from "../../../utils/funtions";
 
 export class PollItemViewer {
     ID: number;
@@ -270,11 +271,9 @@ export class PollItemDesktopViewer extends PollItemViewer {
     }
 }
 export default class ViewPollManeger {
-    IsStarted: boolean;
-
     private pollStatus: PollStatus;
 
-    public onStatusChange = (PollStatus: PollStatus) => { };
+    PollItemsViewers: PollItemViewer[] = [];
 
     public get PollStatus(): PollStatus {
         return this.pollStatus;
@@ -285,9 +284,6 @@ export default class ViewPollManeger {
         this.onStatusChange(pollStatus);
     }
 
-
-    PollItemsViewers: PollItemViewer[] = [];
-
     public get ThereAreSelectedWinners(): boolean {
         for (const key in this.PollItemsViewers) {
             if (this.PollItemsViewers[key].IsWinner())
@@ -296,19 +292,21 @@ export default class ViewPollManeger {
         return false;
     }
 
-    DistributionDiv = <HTMLDivElement>document.getElementById("DistributionDiv");
-    PollManagerDiv = <HTMLDivElement>document.getElementById("PollManagerDiv");
-    PollItensDiv = <HTMLDivElement>document.getElementById("PollItensDiv");
-    CreatePollButton = <HTMLButtonElement>document.getElementById("CreatePollButton");
-    DeletePollButton = <HTMLButtonElement>document.getElementById("DeletePollButton");
-    AddItemButton = <HTMLButtonElement>document.getElementById("AddPollItemButton");
-    StartPollButton = <HTMLButtonElement>document.getElementById("StartPollButton");
-    ApplyChangesButton = <HTMLButtonElement>document.getElementById("ApplyChangesButton");
+    DistributionDiv     = <HTMLDivElement>document.getElementById("DistributionDiv");
+    PollManagerDiv      = <HTMLDivElement>document.getElementById("PollManagerDiv");
+    PollItensDiv        = <HTMLDivElement>document.getElementById("PollItensDiv");
+    CreatePollButton    = <HTMLButtonElement>document.getElementById("CreatePollButton");
+    DeletePollButton    = <HTMLButtonElement>document.getElementById("DeletePollButton");
+    AddItemButton       = <HTMLButtonElement>document.getElementById("AddPollItemButton");
+    StartPollButton     = <HTMLButtonElement>document.getElementById("StartPollButton");
+    ApplyChangesButton  = <HTMLButtonElement>document.getElementById("ApplyChangesButton");
     RevertChangesButton = <HTMLButtonElement>document.getElementById("RevertChangesButton");
-    StopPollButton = <HTMLButtonElement>document.getElementById("StopPollButton");
-    RestartButton = <HTMLButtonElement>document.getElementById("RestartButton");
-    DistributeButton = <HTMLButtonElement>document.getElementById("DistributeButton");
-    CloseButton = <HTMLButtonElement>document.getElementById("CloseButton");
+    StopPollButton      = <HTMLButtonElement>document.getElementById("StopPollButton");
+    RestartButton       = <HTMLButtonElement>document.getElementById("RestartButton");
+    DistributeButton    = <HTMLButtonElement>document.getElementById("DistributeButton");
+    CloseButton         = <HTMLButtonElement>document.getElementById("CloseButton");
+
+    onStatusChange = (PollStatus: PollStatus) => { };
 
     onCommandToCreateSent: () => Promise<void>;
     onCommandToWaxSent: () => Promise<void>;
@@ -323,6 +321,8 @@ export default class ViewPollManeger {
     setCreatedPoll() {
         this.ShowPoll();
         this.EnableButton(this.AddItemButton, this.onClickOfAddItemButton);
+
+        this.ShowButton(this.DeletePollButton);
         this.EnableButton(this.DeletePollButton, this.onClickOfWaxedPollButton);
     }
     setWaxedPoll() {
@@ -331,16 +331,15 @@ export default class ViewPollManeger {
         this.HideButton(this.RestartButton);
         this.HideButton(this.StopPollButton);
         this.HideButton(this.DistributeButton);
+        this.HideButton(this.DeletePollButton);
         this.removeAllItems();
         this.ShowButton(this.CreatePollButton);
         this.EnableButton(this.CreatePollButton, this.onClickOfCreatePollButton);
-        this.IsStarted = false;
     }
     setStartedPoll() {
         this.ShowButton(this.StopPollButton);
         this.EnableButton(this.StopPollButton, this.onClickOfStopPollButton);
         this.HideButton(this.StartPollButton);
-        this.IsStarted = true;
     }
     setStopedPoll() {
         this.ShwoWinnersPicks();
@@ -353,7 +352,6 @@ export default class ViewPollManeger {
         this.EnableButton(this.RestartButton, this.onClickOfRestartButton);
 
         this.DisableButton(this.AddItemButton);
-        this.IsStarted = false;
     }
     setRestartedPoll() {
         this.HideWinnersPicks();
@@ -362,10 +360,16 @@ export default class ViewPollManeger {
         this.HideButton(this.RestartButton);
         this.EnableButton(this.StopPollButton, this.onClickOfStopPollButton);
         this.EnableButton(this.AddItemButton, this.onClickOfAddItemButton);
-        this.IsStarted = true;
     }
-    setInDestruction() {
+    setInDistribution() {
         this.ShowDistributionDiv();
+        this.ShowButton(this.CloseButton);
+        this.EnableButton(this.CloseButton, this.onClickOfCloseButton);
+        this.DistributionDiv.classList.remove('DistributioFninished');
+    }
+    async setDistributioFninished() {
+        await sleep(500);
+        this.DistributionDiv.classList.add('DistributioFninished');
     }
     Initialize() {
         this.CreatePollButton.onclick = this.onClickOfCreatePollButton;
@@ -436,7 +440,7 @@ export default class ViewPollManeger {
     };
     private onClickOfDistributeButton = () => {
         this.onCommandToDistributeSent().then((res) => {
-            this.setInDestruction();
+            this.setInDistribution();
         });
         return true;
     };
@@ -447,11 +451,7 @@ export default class ViewPollManeger {
         return true;
     };
 
-    //TODO ADD canell distribuition 
-    setDistributioFninished() {
-        this.ShowButton(this.CloseButton);
-        this.EnableButton(this.CloseButton, this.onClickOfCloseButton);
-    }
+
     private onPollItemModified = () => {
         if (this.pollStatus.PollStarted) {
             this.ShowButton(this.ApplyChangesButton);
@@ -479,6 +479,64 @@ export default class ViewPollManeger {
     };
     private ThereAreEnoughElements() {
         return (this.PollItemsViewers.length > 1);
+    }
+
+    private ShowPoll() {
+        this.PollManagerDiv.classList.remove("Hidden");
+        this.HideButton(this.CreatePollButton);
+        this.ShowButton(this.StartPollButton);
+        this.HideDistributionDiv();
+    }
+    private HidePoll() {
+        this.PollManagerDiv.classList.add("Hidden");
+    }
+    private ShowDistributionDiv() {
+        this.DistributionDiv.classList.remove('Hidden');
+        this.HidePoll();
+    }
+    private HideDistributionDiv() {
+        this.DistributionDiv.classList.add('Hidden');
+    }
+
+    private ShowButton(Button: HTMLButtonElement) {
+        Button.classList.remove("ButtonHide");
+        Button.classList.remove("ButtonEnable");
+        Button.classList.add("ButtonDisable");
+        Button.onclick = null;
+    }
+    private HideButton(Button: HTMLButtonElement) {
+        Button.classList.remove("ButtonDisable");
+        Button.classList.remove("ButtonEnable");
+        Button.classList.add("ButtonHide");
+        Button.onclick = null;
+    }
+    private EnableButton(Button: HTMLButtonElement, onclick: () => {}) {
+        Button.classList.remove("ButtonDisable");
+        Button.classList.add("ButtonEnable");
+        Button.onclick = onclick;
+    }
+    private DisableButton(Button: HTMLButtonElement) {
+        Button.classList.remove("ButtonEnable");
+        Button.classList.add("ButtonDisable");
+        Button.onclick = null;
+    }
+    private ShwoWinnersPicks() {
+        this.PollItemsViewers.forEach(PollItemViewer => {
+            PollItemViewer.ShowWinnerPick();
+        });
+    }
+    private HideWinnersPicks() {
+        this.PollItemsViewers.forEach(PollItemViewer => {
+            PollItemViewer.HideWinnerPick();
+        });
+    }
+    
+    getPollButtons(): PollButton[] {
+        let Buttons = [];
+        this.PollItemsViewers.forEach(PollItemViewer => {
+            Buttons.push(new PollButton(PollItemViewer.ID, PollItemViewer.getNameInputValue(), PollItemViewer.getColorInputValue(), PollItemViewer.IsWinner()));
+        });
+        return Buttons;
     }
     addItem(ID: number, Name: string, Color: string, IsWinner: boolean) {
         let PollItem = new PollItemDesktopViewer(ID, this);
@@ -522,61 +580,6 @@ export default class ViewPollManeger {
         this.PollItensDiv.innerHTML = '';
         this.PollItemsViewers = [];
     }
-    private ShowPoll() {
-        this.PollManagerDiv.classList.remove("Hidden");
-        this.HideButton(this.CreatePollButton);
-        this.ShowButton(this.StartPollButton);
-        this.HideDistributionDiv();
-    }
-    private HidePoll() {
-        this.PollManagerDiv.classList.add("Hidden");
-    }
-    private ShowDistributionDiv() {
-        this.DistributionDiv.classList.remove('Hidden');
-        this.HidePoll();
-    }
-    private HideDistributionDiv() {
-        this.DistributionDiv.classList.add('Hidden');
-    }
-    private ShowButton(Button: HTMLButtonElement) {
-        Button.classList.remove("ButtonHide");
-        Button.classList.remove("ButtonEnable");
-        Button.classList.add("ButtonDisable");
-        Button.onclick = null;
-    }
-    private HideButton(Button: HTMLButtonElement) {
-        Button.classList.remove("ButtonDisable");
-        Button.classList.remove("ButtonEnable");
-        Button.classList.add("ButtonHide");
-        Button.onclick = null;
-    }
-    private EnableButton(Button: HTMLButtonElement, onclick: () => {}) {
-        Button.classList.remove("ButtonDisable");
-        Button.classList.add("ButtonEnable");
-        Button.onclick = onclick;
-    }
-    private DisableButton(Button: HTMLButtonElement) {
-        Button.classList.remove("ButtonEnable");
-        Button.classList.add("ButtonDisable");
-        Button.onclick = null;
-    }
-    private ShwoWinnersPicks() {
-        this.PollItemsViewers.forEach(PollItemViewer => {
-            PollItemViewer.ShowWinnerPick();
-        });
-    }
-    private HideWinnersPicks() {
-        this.PollItemsViewers.forEach(PollItemViewer => {
-            PollItemViewer.HideWinnerPick();
-        });
-    }
-    getPollButtons(): PollButton[] {
-        let Buttons = [];
-        this.PollItemsViewers.forEach(PollItemViewer => {
-            Buttons.push(new PollButton(PollItemViewer.ID, PollItemViewer.getNameInputValue(), PollItemViewer.getColorInputValue(), PollItemViewer.IsWinner()));
-        });
-        return Buttons;
-    }
 
     constructor(Poll: Poll) {
         this.Initialize();
@@ -591,11 +594,9 @@ export default class ViewPollManeger {
             if (Poll.PollStatus.PollStoped)
                 this.setStopedPoll();
             if (Poll.PollStatus.InDistribution)
-                this.setInDestruction();
+                this.setInDistribution();
             if (Poll.PollStatus.DistributionCompleted)
                 this.setDistributioFninished();
         }
     }
 }
-
-//TODO refatorar 

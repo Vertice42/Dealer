@@ -4,7 +4,7 @@ import MinerManeger from "../modules/database/miner/dbMinerManager";
 import { MiningResponse } from "../models/miner/MiningResponse";
 import { MinerRequest } from "../models/miner/MinerRequest";
 import { MineCoinRoute } from "./routes";
- 
+
 APP.post(MineCoinRoute, async function (req: MinerRequest, res: express.Response) {
     let ErrorList = CheckRequisition([
         () => {
@@ -20,8 +20,5 @@ APP.post(MineCoinRoute, async function (req: MinerRequest, res: express.Response
 
     MinerManeger.MineCoin(req.body.StreamerID, req.body.TwitchUserID)
         .then((resolve: MiningResponse) => { res.status(200).send(resolve) })
-        .catch((reje) => {            
-            res.status(500).send(reje);
-        });
-    //TODO ADICINADO MINIRAÇÃO MACIMA
+        .catch((reje) => { res.status(500).send(reje) });
 });

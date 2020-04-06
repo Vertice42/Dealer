@@ -1,5 +1,5 @@
 import BackendConnections = require("../../BackendConnection");
-import { sleep } from "../../../utils/utils";
+import { sleep } from "../../../utils/funtions";
 import UploadFileResponse from "../../../services/models/files_manager/UploadFileResponse";
 import StoreItem, { StoreTypes } from "../../../services/models/store/StoreItem";
 import ViewStore, { ViewStoreItem } from "../view/ViewStore";
@@ -15,7 +15,6 @@ export default class StoreController {
     StreamerID: string;
     ViewStore = new ViewStore();
     ViewAdvertisement = new ViewAdvertisement();
-    //TODO CHANGE to josineditaleble file
     StoreItems: StoreItem[];
 
     private onStoreChange() {
@@ -135,8 +134,8 @@ export default class StoreController {
                     this.onStoreChange();
                     this.ViewStore.removeStoreItem(StoreItem)
                 })
-                .catch((rej) => {
-                    //TODO ADD VIEW ERROR
+                .catch((error) => {
+                    console.error(error);
                 })
         }
     }

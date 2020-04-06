@@ -10,6 +10,7 @@ import { Poll } from "../../../services/models/poll/Poll";
 export default class PollController {
     StreamerID: string;
     ViewPollManeger: ViewPollManeger;
+    PollObserver: Observer;
 
     setAllCommands() {
         this.ViewPollManeger.onCommandToCreateSent = async () => {
@@ -23,6 +24,7 @@ export default class PollController {
             this.ViewPollManeger.PollStatus.PollWaxed = true;
             return BackendConnections.SendToPollManager(this.StreamerID, null, this.ViewPollManeger.PollStatus)
                 .then(async () => {
+                    this.PollObserver.stop();
                     NotifyViewers({ ListenerName: TwitchListeners.onPollChange, data: await BackendConnections.getCurrentPoll(this.StreamerID) });
                 })
 
@@ -31,6 +33,7 @@ export default class PollController {
             this.ViewPollManeger.PollStatus.PollStarted = true;
             return BackendConnections.SendToPollManager(this.StreamerID, this.ViewPollManeger.getPollButtons(), this.ViewPollManeger.PollStatus)
                 .then(async () => {
+                    this.PollObserver.start();
                     NotifyViewers({ ListenerName: TwitchListeners.onPollChange, data: await BackendConnections.getCurrentPoll(this.StreamerID) });
                 })
         };
@@ -44,6 +47,7 @@ export default class PollController {
             this.ViewPollManeger.PollStatus.PollStoped = true;
             return BackendConnections.SendToPollManager(this.StreamerID, null, this.ViewPollManeger.PollStatus)
                 .then(async () => {
+                    this.PollObserver.stop();
                     NotifyViewers({ ListenerName: TwitchListeners.onPollChange, data: await BackendConnections.getCurrentPoll(this.StreamerID) });
                 })
         }
@@ -51,6 +55,7 @@ export default class PollController {
             this.ViewPollManeger.PollStatus.PollStoped = false;
             return BackendConnections.SendToPollManager(this.StreamerID, null, this.ViewPollManeger.PollStatus)
                 .then(async () => {
+                    this.PollObserver.start();
                     NotifyViewers({ ListenerName: TwitchListeners.onPollChange, data: await BackendConnections.getCurrentPoll(this.StreamerID) });
                 })
 
@@ -82,17 +87,17 @@ export default class PollController {
         let Poll = await BackendConnections.getCurrentPoll(this.StreamerID)
         this.ViewPollManeger = new ViewPollManeger(Poll);
 
-        let observer = new Observer(async () => BackendConnections.getCurrentPoll(this.StreamerID), 500);
-        observer.OnWaitch = (Poll: Poll) => {
+        this.PollObserver = new Observer(async () => BackendConnections.getCurrentPoll(this.StreamerID), 500);
+        this.PollObserver.OnWaitch = (Poll: Poll) => {
             this.ViewPollManeger.uppdateVotesOfAllItems(Poll);
         }
 
         this.ViewPollManeger.onStatusChange = (PollStatus) => {
             if (PollStatus.PollStarted && !PollStatus.PollStoped) {
-                observer.start();
+                this.PollObserver.start();
             }
             else {
-                observer.stop();
+                this.PollObserver.stop();
             }
 
         };

@@ -1,4 +1,4 @@
-@keyframes ShowAnimationStopAlert {
+@keyframes ShowStopAlert {
     0% {
         clip-path: inset(0px 0px 1000px 0px);
         transform: scale(0.9) translate(0px, 500px);
@@ -20,7 +20,7 @@
     }
 }
 
-@keyframes HideAnimationStopAlert {
+@keyframes HideStopAlert {
     from {
         transform: scale(1, 1);
     }
@@ -40,23 +40,23 @@
 }
 
 .Enable#StopAlert {
-    animation: HideAnimation 2s 5s forwards, ShowAnimationStopAlert 1s forwards;
+    animation: HideAnimation 2s 5s forwards, ShowStopAlert 1s forwards;
 }
 
-.MainDiv:hover .Enable#StopAlert {
-    animation: ShowAnimation 500ms forwards, ShowAnimationStopAlert 1s forwards;
+.MainDiv:hover .Visible.Enable#StopAlert {
+    animation: ShowAnimation 500ms forwards, ShowStopAlert 1s forwards;
 }
 
 .Disable#StopAlert {
-    animation: HideAnimationStopAlert 0.2s forwards;
+    animation: HideStopAlert 0.2s forwards;
 }
 
 #StopAlert h2 {
-    width: min-content;
-    margin: auto auto;
+    margin: auto;
     font-family: Heroes;
     color: white;
-    font-size: 15pt;
+    font-size: 2vw;
+    text-align: center;
 }
 
 #StopAlert::before {

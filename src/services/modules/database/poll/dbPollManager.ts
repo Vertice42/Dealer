@@ -4,7 +4,7 @@ import { PollBeat } from "../../../models/poll/PollBeat"
 import { dbButton, dbButtonType } from "../../../models/poll/dbButton";
 import { dbManager } from "../dbManager";
 import { Bet } from "../../../models/poll/dbBettings";
-import { sleep } from "../../../../utils/utils";
+import { sleep } from "../../../../utils/funtions";
 
 export class dbPollMager {
     StreamerID: string;
@@ -53,12 +53,10 @@ export class dbPollMager {
                         if (rej.parent.errno === 1146) {
                             await sleep(500)
                             return this.getAllButtonsOfCurrentPoll();
-                            //TODO POSIVEL LOOP INFINITO
                         }
                     })
             }
-            return reject('dbCurrentPollButtons undefined');
-
+            return [];
         }
         return reject('AccountData undefined');
     }

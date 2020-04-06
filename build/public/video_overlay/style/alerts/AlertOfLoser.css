@@ -2,7 +2,7 @@
     filter: none;
 }
 
-@keyframes ShowLoserAnimation {
+@keyframes ShowAlertOfLoser {
     0% {
         opacity: 0;
         transform: translateY(200px)
@@ -13,7 +13,7 @@
 
 }
 
-@keyframes HideLoserAnimation {
+@keyframes HideAlertOfLoser {
     0% {
         transform: translateY(0px)
     }
@@ -24,22 +24,22 @@
 }
 
 .Enable#AlertOfLoser {
-    animation: HideAnimation 2s 5s forwards, ShowLoserAnimation 1s forwards;
+    animation: HideAnimation 2s 5s forwards, ShowAlertOfLoser 1s forwards;
 }
 
-.MainDiv:hover .Enable#AlertOfLoser {
-    animation: ShowAnimation 500ms forwards, ShowLoserAnimation 1s forwards;
+.MainDiv:hover .Visible.Enable#AlertOfLoser {
+    animation: ShowAnimation 500ms forwards, ShowAlertOfLoser 1s forwards;
 }
 
 .Disable#AlertOfLoser {
-    animation: HideLoserAnimation 1s forwards;
+    animation: HideAlertOfLoser 1s forwards;
 }
 
 #AlertOfLoser h2 {
     margin: 10% 10% 0%;
     text-align: center;
     font-family: Heroes;
-    font-size: 20pt;
+    font-size: 2vw;
     color: white;
     animation: GradienetAnimation 20s infinite;
 }
@@ -48,7 +48,7 @@
     text-align: center;
     font-family: Heroes;
     color: white;
-    font-size: 10pt;
+    font-size: 1vw;
     margin: -10px auto auto;
 }
 

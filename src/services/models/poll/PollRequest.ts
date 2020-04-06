@@ -1,9 +1,13 @@
 import { PollButton } from "./PollButton";
 import { PollStatus } from "./PollStatus";
 export class PollRequest {
-    body: {
-        StreamerID: any;
-        NewPollStatus: PollStatus;
-        PollButtons: PollButton[];
-    };
+    StreamerID: string;
+    NewPollStatus: PollStatus;
+    PollButtons: PollButton[];
+
+    constructor(StreamerID: string, PollButtons: PollButton[], NewPollStatus: PollStatus) {
+        this.StreamerID = StreamerID;
+        this.PollButtons = PollButtons;
+        this.NewPollStatus = NewPollStatus;
+    }
 }

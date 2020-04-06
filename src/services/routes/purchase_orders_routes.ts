@@ -9,14 +9,27 @@ import dbStoreManager from "../modules/database/store/dbStoreManager";
 import ItemSetting from "../models/store/item_settings/ItemSettings";
 import { PurchaseOrderRoute, GetPurchaseOrderRoute } from "./routes";
 import DeletePurchaseOrderRequest from "../models/store/DeletePurchaseOrderRequest";
-import { APP } from "..";
+import { APP, CheckRequisition } from "..";
 import { getSoketOfStreamer } from "../SocketsManager";
 import { dbWalletManeger } from "../modules/database/wallet/dbWalletManager";
-import { Socket } from "dgram";
 
 APP.post(PurchaseOrderRoute, async function (req, res: express.Response) {
     let PurchaseOrderRequest: PurchaseOrderRequest = req.body;
-    //TODO add CheckRequisition
+    let ErrorList = CheckRequisition([
+        () => {
+            if (!PurchaseOrderRequest.StreamerID)
+                return ({ RequestError: "StreamerID is no defined" })
+        },
+        () => {
+            if (!PurchaseOrderRequest.TwitchUserID)
+                return ({ RequestError: "TwitchUserID is no defined" })
+        },
+        () => {
+            if (!PurchaseOrderRequest.StoreItemID)
+                return ({ RequestError: "StoreItemID is no defined" })
+        }
+    ])
+    if (ErrorList.length > 0) return res.status(400).send({ ErrorList });
 
     let ItemPrice = (await new dbStoreManager(PurchaseOrderRequest.StreamerID).getIten(PurchaseOrderRequest.StoreItemID)).Price;
     let dbWalletM = new dbWalletManeger(PurchaseOrderRequest.StreamerID, PurchaseOrderRequest.TwitchUserID);
@@ -45,7 +58,7 @@ APP.post(PurchaseOrderRoute, async function (req, res: express.Response) {
     dbPurchaseOrderMan.addPurchaseOrder(new PurchaseOrder(ItemPrice, PurchaseOrderRequest.TwitchUserID, PurchaseOrderRequest.StoreItemID)
     )
         .then(async (dbPurchaseOrder) => {
-            await dbWalletM.withdraw(ItemPrice);            
+            await dbWalletM.withdraw(ItemPrice);
             getSoketOfStreamer(PurchaseOrderRequest.StreamerID).forEach(socket => {
                 socket.emit(IO_Listeners.onAddPurchasedItem, <PurchaseOrder>dbPurchaseOrder);
             })
@@ -58,6 +71,29 @@ APP.post(PurchaseOrderRoute, async function (req, res: express.Response) {
 })
 APP.delete(PurchaseOrderRoute, async function (req, res: express.Response) {
     let PurchaseOrder: DeletePurchaseOrderRequest = req.body;
+    let ErrorList = CheckRequisition([
+        () => {
+            if (!PurchaseOrder.StreamerID)
+                return ({ RequestError: "StreamerID is no defined" })
+        },
+        () => {
+            if (!PurchaseOrder.TwitchUserID)
+                return ({ RequestError: "TwitchUserID is no defined" })
+        },
+        () => {
+            if (!PurchaseOrder.StoreItemID)
+                return ({ RequestError: "StoreItemID is no defined" })
+        },
+        () => {
+            if (!PurchaseOrder.SpentCoins)
+                return ({ RequestError: "SpentCoins is no defined" })
+        },
+        () => {
+            if (!(typeof PurchaseOrder.PurchaseOrderID))
+                return ({ RequestError: "PurchaseOrderID is no defined" })
+        }
+    ])
+    if (ErrorList.length > 0) return res.status(400).send({ ErrorList });
     new dbPurchaseOrderManager(PurchaseOrder.StreamerID)
         .removePurchaseOrder(PurchaseOrder.PurchaseOrderID)
         .then(async () => {
@@ -73,6 +109,18 @@ APP.delete(PurchaseOrderRoute, async function (req, res: express.Response) {
         })
 })
 APP.get(GetPurchaseOrderRoute, async function (req: { params: { StreamerID: string, StoreItemID: string } }, res: express.Response) {
+    let ErrorList = CheckRequisition([
+        () => {
+            if (!req.params.StreamerID)
+                return ({ RequestError: "StreamerID is no defined" })
+        },
+        () => {
+            if (!req.params.StoreItemID)
+                return ({ RequestError: "StoreItemID is no defined" })
+        }
+    ])
+    if (ErrorList.length > 0) return res.status(400).send({ ErrorList });
+
     new dbPurchaseOrderManager(req.params.StreamerID).getAllPurchaseOrders(req.params.StoreItemID)
         .then((result) => {
             res.status(200).send(<dbPurchaseOrder[]>result);

@@ -14,9 +14,6 @@
 }
 
 @keyframes ShowAnimation {
-    0% {
-        opacity: 0;
-    }
     100% {
         opacity: 1;
     }
@@ -33,7 +30,7 @@
 }
 
 .Alert {
-    display: grid;
+    display: inline-grid;
     bottom: 10%;
     margin: auto;
     width: 30vw;

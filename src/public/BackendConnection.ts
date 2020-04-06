@@ -12,7 +12,10 @@ import { WalletManagerRequest } from '../services/models/wallet/WalletManagerReq
 import { CoinsSettings } from '../services/models/streamer_settings/CoinsSettings';
 import { getPollRoute, PollManagerRoute, MinerManagerRoute, addBeatRoute, getMinerSettingsRoute, getCoinsSettingsRoute, CoinsSettingsManagerRoute, MineCoinRoute, getWalletRoute, WalletManager, getStoreRoute, StoreManagerRoute, PurchaseOrderRoute, getPurchaseOrderRoute, UploadFileRoute, getFilesRoute, GetWalletsRoute, getWallestRoute, getWalletSkinImage, GetWalletSkins, getLocale } from '../services/routes/routes';
 import { Poll } from '../services/models/poll/Poll';
-import { sleep } from '../utils/utils';
+import { sleep } from '../utils/funtions';
+import { PollRequest } from '../services/models/poll/PollRequest';
+import { CoinsSettingsManagerRequest } from '../services/models/streamer_settings/CoinsSettingsManagerRequest';
+import { MinerManagerRequest } from '../services/models/miner/MinerManagerRequest';
 
 export const HOST = 'http://localhost:' + (ServerConfigs.Port || process.env.Port);
 
@@ -77,20 +80,15 @@ export async function getCurrentPoll(StreamerID: string): Promise<Poll> {
   })
 }
 
-export async function SendToPollManager(StreamerID: String, PollButtons: PollButton[],
-  NewPollStatus: PollStatus): Promise<any> {
+export async function SendToPollManager(StreamerID: string, PollButtons: PollButton[], NewPollStatus: PollStatus): Promise<any> {
   /*Send current voting with your buttons and current poll status */
   let H = new Headers();
-  H.append("Content-Type", "application/json");
+  H.append("Content-Type", "application/json");  
 
   return fetch(HOST + PollManagerRoute, {
     method: "POST",
     headers: H,
-    body: JSON.stringify({
-      StreamerID: StreamerID,
-      NewPollStatus: NewPollStatus,
-      PollButtons: PollButtons//TODO POR EM UM MODELODE DE REQUISIÇÃO
-    })
+    body: JSON.stringify(new PollRequest(StreamerID, PollButtons, NewPollStatus))
   }).then((res) => {
     if (res.ok) return resolve(res)
     else return reject(res);
@@ -98,11 +96,10 @@ export async function SendToPollManager(StreamerID: String, PollButtons: PollBut
     return res.json().then((res) => {
       return res;
     })
-  }).catch((rej) => {
-    return rej.json()
-      .then((res) => {
-        return reject(res);
-      })
+  }).catch(async (rej) => {
+    console.log(await rej.json());
+    
+    return rej.json();
   });
 }
 
@@ -113,10 +110,7 @@ export async function SendToMinerManager(StreamerID: string, Setting: MinerSetti
   return fetch(HOST + MinerManagerRoute, {
     method: "POST",
     headers: H,
-    body: JSON.stringify({
-      StreamerID: StreamerID,
-      Setting: Setting
-    })
+    body: JSON.stringify(new MinerManagerRequest(StreamerID,Setting))
   }).then(function (res) {
     if (res.ok) return resolve(res)
     else return reject(res);
@@ -164,7 +158,7 @@ export async function GetMinerSettings(StreamerID: string) {
   });
 }
 
-export async function GetCoinsSettings(StreamerID: string): Promise<CoinsSettings> {//TODO A ESTRURA SE REPETE em get Miner
+export async function GetCoinsSettings(StreamerID: string): Promise<CoinsSettings> {
   return fetch(HOST + getCoinsSettingsRoute(StreamerID), {
     method: "GET"
   }).then(function (res) {
@@ -180,17 +174,14 @@ export async function GetCoinsSettings(StreamerID: string): Promise<CoinsSetting
   });
 }
 
-export async function SendToCoinsSettingsManager(StreamerID: String, Setting: CoinsSettings) {
+export async function SendToCoinsSettingsManager(StreamerID: string, Setting: CoinsSettings) {
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
   return fetch(HOST + CoinsSettingsManagerRoute, {
     method: "POST",
     headers: H,
-    body: JSON.stringify({
-      StreamerID: StreamerID,
-      Setting: Setting
-    })
+    body: JSON.stringify(new CoinsSettingsManagerRequest(StreamerID, Setting))
   }).then(function (res) {
     if (res.ok) return resolve(res)
     else return reject(res);
@@ -431,7 +422,7 @@ export function getURLOfWalletSkinsImage(SkinImageName: string, MaskNumber: numb
 export async function getWalletSkins() {
   return fetch(HOST + GetWalletSkins, {
     method: "GET"
-  }).then(function (res) {    
+  }).then(function (res) {
     if (res.ok)
       return resolve(res.json())
     else
@@ -440,12 +431,12 @@ export async function getWalletSkins() {
     .catch((rej) => {
       console.error(rej);
     })
-} 
+}
 
-export async function getLocaleFile(ViewName:string,Locale:string) {
-  return fetch(HOST + getLocale(ViewName,Locale), {
+export async function getLocaleFile(ViewName: string, Locale: string) {
+  return fetch(HOST + getLocale(ViewName, Locale), {
     method: "GET"
-  }).then(function (res) {    
+  }).then(function (res) {
     if (res.ok)
       return resolve(res.json())
     else

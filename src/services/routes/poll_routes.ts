@@ -18,45 +18,48 @@ function ThereWinningButtonsInArray(PollButtons: PollButton[]): boolean {
     return false;
 }
 
-APP.post(PollManagerRoute, async function (req: PollRequest, res: express.Response) {
+APP.post(PollManagerRoute, async function (req, res: express.Response) {
+    let PollRequest: PollRequest = req.body;
+
+    console.log(PollRequest);
 
     let ErrorList = CheckRequisition([
         () => {
-            if (!req.body.StreamerID)
+            if (!PollRequest.StreamerID)
                 return ({ RequestError: "StreamerID is no defined" })
         },
         () => {
-            if (!req.body.StreamerID)
+            if (!PollRequest.NewPollStatus)
                 return ({ RequestError: "CurrentPollStatus is no defined" })
         }
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList });
 
-    let pollController = new PollController(req.body.StreamerID);
+    let pollController = new PollController(PollRequest.StreamerID);
 
     let PoolUpdateResult: { UpdatePollStatusRes: PollStatus, UpdateButtonGroupRes: UpdateButtonGroupResult };
     let SrartDistribuitionResult: { DistributionStarted: Date; };
 
-    let AccountData = dbManager.getAccountData(req.body.StreamerID);
-    if (AccountData.CurrentPollStatus.PollWaxed)
+    let AccountData = dbManager.getAccountData(PollRequest.StreamerID);
+    if (AccountData.CurrentPollStatus.PollWaxed) {
         return res.status(200).send(pollController.CreatePoll());
-    else {
+    } else {
 
-        if (req.body.NewPollStatus) {
-            AccountData.CurrentPollStatus = req.body.NewPollStatus;
-            PoolUpdateResult = await pollController.UpdatePoll(req.body.PollButtons);
+        if (PollRequest.NewPollStatus) {
+            AccountData.CurrentPollStatus = PollRequest.NewPollStatus;
+            PoolUpdateResult = await pollController.UpdatePoll(PollRequest.PollButtons);
 
             if (AccountData.CurrentPollStatus.InDistribution &&
-                !AccountData.CurrentPollStatus.PollWaxed &&
-                !AccountData.CurrentPollStatus.DistributionStarted
-            ) {
-                if (ThereWinningButtonsInArray(req.body.PollButtons)) {
+                !AccountData.CurrentPollStatus.DistributionStarted) {
+                if (AccountData.CurrentPollStatus.PollWaxed) {
+                    pollController.stopDistribuition();
+                } else if (ThereWinningButtonsInArray(PollRequest.PollButtons)) {
                     pollController.OnDistribuitionEnd = (StatisticsOfDistribution) => {
 
                         AccountData.CurrentPollStatus.DistributionCompleted = true
                         AccountData.CurrentPollStatus.StatisticsOfDistribution = StatisticsOfDistribution;
 
-                        let SoketsOfStreamer = getSoketOfStreamer(req.body.StreamerID);
+                        let SoketsOfStreamer = getSoketOfStreamer(PollRequest.StreamerID);
 
                         if (SoketsOfStreamer) {
                             SoketsOfStreamer.forEach(socket => {
@@ -65,7 +68,7 @@ APP.post(PollManagerRoute, async function (req: PollRequest, res: express.Respon
                         }
                     }
                     try {
-                        SrartDistribuitionResult = await pollController.StartDistribuition(req.body.PollButtons);
+                        SrartDistribuitionResult = await pollController.startDistribuition(PollRequest.PollButtons);
                     } catch (error) {
                         return res.status(500).send(error);
                     }

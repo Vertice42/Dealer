@@ -59,7 +59,7 @@ export class OrientedInput extends ResponsiveInput {
 
     this.HTMLInput.type = 'text';
     this.setNotUsed();
-    this.HTMLInput.value = Guidance;//TODO ADD TRALATE
+    this.HTMLInput.value = Guidance;
 
     this.HTMLInput.addEventListener('focusout', () => {
       if (this.HTMLInput.value === '') {
