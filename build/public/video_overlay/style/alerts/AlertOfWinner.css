@@ -63,10 +63,10 @@
 }
 
 #AlertOfWinner h2 {
-    margin: 5% 10% 0%;
+    margin-top: 3vw;
     text-align: center;
     font-family: Heroes;
-    font-size: 2vw;
+    font-size: 1.6vw;
     background-image: -webkit-linear-gradient(left, #f55151, #fffb00, #72ff65, #4be5f0, #7257e9, #bf75d6, #ec6060);
     background-clip: border-box;
     -webkit-background-clip: text;
@@ -75,13 +75,21 @@
     animation: GradienetAnimation 20s infinite, ShowText 0.8s;
 }
 
-#AlertOfWinner h3 {
+#AlertOfWinner .AlertResultDiv {
+    display: flex;
+    width: fit-content;
     text-align: center;
+    margin: auto;
+    margin-top: -3vw;
     font-family: Heroes;
     color: white;
-    font-size: 1vw;
-    margin: -10px auto auto;
+    font-size: 1.3vw;
     animation: ShowText 0.8s;
+}
+
+.AlertResultDiv span {
+    height: fit-content;
+    margin: 1vw;
 }
 
 #AlertOfWinner::before {

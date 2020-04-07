@@ -1,10 +1,10 @@
 import { MinerSettings } from "../streamer_settings/MinerSettings";
 export class MinerManagerRequest {
-    StreamerID: string;
+    Token: string;
     Setting: MinerSettings;
 
-    constructor(StreamerID: string,Setting: MinerSettings) {
-        this.StreamerID = StreamerID;
+    constructor(Token: string,Setting: MinerSettings) {
+        this.Token = Token;
         this.Setting = Setting;
     }
 }

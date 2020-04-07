@@ -12,13 +12,15 @@ import DeletePurchaseOrderRequest from "../models/store/DeletePurchaseOrderReque
 import { APP, CheckRequisition } from "..";
 import { getSoketOfStreamer } from "../SocketsManager";
 import { dbWalletManeger } from "../modules/database/wallet/dbWalletManager";
+import { AuthenticateResult } from "../models/poll/AuthenticateResult";
+import { Authenticate } from "../modules/Authentication";
 
 APP.post(PurchaseOrderRoute, async function (req, res: express.Response) {
     let PurchaseOrderRequest: PurchaseOrderRequest = req.body;
     let ErrorList = CheckRequisition([
         () => {
-            if (!PurchaseOrderRequest.StreamerID)
-                return ({ RequestError: "StreamerID is no defined" })
+            if (!PurchaseOrderRequest.Token)
+                return ({ RequestError: "Token is no defined" })
         },
         () => {
             if (!PurchaseOrderRequest.TwitchUserID)
@@ -31,14 +33,20 @@ APP.post(PurchaseOrderRoute, async function (req, res: express.Response) {
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList });
 
-    let ItemPrice = (await new dbStoreManager(PurchaseOrderRequest.StreamerID).getIten(PurchaseOrderRequest.StoreItemID)).Price;
-    let dbWalletM = new dbWalletManeger(PurchaseOrderRequest.StreamerID, PurchaseOrderRequest.TwitchUserID);
+    let Result: AuthenticateResult
+    try { Result = <AuthenticateResult>await Authenticate(PurchaseOrderRequest.Token) }
+    catch (error) { return res.status(401).send(error) }
+
+    let StreamerID = Result.channel_id;
+
+    let ItemPrice = (await new dbStoreManager(StreamerID).getIten(PurchaseOrderRequest.StoreItemID)).Price;
+    let dbWalletM = new dbWalletManeger(StreamerID, PurchaseOrderRequest.TwitchUserID);
 
     if ((await dbWalletM.getWallet()).Coins < ItemPrice) {
         return res.status(400).send({ ErrorBuying: 'Insufficient funds' })
     }
 
-    let dbStoreIten = await new dbStoreManager(PurchaseOrderRequest.StreamerID).getIten(PurchaseOrderRequest.StoreItemID);
+    let dbStoreIten = await new dbStoreManager(StreamerID).getIten(PurchaseOrderRequest.StoreItemID);
     let ItemSettings: ItemSetting[] = JSON.parse(dbStoreIten.ItemSettingsJson);
 
     let SingleReproductionEnable = false;
@@ -47,7 +55,7 @@ APP.post(PurchaseOrderRoute, async function (req, res: express.Response) {
         )
             SingleReproductionEnable = true;
     });
-    let dbPurchaseOrderMan = new dbPurchaseOrderManager(PurchaseOrderRequest.StreamerID);
+    let dbPurchaseOrderMan = new dbPurchaseOrderManager(StreamerID);
 
     if (SingleReproductionEnable) {
         if (await dbPurchaseOrderMan.getPurchaseOrderByStoreItemID(PurchaseOrderRequest.StoreItemID)) {
@@ -59,7 +67,7 @@ APP.post(PurchaseOrderRoute, async function (req, res: express.Response) {
     )
         .then(async (dbPurchaseOrder) => {
             await dbWalletM.withdraw(ItemPrice);
-            getSoketOfStreamer(PurchaseOrderRequest.StreamerID).forEach(socket => {
+            getSoketOfStreamer(StreamerID).forEach(socket => {
                 socket.emit(IO_Listeners.onAddPurchasedItem, <PurchaseOrder>dbPurchaseOrder);
             })
             res.status(200).send({ PurchaseOrderWasSentSuccessfully: new Date })
@@ -73,8 +81,8 @@ APP.delete(PurchaseOrderRoute, async function (req, res: express.Response) {
     let PurchaseOrder: DeletePurchaseOrderRequest = req.body;
     let ErrorList = CheckRequisition([
         () => {
-            if (!PurchaseOrder.StreamerID)
-                return ({ RequestError: "StreamerID is no defined" })
+            if (!PurchaseOrder.Token)
+                return ({ RequestError: "Token is no defined" })
         },
         () => {
             if (!PurchaseOrder.TwitchUserID)
@@ -93,12 +101,19 @@ APP.delete(PurchaseOrderRoute, async function (req, res: express.Response) {
                 return ({ RequestError: "PurchaseOrderID is no defined" })
         }
     ])
+
+    let Result: AuthenticateResult
+    try { Result = <AuthenticateResult>await Authenticate(PurchaseOrder.Token) }
+    catch (error) { return res.status(401).send(error) }
+
+    let StreamerID = Result.channel_id;
+
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList });
-    new dbPurchaseOrderManager(PurchaseOrder.StreamerID)
+    new dbPurchaseOrderManager(StreamerID)
         .removePurchaseOrder(PurchaseOrder.PurchaseOrderID)
         .then(async () => {
             if (PurchaseOrder.Refund) {
-                await new dbWalletManeger(PurchaseOrder.StreamerID, PurchaseOrder.TwitchUserID)
+                await new dbWalletManeger(StreamerID, PurchaseOrder.TwitchUserID)
                     .deposit(PurchaseOrder.SpentCoins)
             }
             return res.status(200).send({ PurchaseOrderRemovedSuccessfully: new Date })

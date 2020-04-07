@@ -110,6 +110,8 @@ APP.get(GetPollRoute, async function (req: { params: { StreamerID: string } }, r
 });
 APP.post(AddBeatRoute, async function (req, res: express.Response) {
     let AddBetRequest = <AddBetRequest>req.body;
+    console.log(AddBetRequest);
+    
 
     let Result: AuthenticateResult
     try { Result = <AuthenticateResult> await Authenticate(AddBetRequest.Token)}

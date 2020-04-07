@@ -8,12 +8,13 @@ import UploadFileResponse from "../models/files_manager/UploadFileResponse";
 import { UploadFileRoute, GetFileRoute as GetUploadedFile, GetWalletSkinImage, GetWalletSkins, GetLocale } from "./routes";
 import { getSoketOfStreamer } from "../SocketsManager";
 import IOListeners from "../IOListeners";
+import { Authenticate } from "../modules/Authentication";
+import { AuthenticateResult } from "../models/poll/AuthenticateResult";
 
 APP.post(UploadFileRoute, async function (req, res: express.Response) {
-
     let ErrorList = CheckRequisition([
         () => {
-            if (!(typeof req.headers["streamer-id"] === 'string'))
+            if (!(typeof req.headers["token"] === 'string'))
                 return ({ RequestError: "StreamerID is no a string" })
         },
         () => {
@@ -27,9 +28,15 @@ APP.post(UploadFileRoute, async function (req, res: express.Response) {
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
 
-    const StreamerID = <string>req.headers["streamer-id"];
+    const Token = <string>req.headers["token"];
     const FileID = <string>req.headers["file-id"];
     const FileName = <string>req.headers["file-name"];
+
+    let Result: AuthenticateResult
+    try { Result = <AuthenticateResult>await Authenticate(Token) }
+    catch (error) { return res.status(401).send(error) }
+
+    const StreamerID = Result.channel_id;
 
     let dir = `uploads/${StreamerID}/${FileID}`;
 
@@ -70,12 +77,12 @@ APP.get(GetWalletSkins, async function (req, res: express.Response) {
     res.status(200).sendFile(path.resolve(`./configs/WalletSkins.json`))
 })
 
-APP.get(GetLocale, async function (req, res: express.Response) {    
+APP.get(GetLocale, async function (req, res: express.Response) {
     let Path = path.resolve(`./configs/locales/${req.params.ViewName}/${req.params.Language}.json`);
-    
+
     fs.open(Path, 'r', (err, fd) => {
         if (err) {
-            if (err.code === 'ENOENT') {                
+            if (err.code === 'ENOENT') {
                 Path = path.resolve(`./configs/locales/${req.params.ViewName}/en.json`);
                 res.status(200).sendFile(Path);
             } else {

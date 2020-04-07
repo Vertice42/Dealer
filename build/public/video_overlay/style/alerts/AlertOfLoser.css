@@ -44,12 +44,21 @@
     animation: GradienetAnimation 20s infinite;
 }
 
-#AlertOfLoser h3 {
+#AlertOfLoser .AlertResultDiv {
+    display: flex;
+    width: fit-content;
     text-align: center;
+    margin: auto;
+    margin-top: -3vw;
     font-family: Heroes;
     color: white;
-    font-size: 1vw;
-    margin: -10px auto auto;
+    font-size: 1.3vw;
+    animation: ShowText 0.8s;
+}
+
+.AlertResultDiv span {
+    height: fit-content;
+    margin: 1vw;
 }
 
 @keyframes SedAnimation {

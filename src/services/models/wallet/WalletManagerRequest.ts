@@ -1,10 +1,10 @@
 export class WalletManagerRequest {
-    StreamerID: string;
+    Token: string;
     TwitchUserID: string;
     newValue: number;
 
-    constructor(StreamerID: string,TwitchUserID: string,newValue: number) {
-        this.StreamerID = StreamerID;
+    constructor(Token: string,TwitchUserID: string,newValue: number) {
+        this.Token = Token;
         this.TwitchUserID = TwitchUserID;
         this.newValue = newValue;
     }

@@ -18,7 +18,8 @@ export class PurchaseOrderItem {
     }
 }
 
-export default class PurchaseOrderController {
+export default class PurchaseOrderController {    
+    Token: string;
     StreamerID: string;
     socket: SocketIOClient.Socket;
     ViewPurchaseOrders = new ViewPurchaseOrders;
@@ -79,7 +80,7 @@ export default class PurchaseOrderController {
     nextOrder(Refund: boolean) {
         if (PurchaseOrder) {
             let DeletedPurchaseOrder = this.PurchaseOrdersList.shift().PurchaseOrder;
-            BackendConnections.DeletePurchaseOrder(this.StreamerID, DeletedPurchaseOrder, Refund);
+            BackendConnections.DeletePurchaseOrder(this.Token, DeletedPurchaseOrder, Refund);
 
             if (this.PurchaseOrdersList[0]) this.ExecuteOrder(this.PurchaseOrdersList[0])
             else this.ViewPurchaseOrders.setInPurchaseOrdersEmpty();
@@ -93,7 +94,7 @@ export default class PurchaseOrderController {
             if(!this.AudioPlayerIsUnlocked) return;
             this.ViewPurchaseOrders.removeViewPurchaseOrder(ViewPurchasedItem);
             this.PurchaseOrdersList.splice(ViewPurchasedItem.id, 1);
-            await BackendConnections.DeletePurchaseOrder(this.StreamerID, PurchaseOrder, true);
+            await BackendConnections.DeletePurchaseOrder(this.Token, PurchaseOrder, true);
             NotifyViewers({ ListenerName: TwitchListeners.onDeletePurchaseOrder, data: PurchaseOrder });
         }
     }
@@ -110,7 +111,7 @@ export default class PurchaseOrderController {
             if (StoreItem) {
                 this.ViewPurchaseOrders.addViewPurchaseOrder(PurchaseOrder, StoreItem);
             } else {
-                BackendConnections.DeletePurchaseOrder(this.StreamerID, PurchaseOrder, true);
+                BackendConnections.DeletePurchaseOrder(this.Token, PurchaseOrder, true);
             }
         })
 
@@ -128,7 +129,8 @@ export default class PurchaseOrderController {
         this.setAllCommands();
     }
     
-    constructor(StreamerID: string, socket: SocketIOClient.Socket) {
+    constructor(Token:string, StreamerID: string, socket: SocketIOClient.Socket) {
+        this.Token = Token;
         this.StreamerID = StreamerID;
         this.socket = socket;
         this.loadingPurchaseOrders();

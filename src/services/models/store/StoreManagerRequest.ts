@@ -1,10 +1,10 @@
 import StoreItem from "./StoreItem";
 
 export default class StoreManagerRequest {
-    StreamerID: string
+    Token: string
     StoreItem: StoreItem
-    constructor(StreamerID: string, StoreItem: StoreItem) {
-        this.StreamerID = StreamerID;
+    constructor(Token: string, StoreItem: StoreItem) {
+        this.Token = Token;
         this.StoreItem = StoreItem;
     }
 } 

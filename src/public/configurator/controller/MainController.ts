@@ -47,15 +47,15 @@ window.Twitch.ext.onAuthorized(async (auth) => {
     if (Registered) return;
     else Registered = true;
 
-    new PollController(StreamerID, auth.token);
+    new PollController(auth.token, StreamerID);
 
-    new SettingsController(StreamerID);
+    new SettingsController(auth.token, StreamerID);
 
-    new StoreController(StreamerID);
+    new StoreController(auth.token, StreamerID);
 
-    new PurchaseOrderController(StreamerID, STREAMER_SOCKET);
+    new PurchaseOrderController(auth.token, StreamerID, STREAMER_SOCKET);
 
-    new WalletsController(StreamerID);
+    new WalletsController(auth.token, StreamerID);
   })
 });
 

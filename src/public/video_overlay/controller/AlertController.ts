@@ -26,14 +26,16 @@ function IsWinner(PollButtons: PollButton[], ChosenButtonID: number) {
 
 export default class AllertController {
     Token: string;
-    StreamerID: string;
-    ViewAlerts = new ViewAlerts();
+    StreamerID: string;    
+    TwitchUserName: string;
+
+    ViewAlerts:ViewAlerts;
     CurrentPollStatus: PollStatus;
 
     ChangeBeat = () => {
-        if (this.ViewAlerts.SelectedButtonID !== null) {
+        if (localStorage['sbi'+this.TwitchUserName] !== null) {
             this.ViewAlerts.BetAmountInput.setChangedInput();
-            BackendConnections.addBet(this.Token, this.TwitchUserName, this.ViewAlerts.SelectedButtonID, this.ViewAlerts.getBetValue())
+            BackendConnections.addBet(this.Token, this.TwitchUserName, Number(localStorage['sbi'+this.TwitchUserName]), this.ViewAlerts.getBetValue())
                 .then(async () => {
                     this.ViewAlerts.BetAmountInput.setInputSentSuccessfully();
                     await sleep(100);
@@ -46,7 +48,6 @@ export default class AllertController {
             this.ViewAlerts.BetAmountInput.setInputSentError();
         }
     }
-    TwitchUserName: string;
 
     async EnbleAllCommands() {
         this.ViewAlerts.onBeatIDSelected = this.ChangeBeat;
@@ -64,9 +65,10 @@ export default class AllertController {
             }
 
             if (Poll.PollStatus.DistributionCompleted) {
-                if (isNaN(this.ViewAlerts.SelectedButtonID)) {
+                console.log(localStorage['sbi'+this.TwitchUserName], isNaN((Number(localStorage['sbi'+this.TwitchUserName]))));
+                if (isNaN(Number(localStorage['sbi'+this.TwitchUserName]))) {
                 } else {
-                    if (IsWinner(Poll.PollButtons, this.ViewAlerts.SelectedButtonID)) {
+                    if (IsWinner(Poll.PollButtons, Number((localStorage['sbi'+this.TwitchUserName])))) {
                         this.ViewAlerts.setInWinnerMode(Poll.LossDistributorOfPoll);
                     } else {
                         this.ViewAlerts.setInLoserMode();
@@ -122,5 +124,7 @@ export default class AllertController {
         this.Token = Token;
         this.StreamerID = StreamerID;
         this.TwitchUserName = TwitchUserName;
+
+        this.ViewAlerts = new ViewAlerts(this.TwitchUserName);        
     }
 }

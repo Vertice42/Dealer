@@ -345,7 +345,7 @@ export default class ViewWalletDisplay {
 
         EnableRelocatableElemente(this.WalletDiv, 0, 0);
         
-        EnableHideWhenMouseIsInactive(document.body,this.WalletDiv);
+        EnableHideWhenMouseIsInactive(document.body,this.WalletDiv,2000);
 
         this.NavStoreButtom.onclick = () => {
             this.setNavSelected(this.NavStoreButtom);

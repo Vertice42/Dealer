@@ -5,6 +5,8 @@ import { dbWallet } from "../models/poll/dbWallet";
 import { WalletManagerRequest } from "../models/wallet/WalletManagerRequest";
 import { GetWalletRoute, WalletManager, GetWalletsRoute } from "./routes";
 import { getAllWallets, dbWalletManeger } from "../modules/database/wallet/dbWalletManager";
+import { AuthenticateResult } from "../models/poll/AuthenticateResult";
+import { Authenticate } from "../modules/Authentication";
 
 APP.get(GetWalletRoute, async function (req, res: express.Response) {
     var Request = <{ StreamerID: string, TwitchUserID: string }>req.params;
@@ -57,8 +59,8 @@ APP.post(WalletManager, async function (req, res: express.Response) {
     let walletManagerRequest: WalletManagerRequest = req.body;
     let ErrorList = CheckRequisition([
         () => {
-            if (!walletManagerRequest.StreamerID)
-                return ({ RequestError: "StreamerID is no defined" })
+            if (!walletManagerRequest.Token)
+                return ({ RequestError: "Token is no defined" })
         }, () => {
             if (!walletManagerRequest.TwitchUserID)
                 return ({ RequestError: "TwitchUserID is no defined" })
@@ -69,7 +71,14 @@ APP.post(WalletManager, async function (req, res: express.Response) {
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
 
-    new dbWalletManeger(walletManagerRequest.StreamerID, walletManagerRequest.TwitchUserID)
+
+    let Result: AuthenticateResult
+    try { Result = <AuthenticateResult>await Authenticate(walletManagerRequest.Token) }
+    catch (error) { return res.status(401).send(error) }
+
+    let StreamerID = Result.channel_id;
+
+    new dbWalletManeger(StreamerID, walletManagerRequest.TwitchUserID)
         .update(walletManagerRequest.newValue)
         .then(() => {
             res.status(200).send({ WalletSuccessfullyChanged: new Date });

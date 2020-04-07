@@ -82,10 +82,11 @@ export class ViewPollButton {
 
     }
 }
-export default class ViewAlerts {
+export default class ViewAlerts {    
+    TwitchUserName: string;
+
     public getBetValue: () => number;
     public onBeatIDSelected = () => { };
-    public SelectedButtonID: number = null;
     public BetAmountInput = new ResponsiveInput(<HTMLInputElement>document.getElementById("BetAmountInput"));
 
     private ParticipatePollButton = <HTMLInputElement>document.getElementById("ParticipatePollButton");
@@ -102,14 +103,16 @@ export default class ViewAlerts {
     private ButtonsDiv = <HTMLDivElement>document.getElementById("ButtonsDiv");
 
     public setButtonsInPollDiv(PollButtons: PollButton[]) {
-        this.SelectedButtonID = null;
+        localStorage['sbi'+this.TwitchUserName] = undefined;
         this.ButtonsDiv.innerHTML = "";
         let buttons = [];
         PollButtons.forEach(pollButton => {
             let button = new ViewPollButton(pollButton);
             buttons.push(button);
-            button.onSelected = () => {
-                this.SelectedButtonID = pollButton.ID;
+            button.onSelected = () => {                
+                localStorage['sbi'+this.TwitchUserName] = pollButton.ID;
+                console.log('selected',localStorage['sbi'+this.TwitchUserName]);
+                
                 this.onBeatIDSelected();
                 buttons.forEach(Button => {
                     Button.Unelect();
@@ -184,7 +187,9 @@ export default class ViewAlerts {
             this.LossView.innerText = this.getBetValue().toString();
         });
     }
-    constructor() {
+    constructor(TwitchUserName:string) {
+        this.TwitchUserName = TwitchUserName;
+
         let display = document.getElementById('display');
         let X = display.clientWidth;
         let Y = display.clientHeight;

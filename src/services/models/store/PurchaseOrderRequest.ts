@@ -1,9 +1,9 @@
 export default class PurchaseOrderRequest {
-    StreamerID: string
+    Token: string
     TwitchUserID: string
     StoreItemID:number
-    constructor(StreamerID: string, TwitchUserID: string, StoreItemID: number) {
-        this.StreamerID = StreamerID;
+    constructor(Token: string, TwitchUserID: string, StoreItemID: number) {
+        this.Token = Token;
         this.TwitchUserID = TwitchUserID;
         this.StoreItemID = StoreItemID;
     }

@@ -1,15 +1,14 @@
 import PurchaseOrderRequest from "./PurchaseOrderRequest";
 
 export default class DeletePurchaseOrderRequest implements PurchaseOrderRequest {
-    StreamerID: string
+    Token: string
     TwitchUserID: string
     PurchaseOrderID: number
     StoreItemID: number
     SpentCoins: number
     Refund: boolean
-    constructor(StreamerID: string, TwitchUserID: string, PurchaseOrderID: number
-        , StoreItemID: number, SpentCoins: number, Refund: boolean, ) {
-        this.StreamerID = StreamerID;
+    constructor(Token: string, TwitchUserID: string, PurchaseOrderID: number, StoreItemID: number, SpentCoins: number, Refund: boolean, ) {
+        this.Token = Token;
         this.TwitchUserID = TwitchUserID;
         this.PurchaseOrderID = PurchaseOrderID;
         this.StoreItemID = StoreItemID;

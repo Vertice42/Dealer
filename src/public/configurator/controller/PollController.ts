@@ -77,7 +77,7 @@ export default class PollController {
             });
 
             await BackendConnections.SendToPollManager(
-                this.StreamerID,this.Token,
+                this.StreamerID, this.Token,
                 this.ViewPollManeger.getPollButtons(),
                 new PollStatus(this.ViewPollManeger.PollStatus).startDistribution()
             )
@@ -106,9 +106,9 @@ export default class PollController {
         this.setAllCommands();
     }
 
-    constructor(StreamerID: string, Token: string) {
-        this.StreamerID = StreamerID;
+    constructor(Token: string, StreamerID: string) {
         this.Token = Token;
+        this.StreamerID = StreamerID;
         this.LoadingCurrentPoll();
     }
 } 

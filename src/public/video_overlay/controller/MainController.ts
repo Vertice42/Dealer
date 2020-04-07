@@ -18,7 +18,7 @@ function makeid(length: number) {
 
 export var Texts: LocalizedTexts;
 
-var token: string, StreamerID: string, TwitchUserName: string;
+var Token: string, StreamerID: string, TwitchUserName: string;
 
 var TwitchListeners: { ListenerName: string, Listerner: (data) => any }[] = [];
 
@@ -42,7 +42,7 @@ window.Twitch.ext.listen('broadcast', Twitchbroadcast);
 window.Twitch.ext.onAuthorized(async (auth) => {
 
   StreamerID = auth.channelId.toLowerCase();
-  token = auth.token;
+  Token = auth.token;
 
   if (process.env.NODE_ENV === 'production') {
     TwitchUserName = auth.userId;
@@ -52,7 +52,6 @@ window.Twitch.ext.onAuthorized(async (auth) => {
   else {
     TwitchUserName = auth.userId;
     TwitchUserName = TwitchUserName.replace(/[^\d]+/g, '')
-    console.log(await getID('cellbit', auth.clientId));
     TwitchUserName = (await getUsername(TwitchUserName, auth.clientId)).name;
 
     //TwitchUserID = makeid(5);
@@ -71,12 +70,11 @@ window.Twitch.ext.onAuthorized(async (auth) => {
     Texts.update(await getLocaleFile('view_video_overlay', context.language));
 
     await new AllertController(auth.token, StreamerID, TwitchUserName).Loading();
-    var ControllerOfStoreDisplay = new StoreDisplayController(StreamerID, TwitchUserName);
+    var ControllerOfStoreDisplay = new StoreDisplayController(Token, StreamerID, TwitchUserName);
     var UserMiner = new Miner(StreamerID, TwitchUserName);
     UserMiner.onMine = (CurrentCoinsOfUserNunber, BalanceChange) => {
       ControllerOfStoreDisplay.setViewBalance(CurrentCoinsOfUserNunber, BalanceChange)
     };
     UserMiner.startMining();
   });
-
 })

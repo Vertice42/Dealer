@@ -17,6 +17,7 @@ import { PollRequest } from '../services/models/poll/PollRequest';
 import { CoinsSettingsManagerRequest } from '../services/models/streamer_settings/CoinsSettingsManagerRequest';
 import { MinerManagerRequest } from '../services/models/miner/MinerManagerRequest';
 import { AddBetRequest } from '../services/models/poll/AddBetRequest';
+import { MinerRequest } from '../services/models/miner/MinerRequest';
 
 export const HOST = 'http://localhost:' + (ServerConfigs.Port || process.env.Port);
 
@@ -104,14 +105,14 @@ export async function SendToPollManager(StreamerID: string, Token: string, PollB
   });
 }
 
-export async function SendToMinerManager(StreamerID: string, Setting: MinerSettings) {
+export async function SendToMinerManager(Token: string, Setting: MinerSettings) {
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
   return fetch(HOST + MinerManagerRoute, {
     method: "POST",
     headers: H,
-    body: JSON.stringify(new MinerManagerRequest(StreamerID, Setting))
+    body: JSON.stringify(new MinerManagerRequest(Token, Setting))
   }).then(function (res) {
     if (res.ok) return resolve(res)
     else return reject(res);
@@ -170,14 +171,14 @@ export async function GetCoinsSettings(StreamerID: string): Promise<CoinsSetting
   });
 }
 
-export async function SendToCoinsSettingsManager(StreamerID: string, Setting: CoinsSettings) {
+export async function SendToCoinsSettingsManager(Token: string, Setting: CoinsSettings) {
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
   return fetch(HOST + CoinsSettingsManagerRoute, {
     method: "POST",
     headers: H,
-    body: JSON.stringify(new CoinsSettingsManagerRequest(StreamerID, Setting))
+    body: JSON.stringify(new CoinsSettingsManagerRequest(Token, Setting))
   }).then(function (res) {
     if (res.ok) return resolve(res)
     else return reject(res);
@@ -197,10 +198,7 @@ export async function MineCoin(StreamerID: string, TwitchUserID: string) {
   return fetch(HOST + MineCoinRoute, {
     method: "POST",
     headers: H,
-    body: JSON.stringify({
-      StreamerID: StreamerID,
-      TwitchUserID: TwitchUserID
-    })
+    body: JSON.stringify(new MinerRequest(StreamerID, TwitchUserID))
   }).then(function (res) {
     if (res.ok) return resolve(res)
     else return reject(res);
@@ -243,7 +241,7 @@ export async function GetWallets(StreamerID: string, TwitchUserID = '*') {
   })
 }
 
-export async function SendToWalletManager(StreamerID: string, TwitchUserID: string, newValue: number): Promise<any> {
+export async function SendToWalletManager(Token: string, TwitchUserID: string, newValue: number): Promise<any> {
   /*Send current voting with your buttons and current poll status */
   let H = new Headers();
   H.append("Content-Type", "application/json");
@@ -251,7 +249,7 @@ export async function SendToWalletManager(StreamerID: string, TwitchUserID: stri
   return fetch(HOST + WalletManager, {
     method: "POST",
     headers: H,
-    body: JSON.stringify(new WalletManagerRequest(StreamerID, TwitchUserID, newValue))
+    body: JSON.stringify(new WalletManagerRequest(Token, TwitchUserID, newValue))
   }).then((res) => {
     if (res.ok) return resolve(res)
     else return reject(res);
@@ -280,7 +278,7 @@ export async function GetStore(StreamerID: string, StoreItemID = -1) {
   })
 }
 
-export async function SendToStoreManager(StreamerID: string, StoreItem: StoreItem): Promise<any> {
+export async function SendToStoreManager(Token: string, StoreItem: StoreItem): Promise<any> {
   /*Send current voting with your buttons and current poll status */
   let H = new Headers();
   H.append("Content-Type", "application/json");
@@ -288,7 +286,7 @@ export async function SendToStoreManager(StreamerID: string, StoreItem: StoreIte
   return fetch(HOST + StoreManagerRoute, {
     method: "POST",
     headers: H,
-    body: JSON.stringify(new StoreManagerRequest(StreamerID, StoreItem))
+    body: JSON.stringify(new StoreManagerRequest(Token, StoreItem))
   }).then((res) => {
     if (res.ok) return resolve(res)
     else return reject(res);
@@ -304,14 +302,14 @@ export async function SendToStoreManager(StreamerID: string, StoreItem: StoreIte
   });
 }
 
-export async function addPurchaseOrder(StreamerID: string, TwitchUserID: string, StoreItem: StoreItem) {
+export async function addPurchaseOrder(Token: string, TwitchUserID: string, StoreItem: StoreItem) {
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
   return fetch(HOST + PurchaseOrderRoute, {
     method: "POST",
     headers: H,
-    body: JSON.stringify(new PurchaseOrderRequest(StreamerID, TwitchUserID, StoreItem.id))
+    body: JSON.stringify(new PurchaseOrderRequest(Token, TwitchUserID, StoreItem.id))
   }).then((res) => {
     if (res.ok) return resolve(res)
     else return reject(res);
@@ -327,14 +325,14 @@ export async function addPurchaseOrder(StreamerID: string, TwitchUserID: string,
   });
 }
 
-export async function DeletePurchaseOrder(StreamerID: string, PurchaseOrder: PurchaseOrder, Refund: boolean) {
+export async function DeletePurchaseOrder(Token: string, PurchaseOrder: PurchaseOrder, Refund: boolean) {
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
   return fetch(HOST + PurchaseOrderRoute, {
     method: "DELETE",
     headers: H,
-    body: JSON.stringify(new DeletePurchaseOrderRequest(StreamerID, PurchaseOrder.TwitchUserID, PurchaseOrder.id, PurchaseOrder.StoreItemID, PurchaseOrder.SpentCoins, Refund))
+    body: JSON.stringify(new DeletePurchaseOrderRequest(Token, PurchaseOrder.TwitchUserID, PurchaseOrder.id, PurchaseOrder.StoreItemID, PurchaseOrder.SpentCoins, Refund))
   }).then((res) => {
     if (res.ok) return resolve(res)
     else return reject(res);
@@ -348,7 +346,7 @@ export async function DeletePurchaseOrder(StreamerID: string, PurchaseOrder: Pur
   });
 }
 
-export async function DeteleStoreItem(StreamerID: string, StoreItem: StoreItem): Promise<any> {
+export async function DeteleStoreItem(Token: string, StoreItem: StoreItem): Promise<any> {
   /*Send current voting with your buttons and current poll status */
   let H = new Headers();
   H.append("Content-Type", "application/json");
@@ -356,7 +354,7 @@ export async function DeteleStoreItem(StreamerID: string, StoreItem: StoreItem):
   return fetch(HOST + StoreManagerRoute, {
     method: "DELETE",
     headers: H,
-    body: JSON.stringify(new StoreManagerRequest(StreamerID, StoreItem))
+    body: JSON.stringify(new StoreManagerRequest(Token, StoreItem))
   }).then((res) => {
     if (res.ok) return resolve(res)
     else return reject(res);
@@ -372,8 +370,8 @@ export async function DeteleStoreItem(StreamerID: string, StoreItem: StoreItem):
   });
 }
 
-export async function GetPurchaseOrders(StreamerID: string) {
-  return fetch(HOST + getPurchaseOrderRoute(StreamerID), {
+export async function GetPurchaseOrders(Token: string) {
+  return fetch(HOST + getPurchaseOrderRoute(Token), {
     method: "GET"
   }).then(function (res) {
     if (res.ok)
@@ -385,11 +383,11 @@ export async function GetPurchaseOrders(StreamerID: string) {
   })
 }
 
-export async function UploadFile(StreamerID: string, FolderName: string, FileName: string, File: File) {
+export async function UploadFile(Token: string, FolderName: string, FileName: string, File: File) {
   /*Send current voting with your buttons and current poll status */
   let headers = new Headers();
   headers.append("Accept", "application/json");
-  headers.append('streamer-id', StreamerID);
+  headers.append('token', Token);
   headers.append("file-name", FileName);
   headers.append("file-id", FolderName);
   return fetch(HOST + UploadFileRoute,

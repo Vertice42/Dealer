@@ -58,14 +58,14 @@ export function DisableRelocatableElemente(Element: HTMLElement) {
     Element.onmouseup = null;
 }
 
-export function EnableHideWhenMouseIsInactive(FatherElement: HTMLElement, Element: HTMLElement) {
+export function EnableHideWhenMouseIsInactive(FatherElement: HTMLElement, Element: HTMLElement,Time = 500) {
     let move = true;
     FatherElement.addEventListener('mousemove', async (event) => {
         if (move) {
             move = false;
             if (!Element.classList.contains('Visible'))
                 Element.classList.add('Visible');
-            await sleep(500);
+            await sleep(Time);
             if (Element.classList.contains('Visible'))
                 Element.classList.remove('Visible');
             move = true;

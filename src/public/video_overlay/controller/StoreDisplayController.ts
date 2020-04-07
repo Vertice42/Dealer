@@ -9,6 +9,7 @@ import { WalletSkin } from "../../../services/models/wallet/WalletSkin";
 
 export default class StoreDisplayController {
     StreamerID: string;
+    Token:string;
     TwitchUserID: string;
     CoinName: string;
     ViewStoreDisplay = new ViewWalletDisplay();
@@ -29,7 +30,7 @@ export default class StoreDisplayController {
         ` ${(~~Balance).toString()}$${this.CoinName}${(lastChar === 's'|| lastChar === 'S') ? '' : 's'}`;
     }
 
-    setSkinOfWallet(WalletSkinsSelectedName) {
+    setSkinOfWallet(WalletSkinsSelectedName:string) {
 
         this.ViewStoreDisplay.Wallet_Mask_0.style.backgroundImage = 'url(' + BackendConnections.getURLOfWalletSkinsImage(WalletSkinsSelectedName, 0) + ')'
         this.ViewStoreDisplay.Wallet_Mask_1.style.backgroundImage = 'url(' + BackendConnections.getURLOfWalletSkinsImage(WalletSkinsSelectedName, 1) + ')'
@@ -38,7 +39,7 @@ export default class StoreDisplayController {
 
     async EnbleAllCommands() {
         this.ViewStoreDisplay.onBuyItemButtonActive = (StoreItem: StoreItem) => {
-            BackendConnections.addPurchaseOrder(this.StreamerID, this.TwitchUserID, StoreItem);
+            BackendConnections.addPurchaseOrder(this.Token, this.TwitchUserID, StoreItem);
         }
 
         this.ViewStoreDisplay.onNavSkinsButtomActive = async () => {
@@ -105,7 +106,8 @@ export default class StoreDisplayController {
         this.EnbleAllCommands();
     }
 
-    constructor(StreamerID: string, TwitchUserID: string) {
+    constructor(Token:string,StreamerID: string, TwitchUserID: string) {
+        this.Token = Token;
         this.StreamerID = StreamerID;
         this.TwitchUserID = TwitchUserID;
         this.LoadingStore()

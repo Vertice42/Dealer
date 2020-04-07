@@ -8,14 +8,16 @@ import { StoreManagerRoute, GetStoreRoute } from "./routes";
 import del = require("del");
 import FolderTypes from "../models/files_manager/FolderTypes";
 import { isEquivalent } from "../../utils/funtions";
+import { AuthenticateResult } from "../models/poll/AuthenticateResult";
+import { Authenticate } from "../modules/Authentication";
 
 APP.post(StoreManagerRoute, async function (req, res: express.Response) {
-    let Request: StoreManagerRequest = req.body;
+    let Request: StoreManagerRequest = req.body;    
 
     let ErrorList = CheckRequisition([
         () => {
-            if (!Request.StreamerID)
-                return ({ RequestError: "StreamerID is no defined" })
+            if (!Request.Token)
+                return ({ RequestError: "Token is no defined" })
         },
         () => {
             if (!Request.StoreItem) {
@@ -35,11 +37,17 @@ APP.post(StoreManagerRoute, async function (req, res: express.Response) {
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
 
-    if ((await new ControllerOfPermissions(Request.StreamerID).AllSettingsISLocked(Request.StoreItem.ItemsSettings))) {
+    let Result: AuthenticateResult
+    try { Result = <AuthenticateResult>await Authenticate(Request.Token) }
+    catch (error) { return res.status(401).send(error) }
+
+    let StreamerID = Result.channel_id;
+
+    if ((await new ControllerOfPermissions(StreamerID).AllSettingsISLocked(Request.StoreItem.ItemsSettings))) {
         return res.status(423).send({ mensage: 'This feature is blocked for you' })
     }
 
-    new dbStoreManager(Request.StreamerID).UpdateOrCreateStoreItem(Request.StoreItem)
+    new dbStoreManager(StreamerID).UpdateOrCreateStoreItem(Request.StoreItem)
         .then((result) => {
             res.status(200).send(result);
         })
@@ -55,15 +63,21 @@ APP.delete(StoreManagerRoute, async function (req, res: express.Response) {
     let Request: StoreManagerRequest = req.body;
     let ErrorList = CheckRequisition([
         () => {
-            if (!req.body.StreamerID)
-                return ({ RequestError: "StreamerID is no defined" })
+            if (!Request.Token)
+                return ({ RequestError: "Token is no defined" })
         }
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
 
-    new dbStoreManager(Request.StreamerID).DeleteStoreItem(req.body.StoreItem)
+    let Result: AuthenticateResult
+    try { Result = <AuthenticateResult>await Authenticate(Request.Token) }
+    catch (error) { return res.status(401).send(error) }
+
+    let StreamerID = Result.channel_id;
+
+    new dbStoreManager(StreamerID).DeleteStoreItem(req.body.StoreItem)
         .then(async (result) => {
-            await del('./uploads/'+Request.StreamerID+'/'+FolderTypes.StoreItem+Request.StoreItem.id+'/*');
+            await del('./uploads/'+StreamerID+'/'+FolderTypes.StoreItem+Request.StoreItem.id+'/*');
             res.status(200).send(result);
         })
         .catch((reject) => {

@@ -1,6 +1,9 @@
 export class MinerRequest {
-    body: {
-        StreamerID: any;
-        TwitchUserID: string;
-    };
+    StreamerID: string;
+    TwitchUserID: string;
+
+    constructor(StreamerID: string, TwitchUserID: string) {
+        this.StreamerID = StreamerID;
+        this.TwitchUserID = TwitchUserID;
+    }
 }

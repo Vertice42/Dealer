@@ -13,6 +13,8 @@ import IOListeners from "../../../services/IOListeners";
 
 export default class StoreController {
     StreamerID: string;
+    Token: string;
+
     ViewStore = new ViewStore();
     ViewAdvertisement = new ViewAdvertisement();
     StoreItems: StoreItem[];
@@ -23,7 +25,7 @@ export default class StoreController {
 
     async setAllCommands() {
         this.ViewStore.onAddStoreItemSondActive = async () => {
-            await BackendConnections.SendToStoreManager(this.StreamerID,
+            await BackendConnections.SendToStoreManager(this.Token,
                 this.ViewStore.addStoreItem(
                     new StoreItem(null, StoreTypes.Audio, null, [new ItemSetting('SingleReproduction', false), new ItemSetting('AudioVolume', false, 100)], null, null)));
         }
@@ -50,7 +52,7 @@ export default class StoreController {
         }
         this.ViewStore.onDescriptionChange = (ViewStoreItem) => {
             ViewStoreItem.DescriptionInput.setChangedInput();
-            BackendConnections.SendToStoreManager(this.StreamerID, <StoreItem>ViewStoreItem)
+            BackendConnections.SendToStoreManager(this.Token, <StoreItem>ViewStoreItem)
                 .then(async () => {
                     ViewStoreItem.DescriptionInput.setInputSentSuccessfully();
                     await sleep(500);
@@ -65,7 +67,7 @@ export default class StoreController {
         }
         this.ViewStore.onPriceChange = (ViewStoreItem) => {
             ViewStoreItem.PriceInput.setChangedInput();
-            BackendConnections.SendToStoreManager(this.StreamerID, <StoreItem>ViewStoreItem)
+            BackendConnections.SendToStoreManager(this.Token, <StoreItem>ViewStoreItem)
                 .then(async () => {
                     ViewStoreItem.PriceInput.setInputSentSuccessfully();
                     await sleep(500);
@@ -83,7 +85,7 @@ export default class StoreController {
                 this.ViewStore.HTML_DemoAudioPlayer.currentTime = 0;
             }
 
-            BackendConnections.SendToStoreManager(this.StreamerID, ViewStoreItem)
+            BackendConnections.SendToStoreManager(this.Token, ViewStoreItem)
                 .then(() => this.onStoreChange())
                 .catch((rej) => {
                     if (ItemSettings.DonorFeatureName === 'SingleReproduction') {
@@ -113,14 +115,14 @@ export default class StoreController {
 
                 STREAMER_SOCKET.addEventListener(IOListeners.UploadProgress, ioListener);
 
-                BackendConnections.UploadFile(this.StreamerID, FolderTypes.StoreItem + ViewStoreItem.id, file.name, file
+                BackendConnections.UploadFile(this.Token, FolderTypes.StoreItem + ViewStoreItem.id, file.name, file
                 ).then(async (UploadFileResponse: UploadFileResponse) => {
                     let StoreItem = <StoreItem>ViewStoreItem;
                     StoreItem.FileName = UploadFileResponse.FileName;
-                    await BackendConnections.SendToStoreManager(this.StreamerID, StoreItem);
-                    
+                    await BackendConnections.SendToStoreManager(this.Token, StoreItem);
+
                     ViewStoreItem.ResponsiveInputFile.setUpgradeable();
-                    STREAMER_SOCKET.removeEventListener(IOListeners.UploadProgress,ioListener);
+                    STREAMER_SOCKET.removeEventListener(IOListeners.UploadProgress, ioListener);
 
                     this.onStoreChange();
                 }
@@ -129,7 +131,7 @@ export default class StoreController {
         }
         this.ViewStore.onButtonDeleteActive = async (StoreItem) => {
 
-            BackendConnections.DeteleStoreItem(this.StreamerID, StoreItem)
+            BackendConnections.DeteleStoreItem(this.Token, StoreItem)
                 .then(() => {
                     this.onStoreChange();
                     this.ViewStore.removeStoreItem(StoreItem)
@@ -145,7 +147,8 @@ export default class StoreController {
         this.StoreItems.forEach(StoreItem => this.ViewStore.addStoreItem(StoreItem));
         this.setAllCommands();
     }
-    constructor(StreamerID: string) {
+    constructor(Token: string, StreamerID: string) {
+        this.Token = Token;
         this.StreamerID = StreamerID;
         this.loadingStoreItems();
     }

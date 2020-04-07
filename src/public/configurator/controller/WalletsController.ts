@@ -4,6 +4,7 @@ import { Wallet } from "../../../services/models/poll/dbWallet";
 import ViewWallets from "../view/ViewWallets";
 
 export default class WalletsController {
+    Token: string;
     StreamerID: string;
     ViewWallets = new ViewWallets;
     WatchWallets: BackendConnections.Observer;
@@ -30,7 +31,7 @@ export default class WalletsController {
 
             ViewWallet.InputOfCoinsOfWalletOfUser.setChangedInput();
 
-            BackendConnections.SendToWalletManager(this.StreamerID, TwitchUserID, Number(ViewWallet.InputOfCoinsOfWalletOfUser.HTMLInput.value))
+            BackendConnections.SendToWalletManager(this.Token, TwitchUserID, Number(ViewWallet.InputOfCoinsOfWalletOfUser.HTMLInput.value))
                 .then(async () => {
                     ViewWallet.InputOfCoinsOfWalletOfUser.setInputSentSuccessfully();
                     await sleep(500)
@@ -62,7 +63,8 @@ export default class WalletsController {
         this.EnbleAllCommands();
     }
 
-    constructor(StreamerID: string) {
+    constructor(Token: string, StreamerID: string) {
+        this.Token = Token;
         this.StreamerID = StreamerID;
 
         this.loadingWallets();

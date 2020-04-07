@@ -9,7 +9,9 @@ import TwitchListeners from "../../../services/TwitchListeners";
 
 
 export default class SettingsController {
-    StreamerID: string;
+    StreamerID: string;    
+    Token: string;
+
     ViewSettings = new ViewSettings;
     MinerSettings: MinerSettings;
     CoinsSettings: CoinsSettings;
@@ -17,7 +19,7 @@ export default class SettingsController {
     setAllCommands() {
         this.ViewSettings.HourlyRewardInput.HTMLInput.onchange = () => {
             this.ViewSettings.HourlyRewardInput.setChangedInput();
-            BackendConnections.SendToMinerManager(this.StreamerID,
+            BackendConnections.SendToMinerManager(this.Token,
                 new MinerSettings(Number(this.ViewSettings.HourlyRewardInput.HTMLInput.value) / 60))
                 .then(async () => {
                     this.ViewSettings.HourlyRewardInput.setInputSentSuccessfully();
@@ -31,7 +33,7 @@ export default class SettingsController {
         this.ViewSettings.CoinNameInput.HTMLInput.onchange = async () => {
             this.ViewSettings.CoinNameInput.setChangedInput();
             this.CoinsSettings.CoinName = this.ViewSettings.CoinNameInput.HTMLInput.value;
-            BackendConnections.SendToCoinsSettingsManager(this.StreamerID, this.CoinsSettings)
+            BackendConnections.SendToCoinsSettingsManager(this.Token, this.CoinsSettings)
                 .then(async () => {
                     this.ViewSettings.CoinNameInput.setInputSentSuccessfully();
                     await sleep(100);
@@ -45,10 +47,10 @@ export default class SettingsController {
         this.ViewSettings.InputCoinImg.onchange = () => {
             let file = this.ViewSettings.InputCoinImg.files[0]
             if (file) {
-                BackendConnections.UploadFile(this.StreamerID, 'CoinImage', file.name, file)
+                BackendConnections.UploadFile(this.Token, 'CoinImage', file.name, file)
                     .then(async (UploadFileResponse: UploadFileResponse) => {
                         this.CoinsSettings.FileNameOfCoinImage = file.name;
-                        BackendConnections.SendToCoinsSettingsManager(this.StreamerID, this.CoinsSettings)
+                        BackendConnections.SendToCoinsSettingsManager(this.Token, this.CoinsSettings)
                         this.ViewSettings.setCoinIMG(BackendConnections.getUrlOfFile(this.StreamerID, 'CoinImage', this.CoinsSettings.FileNameOfCoinImage))
                     })
                     .catch(rej => console.error(rej))
@@ -70,7 +72,8 @@ export default class SettingsController {
         this.setAllCommands();
     }
 
-    constructor(StreamerID: string) {
+    constructor(Token:string,StreamerID: string) {
+        this.Token = Token;
         this.StreamerID = StreamerID;
         this.LoadingSettings();
     }
