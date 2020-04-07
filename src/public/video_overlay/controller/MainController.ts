@@ -18,7 +18,7 @@ function makeid(length: number) {
 
 export var Texts: LocalizedTexts;
 
-var token: string, StreamerID: string, TwitchUserID: string;
+var token: string, StreamerID: string, TwitchUserName: string;
 
 var TwitchListeners: { ListenerName: string, Listerner: (data) => any }[] = [];
 
@@ -45,21 +45,20 @@ window.Twitch.ext.onAuthorized(async (auth) => {
   token = auth.token;
 
   if (process.env.NODE_ENV === 'production') {
-    TwitchUserID = auth.userId.toLowerCase();
-
-    TwitchUserID = TwitchUserID.replace(/[^\d]+/g, '')
-    TwitchUserID = (await getUsername(TwitchUserID, auth.clientId)).name;
+    TwitchUserName = auth.userId;
+    TwitchUserName = TwitchUserName.replace(/[^\d]+/g, '')
+    TwitchUserName = (await getUsername(TwitchUserName, auth.clientId)).name;
   }
   else {
-    TwitchUserID = auth.userId;
-    TwitchUserID = TwitchUserID.replace(/[^\d]+/g, '')
+    TwitchUserName = auth.userId;
+    TwitchUserName = TwitchUserName.replace(/[^\d]+/g, '')
     console.log(await getID('cellbit', auth.clientId));
-    TwitchUserID = (await getUsername(TwitchUserID, auth.clientId)).name;
+    TwitchUserName = (await getUsername(TwitchUserName, auth.clientId)).name;
 
     //TwitchUserID = makeid(5);
   }
 
-  if (!TwitchUserID) {
+  if (!TwitchUserName) {
     document.body.style.display = 'none';
     return 'TwitchUserID undefined';
   }
@@ -71,9 +70,9 @@ window.Twitch.ext.onAuthorized(async (auth) => {
     IncertTextInElements(await getLocaleFile('view_video_overlay_hard_code', context.language));
     Texts.update(await getLocaleFile('view_video_overlay', context.language));
 
-    await new AllertController(StreamerID, TwitchUserID).Loading();
-    var ControllerOfStoreDisplay = new StoreDisplayController(StreamerID, TwitchUserID);
-    var UserMiner = new Miner(StreamerID, TwitchUserID);
+    await new AllertController(auth.token, StreamerID, TwitchUserName).Loading();
+    var ControllerOfStoreDisplay = new StoreDisplayController(StreamerID, TwitchUserName);
+    var UserMiner = new Miner(StreamerID, TwitchUserName);
     UserMiner.onMine = (CurrentCoinsOfUserNunber, BalanceChange) => {
       ControllerOfStoreDisplay.setViewBalance(CurrentCoinsOfUserNunber, BalanceChange)
     };

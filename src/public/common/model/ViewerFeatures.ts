@@ -63,8 +63,6 @@ export function EnableHideWhenMouseIsInactive(FatherElement: HTMLElement, Elemen
     FatherElement.addEventListener('mousemove', async (event) => {
         if (move) {
             move = false;
-            console.log(Element.id);
-
             if (!Element.classList.contains('Visible'))
                 Element.classList.add('Visible');
             await sleep(500);

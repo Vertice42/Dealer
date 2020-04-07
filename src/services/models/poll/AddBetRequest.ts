@@ -1,8 +1,12 @@
 export class AddBetRequest {
-    body: {
-        StreamerID: string;
-        TwitchUserID: string;
-        BetAmount: number;
-        Vote: number;
-    };
+    Token: string;
+    TwitchUserName: string;
+    BetAmount: number;
+    Vote: number;
+    constructor(Token: string, TwitchUserName: string, BetAmount: number, Vote: number) {
+        this.Token = Token;
+        this.TwitchUserName = TwitchUserName;
+        this.BetAmount = BetAmount;
+        this.Vote = Vote;
+    }
 }

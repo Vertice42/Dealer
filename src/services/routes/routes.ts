@@ -1,8 +1,7 @@
 export const PollManagerRoute = '/PollManager';
 export const GetPollRoute = '/Poll/:StreamerID';
 export const getPollRoute = (StreamerID: string) => { return '/Poll/' + StreamerID };
-export const AddBeatRoute = '/addBeat/:StreamerID/:TwitchUserID';
-export const addBeatRoute = (StreamerID: string, TwitchUserID: string) => { return '/addBeat/' + StreamerID + '/' + TwitchUserID };
+export const AddBeatRoute = '/addBeat';
 //POLL
 export const MineCoinRoute = '/MinerCoin';
 //MINER

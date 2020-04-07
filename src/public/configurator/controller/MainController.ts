@@ -42,12 +42,12 @@ window.Twitch.ext.onAuthorized(async (auth) => {
   })
 
   let Registered = false;
-  STREAMER_SOCKET.on(IOListeners.onStreamerAsRegistered, () => {
+  STREAMER_SOCKET.on(IOListeners.onStreamerAsRegistered, async () => {
 
     if (Registered) return;
     else Registered = true;
 
-    new PollController(StreamerID);
+    new PollController(StreamerID, auth.token);
 
     new SettingsController(StreamerID);
 

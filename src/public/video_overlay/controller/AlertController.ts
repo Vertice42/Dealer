@@ -25,17 +25,15 @@ function IsWinner(PollButtons: PollButton[], ChosenButtonID: number) {
 }
 
 export default class AllertController {
+    Token: string;
     StreamerID: string;
-    TwitchUserID: string;
-
     ViewAlerts = new ViewAlerts();
-
     CurrentPollStatus: PollStatus;
 
     ChangeBeat = () => {
         if (this.ViewAlerts.SelectedButtonID !== null) {
             this.ViewAlerts.BetAmountInput.setChangedInput();
-            BackendConnections.addBet(this.StreamerID, this.TwitchUserID, this.ViewAlerts.SelectedButtonID, this.ViewAlerts.getBetValue())
+            BackendConnections.addBet(this.Token, this.TwitchUserName, this.ViewAlerts.SelectedButtonID, this.ViewAlerts.getBetValue())
                 .then(async () => {
                     this.ViewAlerts.BetAmountInput.setInputSentSuccessfully();
                     await sleep(100);
@@ -48,6 +46,7 @@ export default class AllertController {
             this.ViewAlerts.BetAmountInput.setInputSentError();
         }
     }
+    TwitchUserName: string;
 
     async EnbleAllCommands() {
         this.ViewAlerts.onBeatIDSelected = this.ChangeBeat;
@@ -119,8 +118,9 @@ export default class AllertController {
 
     }
 
-    constructor(StreamerID: string, TwitchUserID: string) {
+    constructor(Token: string, StreamerID: string, TwitchUserName: string) {
+        this.Token = Token;
         this.StreamerID = StreamerID;
-        this.TwitchUserID = TwitchUserID;
+        this.TwitchUserName = TwitchUserName;
     }
 }

@@ -10,12 +10,13 @@ import DeletePurchaseOrderRequest from '../services/models/store/DeletePurchaseO
 import PurchaseOrder from '../services/models/store/PurchaseOrder';
 import { WalletManagerRequest } from '../services/models/wallet/WalletManagerRequest';
 import { CoinsSettings } from '../services/models/streamer_settings/CoinsSettings';
-import { getPollRoute, PollManagerRoute, MinerManagerRoute, addBeatRoute, getMinerSettingsRoute, getCoinsSettingsRoute, CoinsSettingsManagerRoute, MineCoinRoute, getWalletRoute, WalletManager, getStoreRoute, StoreManagerRoute, PurchaseOrderRoute, getPurchaseOrderRoute, UploadFileRoute, getFilesRoute, GetWalletsRoute, getWallestRoute, getWalletSkinImage, GetWalletSkins, getLocale } from '../services/routes/routes';
+import { getPollRoute, PollManagerRoute, MinerManagerRoute, getMinerSettingsRoute, getCoinsSettingsRoute, CoinsSettingsManagerRoute, MineCoinRoute, getWalletRoute, WalletManager, getStoreRoute, StoreManagerRoute, PurchaseOrderRoute, getPurchaseOrderRoute, UploadFileRoute, getFilesRoute, GetWalletsRoute, getWallestRoute, getWalletSkinImage, GetWalletSkins, getLocale, AddBeatRoute } from '../services/routes/routes';
 import { Poll } from '../services/models/poll/Poll';
 import { sleep } from '../utils/funtions';
 import { PollRequest } from '../services/models/poll/PollRequest';
 import { CoinsSettingsManagerRequest } from '../services/models/streamer_settings/CoinsSettingsManagerRequest';
 import { MinerManagerRequest } from '../services/models/miner/MinerManagerRequest';
+import { AddBetRequest } from '../services/models/poll/AddBetRequest';
 
 export const HOST = 'http://localhost:' + (ServerConfigs.Port || process.env.Port);
 
@@ -80,15 +81,15 @@ export async function getCurrentPoll(StreamerID: string): Promise<Poll> {
   })
 }
 
-export async function SendToPollManager(StreamerID: string, PollButtons: PollButton[], NewPollStatus: PollStatus): Promise<any> {
+export async function SendToPollManager(StreamerID: string, Token: string, PollButtons: PollButton[], NewPollStatus: PollStatus): Promise<any> {
   /*Send current voting with your buttons and current poll status */
   let H = new Headers();
-  H.append("Content-Type", "application/json");  
+  H.append("Content-Type", "application/json");
 
   return fetch(HOST + PollManagerRoute, {
     method: "POST",
     headers: H,
-    body: JSON.stringify(new PollRequest(StreamerID, PollButtons, NewPollStatus))
+    body: JSON.stringify(new PollRequest(Token, PollButtons, NewPollStatus))
   }).then((res) => {
     if (res.ok) return resolve(res)
     else return reject(res);
@@ -98,7 +99,7 @@ export async function SendToPollManager(StreamerID: string, PollButtons: PollBut
     })
   }).catch(async (rej) => {
     console.log(await rej.json());
-    
+
     return rej.json();
   });
 }
@@ -110,7 +111,7 @@ export async function SendToMinerManager(StreamerID: string, Setting: MinerSetti
   return fetch(HOST + MinerManagerRoute, {
     method: "POST",
     headers: H,
-    body: JSON.stringify(new MinerManagerRequest(StreamerID,Setting))
+    body: JSON.stringify(new MinerManagerRequest(StreamerID, Setting))
   }).then(function (res) {
     if (res.ok) return resolve(res)
     else return reject(res);
@@ -123,19 +124,14 @@ export async function SendToMinerManager(StreamerID: string, Setting: MinerSetti
       })
   });
 }
-export async function addBet(StreamerID: string, TwitchUserID: string,
-  IdOfVote: number, BetAmount: number): Promise<any> {
+export async function addBet(Token: string, TwitchUserName: string, IdOfVote: number, BetAmount: number): Promise<any> {
   let H = new Headers();
   H.append("Content-Type", "application/json");
-  return fetch(HOST + addBeatRoute(StreamerID, TwitchUserID), {
+  return fetch(HOST + AddBeatRoute, {
     method: "POST",
     headers: H,
-    body: JSON.stringify({
-      StreamerID: StreamerID,
-      TwitchUserID: TwitchUserID,
-      Vote: IdOfVote,
-      BetAmount: Number(BetAmount)
-    })
+    body: JSON.stringify(new AddBetRequest(Token, TwitchUserName, Number(BetAmount), IdOfVote))
+
   }).then(async function (res) {
     if (res.ok) return resolve(await res.json())
     else return reject(await res.json());

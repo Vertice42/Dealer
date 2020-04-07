@@ -11,6 +11,8 @@ import { PollButton } from "../models/poll/PollButton";
 import { PollManagerRoute, AddBeatRoute, GetPollRoute } from "./routes";
 import { getSoketOfStreamer } from "../SocketsManager";
 import IOListeners from "../IOListeners";
+import { Authenticate } from "../modules/Authentication";
+import { AuthenticateResult } from "../models/poll/AuthenticateResult";
 
 function ThereWinningButtonsInArray(PollButtons: PollButton[]): boolean {
     for (let i = 0; i < PollButtons.length; i++)
@@ -21,12 +23,16 @@ function ThereWinningButtonsInArray(PollButtons: PollButton[]): boolean {
 APP.post(PollManagerRoute, async function (req, res: express.Response) {
     let PollRequest: PollRequest = req.body;
 
-    console.log(PollRequest);
+    let Result: AuthenticateResult
+    try { Result = <AuthenticateResult> await Authenticate(PollRequest.Token)}
+    catch (error) {return res.status(401).send(error)}
+
+    let StreamerID = Result.channel_id;
 
     let ErrorList = CheckRequisition([
         () => {
-            if (!PollRequest.StreamerID)
-                return ({ RequestError: "StreamerID is no defined" })
+            if (!PollRequest.Token)
+                return ({ RequestError: "Token is no defined" })
         },
         () => {
             if (!PollRequest.NewPollStatus)
@@ -35,12 +41,12 @@ APP.post(PollManagerRoute, async function (req, res: express.Response) {
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList });
 
-    let pollController = new PollController(PollRequest.StreamerID);
+    let pollController = new PollController(StreamerID);
 
     let PoolUpdateResult: { UpdatePollStatusRes: PollStatus, UpdateButtonGroupRes: UpdateButtonGroupResult };
     let SrartDistribuitionResult: { DistributionStarted: Date; };
 
-    let AccountData = dbManager.getAccountData(PollRequest.StreamerID);
+    let AccountData = dbManager.getAccountData(StreamerID);
     if (AccountData.CurrentPollStatus.PollWaxed) {
         return res.status(200).send(pollController.CreatePoll());
     } else {
@@ -59,7 +65,7 @@ APP.post(PollManagerRoute, async function (req, res: express.Response) {
                         AccountData.CurrentPollStatus.DistributionCompleted = true
                         AccountData.CurrentPollStatus.StatisticsOfDistribution = StatisticsOfDistribution;
 
-                        let SoketsOfStreamer = getSoketOfStreamer(PollRequest.StreamerID);
+                        let SoketsOfStreamer = getSoketOfStreamer(StreamerID);
 
                         if (SoketsOfStreamer) {
                             SoketsOfStreamer.forEach(socket => {
@@ -102,21 +108,25 @@ APP.get(GetPollRoute, async function (req: { params: { StreamerID: string } }, r
             res.status(500).send(reje)
         })
 });
-APP.post(AddBeatRoute, async function (req: AddBetRequest, res: express.Response) {
+APP.post(AddBeatRoute, async function (req, res: express.Response) {
+    let AddBetRequest = <AddBetRequest>req.body;
+
+    let Result: AuthenticateResult
+    try { Result = <AuthenticateResult> await Authenticate(AddBetRequest.Token)}
+    catch (error) {return res.status(401).send(error)}
+
+    let StreamerID = Result.channel_id;
+
     let ErrorList = CheckRequisition([
         () => {
-            if (!req.body.StreamerID)
-                return ({ RequestError: "StreamerID is no defined" })
-        },
-        () => {
-            if (!req.body.TwitchUserID)
-                return ({ RequestError: "TwitchUserID is no defined" })
+            if (!AddBetRequest.Token)
+                return ({ RequestError: "Token is no defined" })
         },
         () => {
             let mensage: string;
-            if (!req.body.Vote && req.body.Vote !== 0)
+            if (!AddBetRequest.Vote && AddBetRequest.Vote !== 0)
                 mensage = "Vote is no defined";
-            else if (!Number.isInteger(req.body.Vote))
+            else if (!Number.isInteger(AddBetRequest.Vote))
                 mensage = "Vote is no defined";
 
             if (mensage) return { RequestError: mensage };
@@ -124,11 +134,11 @@ APP.post(AddBeatRoute, async function (req: AddBetRequest, res: express.Response
         () => {
             let mensage: string;
 
-            if (!req.body.BetAmount && req.body.BetAmount !== 0)
+            if (!AddBetRequest.BetAmount && AddBetRequest.BetAmount !== 0)
                 mensage = "BetAmount is no defined";
-            else if (!Number.isInteger(req.body.BetAmount))
+            else if (!Number.isInteger(AddBetRequest.BetAmount))
                 mensage = "BetAmount not is Integer"
-            else if (req.body.BetAmount < 1)
+            else if (AddBetRequest.BetAmount < 1)
                 mensage = "BetAmount not is Valid"
 
             if (mensage) return { RequestError: mensage };
@@ -136,12 +146,12 @@ APP.post(AddBeatRoute, async function (req: AddBetRequest, res: express.Response
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
 
-    let pollController = new PollController(req.body.StreamerID);
+    let pollController = new PollController(StreamerID);
 
     pollController.AddBet(
-        req.body.TwitchUserID,
-        req.body.Vote,
-        req.body.BetAmount)
+        AddBetRequest.TwitchUserName,
+        AddBetRequest.Vote,
+        AddBetRequest.BetAmount)
         .then((reso) => {
             res.status(200).send(reso);
         })

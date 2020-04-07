@@ -97,16 +97,16 @@ export class PollController {
     }
     /**
      * 
-     * @param TwitchUserID 
+     * @param TwitchUserName 
      * @param ChosenOppositeID 
      * @param newBetAmount 
      */
-    async AddBet(TwitchUserID: string, ChosenBetID: number, newBetAmount: number) {
+    async AddBet(TwitchUserName: string, ChosenBetID: number, newBetAmount: number) {
         let BetsManager = new dbBettingsManager(this.StreamerID);
-        let WalletManager = new dbWalletManeger(this.StreamerID, TwitchUserID);
+        let WalletManager = new dbWalletManeger(this.StreamerID, TwitchUserName);
         let UserWallet = await WalletManager.getWallet();
 
-        let dbBet = await BetsManager.getdbBet(TwitchUserID);
+        let dbBet = await BetsManager.getdbBet(TwitchUserName);
 
         if (dbBet) {
             if (dbBet.BetAmount !== newBetAmount) {
@@ -130,7 +130,7 @@ export class PollController {
                     await WalletManager.withdraw(DifferenceBetweenBets);
                 }
             }
-            await BetsManager.updateBet(dbBet, new Bet(TwitchUserID, ChosenBetID, newBetAmount));
+            await BetsManager.updateBet(dbBet, new Bet(TwitchUserName, ChosenBetID, newBetAmount));
 
         } else {
 
@@ -146,7 +146,7 @@ export class PollController {
             }
 
             await WalletManager.withdraw(newBetAmount);
-            await BetsManager.createBet(new Bet(TwitchUserID, ChosenBetID, newBetAmount));
+            await BetsManager.createBet(new Bet(TwitchUserName, ChosenBetID, newBetAmount));
         }
 
         return resolve({ BetAcepted: { Bet: newBetAmount } });
