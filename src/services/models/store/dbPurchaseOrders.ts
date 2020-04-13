@@ -19,7 +19,7 @@ export class dbPurchaseOrder extends Model implements PurchaseOrder {
 
 export const PurchaseOrdersDefiner = {
     name: 'purchase_orders',
-    atributes: {
+    attributes: {
         UserId: {
             type: sequelize.STRING
         },

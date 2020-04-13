@@ -4,29 +4,29 @@ import { Model } from "sequelize";
 export class Wallet {
     TwitchUserID: string
     Coins: number
-    LastMiningAttemp: Date
+    LastMiningAttempt: Date
 
-    constructor(TwitchUserID: string,Coins: number,LastMiningAttemp: Date) {
+    constructor(TwitchUserID: string,Coins: number,LastMiningAttempt: Date) {
         this.TwitchUserID = TwitchUserID;
         this.Coins = Coins;
-        this.LastMiningAttemp = LastMiningAttemp;
+        this.LastMiningAttempt = LastMiningAttempt;
     }
 }
 
 export class dbWallet extends Model implements Wallet {
     TwitchUserID: string;
     Coins: number;
-    LastMiningAttemp: Date;
+    LastMiningAttempt: Date;
 
     static toWallet(dbWallet: dbWallet) {
-        return new Wallet(dbWallet.TwitchUserID, dbWallet.Coins, dbWallet.LastMiningAttemp)
+        return new Wallet(dbWallet.TwitchUserID, dbWallet.Coins, dbWallet.LastMiningAttempt)
     }
 
 }
 
 const WalletDefiner = {
     Name: 'wallets',
-    atributes: {
+    attributes: {
         TwitchUserID: {
             type: sequelize.STRING,
             primaryKey: true
@@ -35,7 +35,7 @@ const WalletDefiner = {
             type: sequelize.DOUBLE,
             defaultValue: 0
         },
-        LastMiningAttemp: {
+        LastMiningAttempt: {
             type: sequelize.DATE,
             defaultValue: sequelize.NOW
         }

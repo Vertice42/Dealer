@@ -1,11 +1,12 @@
 import { Miner } from "../modules/Miner";
-import AllertController from "./AlertController";
+import AlertController from "./AlertController";
 import StoreDisplayController from "./StoreDisplayController";
-import { getUsername, getID } from "../../TwitchConnections";
-import { IncertTextInHardCode as IncertTextInElements, LocalizedTexts } from "../../common/model/IncertText";
-import { getLocaleFile } from "../../BackendConnection";
+import { InsertTextInHardCode as InsertTextInElements, LocalizedTexts } from "../../common/view/Texts";
+import { TwitchListener } from "../../common/model/TwitchListener";
+import { getLocaleFile } from "../../common/BackendConnection/BlobFiles";
+import { getUsername } from "../../common/TwitchConnections";
 
-function makeid(length: number) {
+function makeID(length: number) {
   var result = "";
   var characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -16,65 +17,54 @@ function makeid(length: number) {
   return result;
 }
 
-export var Texts: LocalizedTexts;
+var TwitchListeners: TwitchListener[] = [];
+var Initialized = false;
+/**
+ * Adds a new twitch listener or pub sub
+ */
+export function addTwitchListeners(TwitchListener: TwitchListener) {
+  TwitchListeners.push(TwitchListener);
+}
 
-var Token: string, StreamerID: string, TwitchUserName: string;
-
-var TwitchListeners: { ListenerName: string, Listerner: (data) => any }[] = [];
-
-var Twitchbroadcast = (opic, contentType, json: string) => {
+window.Twitch.ext.listen('broadcast', (topic, contentType, json: string) => {
   TwitchListeners.forEach((twitchListener) => {
-    let jsonOBJ: { ListenerName: string, data: any } = JSON.parse(json);
+    let jsonOBJ: TwitchListener = JSON.parse(json);
 
     if (jsonOBJ.ListenerName === twitchListener.ListenerName) {
-      twitchListener.Listerner(jsonOBJ.data)
+      twitchListener.data(jsonOBJ.data)
     }
 
   });
-}
+});
 
-export function addTwitchListeners(ListenerName: string, Listerner: (data) => any) {
-  TwitchListeners.push({ ListenerName, Listerner });
-}
-window.Twitch.ext.listen('broadcast', Twitchbroadcast);
+export var Texts: LocalizedTexts;
+window.Twitch.ext.onContext(async (context) => {
+  InsertTextInElements(await getLocaleFile('view_video_overlay_hard_code', context.language));
 
-
-window.Twitch.ext.onAuthorized(async (auth) => {
-
-  StreamerID = auth.channelId.toLowerCase();
-  Token = auth.token;
-
-  if (process.env.NODE_ENV === 'production') {
-    TwitchUserName = auth.userId;
-    TwitchUserName = TwitchUserName.replace(/[^\d]+/g, '')
-    TwitchUserName = (await getUsername(TwitchUserName, auth.clientId)).name;
+  if (Texts) {
+    Texts.update(await getLocaleFile('view_video_overlay', context.language));
+  } else {
+    Texts = new LocalizedTexts(await getLocaleFile('view_video_overlay', context.language));
   }
-  else {
-    TwitchUserName = auth.userId;
-    TwitchUserName = TwitchUserName.replace(/[^\d]+/g, '')
-    TwitchUserName = (await getUsername(TwitchUserName, auth.clientId)).name;
+});
 
-    //TwitchUserID = makeid(5);
-  }
+window.Twitch.ext.onAuthorized(async (auth) => { 
+  var TwitchUserName = (await getUsername(auth.userId.replace(/[^\d]+/g, ''), auth.clientId)).name;
 
   if (!TwitchUserName) {
     document.body.style.display = 'none';
     return 'TwitchUserID undefined';
   }
 
-  Texts = new LocalizedTexts(await getLocaleFile('view_video_overlay', 'en'));
+  if(Initialized) return; else Initialized = true;  
 
-  window.Twitch.ext.onContext(async (context) => {
-    console.error(context);
-    IncertTextInElements(await getLocaleFile('view_video_overlay_hard_code', context.language));
-    Texts.update(await getLocaleFile('view_video_overlay', context.language));
+  await new AlertController(auth.token, auth.channelId, TwitchUserName).Build();
 
-    await new AllertController(auth.token, StreamerID, TwitchUserName).Loading();
-    var ControllerOfStoreDisplay = new StoreDisplayController(Token, StreamerID, TwitchUserName);
-    var UserMiner = new Miner(StreamerID, TwitchUserName);
-    UserMiner.onMine = (CurrentCoinsOfUserNunber, BalanceChange) => {
-      ControllerOfStoreDisplay.setViewBalance(CurrentCoinsOfUserNunber, BalanceChange)
-    };
-    UserMiner.startMining();
-  });
+  var ControllerOfStoreDisplay = new StoreDisplayController(auth.token, auth.channelId, TwitchUserName);
+  var MinerOfUser = new Miner(auth.channelId, TwitchUserName);
+  MinerOfUser.onMine = (CurrentCoinsOfUserNumber, BalanceChange) => {
+    ControllerOfStoreDisplay.setViewBalance(CurrentCoinsOfUserNumber, BalanceChange)
+  };
+  MinerOfUser.startMining();
+
 })

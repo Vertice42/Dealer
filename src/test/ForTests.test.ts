@@ -4,22 +4,22 @@ import { PollController } from "../services/controller/PollController";
 import { Loading } from "../services/modules/database/dbLoading";
 import { dbManager } from "../services/modules/database/dbManager";
 
-export const USERS_IDS_FOR_TESTS = ['jukes', 'lato', 'naruto', 'saske', 'bankai'];
+export const USERS_IDS_FOR_TESTS = ['jukes', 'jato', 'naruto', 'saske', 'bankai'];
 
 export const db_PRE_CREATED = 'dava';
 
 export const ID_FOR_MANAGER_POLL = 'amaterasu';
 export const db_FOR_UPDATE_BUTTONS = 'lapis';
-export const ID_FOR_DISTRIBUITION = 'perola';
+export const ID_FOR_DISTRIBUTION = 'perola';
 export const ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS = 'quark';
 export const ID_FOR_CREATE = 'jasper';
-export const ID_FOR_MINIG = 'peridote';
+export const ID_FOR_MINING = 'peridot';
 export const ID_FOR_STORE = 'corona';
 export const ID_FOR_PURCHASE_ORDER = 'bankay';
-export const ID_FOR_SETTINGS = 'whithe';
-export const ID_FOR_WALLETS = 'rahast'
+export const ID_FOR_SETTINGS = 'white';
+export const ID_FOR_WALLETS = 'rhaast'
 
-export const HOURLY_REWARD_FOR_TEST = 102;
+export const HOURLY_REWARD_FOR_TEST = 60;
 export const REWARD_FOR_TEST_ATTEMPT = new MinerSettings(HOURLY_REWARD_FOR_TEST).RewardPerMining;
 
 export async function createAndStartStreamerDatabase(StreamersID: string) {
@@ -43,5 +43,3 @@ export async function startPoll(StreamersID: string) {
     new PollButton(0, 'wait', '#FFFFFF', false),
     new PollButton(1, 'black', '#000000', false)])
 }
-
-// TODO REALOCAR CARIAVECEIS

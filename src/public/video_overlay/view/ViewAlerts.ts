@@ -1,7 +1,7 @@
 import { PollButton } from "../../../services/models/poll/PollButton";
-import { ResponsiveInput } from "../../common/model/Inputs";
-import { hexToRgb, sleep } from "../../../utils/funtions";
-import { EnableRelocatableElemente, DisableRelocatableElemente, EnableHideWhenMouseIsInactive } from "../../common/model/viewerFeatures";
+import { ResponsiveInput } from "../../common/view/Inputs";
+import { hexToRgb, sleep } from "../../../utils/functions";
+import { EnableHideWhenMouseIsInactive, DivRelocatable } from "../../common/view/viewerFeatures";
 
 const GRADIENT_DARKENING_RATE = 1.5;
 
@@ -84,6 +84,7 @@ export class ViewPollButton {
 }
 export default class ViewAlerts {    
     TwitchUserName: string;
+    AlertsRelocatable: DivRelocatable;
 
     public getBetValue: () => number;
     public onBeatIDSelected = () => { };
@@ -110,9 +111,7 @@ export default class ViewAlerts {
             let button = new ViewPollButton(pollButton);
             buttons.push(button);
             button.onSelected = () => {                
-                localStorage['sbi'+this.TwitchUserName] = pollButton.ID;
-                console.log('selected',localStorage['sbi'+this.TwitchUserName]);
-                
+                localStorage['sbi'+this.TwitchUserName] = pollButton.ID;                
                 this.onBeatIDSelected();
                 buttons.forEach(Button => {
                     Button.Unelect();
@@ -170,7 +169,7 @@ export default class ViewAlerts {
             this.ShowAllert(this.PollAlert);
         });
     }
-    setInStopedMode() {
+    setInStopeMode() {
         this.HideAllAlerts().then(() => {
             this.ShowAllert(this.StopAlert);
         });
@@ -193,10 +192,11 @@ export default class ViewAlerts {
         let display = document.getElementById('display');
         let X = display.clientWidth;
         let Y = display.clientHeight;
-        EnableRelocatableElemente(this.AlertsDiv, X / 2.5, Y / 1.9);
-        this.BetAmountInput.HTMLInput.onmouseenter = () => DisableRelocatableElemente(this.AlertsDiv);
-        this.BetAmountInput.HTMLInput.onmouseleave = () => EnableRelocatableElemente(this.AlertsDiv, undefined, undefined);
 
+        this.AlertsRelocatable = new DivRelocatable(this.AlertsDiv, X / 2.5, Y / 1.9);
+
+        this.BetAmountInput.HTML.onmouseenter = () => this.AlertsRelocatable.Disable();
+        this.BetAmountInput.HTML.onmouseleave = () => this.AlertsRelocatable.Disable();
 
         EnableHideWhenMouseIsInactive(document.body, this.PollAlert);
         EnableHideWhenMouseIsInactive(document.body, this.PollDiv);
@@ -206,6 +206,6 @@ export default class ViewAlerts {
 
 
         this.ParticipatePollButton.onclick = () => this.onclickOfParticipatePollButton();
-        this.getBetValue = () => { return Number(this.BetAmountInput.HTMLInput.value); };
+        this.getBetValue = () => { return Number(this.BetAmountInput.HTML.value); };
     }
 }

@@ -1,34 +1,34 @@
 import { Sequelize } from "sequelize";
 
-import DatabaseConfig from "../../configs/DatabseConfig";
 import { resolve, reject } from "bluebird";
 import { AccountData } from "../../models/dealer/AccountData";
+import dbConfigs from "./dbConfigs";
 
 export const NOT_IN_STRING = -1;
 
 export const POLL_WAXED = "_waxed";
 export const POLL_STARTED = "_started";
-export const POLL_STOPED = "_stoped";
+export const POLL_STOPPED = "_stopped";
 
 const STREAMER_DATABASE_NAME = 'streamer_';
 
 const Mysql = new Sequelize(
     'mysql',
-    DatabaseConfig.User,
-    DatabaseConfig.Password,
-    DatabaseConfig.SequelizeOptions);
+    dbConfigs.User,
+    dbConfigs.Password,
+    dbConfigs.SequelizeOptions);
 
 var AccountDataArray: AccountData[] = [];
 /**
- * Contains methods for managing a stremer's database
+ * Contains methods for managing a streamer database
  */
 export class dbManager {
     static getStreamerDataBase(StreamerID: string) {
         return new Sequelize(
             STREAMER_DATABASE_NAME + StreamerID,
-            DatabaseConfig.User,
-            DatabaseConfig.Password,
-            DatabaseConfig.SequelizeOptions)
+            dbConfigs.User,
+            dbConfigs.Password,
+            dbConfigs.SequelizeOptions)
     }
 
     static getAccountData(StreamerID: string): AccountData {                
@@ -67,9 +67,9 @@ export class dbManager {
     static async getDataBase(DataBaseName: string) {
         return new Sequelize(
             DataBaseName
-            , DatabaseConfig.User,
-            DatabaseConfig.Password,
-            DatabaseConfig.SequelizeOptions)
+            , dbConfigs.User,
+            dbConfigs.Password,
+            dbConfigs.SequelizeOptions)
     }
 
     static async CreateIfNotExistSDataBase(DataBaseName: string) {

@@ -1,36 +1,29 @@
 import { PollStatus } from "../../../services/models/poll/PollStatus";
 import { Poll } from "../../../services/models/poll/Poll";
 import { PollButton } from "../../../services/models/poll/PollButton";
-import { GenerateColor } from "../../common/model/ViewerFeatures";
+import { GenerateColor } from "../../common/view/ViewerFeatures";
 import { Texts } from "../controller/MainController";
-import { sleep } from "../../../utils/funtions";
-
-export class PollItemViewer {
-    ID: number;
-    onChange: { (): void; (): void; (): void; };
-
-    getNameInputValue: () => string;
-    setNameInputValue: (v: string) => void;
-    getColorInputValue: () => string;
-    setColorInputValue: (v: string) => void;
-    IsWinner: () => boolean;
-    setVoteCounterOutputValue: (value: number) => void;
-
-    ShowWinnerPick: () => void;
-    HideWinnerPick: () => void;
-}
+import { sleep } from "../../../utils/functions";
 
 class NameInput {
     public HTMLElement: HTMLDivElement;
     public HTMLNameInput: HTMLInputElement;
     onChange: { (): void; (): void; };
 
+    public getValue(): string {
+        return this.HTMLNameInput.value;
+    }
+
+    public setValue(v: string) {
+        this.HTMLNameInput.value = v;
+    }
+
     constructor() {
         let name_input_div = document.createElement("div");
         name_input_div.classList.add('ItemInputDiv')
         let text_name = document.createElement("h3");
         Texts.onLocaleChange = () => {
-            text_name.innerText = Texts.get("Name") + " |";
+            text_name.innerText = Texts.getText("Name") + " |";
         }
         name_input_div.appendChild(text_name);
         // name to indicate input function
@@ -40,13 +33,6 @@ class NameInput {
         this.HTMLNameInput.onchange = () => { this.onChange(); }
         name_input_div.appendChild(this.HTMLNameInput);
         this.HTMLElement = name_input_div;
-    }
-    public getValue(): string {
-        return this.HTMLNameInput.value;
-    }
-
-    public setValue(v: string) {
-        this.HTMLNameInput.value = v;
     }
 }
 
@@ -60,7 +46,7 @@ class ColorInput {
         color_input_div.classList.add('ItemInputDiv')
         let text_color = document.createElement("h3");
         Texts.onLocaleChange = () => {
-            text_color.innerText = Texts.get("Color") + " |";
+            text_color.innerText = Texts.getText("Color") + " |";
         }
         color_input_div.appendChild(text_color);
         // name to indicate input function
@@ -88,7 +74,7 @@ class VoteCounterOutput {
         vote_output_div.classList.add('ItemInputDiv');
         let text_Vote = document.createElement("h3");
         Texts.onLocaleChange = () => {
-            text_Vote.innerText = Texts.get("Betting") + " |";
+            text_Vote.innerText = Texts.getText("Betting") + " |";
         }
         vote_output_div.appendChild(text_Vote);
         //name to indicate output function
@@ -111,11 +97,11 @@ class VoteCounterOutput {
 
 class DeleteButton {
     HTMLElement: HTMLButtonElement;
-    constructor(ViewPoll: ViewPollManeger, PollItemDesktopViewer: PollItemDesktopViewer) {
+    constructor(ViewPoll: ViewPollManager, PollItemViewer: PollItemViewer) {
         let delete_button = document.createElement("button");
         delete_button.classList.add("DeletePollItemButton");
         delete_button.onclick = function () {
-            ViewPoll.removeItem(PollItemDesktopViewer);
+            ViewPoll.removeItem(PollItemViewer);
         };
         //button to delete this item
         this.HTMLElement = delete_button;
@@ -186,18 +172,34 @@ class PickWinnerButton {
     }
 }
 
-export class PollItemDesktopViewer extends PollItemViewer {
-    private ViewPoll: ViewPollManeger;
+/**
+ * It is a viewer for the streamer to be able to create an item to be bet by users
+ */
+export class PollItemViewer {
+    ID: number;
+    ViewPoll: ViewPollManager;
 
-    public HTMLElement: HTMLDivElement;
-
-    getVoteCounterOutputValue: () => number;
-    onWinnersButtonsChange: () => {};
+    HTML: HTMLDivElement;
     NameInput: NameInput;
     ColorInput: ColorInput;
     VoteCounterOutput: VoteCounterOutput;
     DeleteButton: DeleteButton;
     PickWinnerButton: PickWinnerButton;
+
+    onChange: { (): void; (): void; (): void; };
+
+    getNameInputValue: () => string;
+    setNameInputValue: (v: string) => void;
+    getColorInputValue: () => string;
+    setColorInputValue: (v: string) => void;
+    IsWinner: () => boolean;
+    setVoteCounterOutputValue: (value: number) => void;
+
+    ShowWinnerPick: () => void;
+    HideWinnerPick: () => void;
+
+    getVoteCounterOutputValue: () => number;
+    onWinnersButtonsChange: () => {};
 
     Enable(background_div: HTMLDivElement) {
         background_div.classList.add('PollItemInChoose');
@@ -215,13 +217,12 @@ export class PollItemDesktopViewer extends PollItemViewer {
 
     setWinner: () => void;
 
-    constructor(ID: number, ViewPoll: ViewPollManeger) {
-        super();
+    constructor(ID: number, ViewPoll: ViewPollManager) {
         this.ID = ID;
         this.ViewPoll = ViewPoll;
 
-        let view_vote_item_div = document.createElement("div");
-        view_vote_item_div.classList.add("PollItem");
+        this.HTML = document.createElement("div");
+        this.HTML.classList.add("PollItem");
 
         let background_div = document.createElement("div");
         background_div.style.display = 'flex';
@@ -263,14 +264,16 @@ export class PollItemDesktopViewer extends PollItemViewer {
 
         this.IsWinner = () => this.PickWinnerButton.IsSelected();
 
-        view_vote_item_div.appendChild(background_div);
-        view_vote_item_div.appendChild(this.PickWinnerButton.HTMLElement);
-        view_vote_item_div.appendChild(background_div);
-
-        this.HTMLElement = view_vote_item_div;
+        this.HTML.appendChild(background_div);
+        this.HTML.appendChild(this.PickWinnerButton.HTMLElement);
+        this.HTML.appendChild(background_div);
     }
 }
-export default class ViewPollManeger {
+
+/**
+ * It contains the methods to show the bet status and the listeners to capture the users actions
+ */
+export default class ViewPollManager {
     private pollStatus: PollStatus;
 
     PollItemsViewers: PollItemViewer[] = [];
@@ -292,19 +295,19 @@ export default class ViewPollManeger {
         return false;
     }
 
-    DistributionDiv     = <HTMLDivElement>document.getElementById("DistributionDiv");
-    PollManagerDiv      = <HTMLDivElement>document.getElementById("PollManagerDiv");
-    PollItensDiv        = <HTMLDivElement>document.getElementById("PollItensDiv");
-    CreatePollButton    = <HTMLButtonElement>document.getElementById("CreatePollButton");
-    DeletePollButton    = <HTMLButtonElement>document.getElementById("DeletePollButton");
-    AddItemButton       = <HTMLButtonElement>document.getElementById("AddPollItemButton");
-    StartPollButton     = <HTMLButtonElement>document.getElementById("StartPollButton");
-    ApplyChangesButton  = <HTMLButtonElement>document.getElementById("ApplyChangesButton");
+    DistributionDiv = <HTMLDivElement>document.getElementById("DistributionDiv");
+    PollManagerDiv = <HTMLDivElement>document.getElementById("PollManagerDiv");
+    PollItemsDiv = <HTMLDivElement>document.getElementById("PollItemsDiv");
+    CreatePollButton = <HTMLButtonElement>document.getElementById("CreatePollButton");
+    DeletePollButton = <HTMLButtonElement>document.getElementById("DeletePollButton");
+    AddItemButton = <HTMLButtonElement>document.getElementById("AddPollItemButton");
+    StartPollButton = <HTMLButtonElement>document.getElementById("StartPollButton");
+    ApplyChangesButton = <HTMLButtonElement>document.getElementById("ApplyChangesButton");
     RevertChangesButton = <HTMLButtonElement>document.getElementById("RevertChangesButton");
-    StopPollButton      = <HTMLButtonElement>document.getElementById("StopPollButton");
-    RestartButton       = <HTMLButtonElement>document.getElementById("RestartButton");
-    DistributeButton    = <HTMLButtonElement>document.getElementById("DistributeButton");
-    CloseButton         = <HTMLButtonElement>document.getElementById("CloseButton");
+    StopPollButton = <HTMLButtonElement>document.getElementById("StopPollButton");
+    RestartButton = <HTMLButtonElement>document.getElementById("RestartButton");
+    DistributeButton = <HTMLButtonElement>document.getElementById("DistributeButton");
+    CloseButton = <HTMLButtonElement>document.getElementById("CloseButton");
 
     onStatusChange = (PollStatus: PollStatus) => { };
 
@@ -341,8 +344,8 @@ export default class ViewPollManeger {
         this.EnableButton(this.StopPollButton, this.onClickOfStopPollButton);
         this.HideButton(this.StartPollButton);
     }
-    setStopedPoll() {
-        this.ShwoWinnersPicks();
+    setStoppedPoll() {
+        this.ShowWinnersPicks();
         this.HideButton(this.StopPollButton);
 
         this.ShowButton(this.DistributeButton);
@@ -365,13 +368,13 @@ export default class ViewPollManeger {
         this.ShowDistributionDiv();
         this.ShowButton(this.CloseButton);
         this.EnableButton(this.CloseButton, this.onClickOfCloseButton);
-        this.DistributionDiv.classList.remove('DistributioFninished');
+        this.DistributionDiv.classList.remove('DistributionsFinished');
     }
-    async setDistributioFninished() {
+    async setDistributionsFinished() {
         await sleep(500);
-        this.DistributionDiv.classList.add('DistributioFninished');
+        this.DistributionDiv.classList.add('DistributionsFinished');
     }
-    Initialize() {
+    InitializeButtons() {
         this.CreatePollButton.onclick = this.onClickOfCreatePollButton;
         this.DeletePollButton.onclick = this.onClickOfWaxedPollButton;
     }
@@ -428,7 +431,7 @@ export default class ViewPollManeger {
     };
     private onClickOfStopPollButton = () => {
         this.onCommandToStopSent().then((res) => {
-            this.setStopedPoll();
+            this.setStoppedPoll();
         });
         return true;
     };
@@ -520,7 +523,7 @@ export default class ViewPollManeger {
         Button.classList.add("ButtonDisable");
         Button.onclick = null;
     }
-    private ShwoWinnersPicks() {
+    private ShowWinnersPicks() {
         this.PollItemsViewers.forEach(PollItemViewer => {
             PollItemViewer.ShowWinnerPick();
         });
@@ -530,7 +533,7 @@ export default class ViewPollManeger {
             PollItemViewer.HideWinnerPick();
         });
     }
-    
+
     getPollButtons(): PollButton[] {
         let Buttons = [];
         this.PollItemsViewers.forEach(PollItemViewer => {
@@ -539,7 +542,7 @@ export default class ViewPollManeger {
         return Buttons;
     }
     addItem(ID: number, Name: string, Color: string, IsWinner: boolean) {
-        let PollItem = new PollItemDesktopViewer(ID, this);
+        let PollItem = new PollItemViewer(ID, this);
         PollItem.setNameInputValue(Name);
         PollItem.setColorInputValue(Color);
         if (IsWinner) {
@@ -548,17 +551,17 @@ export default class ViewPollManeger {
         PollItem.onChange = this.onPollItemModified;
         PollItem.onWinnersButtonsChange = this.onWinnerButtonsModified;
         this.PollItemsViewers.push(PollItem);
-        this.PollItensDiv.appendChild(PollItem.HTMLElement);
+        this.PollItemsDiv.appendChild(PollItem.HTML);
         return PollItem;
     }
-    removeItem(PollItem: PollItemDesktopViewer) {
-        if (!this.pollStatus.PollStoped) {
+    removeItem(PollItem: PollItemViewer) {
+        if (!this.pollStatus.PollStopped) {
             this.PollItemsViewers.splice(this.PollItemsViewers.indexOf(PollItem), 1);
-            this.PollItensDiv.removeChild(PollItem.HTMLElement);
+            this.PollItemsDiv.removeChild(PollItem.HTML);
             this.onPollItemModified();
         }
     }
-    uppdateVotesOfAllItems(Poll: Poll) {
+    updateVotesOfAllItems(Poll: Poll) {
         this.PollItemsViewers.forEach(PollItem => {
             PollItem.setVoteCounterOutputValue(0);
             Poll.Bets.forEach(bet => {
@@ -574,15 +577,15 @@ export default class ViewPollManeger {
         Poll.PollButtons.forEach(PollButton => {
             this.addItem(PollButton.ID, PollButton.Name, PollButton.Color, PollButton.IsWinner);
         });
-        this.uppdateVotesOfAllItems(Poll);
+        this.updateVotesOfAllItems(Poll);
     }
     removeAllItems() {
-        this.PollItensDiv.innerHTML = '';
+        this.PollItemsDiv.innerHTML = '';
         this.PollItemsViewers = [];
     }
 
     constructor(Poll: Poll) {
-        this.Initialize();
+        this.InitializeButtons();
         if (Poll.PollStatus.PollWaxed) {
             this.setWaxedPoll();
         } else {
@@ -591,12 +594,12 @@ export default class ViewPollManeger {
                 this.setStartedPoll();
                 this.updateItems(Poll);
             }
-            if (Poll.PollStatus.PollStoped)
-                this.setStopedPoll();
+            if (Poll.PollStatus.PollStopped)
+                this.setStoppedPoll();
             if (Poll.PollStatus.InDistribution)
                 this.setInDistribution();
             if (Poll.PollStatus.DistributionCompleted)
-                this.setDistributioFninished();
+                this.setDistributionsFinished();
         }
     }
 }

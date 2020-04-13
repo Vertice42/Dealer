@@ -1,11 +1,11 @@
 export default {
     ServerAsStarted:'ServerAsStarted',
     RegisterStreamer:'RegisterStreamer',
+    UploadProgress: 'UploadProgress',
+    
     onStreamerAsRegistered:'StreamerAsRegistered',
-
-    onItensChange:'ItensChange',
+    onItemsChange:'ItemsChange',
     onAddPurchasedItem:'PurchasedItem',
     onDeletePurchasedItem:'DeletePurchasedItem',
-    onDistribuitionFinish:'DistribuitionFinish',
-    UploadProgress: 'UploadProgress'
+    onDistributionFinish:'DistributionsFinish'
 }

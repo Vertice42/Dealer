@@ -1,9 +1,10 @@
-import { sleep } from "../../../../utils/funtions";
-import PurchaseOrder from "../../../../services/models/store/PurchaseOrder";
-import StoreItem from "../../../../services/models/store/StoreItem";
-import { EnableRelocatableElemente, EnableHideWhenMouseIsInactive } from "../../../common/model/ViewerFeatures";
-import { WalletSkin } from "../../../../services/models/wallet/WalletSkin";
-import { Texts } from "../../controller/MainController";
+import { sleep } from "../../../utils/functions";
+import PurchaseOrder from "../../../services/models/store/PurchaseOrder";
+import StoreItem, { getItemsSetting } from "../../../services/models/store/StoreItem";
+import { EnableHideWhenMouseIsInactive, DivRelocatable } from "../../common/view/ViewerFeatures";
+import { WalletSkin } from "../../../services/models/wallet/WalletSkin";
+import { Texts } from "../controller/MainController";
+import ItemSetting from "../../../services/models/store/item_settings/ItemSettings";
 
 class ViewStoreItemDisplay {
     HTML: HTMLDivElement
@@ -14,7 +15,7 @@ class ViewStoreItemDisplay {
 
     private createTypeDisplay() {
         this.HTML_TypeDisplay = document.createElement('img');
-        this.HTML_TypeDisplay.src = 'video_overlay/images/sond-document.png';
+        this.HTML_TypeDisplay.src = 'video_overlay/images/sound-document.png';
         return this.HTML_TypeDisplay;
     }
 
@@ -35,7 +36,7 @@ class ViewStoreItemDisplay {
     private createBuyButton() {
         this.HTML_BuyButton = document.createElement('button');
         Texts.onLocaleChange = () => {
-            this.HTML_BuyButton.innerText = Texts.get('Buy');
+            this.HTML_BuyButton.innerText = Texts.getText('Buy');
         }
         return this.HTML_BuyButton;
     }
@@ -70,7 +71,7 @@ class ViewWalletSkin {
 
     WalletSkin: WalletSkin;
 
-    public get IsLock(): boolean {
+    get IsLock(): boolean {
         return this.HTML.classList.contains('WalletSkinLock');
     }
 
@@ -111,50 +112,50 @@ class ViewWalletSkin {
     }
 }
 
+/**
+ * Contains the html elements and the necessary methods for the user's iteration with
+ * the streamer store and with the wallet Skins, the wallet also serves as a display 
+ * of the viewer's currency balance
+ */
 export default class ViewWalletDisplay {
     public ViewWalletSkins: ViewWalletSkin[];
-
-    private WalletDiv = <HTMLDivElement>document.getElementById("WalletDiv");
-    public Wallet_Mask_0 = <HTMLDivElement>document.getElementById("Wallet_Mask_0");
-    public Wallet_Mask_1 = <HTMLDivElement>document.getElementById("Wallet_Mask_1");
-
-    private NavStoreButtom = <HTMLButtonElement>document.getElementById("NavStoreButtom");
-    private NavSkinsButtom = <HTMLButtonElement>document.getElementById("NavSkinsButtom");
-
-    private InsideOfWalletDiv = <HTMLDivElement>document.getElementById("InsideOfWalletDiv");
-
-    private StreamerStorePageDiv = <HTMLDivElement>document.getElementById("StreamerStorePageDiv");
-    private ItemsList = <HTMLDivElement>document.getElementById("ItemsList");
-
-    private CoinsDiv = <HTMLDivElement>document.getElementById("CoinsDiv");
-    public CoinsOfUserView = <HTMLElement>document.getElementById("CoinsOfUserView");
+    public WalletRelocatable: DivRelocatable;
     public CoinImgURL: string;
 
-    private SkinsPageDiv = <HTMLDivElement>document.getElementById("SkinsPageDiv");
-    private SkinsListDiv = <HTMLDivElement>document.getElementById("SkinsListDiv");
+    private HTML = <HTMLDivElement>document.getElementById("WalletDiv");
 
-    onNavStoreButtomActive = () => { };
-    onNavSkinsButtomActive = () => { };
+    public HTML_Wallet_Mask_0 = <HTMLDivElement>document.getElementById("Wallet_Mask_0");
+    public HTML_Wallet_Mask_1 = <HTMLDivElement>document.getElementById("Wallet_Mask_1");
 
-    onWalletSkinSelected = (ViewWalletSkin: ViewWalletSkin) => { };
+    private HTML_NavStoreButton = <HTMLButtonElement>document.getElementById("NavStoreButton");
+    private HTML_NavSkinsButton = <HTMLButtonElement>document.getElementById("NavSkinsButton");
 
-    onBuyItemButtonActive = (StoreItem: StoreItem) => { };
+    private HTML_InsideOfWalletDiv = <HTMLDivElement>document.getElementById("InsideOfWalletDiv");
 
-    UnSelectedAllWallets() {
-        this.ViewWalletSkins.forEach(viewWalletSkins => {
-            viewWalletSkins.setUnSelected();
-        });
-    }
+    private HTML_StreamerStorePageDiv = <HTMLDivElement>document.getElementById("StreamerStorePageDiv");
+    private HTML_ItemsList = <HTMLDivElement>document.getElementById("ItemsList");
 
-    setNavSelected(navButton: HTMLButtonElement) {
-        this.NavStoreButtom.classList.remove('NavButtonEnable');
-        this.NavSkinsButtom.classList.remove('NavButtonEnable');
+    private HTML_CoinsDiv = <HTMLDivElement>document.getElementById("CoinsDiv");
+    public HTML_CoinsOfUserView = <HTMLElement>document.getElementById("CoinsOfUserView");
+
+    private HTML_SkinsPageDiv = <HTMLDivElement>document.getElementById("SkinsPageDiv");
+    private HTML_SkinsListDiv = <HTMLDivElement>document.getElementById("SkinsListDiv");
+
+    public onNavStoreButtonActive = () => { };
+    public onNavSkinsButtonActive = () => { };
+
+    public onWalletSkinSelected = (ViewWalletSkin: ViewWalletSkin) => { };
+    public onBuyItemButtonActive = (StoreItem: StoreItem) => { };
+
+    private setNavSelected(navButton: HTMLButtonElement) {
+        this.HTML_NavStoreButton.classList.remove('NavButtonEnable');
+        this.HTML_NavSkinsButton.classList.remove('NavButtonEnable');
 
         navButton.classList.add('NavButtonEnable');
     }
 
-    setWalletSkins(WalletSkins: WalletSkin[], BitsDonatedByViewer: number, getWalletSkinsURl: (WalletSkinsName: string) => string) {
-        this.SkinsListDiv.innerHTML = '';
+    public setWalletSkins(WalletSkins: WalletSkin[], BitsDonatedByViewer: number, getWalletSkinsURl: (WalletSkinsName: string) => string) {
+        this.HTML_SkinsListDiv.innerHTML = '';
         this.ViewWalletSkins = [];
 
         WalletSkins.forEach(WalletSkin => {
@@ -168,32 +169,38 @@ export default class ViewWalletDisplay {
                 this.onWalletSkinSelected(viewWalletSkin);
             }
 
-            this.SkinsListDiv.appendChild(viewWalletSkin.HTML);
+            this.HTML_SkinsListDiv.appendChild(viewWalletSkin.HTML);
         });
     }
 
-    async DepositAnimation(Coin: HTMLDivElement, CoinNumber: number, onStart: () => void, onEnd: () => void) {
+    public DeselectAllWallets() {
+        this.ViewWalletSkins.forEach(viewWalletSkins => {
+            viewWalletSkins.setUnSelected();
+        });
+    }
+
+    private async DepositAnimation(Coin: HTMLDivElement, CoinNumber: number, onStart: () => void, onEnd: () => void) {
         Coin.classList.add('Coin');
         if (this.CoinImgURL) Coin.style.backgroundImage = 'url(' + this.CoinImgURL + ')';
 
         Coin.style.left = `${((Math.random() >= 0.5) ? -36 : 70)}%`;
         Coin.style.top = '-50%';
 
-        this.CoinsDiv.appendChild(Coin);
+        this.HTML_CoinsDiv.appendChild(Coin);
 
-        let ontransitionstart = () => {
-            Coin.removeEventListener('transitionstart', ontransitionstart);
+        let onTransitionStart = () => {
+            Coin.removeEventListener('transitionstart', onTransitionStart);
             if (onStart) onStart();
 
         }
-        Coin.addEventListener('transitionstart', ontransitionstart);
+        Coin.addEventListener('transitionstart', onTransitionStart);
 
-        let ontransitionend = () => {
-            Coin.removeEventListener('transitionend', ontransitionend);
+        let OnTransitionEnd = () => {
+            Coin.removeEventListener('transitionend', OnTransitionEnd);
             if (onEnd) onEnd();
 
         };
-        Coin.addEventListener('transitionend', ontransitionend);
+        Coin.addEventListener('transitionend', OnTransitionEnd);
 
         await sleep(500 + CoinNumber * 250);
 
@@ -205,7 +212,7 @@ export default class ViewWalletDisplay {
         Coin.style.top = '30%';
     }
 
-    async WithdrawalAnimation(Coin: HTMLDivElement, CoinNumber: number, onStart: () => void, onEnd: () => void) {
+    private async WithdrawalAnimation(Coin: HTMLDivElement, CoinNumber: number, onStart: () => void, onEnd: () => void) {
         Coin.classList.add('Coin');
         if (this.CoinImgURL) Coin.style.backgroundImage = 'url(' + this.CoinImgURL + ')';
 
@@ -213,21 +220,21 @@ export default class ViewWalletDisplay {
         Coin.style.top = '15%';
         Coin.style.opacity = '1';
 
-        this.CoinsDiv.appendChild(Coin);
+        this.HTML_CoinsDiv.appendChild(Coin);
 
-        let ontransitionstart = () => {
-            Coin.removeEventListener('transitionstart', ontransitionstart);
+        let OnTransitionStart = () => {
+            Coin.removeEventListener('transitionstart', OnTransitionStart);
             if (onStart) onStart();
 
         }
-        Coin.addEventListener('transitionstart', ontransitionstart);
+        Coin.addEventListener('transitionstart', OnTransitionStart);
 
-        let ontransitionend = () => {
-            Coin.removeEventListener('transitionend', ontransitionend);
+        let OnTransitionEnd = () => {
+            Coin.removeEventListener('transitionend', OnTransitionEnd);
             if (onEnd) onEnd();
 
         };
-        Coin.addEventListener('transitionend', ontransitionend);
+        Coin.addEventListener('transitionend', OnTransitionEnd);
 
         await sleep(500 + CoinNumber * 500);
 
@@ -240,8 +247,8 @@ export default class ViewWalletDisplay {
         Coin.style.opacity = '0';
     }
 
-    StartCoinsAnimation(reverse: boolean, CoinsNumber: number) {
-        this.CoinsDiv.innerHTML = null;
+    private StartCoinsAnimation(reverse: boolean, CoinsNumber: number) {
+        this.HTML_CoinsDiv.innerHTML = null;
 
         let addX = 0.1 / CoinsNumber;
         let addY = 0.2 / CoinsNumber;
@@ -251,14 +258,14 @@ export default class ViewWalletDisplay {
                 this.WithdrawalAnimation(document.createElement('div'), i,
                     () => {
                         if (i === 0)
-                            this.Wallet_Mask_0.classList.add('inAction');
+                            this.HTML_Wallet_Mask_0.classList.add('inAction');
                     },
                     () => {
-                        this.Wallet_Mask_0.style.transform = 'scale(' + (1 + addX * i) + ',' + (1 + addY * i) + ')';
+                        this.HTML_Wallet_Mask_0.style.transform = 'scale(' + (1 + addX * i) + ',' + (1 + addY * i) + ')';
                         setTimeout(() => {
                             if (i === CoinsNumber - 1)
-                                this.Wallet_Mask_0.classList.remove('inAction');
-                            this.Wallet_Mask_0.style.transform = 'scale(1)';
+                                this.HTML_Wallet_Mask_0.classList.remove('inAction');
+                            this.HTML_Wallet_Mask_0.style.transform = 'scale(1)';
                         }, 100);
                     })
             }
@@ -266,24 +273,24 @@ export default class ViewWalletDisplay {
             for (let i = 0; i < CoinsNumber; i++) {
                 this.DepositAnimation(document.createElement('div'), i, null,
                     () => {
-                        this.Wallet_Mask_0.style.transform = 'scale(' + (1 + addX * i) + ',' + (1 + addY * i) + ')';
+                        this.HTML_Wallet_Mask_0.style.transform = 'scale(' + (1 + addX * i) + ',' + (1 + addY * i) + ')';
                         setTimeout(() => {
-                            this.Wallet_Mask_0.style.transform = 'scale(1)';
+                            this.HTML_Wallet_Mask_0.style.transform = 'scale(1)';
                         }, 100);
                     })
             }
         }
     }
 
-    startDepositAnimation(Deposit: number) {
+    public startDepositAnimation(Deposit: number) {
         this.StartCoinsAnimation(false, Deposit);
     };
 
-    startWithdrawalAnimation(Withdrawal: number) {
+    public startWithdrawalAnimation(Withdrawal: number) {
         this.StartCoinsAnimation(true, Withdrawal);
     }
 
-    MakeSureItemIsAvailable(StoreItemID: number, PurchaseOrders: PurchaseOrder[]) {
+    private MakeSureItemIsAvailable(StoreItemID: number, PurchaseOrders: PurchaseOrder[]) {
         for (const key in PurchaseOrders) {
             if (PurchaseOrders[key].StoreItemID === StoreItemID)
                 return true;
@@ -291,76 +298,73 @@ export default class ViewWalletDisplay {
         return false;
     }
 
-    updateStoreItems(StoreItems: StoreItem[], PurchaseOrders: PurchaseOrder[]) {
-        this.ItemsList.innerHTML = '';
+    public updateStoreItems(StoreItems: StoreItem[], PurchaseOrders: PurchaseOrder[]) {
+        this.HTML_ItemsList.innerHTML = '';
         StoreItems.forEach(StoreItem => {
             if (StoreItem.FileName && StoreItem.Description && StoreItem.Price) {
-                let viewStoreItem = new ViewStoreItemDisplay(StoreItem.Description, StoreItem.Price);
+                let viewStoreItem = new ViewStoreItemDisplay(StoreItem.Description, StoreItem.Price);                
 
-                let SingleReproductionEnable = (StoreItem.ItemsSettings.findIndex((Setting) => {
-                    return Setting.DonorFeatureName === 'SingleReproduction' && Setting.Enable;
-                }) !== -1);
-
+                let SingleReproduction: ItemSetting = getItemsSetting('SingleReproduction',StoreItem.ItemsSettings);
                 let ThereAlreadyAnItemInList = false;
-
-                if (PurchaseOrders && SingleReproductionEnable) {
+                if (PurchaseOrders && SingleReproduction.Enable) {
                     ThereAlreadyAnItemInList = this.MakeSureItemIsAvailable(StoreItem.id, PurchaseOrders)
                 }
 
-                if (SingleReproductionEnable && ThereAlreadyAnItemInList) {
+                if (SingleReproduction.Enable && ThereAlreadyAnItemInList) {
                     viewStoreItem.setUnavailable();
                 }
                 else {
                     viewStoreItem.setAvailable();
-                    viewStoreItem.HTML_BuyButton.onclick = () => { console.log(new Date);
-                     this.onBuyItemButtonActive(StoreItem) };
+                    viewStoreItem.HTML_BuyButton.onclick = () => {
+                        this.onBuyItemButtonActive(StoreItem)
+                    };
                 }
 
-                this.ItemsList.appendChild(viewStoreItem.HTML);
+                this.HTML_ItemsList.appendChild(viewStoreItem.HTML);
             }
         });
     }
 
-    setPageHide(Page: HTMLDivElement) {
-        Page.classList.add('PageHiden');
+    private setPageHide(Page: HTMLDivElement) {
+        Page.classList.add('PageHide');
         Page.classList.remove('PageSample');
     }
 
-    setPageSample(Page: HTMLDivElement) {
+    private setPageSample(Page: HTMLDivElement) {
         Page.classList.add('PageSample');
-        Page.classList.remove('PageHiden');
+        Page.classList.remove('PageHide');
     }
 
     constructor() {
-        this.Wallet_Mask_1.addEventListener('click', () => {
+        this.HTML_Wallet_Mask_1.addEventListener('click', () => {
 
-            if (this.InsideOfWalletDiv.classList.contains('StoreHide')) {
-                this.InsideOfWalletDiv.classList.remove('StoreHide');
-                this.InsideOfWalletDiv.classList.add('StoreSample');
+            if (this.HTML_InsideOfWalletDiv.classList.contains('StoreHide')) {
+                this.HTML_InsideOfWalletDiv.classList.remove('StoreHide');
+                this.HTML_InsideOfWalletDiv.classList.add('StoreSample');
             } else {
-                this.InsideOfWalletDiv.classList.remove('StoreSample');
-                this.InsideOfWalletDiv.classList.add('StoreHide');
+                this.HTML_InsideOfWalletDiv.classList.remove('StoreSample');
+                this.HTML_InsideOfWalletDiv.classList.add('StoreHide');
             }
         })
 
-        EnableRelocatableElemente(this.WalletDiv, 0, 0);
-        
-        EnableHideWhenMouseIsInactive(document.body,this.WalletDiv,2000);
+        this.WalletRelocatable = new DivRelocatable(this.HTML, 0, 0);
 
-        this.NavStoreButtom.onclick = () => {
-            this.setNavSelected(this.NavStoreButtom);
+        EnableHideWhenMouseIsInactive(document.body, this.HTML, 2000);
 
-            this.onNavStoreButtomActive();
-            this.setPageSample(this.StreamerStorePageDiv);
-            this.setPageHide(this.SkinsPageDiv);
+        this.HTML_NavStoreButton.onclick = () => {
+            this.setNavSelected(this.HTML_NavStoreButton);
+
+            this.onNavStoreButtonActive();
+            this.setPageSample(this.HTML_StreamerStorePageDiv);
+            this.setPageHide(this.HTML_SkinsPageDiv);
         }
 
-        this.NavSkinsButtom.onclick = () => {
-            this.setNavSelected(this.NavSkinsButtom);
+        this.HTML_NavSkinsButton.onclick = () => {
+            this.setNavSelected(this.HTML_NavSkinsButton);
 
-            this.onNavSkinsButtomActive();
-            this.setPageSample(this.SkinsPageDiv);
-            this.setPageHide(this.StreamerStorePageDiv);
+            this.onNavSkinsButtonActive();
+            this.setPageSample(this.HTML_SkinsPageDiv);
+            this.setPageHide(this.HTML_StreamerStorePageDiv);
 
         }
     }

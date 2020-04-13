@@ -1,8 +1,7 @@
-import BackendConnections = require("../../BackendConnection");
-import { sleep } from "../../../utils/funtions";
+import { sleep } from "../../../utils/functions";
 import UploadFileResponse from "../../../services/models/files_manager/UploadFileResponse";
-import StoreItem, { StoreTypes } from "../../../services/models/store/StoreItem";
-import ViewStore, { ViewStoreItem } from "../view/ViewStore";
+import StoreItem, { StoreTypes, getItemsSetting } from "../../../services/models/store/StoreItem";
+import ViewStoreManager from "../view/ViewStore";
 import ItemSetting from "../../../services/models/store/item_settings/ItemSettings";
 import TwitchListeners from "../../../services/TwitchListeners";
 import { NotifyViewers, STREAMER_SOCKET } from "./MainController";
@@ -10,29 +9,34 @@ import { reject } from "bluebird";
 import FolderTypes from "../../../services/models/files_manager/FolderTypes";
 import { ViewAdvertisement } from "../view/ViewAdvertising";
 import IOListeners from "../../../services/IOListeners";
+import { PutStoreItem, DeleteStoreItem, GetStore } from "../../common/BackendConnection/Store";
+import { getUrlOfFile, UploadFile } from "../../common/BackendConnection/BlobFiles";
 
+/**
+ * Connects the streamer actions to the back end to manage your Store
+ */
 export default class StoreController {
-    StreamerID: string;
-    Token: string;
+    private StreamerID: string;
+    private Token: string;
 
-    ViewStore = new ViewStore();
-    ViewAdvertisement = new ViewAdvertisement();
-    StoreItems: StoreItem[];
+    private ViewStore = new ViewStoreManager();
+    private StoreItems: StoreItem[];
 
     private onStoreChange() {
         NotifyViewers({ ListenerName: TwitchListeners.onStoreChange, data: undefined })
     }
 
-    async setAllCommands() {
-        this.ViewStore.onAddStoreItemSondActive = async () => {
-            await BackendConnections.SendToStoreManager(this.Token,
-                this.ViewStore.addStoreItem(
-                    new StoreItem(null, StoreTypes.Audio, null, [new ItemSetting('SingleReproduction', false), new ItemSetting('AudioVolume', false, 100)], null, null)));
+    async setListeners() {
+        this.ViewStore.onAddStoreItemSoundActive = async () => {
+            await PutStoreItem(this.Token,
+                this.ViewStore.addViewStoreItem(new StoreItem(null, StoreTypes.Audio,
+                    null, [new ItemSetting('SingleReproduction', false),
+                    new ItemSetting('AudioVolume', false, 100)], null, null)));
         }
-        this.ViewStore.onStoreTypeActive = async (ViewStoreItemActived, ViewStoreType) => {
-            if (!ViewStoreItemActived.FileName) return;
+        this.ViewStore.onStoreTypeActive = async (ViewStoreItemActive, ViewStoreType) => {
+            if (!ViewStoreItemActive.FileName) return;
             this.ViewStore.ViewStoreItems.forEach(ViewStoreItem => {
-                if (ViewStoreItem !== ViewStoreItemActived) {
+                if (ViewStoreItem !== ViewStoreItemActive) {
                     ViewStoreItem.ViewStoreType.setHide();
                 }
             });
@@ -41,20 +45,20 @@ export default class StoreController {
                 this.ViewStore.HTML_DemoAudioPlayer.pause();
             } else {
                 ViewStoreType.setInDemo();
-                this.ViewStore.HTML_DemoAudioPlayer.src = BackendConnections.getUrlOfFile(
+                this.ViewStore.HTML_DemoAudioPlayer.src = getUrlOfFile(
                     this.StreamerID,
-                    FolderTypes.StoreItem + ViewStoreItemActived.id,
-                    ViewStoreItemActived.FileName);
+                    FolderTypes.StoreItem + ViewStoreItemActive.id,
+                    ViewStoreItemActive.FileName);
 
-                this.ViewStore.HTML_DemoAudioPlayer.volume = ViewStoreItemActived.ItemsSettings[ViewStoreItemActived.ItemsSettings.findIndex((ViewSettingsOfIten) => { return (ViewSettingsOfIten.DonorFeatureName === 'AudioVolume') })].value / 100;
+                this.ViewStore.HTML_DemoAudioPlayer.volume = getItemsSetting('AudioVolume',ViewStoreItemActive.ItemsSettings).value / 100;
                 this.ViewStore.HTML_DemoAudioPlayer.play();
             }
         }
         this.ViewStore.onDescriptionChange = (ViewStoreItem) => {
             ViewStoreItem.DescriptionInput.setChangedInput();
-            BackendConnections.SendToStoreManager(this.Token, <StoreItem>ViewStoreItem)
+            PutStoreItem(this.Token, <StoreItem>ViewStoreItem)
                 .then(async () => {
-                    ViewStoreItem.DescriptionInput.setInputSentSuccessfully();
+                    ViewStoreItem.DescriptionInput.setInputSuccessfully();
                     await sleep(500);
                     ViewStoreItem.DescriptionInput.setUnchangedInput();
                     this.onStoreChange();
@@ -62,21 +66,21 @@ export default class StoreController {
                 })
                 .catch((rej) => {
                     console.error(rej);
-                    ViewStoreItem.DescriptionInput.setInputSentError();
+                    ViewStoreItem.DescriptionInput.setInputError();
                 })
         }
         this.ViewStore.onPriceChange = (ViewStoreItem) => {
             ViewStoreItem.PriceInput.setChangedInput();
-            BackendConnections.SendToStoreManager(this.Token, <StoreItem>ViewStoreItem)
+            PutStoreItem(this.Token, <StoreItem>ViewStoreItem)
                 .then(async () => {
-                    ViewStoreItem.PriceInput.setInputSentSuccessfully();
+                    ViewStoreItem.PriceInput.setInputSuccessfully();
                     await sleep(500);
                     ViewStoreItem.PriceInput.setUnchangedInput();
                     this.onStoreChange();
                 })
                 .catch((rej) => {
                     console.error(rej);
-                    ViewStoreItem.PriceInput.setInputSentError();
+                    ViewStoreItem.PriceInput.setInputError();
                 })
         }
         this.ViewStore.onSettingOfItemChange = (ViewStoreItem, ItemSettings) => {
@@ -85,9 +89,9 @@ export default class StoreController {
                 this.ViewStore.HTML_DemoAudioPlayer.currentTime = 0;
             }
 
-            BackendConnections.SendToStoreManager(this.Token, ViewStoreItem)
+            PutStoreItem(this.Token, ViewStoreItem)
                 .then(() => this.onStoreChange())
-                .catch((rej) => {
+                .catch((rej) => {                    
                     if (ItemSettings.DonorFeatureName === 'SingleReproduction') {
                         ViewStoreItem.SingleReproductionSetting.HTML_Input.checked = false;
                         ItemSettings.Enable = false;
@@ -102,7 +106,7 @@ export default class StoreController {
                 switch (ViewStoreItem.Type) {
                     case StoreTypes.Audio:
                         if (!(file.type === 'audio/mp3' || file.type === 'audio/wav'))
-                            return reject({ typeEror: file.type })
+                            return reject({ typeError: file.type })
 
                     default:
                         break;
@@ -110,16 +114,16 @@ export default class StoreController {
                 ViewStoreItem.ResponsiveInputFile.setInUpload();
 
                 let ioListener = (UploadPercentage: number) => {
-                    ViewStoreItem.ResponsiveInputFile.setUploadPorcentage(UploadPercentage);
+                    ViewStoreItem.ResponsiveInputFile.setUploadPercentage(UploadPercentage);
                 }
 
                 STREAMER_SOCKET.addEventListener(IOListeners.UploadProgress, ioListener);
 
-                BackendConnections.UploadFile(this.Token, FolderTypes.StoreItem + ViewStoreItem.id, file.name, file
+                UploadFile(this.Token, FolderTypes.StoreItem + ViewStoreItem.id, file.name, file
                 ).then(async (UploadFileResponse: UploadFileResponse) => {
                     let StoreItem = <StoreItem>ViewStoreItem;
                     StoreItem.FileName = UploadFileResponse.FileName;
-                    await BackendConnections.SendToStoreManager(this.Token, StoreItem);
+                    await PutStoreItem(this.Token, StoreItem);
 
                     ViewStoreItem.ResponsiveInputFile.setUpgradeable();
                     STREAMER_SOCKET.removeEventListener(IOListeners.UploadProgress, ioListener);
@@ -131,7 +135,7 @@ export default class StoreController {
         }
         this.ViewStore.onButtonDeleteActive = async (StoreItem) => {
 
-            BackendConnections.DeteleStoreItem(this.Token, StoreItem)
+            DeleteStoreItem(this.Token, StoreItem)
                 .then(() => {
                     this.onStoreChange();
                     this.ViewStore.removeStoreItem(StoreItem)
@@ -142,10 +146,14 @@ export default class StoreController {
         }
     }
 
-    async loadingStoreItems() {
-        this.StoreItems = await BackendConnections.GetStore(this.StreamerID);
-        this.StoreItems.forEach(StoreItem => this.ViewStore.addStoreItem(StoreItem));
-        this.setAllCommands();
+    private async loadingStoreItems() {
+        
+        this.StoreItems = (await GetStore(this.StreamerID));
+
+        this.StoreItems.forEach((StoreItem: StoreItem) => {
+            this.ViewStore.addViewStoreItem(StoreItem)
+        });
+        this.setListeners();
     }
     constructor(Token: string, StreamerID: string) {
         this.Token = Token;

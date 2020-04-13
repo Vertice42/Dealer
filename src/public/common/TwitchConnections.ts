@@ -14,8 +14,7 @@ export async function getUsername(TwitchUserID: string, Client_ID: string) {
     }).then((res) => {
         return res.json();
     }).catch(async (rej) => {
-        console.log(await rej.json());
-        
+        console.error(await rej.json());
         return rej.json();
     });
 }
@@ -34,7 +33,7 @@ export async function getID(name: string, Client_ID: string) {
     }).then((res) => {
         return res.json();
     }).catch(async (rej) => {
-        console.log(await rej.json());
+        console.error(await rej.json());
         
         return rej.json();
     });

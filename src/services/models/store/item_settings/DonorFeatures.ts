@@ -1,13 +1,11 @@
-export default class DonorFeatures {
-    name: string;
+export default class DonorFeature {
     description: string;
-    itIsfree: Boolean;
+    ItIsFree: Boolean;
     price: number;
 
-    constructor(Name: string, Description: string, ItIsfree: boolean, Price: number) {
-        this.name = Name;
+    constructor(Description: string, ItIsFree: boolean, Price: number) {
         this.description = Description;
-        this.itIsfree = ItIsfree;
+        this.ItIsFree = ItIsFree;
         this.price = Price;
     }
 }

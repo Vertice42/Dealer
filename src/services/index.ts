@@ -2,18 +2,17 @@ import express = require("express");
 import cors = require("cors");
 import bodyParser = require("body-parser");
 import http = require('http')
-import ServerConfigs from "./configs/ServerConfigs";
 import Socket_io = require('socket.io')
 import { Loading } from "./modules/database/dbLoading";
 import IOListeners from "./IOListeners";
 import { dbManager } from "./modules/database/dbManager";
-import { addSoketOfStreamer, removeSoketOfStreamer } from "./SocketsManager";
-import path = require('path');
+import { addSocketOfStreamer, removeSocketOfStreamer } from "./SocketsManager";
+import ServerConfigs from "../configs/ServerConfigs";
 
 export function CheckRequisition(CheckList: (() => Object)[]) {
     let ErrorList = [];
-    CheckList.forEach(chekage => {
-        let fail = chekage();
+    CheckList.forEach(Check => {
+        let fail = Check();
         if (fail) ErrorList.push(fail)
     });
     return ErrorList
@@ -21,7 +20,29 @@ export function CheckRequisition(CheckList: (() => Object)[]) {
 export const APP = express();
 const SERVER = http.createServer(APP);
 
-APP.use(cors());
+var AcceptedOrigin = process.env.AcceptedOrigin;
+
+if (process.env.NODE_ENV !== 'production') AcceptedOrigin = 'http://localhost';
+
+function ValidateOrigin(origin: string, i = 0) {
+    if (origin.charAt(i) === AcceptedOrigin.charAt(i)) {
+        i++;
+        return ValidateOrigin(origin, i);
+    } else {
+        return (i > AcceptedOrigin.length - 1)
+    }
+}
+
+var corsOptionsDelegate = function (req: express.Request, callback) {
+    var corsOptions:cors.CorsOptions;
+
+    if (req.method !== 'GET') {
+        corsOptions = { origin: ValidateOrigin(req.header('Origin')) }
+    }
+    callback(null, corsOptions) // callback expects two parameters: error and options
+}
+
+APP.use(cors(corsOptionsDelegate));
 APP.use(bodyParser.json());
 
 require('./routes/poll_routes');
@@ -39,13 +60,13 @@ IO.on('connection', (socket) => {
         if (!dbManager.getAccountData(StreamerID))
             dbManager.setAccountData(await Loading.StreamerAccountData(StreamerID));
 
-        console.log('conectd', StreamerID);
+        console.log('connected', StreamerID);
         socket.emit(IOListeners.onStreamerAsRegistered);
-        addSoketOfStreamer(StreamerID, socket);
+        addSocketOfStreamer(StreamerID, socket);
 
         socket.on('disconnect', () => {
             console.log('disconnect');
-            removeSoketOfStreamer(StreamerID, socket, () => {
+            removeSocketOfStreamer(StreamerID, socket, () => {
                 if (dbManager.getAccountData(StreamerID)) {
                     dbManager.removeAccountData(StreamerID);
                     console.log('empty');
@@ -56,5 +77,5 @@ IO.on('connection', (socket) => {
 
 });
 
-SERVER.on('listening', () => console.log('**** SERVER AS STARTDED ****'));
+SERVER.on('listening', () => console.log('**** SERVER AS STARTED ****'));
 SERVER.listen(ServerConfigs.Port);

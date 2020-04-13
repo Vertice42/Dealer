@@ -1,4 +1,8 @@
-import { ResponsiveInput } from "../../common/model/Inputs";
+import { ResponsiveInput } from "../../common/view/Inputs";
+
+/**
+ * Contains the necessary elements for the streamer to manage its settings
+ */
 export default class ViewSettings {
   public HourlyRewardInput: ResponsiveInput;
   public CoinNameInput: ResponsiveInput;

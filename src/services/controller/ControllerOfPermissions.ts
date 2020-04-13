@@ -1,4 +1,4 @@
-import DonorFeatures from "../models/store/item_settings/DonorFeatures";
+import DonorFeature from "../models/store/item_settings/DonorFeatures";
 import dbDealerManager from "../modules/database/dbDealerManager";
 import ItemSetting from "../models/store/item_settings/ItemSettings";
 import fs = require('fs');
@@ -10,11 +10,11 @@ export default class ControllerOfPermissions {
         let StreamerData = await new dbDealerManager(this.StreamerID).getStreamerData();
         return (StreamerData) ? (StreamerData.DonatedBeats > 0) : false;
     }
-    async FeaturesIsLocked(DonorFeatures: DonorFeatures) {
-        if (DonorFeatures.itIsfree) return false;
+    async FeaturesIsLocked(DonorFeatures: DonorFeature) {
+        if (DonorFeatures.ItIsFree) return false;
 
         let StreamerData = await new dbDealerManager(this.StreamerID).getStreamerData();
-        
+
         return (StreamerData) ? (StreamerData.DonatedBeats >= DonorFeatures.price) : true;
     }
 
@@ -23,25 +23,25 @@ export default class ControllerOfPermissions {
             fs.readFile(path.resolve('./configs/DonorFeatures.json'), "utf8", async (ERROR, data) => {
                 if (ERROR) return reject(ERROR);
 
-                let DonorFeatures: DonorFeatures[] = JSON.parse(data);
+                let DonorFeatures: DonorFeature[] = JSON.parse(data);
+                let donorFeatureKeys = Object.keys(DonorFeatures);
+
                 let AllSettingsISLocked = false;
 
-                for (const ItemsSetting of ItemsSettings) {
-
-                    let donorFeature = DonorFeatures[DonorFeatures.findIndex(DonorFeature => {
-                        if (DonorFeature.name === ItemsSetting.DonorFeatureName) return true;
-                    })]
-
-                    if (await this.FeaturesIsLocked(donorFeature) && ItemsSetting.Enable) {
-                        AllSettingsISLocked = true;
-                        return resolve(AllSettingsISLocked);
+                for (const itemsSetting of ItemsSettings) {
+                    for (let i = 0; i < donorFeatureKeys.length; i++) {
+                        if (await this.FeaturesIsLocked(DonorFeatures[donorFeatureKeys[i]])
+                            && itemsSetting.Enable) {
+                            AllSettingsISLocked = true;
+                            return resolve(AllSettingsISLocked);
+                        }
                     }
+                    return resolve(AllSettingsISLocked);
                 }
 
-                return resolve(AllSettingsISLocked);
-            })
         })
-    }
+    })
+}
 
     constructor(StreamerId: string) {
         this.StreamerID = StreamerId;

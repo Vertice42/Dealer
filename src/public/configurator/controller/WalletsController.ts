@@ -1,20 +1,25 @@
-import BackendConnections = require("../../BackendConnection");
-import { sleep } from "../../../utils/funtions";
+import { sleep } from "../../../utils/functions";
 import { Wallet } from "../../../services/models/poll/dbWallet";
 import ViewWallets from "../view/ViewWallets";
+import { GetWallets, ManagerWallets } from "../../common/BackendConnection/Wallets";
+import { WalletManagerRequest } from "../../../services/models/wallet/WalletManagerRequest";
+import { Observer } from "../../../utils/Observer";
 
+/**
+ * Connects the streamer actions to the back end to manage the users wallets
+ */
 export default class WalletsController {
-    Token: string;
-    StreamerID: string;
-    ViewWallets = new ViewWallets;
-    WatchWallets: BackendConnections.Observer;
+    private Token: string;
+    private StreamerID: string;
+    private ViewWallets = new ViewWallets;
+    private WatchWallets: Observer;
 
-    async EnbleAllCommands() {
+    private async EnableAllCommands() {
         let Search = async () => {
             let TwitchUserID = this.ViewWallets.HTML_SearchInput.value;
             if (TwitchUserID !== '') {
                 await this.WatchWallets.stop();
-                this.ViewWallets.uptate(await BackendConnections.GetWallets(this.StreamerID, TwitchUserID));
+                this.ViewWallets.update(await GetWallets(this.StreamerID, TwitchUserID));
             } else {
                 this.WatchWallets.start();
             }
@@ -31,20 +36,20 @@ export default class WalletsController {
 
             ViewWallet.InputOfCoinsOfWalletOfUser.setChangedInput();
 
-            BackendConnections.SendToWalletManager(this.Token, TwitchUserID, Number(ViewWallet.InputOfCoinsOfWalletOfUser.HTMLInput.value))
+            ManagerWallets(new WalletManagerRequest(this.Token, TwitchUserID, Number(ViewWallet.InputOfCoinsOfWalletOfUser.HTML.value)))
                 .then(async () => {
-                    ViewWallet.InputOfCoinsOfWalletOfUser.setInputSentSuccessfully();
+                    ViewWallet.InputOfCoinsOfWalletOfUser.setInputSuccessfully();
                     await sleep(500)
                     ViewWallet.InputOfCoinsOfWalletOfUser.setUnchangedInput()
                 })
                 .catch((rej) => {
-                    ViewWallet.InputOfCoinsOfWalletOfUser.setInputSentError()
+                    ViewWallet.InputOfCoinsOfWalletOfUser.setInputError()
                 })
 
         }
 
-        let ObesrverUseOfInput = () => setTimeout(() => {
-            if (InputInUse) ObesrverUseOfInput();
+        let ObserverUseOfInput = () => setTimeout(() => {
+            if (InputInUse) ObserverUseOfInput();
             else this.WatchWallets.start()
             InputInUse = false;
         }, 5000);
@@ -52,15 +57,15 @@ export default class WalletsController {
         this.ViewWallets.onWalletInputInFocus = async () => {
             InputInUse = true;
             await this.WatchWallets.stop();
-            ObesrverUseOfInput();
+            ObserverUseOfInput();
         }
     }
 
-    loadingWallets() {
-        this.WatchWallets = new BackendConnections.Observer(() => BackendConnections.GetWallets(this.StreamerID), 200);
-        this.WatchWallets.OnWaitch = (Wallets: Wallet[]) => this.ViewWallets.uptate(Wallets);
+    private loadingWallets() {
+        this.WatchWallets = new Observer(() => GetWallets(this.StreamerID), 200);
+        this.WatchWallets.OnWatch = (Wallets: Wallet[]) => this.ViewWallets.update(Wallets);
 
-        this.EnbleAllCommands();
+        this.EnableAllCommands();
     }
 
     constructor(Token: string, StreamerID: string) {

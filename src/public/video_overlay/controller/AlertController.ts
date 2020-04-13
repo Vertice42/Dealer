@@ -1,14 +1,20 @@
-import BackendConnections = require("../../BackendConnection");
 import ViewAlerts from "../view/ViewAlerts";
-import { sleep, isEquivalent } from "../../../utils/funtions";
+import { sleep, isEquivalent } from "../../../utils/functions";
 import { Poll } from "../../../services/models/poll/Poll";
 import { PollStatus } from "../../../services/models/poll/PollStatus";
 import { PollButton } from "../../../services/models/poll/PollButton";
 import { addTwitchListeners } from "./MainController";
 import TwitchListeners from "../../../services/TwitchListeners";
 import { reject, resolve } from "bluebird";
+import { TwitchListener } from "../../common/model/TwitchListener";
+import { addBet, getCurrentPoll } from "../../common/BackendConnection/Poll";
+import { AddBetRequest } from "../../../services/models/poll/AddBetRequest";
 
-
+/**
+ * Checks whether a user's pasta was a winner
+ * @param PollButtons: Array with the poll buttons
+ * @param ChosenButtonID: Winner button identifier
+ */
 function IsWinner(PollButtons: PollButton[], ChosenButtonID: number) {
     let WinningButtons: PollButton[] = [];
     PollButtons.forEach(button => {
@@ -24,34 +30,40 @@ function IsWinner(PollButtons: PollButton[], ChosenButtonID: number) {
     return is_winner;
 }
 
-export default class AllertController {
-    Token: string;
-    StreamerID: string;    
-    TwitchUserName: string;
+/**
+ * Intermediate the backend with user actions also controlled alerts
+ * depending on the state of the poll
+ */
+export default class AlertController {
+    private Token: string;
+    private StreamerID: string;
+    private TwitchUserName: string;
 
-    ViewAlerts:ViewAlerts;
-    CurrentPollStatus: PollStatus;
+    private ViewAlerts: ViewAlerts;
+    private CurrentPollStatus: PollStatus;
 
-    ChangeBeat = () => {
-        if (localStorage['sbi'+this.TwitchUserName] !== null) {
+    private ChangeBeat = () => {
+        if (localStorage['sbi' + this.TwitchUserName]) {
             this.ViewAlerts.BetAmountInput.setChangedInput();
-            BackendConnections.addBet(this.Token, this.TwitchUserName, Number(localStorage['sbi'+this.TwitchUserName]), this.ViewAlerts.getBetValue())
+            addBet(new AddBetRequest(this.Token, this.TwitchUserName,
+                Number(localStorage['sbi' + this.TwitchUserName]),
+                this.ViewAlerts.getBetValue()))
                 .then(async () => {
-                    this.ViewAlerts.BetAmountInput.setInputSentSuccessfully();
+                    this.ViewAlerts.BetAmountInput.setInputSuccessfully();
                     await sleep(100);
                     this.ViewAlerts.BetAmountInput.setUnchangedInput();
                 })
                 .catch(() => {
-                    this.ViewAlerts.BetAmountInput.setInputSentError();
+                    this.ViewAlerts.BetAmountInput.setInputError();
                 })
         } else {
-            this.ViewAlerts.BetAmountInput.setInputSentError();
+            this.ViewAlerts.BetAmountInput.setInputError();
         }
     }
 
-    async EnbleAllCommands() {
+    private async setListeners() {
         this.ViewAlerts.onBeatIDSelected = this.ChangeBeat;
-        this.ViewAlerts.BetAmountInput.HTMLInput.onchange = this.ChangeBeat;
+        this.ViewAlerts.BetAmountInput.HTML.onchange = this.ChangeBeat;
     }
 
     private async updateAlerts(Poll: Poll) {
@@ -65,10 +77,8 @@ export default class AllertController {
             }
 
             if (Poll.PollStatus.DistributionCompleted) {
-                console.log(localStorage['sbi'+this.TwitchUserName], isNaN((Number(localStorage['sbi'+this.TwitchUserName]))));
-                if (isNaN(Number(localStorage['sbi'+this.TwitchUserName]))) {
-                } else {
-                    if (IsWinner(Poll.PollButtons, Number((localStorage['sbi'+this.TwitchUserName])))) {
+                if (!isNaN(Number(localStorage['sbi' + this.TwitchUserName]))) {
+                    if (IsWinner(Poll.PollButtons, Number((localStorage['sbi' + this.TwitchUserName])))) {
                         this.ViewAlerts.setInWinnerMode(Poll.LossDistributorOfPoll);
                     } else {
                         this.ViewAlerts.setInLoserMode();
@@ -76,8 +86,8 @@ export default class AllertController {
                 }
                 return
             }
-            if (Poll.PollStatus.PollStoped) {
-                this.ViewAlerts.setInStopedMode();
+            if (Poll.PollStatus.PollStopped) {
+                this.ViewAlerts.setInStopeMode();
                 return
             }
             if (Poll.PollStatus.PollStarted) {
@@ -88,32 +98,34 @@ export default class AllertController {
 
         this.CurrentPollStatus = Poll.PollStatus;
     }
+
     private TryGetCurrentPoll = async () => {
-        return BackendConnections.getCurrentPoll(this.StreamerID)
+        return getCurrentPoll(this.StreamerID)
             .then((Poll) => {
 
                 if (Poll) {
                     return resolve(Poll);
                 } else {
-                    return reject(Poll)
+                    return reject(Poll);
                 }
 
             })
             .catch(async (rej) => {
-                await sleep(500)
+                await sleep(500);
                 return this.TryGetCurrentPoll();
             })
     }
-    async Loading() {
+
+    public async Build() {
         return this.TryGetCurrentPoll()
             .then((Poll: Poll) => {
                 this.updateAlerts(Poll);
 
-                addTwitchListeners(TwitchListeners.onPollChange, async (Poll) => {
+                addTwitchListeners(new TwitchListener(TwitchListeners.onPollChange, async (Poll: Poll) => {
                     this.updateAlerts(Poll);
-                })
+                }))
 
-                this.EnbleAllCommands();
+                this.setListeners();
 
                 return this;
             })
@@ -125,6 +137,6 @@ export default class AllertController {
         this.StreamerID = StreamerID;
         this.TwitchUserName = TwitchUserName;
 
-        this.ViewAlerts = new ViewAlerts(this.TwitchUserName);        
+        this.ViewAlerts = new ViewAlerts(this.TwitchUserName);
     }
 }

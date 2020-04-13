@@ -7,12 +7,12 @@ import StoreItem from "../models/store/StoreItem";
 import { StoreManagerRoute, GetStoreRoute } from "./routes";
 import del = require("del");
 import FolderTypes from "../models/files_manager/FolderTypes";
-import { isEquivalent } from "../../utils/funtions";
+import { isEquivalent } from "../../utils/functions";
 import { AuthenticateResult } from "../models/poll/AuthenticateResult";
 import { Authenticate } from "../modules/Authentication";
 
 APP.post(StoreManagerRoute, async function (req, res: express.Response) {
-    let Request: StoreManagerRequest = req.body;    
+    let Request: StoreManagerRequest = req.body;
 
     let ErrorList = CheckRequisition([
         () => {
@@ -25,12 +25,12 @@ APP.post(StoreManagerRoute, async function (req, res: express.Response) {
             }
         },
         () => {
-            if (!Request.StoreItem ) {
+            if (!Request.StoreItem) {
                 return ({ RequestError: "StoreItem is no defined" })
             }
         },
         () => {
-            if (!Request.StoreItem.id ) {
+            if (!Request.StoreItem.id) {
                 return ({ RequestError: "StoreItem ID is no defined" })
             }
         }
@@ -45,13 +45,15 @@ APP.post(StoreManagerRoute, async function (req, res: express.Response) {
 
     if ((await new ControllerOfPermissions(StreamerID).AllSettingsISLocked(Request.StoreItem.ItemsSettings))) {
         return res.status(423).send({ mensage: 'This feature is blocked for you' })
-    }
+    }    
 
     new dbStoreManager(StreamerID).UpdateOrCreateStoreItem(Request.StoreItem)
         .then((result) => {
             res.status(200).send(result);
         })
-        .catch((reject) => {            
+        .catch((reject) => {
+            console.error(reject);
+
             if (reject.RequestError) {
                 res.status(400).send(reject);
             } else {
@@ -77,7 +79,7 @@ APP.delete(StoreManagerRoute, async function (req, res: express.Response) {
 
     new dbStoreManager(StreamerID).DeleteStoreItem(req.body.StoreItem)
         .then(async (result) => {
-            await del('./uploads/'+StreamerID+'/'+FolderTypes.StoreItem+Request.StoreItem.id+'/*');
+            await del('./uploads/' + StreamerID + '/' + FolderTypes.StoreItem + Request.StoreItem.id + '/*');
             res.status(200).send(result);
         })
         .catch((reject) => {
@@ -88,7 +90,7 @@ APP.get(GetStoreRoute, async function (req: { params: { StreamerID: string, Stor
     let dbStoreM = new dbStoreManager(req.params.StreamerID)
 
     if (req.params.StoreItemID === '-1') {
-        dbStoreM.getAllItens()
+        dbStoreM.getAllItems()
             .then((dbStoreItems) => {
                 let StoreItems: StoreItem[] = [];
 
@@ -98,18 +100,20 @@ APP.get(GetStoreRoute, async function (req: { params: { StreamerID: string, Stor
                             dbStoreItem.id,
                             dbStoreItem.Type,
                             dbStoreItem.Description,
-                            JSON.parse(dbStoreItem.ItemSettingsJson),
+                            dbStoreItem.ItemsSettings,
                             dbStoreItem.FileName,
                             dbStoreItem.Price)
                 });
                 res.status(200).send(StoreItems);
             })
             .catch((rej) => {
-                res.status(500).send(rej);                
+                console.error(rej);
+
+                res.status(500).send(rej);
             })
 
     } else {
-        dbStoreM.getIten(Number(req.params.StoreItemID))
+        dbStoreM.getItem(Number(req.params.StoreItemID))
             .then((Item) => {
                 res.status(200).send(<StoreItem>Item);
             })

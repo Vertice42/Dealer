@@ -194,11 +194,11 @@
     text-transform: uppercase;
 }
 
-.DistributionDiv.DistributioFninished h3{
+.DistributionDiv.DistributionsFinished h3{
     display: none;
 }
 
-.DistributioFninished img {
+.DistributionsFinished img {
     display: none;
 }
 

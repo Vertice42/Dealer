@@ -30,8 +30,8 @@ APP.post(CoinsSettingsManagerRoute, async function (req, res: express.Response) 
     let StreamerID = Result.channel_id;
 
     StreamerSettingsManager.UpdateOrCreateCoinsSettings(StreamerID, CoinsSettingsManagerRequest.Setting)
-        .then((reso) => { res.status(200).send(reso) })
-        .catch((reje) => { res.status(500).send(reje) });
+        .then((resolve) => { res.status(200).send(resolve) })
+        .catch((reject) => { res.status(500).send(reject) });
 });
 APP.get(GetCoinsSettingsRoute, async function (req: { params: { StreamerID: string } }, res: express.Response) {
     let ErrorList = CheckRequisition([
@@ -76,8 +76,8 @@ APP.post(MinerManagerRoute, async function (req, res: express.Response) {
     let StreamerID = Result.channel_id;
 
     StreamerSettingsManager.UpdateMinerSettings(StreamerID, MinerManagerRequest.Setting)
-        .then((reso) => { res.status(200).send(reso) })
-        .catch((reje) => { res.status(500).send(reje) });
+        .then((resolve) => { res.status(200).send(resolve) })
+        .catch((reject) => { res.status(500).send(reject) });
 });
 
 APP.get(GetMinerSettingsRoute, async function (req: { params: { StreamerID: string } }, res: express.Response) {

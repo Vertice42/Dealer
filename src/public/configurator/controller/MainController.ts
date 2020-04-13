@@ -1,61 +1,57 @@
 import io = require('socket.io-client');
-
 import PollController from "./PollController";
-import { HOST, getLocaleFile } from "../../BackendConnection";
 import SettingsController from "./SettingsController";
 import StoreController from "./StoreController";
 import PurchaseOrderController from "./PurchaseOrderController";
 import WalletsController from "./WalletsController";
 import IOListeners from "../../../services/IOListeners";
 import { ViewMain } from "../view/ViewMain";
-import { IncertTextInHardCode, LocalizedTexts } from '../../common/model/IncertText';
+import { InsertTextInHardCode, LocalizedTexts } from '../../common/view/Texts';
+import { TwitchListener } from '../../common/model/TwitchListener';
+import { getLocaleFile } from '../../common/BackendConnection/BlobFiles';
+import ServerConfigs from '../../../configs/ServerConfigs';
 
-export const STREAMER_SOCKET = io(HOST);
+export const STREAMER_SOCKET = io(ServerConfigs.URL);
 export var Texts: LocalizedTexts;
 
-var token, StreamerID;
+var Initialized = false;
 
-export function NotifyViewers(TwitchListener: { ListenerName: string, data: any }) {
+/**
+ * Notify by Twitch broadcast to all channel viewers
+ * @param TwitchListener : Listener pre-defined to be able to be identified the notification can contain a json object
+ */
+export function NotifyViewers(TwitchListener: TwitchListener) {
   window.Twitch.ext.send("broadcast", "json", JSON.stringify(TwitchListener));
 }
 
-
 window.Twitch.ext.onContext(async (context) => {
-  console.error(context);
 
-  new ViewMain();
-
-  IncertTextInHardCode(await getLocaleFile('view_config_hard_code', context.language));
+  InsertTextInHardCode(await getLocaleFile('view_config_hard_code', context.language));
 
   if (!Texts) Texts = new LocalizedTexts(await getLocaleFile('view_config', context.language));
   else Texts.update(await getLocaleFile('view_config', context.language));
 
-})
+  window.Twitch.ext.onAuthorized(async (auth) => {
+    STREAMER_SOCKET.emit(IOListeners.RegisterStreamer, auth.channelId);
 
-window.Twitch.ext.onAuthorized(async (auth) => {
-  token = auth.token;
-  StreamerID = auth.channelId.toLowerCase();
-  STREAMER_SOCKET.emit(IOListeners.RegisterStreamer, StreamerID);
+    STREAMER_SOCKET.on('connect', () => {
+      STREAMER_SOCKET.emit(IOListeners.RegisterStreamer, auth.channelId);
+    })
 
-  STREAMER_SOCKET.on('connect', () => {
-    STREAMER_SOCKET.emit(IOListeners.RegisterStreamer, StreamerID);
-  })
+    STREAMER_SOCKET.on(IOListeners.onStreamerAsRegistered, async () => {
+      if(Initialized) return; else Initialized = true;  
+      
+      new ViewMain();
 
-  let Registered = false;
-  STREAMER_SOCKET.on(IOListeners.onStreamerAsRegistered, async () => {
+      new PollController(auth.token, auth.channelId);
 
-    if (Registered) return;
-    else Registered = true;
+      new SettingsController(auth.token, auth.channelId);
 
-    new PollController(auth.token, StreamerID);
+      new StoreController(auth.token, auth.channelId);
 
-    new SettingsController(auth.token, StreamerID);
+      new PurchaseOrderController(auth.token, auth.channelId, STREAMER_SOCKET);
 
-    new StoreController(auth.token, StreamerID);
-
-    new PurchaseOrderController(auth.token, StreamerID, STREAMER_SOCKET);
-
-    new WalletsController(auth.token, StreamerID);
-  })
+      new WalletsController(auth.token, auth.channelId);
+    })
+  });
 });
-

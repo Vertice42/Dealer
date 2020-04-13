@@ -6,7 +6,7 @@ export class dbSettings extends Model {
 }
 const SettingsDefiner = {
     name:'settings',
-    atributes:{
+    attributes:{
         SettingName:{
             type: sequelize.STRING,
             primaryKey: true    

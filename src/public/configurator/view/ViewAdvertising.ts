@@ -1,12 +1,14 @@
-import { sleep } from "../../../utils/funtions";
+import { sleep } from "../../../utils/functions";
 import { ViewMain } from "./ViewMain";
-
+/**
+ * Contains methods to control advertising for the streamer
+ */
 export class ViewAdvertisement {
     private static HTML_AdvertisementDiv = <HTMLDivElement> document.getElementById('AdvertisementDiv');
-    private static HTML_CloaseAdvertisementButton = <HTMLButtonElement> document.getElementById('CloaseAdvertisementButton');
+    private static HTML_CloseAdvertisementButton = <HTMLButtonElement> document.getElementById('CloseAdvertisementButton');
     private static HTML_AdvertisementButton = <HTMLButtonElement> document.getElementById('AdvertisementButton');
 
-    static Show() {
+    public static Show() {
         ViewAdvertisement.HTML_AdvertisementDiv.style.display = '';
         ViewAdvertisement.HTML_AdvertisementDiv.classList.remove('AdvertisementHide');
         ViewAdvertisement.HTML_AdvertisementDiv.classList.add('AdvertisementSample');
@@ -14,7 +16,7 @@ export class ViewAdvertisement {
         ViewMain.Hide();
     }
 
-    static async Hide() {
+    public static async Hide() {
         ViewAdvertisement.HTML_AdvertisementDiv.classList.remove('AdvertisementSample');
         ViewAdvertisement.HTML_AdvertisementDiv.classList.add('AdvertisementHide');
         await sleep(1100);
@@ -23,10 +25,8 @@ export class ViewAdvertisement {
     }
 
     constructor(){
-        ViewAdvertisement.HTML_CloaseAdvertisementButton.onclick = () => {
+        ViewAdvertisement.HTML_CloseAdvertisementButton.onclick = () => {
             ViewAdvertisement.Hide();
         }
     }
-    
-
 }

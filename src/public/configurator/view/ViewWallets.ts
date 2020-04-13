@@ -1,6 +1,9 @@
 import { Wallet } from "../../../services/models/poll/dbWallet";
-import { ResponsiveInput } from "../../common/model/Inputs";
+import { ResponsiveInput } from "../../common/view/Inputs";
 
+/**
+ * Is a viewer so that the streamer can see the careers of users
+ */
 export class ViewWallet {
     HTML: HTMLDivElement;
     InputOfCoinsOfWalletOfUser: ResponsiveInput;
@@ -26,20 +29,21 @@ export class ViewWallet {
         let input = document.createElement('input');
         input.classList.add('CoinsOfWalletOfUser');
         input.type = 'number';
-
-        input.maxLength = 7;
         input.max = '9999999';
 
         this.InputOfCoinsOfWalletOfUser = new ResponsiveInput(input);
         this.InputOfCoinsOfWalletOfUser.setUnchangedInput();
-        this.InputOfCoinsOfWalletOfUser.HTMLInput.value = CoinsOfWalletOfUser.toString();
+        this.InputOfCoinsOfWalletOfUser.HTML.value = CoinsOfWalletOfUser.toString();
 
         this.HTML.appendChild(this.createPlacing(Placing));
         this.HTML.appendChild(this.createTwitchUserID(TwitchUserID));
-        this.HTML.appendChild(this.InputOfCoinsOfWalletOfUser.HTMLInput);
+        this.HTML.appendChild(this.InputOfCoinsOfWalletOfUser.HTML);
     }
 }
 
+/**
+ * Contains html elements and methods for the streamer to manage the wallets
+ */
 export default class ViewWallets {
     HTML_DivOfWallets = <HTMLDivElement>document.getElementById('DivOfWallets');
     HTML_SearchInput = <HTMLInputElement>document.getElementById('SearchInput');
@@ -48,18 +52,18 @@ export default class ViewWallets {
     onWalletInputInFocus = (TwitchUserID: string, viewWallet: ViewWallet) => { };
     onWalletInputFocusOut = (TwitchUserID: string, viewWallet: ViewWallet) => { };
 
-    uptate(Wallets: Wallet[]) {
+    update(Wallets: Wallet[]) {
         this.HTML_DivOfWallets.innerHTML = '';
         Wallets.forEach((Wallet, index) => {
             let viewWallet = new ViewWallet(index + 1, Wallet.TwitchUserID, (~~Wallet.Coins));
-            viewWallet.InputOfCoinsOfWalletOfUser.HTMLInput.onchange = () => {
+            viewWallet.InputOfCoinsOfWalletOfUser.HTML.onchange = () => {
                 this.onWalletInputChange(Wallet.TwitchUserID, viewWallet);
             };
-            viewWallet.InputOfCoinsOfWalletOfUser.HTMLInput.onfocus = () => {
+            viewWallet.InputOfCoinsOfWalletOfUser.HTML.onfocus = () => {
                 this.onWalletInputInFocus(Wallet.TwitchUserID, viewWallet);
             }
 
-            viewWallet.InputOfCoinsOfWalletOfUser.HTMLInput.addEventListener('focusout', () => {
+            viewWallet.InputOfCoinsOfWalletOfUser.HTML.addEventListener('focusout', () => {
                 this.onWalletInputFocusOut(Wallet.TwitchUserID, viewWallet);
             })
 

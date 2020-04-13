@@ -1,6 +1,6 @@
 import { PollStatus } from "../poll/PollStatus";
 import { dbButton as dbButton } from "../poll/dbButton";
-import { dbBet } from "../poll/dbBettings";
+import { dbBet } from "../poll/dbBetting";
 import { dbWallet } from "../poll/dbWallet";
 import { dbSettings } from "../streamer_settings/dbSettings";
 import { MinerSettings } from "../streamer_settings/MinerSettings";
@@ -13,11 +13,11 @@ export class AccountData {
 
     StreamerID: string;
     CurrentPollID: string;
-    CurrentBettingsID: string;
+    CurrentBettingID: string;
 
     dbStreamer: Sequelize;
     dbCurrentPollButtons: typeof dbButton;
-    dbCurrentBettings: typeof dbBet;
+    dbCurrentBeatings: typeof dbBet;
     dbWallets: typeof dbWallet;
     dbSettings: typeof dbSettings;
     dbStore: typeof dbStoreItem;
@@ -32,12 +32,12 @@ export class AccountData {
         this.StreamerID = StreamerID;
         this.dbStreamer = dbManager.getStreamerDataBase(StreamerID);
         this.dbCurrentPollButtons = null;
-        this.dbCurrentBettings = null;
+        this.dbCurrentBeatings = null;
         this.dbWallets = null;
         this.dbSettings = null;
         this.MinerSettings = null;
         this.CurrentPollID = null;
-        this.CurrentBettingsID = null;
+        this.CurrentBettingID = null;
         this.CurrentPollStatus = null;
         this.LastUpdate = null;
     }

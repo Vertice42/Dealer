@@ -5,8 +5,8 @@ import path = require('path');
 
 import { APP, CheckRequisition } from "..";
 import UploadFileResponse from "../models/files_manager/UploadFileResponse";
-import { UploadFileRoute, GetFileRoute as GetUploadedFile, GetWalletSkinImage, GetWalletSkins, GetLocale } from "./routes";
-import { getSoketOfStreamer } from "../SocketsManager";
+import { UploadFileRoute, GetFileRoute, GetWalletSkinImage, GetWalletSkins, GetLocale } from "./routes";
+import { getSocketOfStreamer } from "../SocketsManager";
 import IOListeners from "../IOListeners";
 import { Authenticate } from "../modules/Authentication";
 import { AuthenticateResult } from "../models/poll/AuthenticateResult";
@@ -53,7 +53,7 @@ APP.post(UploadFileRoute, async function (req, res: express.Response) {
     req.on('data', chunk => {
         file.write(chunk);
         let UploadPercentage = (file.bytesWritten / fileSize) * 100;
-        getSoketOfStreamer(StreamerID).forEach(socket => {
+        getSocketOfStreamer(StreamerID).forEach(socket => {
             socket.emit(IOListeners.UploadProgress, UploadPercentage);
         })
     })
@@ -65,7 +65,7 @@ APP.post(UploadFileRoute, async function (req, res: express.Response) {
     })
 })
 
-APP.get(GetUploadedFile, async function (req, res: express.Response) {
+APP.get(GetFileRoute, async function (req, res: express.Response) {    
     res.status(200).sendFile(path.resolve(`./uploads/${req.params.StreamerID}/${req.params.Folder}/${req.params.FileName}`))
 })
 

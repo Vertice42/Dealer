@@ -1,36 +1,31 @@
-import BackendConnections = require("../../BackendConnection");
-import StoreItem from "../../../services/models/store/StoreItem";
+import StoreItem, { getItemsSetting } from "../../../services/models/store/StoreItem";
 import PurchaseOrder from "../../../services/models/store/PurchaseOrder";
-import ViewPurchaseOrders, { ViewPurchasedItem } from "../view/ViewPurchaseOrders";
+import ViewPurchaseOrders from "../view/ViewPurchaseOrders";
 import IO_Listeners from "../../../services/IOListeners";
 import { NotifyViewers } from "./MainController";
 import TwitchListeners from "../../../services/TwitchListeners";
 import FolderTypes from "../../../services/models/files_manager/FolderTypes";
+import { PurchaseOrderItem } from "../model/PurchaseOrderItem";
+import ItemSetting from "../../../services/models/store/item_settings/ItemSettings";
+import { GetStore } from "../../common/BackendConnection/Store";
+import { getUrlOfFile } from "../../common/BackendConnection/BlobFiles";
+import { DeletePurchaseOrder, GetPurchaseOrders } from "../../common/BackendConnection/PurchaseOrders";
 
-export class PurchaseOrderItem {
-    ViewPurchasedItem: ViewPurchasedItem;
-    PurchaseOrder: PurchaseOrder;
-    StoreItem: StoreItem;
-    constructor(ViewPurchasedItem: ViewPurchasedItem, PurchaseOrder: PurchaseOrder, StoreItem: StoreItem) {
-        this.ViewPurchasedItem = ViewPurchasedItem;
-        this.PurchaseOrder = PurchaseOrder;
-        this.StoreItem = StoreItem;
-    }
-}
+/**
+ * Connects the streamer actions and controls consumption of purchase orders for items made by users
+ */
+export default class PurchaseOrderController {
+    private Token: string;
+    private StreamerID: string;
+    private Socket: SocketIOClient.Socket;
+    private ViewPurchaseOrders = new ViewPurchaseOrders;
+    private PurchaseOrdersList: PurchaseOrderItem[] = [];
+    private AudioPlayerIsUnlocked = true;
 
-export default class PurchaseOrderController {    
-    Token: string;
-    StreamerID: string;
-    socket: SocketIOClient.Socket;
-    ViewPurchaseOrders = new ViewPurchaseOrders;
-    PurchaseOrdersList: PurchaseOrderItem[] = [];
-    AudioPlayerIsUnlocked = true;
+    private ExecuteOrder(PurchaseOrderItemList: PurchaseOrderItem) {
 
-    ExecuteOrder(PurchaseOrderItemList: PurchaseOrderItem) {
-
-        this.ViewPurchaseOrders.HTML_AudioPlayer.src = BackendConnections.getUrlOfFile(this.StreamerID, FolderTypes.StoreItem + PurchaseOrderItemList.StoreItem.id, PurchaseOrderItemList.StoreItem.FileName);
-        PurchaseOrderItemList.StoreItem.ItemsSettings = JSON.parse(PurchaseOrderItemList.StoreItem.ItemSettingsJson);
-        this.ViewPurchaseOrders.HTML_AudioPlayer.volume = PurchaseOrderItemList.StoreItem.ItemsSettings[PurchaseOrderItemList.StoreItem.ItemsSettings.findIndex((ViewSettingsOfIten) => { return (ViewSettingsOfIten.DonorFeatureName === 'AudioVolume') })].value / 100;
+        this.ViewPurchaseOrders.HTML_AudioPlayer.src = getUrlOfFile(this.StreamerID, FolderTypes.StoreItem + PurchaseOrderItemList.StoreItem.id, PurchaseOrderItemList.StoreItem.FileName);
+        this.ViewPurchaseOrders.HTML_AudioPlayer.volume = getItemsSetting('AudioVolume',PurchaseOrderItemList.StoreItem.ItemsSettings).value / 100;
 
         this.ViewPurchaseOrders.HTML_AudioPlayer.onplay = () => {
             this.ViewPurchaseOrders.removeViewPurchaseOrder(PurchaseOrderItemList.ViewPurchasedItem);
@@ -77,62 +72,57 @@ export default class PurchaseOrderController {
 
         this.ViewPurchaseOrders.HTML_AudioPlayer.onended = () => this.nextOrder(false);
     }
-    nextOrder(Refund: boolean) {
-        if (PurchaseOrder) {
-            let DeletedPurchaseOrder = this.PurchaseOrdersList.shift().PurchaseOrder;
-            BackendConnections.DeletePurchaseOrder(this.Token, DeletedPurchaseOrder, Refund);
+    private nextOrder(Refund: boolean) {
+        let DeletedPurchaseOrder = this.PurchaseOrdersList.shift().PurchaseOrder;
+        DeletePurchaseOrder(this.Token, DeletedPurchaseOrder, Refund);
 
-            if (this.PurchaseOrdersList[0]) this.ExecuteOrder(this.PurchaseOrdersList[0])
-            else this.ViewPurchaseOrders.setInPurchaseOrdersEmpty();
+        if (this.PurchaseOrdersList[0]) this.ExecuteOrder(this.PurchaseOrdersList[0])
+        else this.ViewPurchaseOrders.setInPurchaseOrdersEmpty();
 
-            NotifyViewers({ ListenerName: TwitchListeners.onDeletePurchaseOrder, data: DeletedPurchaseOrder });
-
-        }
+        NotifyViewers({ ListenerName: TwitchListeners.onDeletePurchaseOrder, data: DeletedPurchaseOrder });
     }
-    async setAllCommands() {
+
+    private async setListener() {
         this.ViewPurchaseOrders.onButtonPurchaseOrderRefundActive = async (ViewPurchasedItem, PurchaseOrder) => {
-            if(!this.AudioPlayerIsUnlocked) return;
+            if (!this.AudioPlayerIsUnlocked) return;
             this.ViewPurchaseOrders.removeViewPurchaseOrder(ViewPurchasedItem);
             this.PurchaseOrdersList.splice(ViewPurchasedItem.id, 1);
-            await BackendConnections.DeletePurchaseOrder(this.Token, PurchaseOrder, true);
+            await DeletePurchaseOrder(this.Token, PurchaseOrder, true);
             NotifyViewers({ ListenerName: TwitchListeners.onDeletePurchaseOrder, data: PurchaseOrder });
         }
     }
-
-    async loadingPurchaseOrders() {
-        this.ViewPurchaseOrders.onAddPuchaseOrder = (PurchaseOrderItem: PurchaseOrderItem) => {
+    private async loadingPurchaseOrders() {
+        this.ViewPurchaseOrders.onAddPurchaseOrder = (PurchaseOrderItem: PurchaseOrderItem) => {
             this.PurchaseOrdersList.push(PurchaseOrderItem);
             if (this.PurchaseOrdersList.length === 1) this.ExecuteOrder(PurchaseOrderItem)
         }
 
-        let PurchaseOrders = await BackendConnections.GetPurchaseOrders(this.StreamerID);
+        let PurchaseOrders = await GetPurchaseOrders(this.StreamerID);
         PurchaseOrders.forEach(async (PurchaseOrder: PurchaseOrder) => {
-            let StoreItem = await BackendConnections.GetStore(this.StreamerID, PurchaseOrder.StoreItemID)
+            let StoreItem = await GetStore(this.StreamerID, PurchaseOrder.StoreItemID)
             if (StoreItem) {
                 this.ViewPurchaseOrders.addViewPurchaseOrder(PurchaseOrder, StoreItem);
             } else {
-                BackendConnections.DeletePurchaseOrder(this.Token, PurchaseOrder, true);
+                DeletePurchaseOrder(this.Token, PurchaseOrder, true);
             }
         })
 
-        this.socket.on(IO_Listeners.onAddPurchasedItem, async (PurchaseOrder: PurchaseOrder) => {
-            let StoreItem: StoreItem = await BackendConnections.GetStore(this.StreamerID, PurchaseOrder.StoreItemID)
+        this.Socket.on(IO_Listeners.onAddPurchasedItem, async (PurchaseOrder: PurchaseOrder) => {
+            let StoreItem: StoreItem = await GetStore(this.StreamerID, PurchaseOrder.StoreItemID)
             this.ViewPurchaseOrders.addViewPurchaseOrder(PurchaseOrder, StoreItem);
-            StoreItem.ItemsSettings = JSON.parse(StoreItem.ItemSettingsJson);
-            if ((StoreItem.ItemsSettings.findIndex((Setting) => {
-                return Setting.DonorFeatureName === 'SingleReproduction' && Setting.Enable;
-            }) !== -1)) {
+            let ItemsSetting: ItemSetting = getItemsSetting('SingleReproduction',StoreItem.ItemsSettings);
+            if (ItemsSetting.Enable) {
                 NotifyViewers({ ListenerName: TwitchListeners.onAddPurchasedItem, data: PurchaseOrder })
             }
         });
 
-        this.setAllCommands();
+        this.setListener();
     }
-    
-    constructor(Token:string, StreamerID: string, socket: SocketIOClient.Socket) {
+
+    constructor(Token: string, StreamerID: string, socket: SocketIOClient.Socket) {
         this.Token = Token;
         this.StreamerID = StreamerID;
-        this.socket = socket;
+        this.Socket = socket;
         this.loadingPurchaseOrders();
     }
 }

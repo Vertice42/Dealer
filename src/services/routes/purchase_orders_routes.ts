@@ -6,14 +6,14 @@ import IO_Listeners from "../IOListeners";
 import { dbPurchaseOrder } from "../models/store/dbPurchaseOrders";
 import PurchaseOrderRequest from "../models/store/PurchaseOrderRequest";
 import dbStoreManager from "../modules/database/store/dbStoreManager";
-import ItemSetting from "../models/store/item_settings/ItemSettings";
 import { PurchaseOrderRoute, GetPurchaseOrderRoute } from "./routes";
 import DeletePurchaseOrderRequest from "../models/store/DeletePurchaseOrderRequest";
 import { APP, CheckRequisition } from "..";
-import { getSoketOfStreamer } from "../SocketsManager";
-import { dbWalletManeger } from "../modules/database/wallet/dbWalletManager";
+import { getSocketOfStreamer } from "../SocketsManager";
+import { dbWalletManager as dbWalletManager } from "../modules/database/wallet/dbWalletManager";
 import { AuthenticateResult } from "../models/poll/AuthenticateResult";
 import { Authenticate } from "../modules/Authentication";
+import { getItemsSetting } from "../models/store/StoreItem";
 
 APP.post(PurchaseOrderRoute, async function (req, res: express.Response) {
     let PurchaseOrderRequest: PurchaseOrderRequest = req.body;
@@ -39,25 +39,18 @@ APP.post(PurchaseOrderRoute, async function (req, res: express.Response) {
 
     let StreamerID = Result.channel_id;
 
-    let ItemPrice = (await new dbStoreManager(StreamerID).getIten(PurchaseOrderRequest.StoreItemID)).Price;
-    let dbWalletM = new dbWalletManeger(StreamerID, PurchaseOrderRequest.TwitchUserID);
+    let ItemPrice = (await new dbStoreManager(StreamerID).getItem(PurchaseOrderRequest.StoreItemID)).Price;
+    let dbWalletM = new dbWalletManager(StreamerID, PurchaseOrderRequest.TwitchUserID);
 
     if ((await dbWalletM.getWallet()).Coins < ItemPrice) {
         return res.status(400).send({ ErrorBuying: 'Insufficient funds' })
     }
 
-    let dbStoreIten = await new dbStoreManager(StreamerID).getIten(PurchaseOrderRequest.StoreItemID);
-    let ItemSettings: ItemSetting[] = JSON.parse(dbStoreIten.ItemSettingsJson);
-
-    let SingleReproductionEnable = false;
-    ItemSettings.forEach(ItemSetting => {
-        if (ItemSetting.DonorFeatureName === 'SingleReproduction' && ItemSetting.Enable
-        )
-            SingleReproductionEnable = true;
-    });
+    let dbStoreItem = await new dbStoreManager(StreamerID).getItem(PurchaseOrderRequest.StoreItemID);
     let dbPurchaseOrderMan = new dbPurchaseOrderManager(StreamerID);
+    let SingleReproduction = getItemsSetting('SingleReproduction',dbStoreItem.ItemsSettings);
 
-    if (SingleReproductionEnable) {
+    if (SingleReproduction.Enable) {
         if (await dbPurchaseOrderMan.getPurchaseOrderByStoreItemID(PurchaseOrderRequest.StoreItemID)) {
             return res.status(423).send({ PurchaseFailed: 'There can be only one item at a time in the order fight' })
         }
@@ -67,7 +60,7 @@ APP.post(PurchaseOrderRoute, async function (req, res: express.Response) {
     )
         .then(async (dbPurchaseOrder) => {
             await dbWalletM.withdraw(ItemPrice);
-            getSoketOfStreamer(StreamerID).forEach(socket => {
+            getSocketOfStreamer(StreamerID).forEach(socket => {
                 socket.emit(IO_Listeners.onAddPurchasedItem, <PurchaseOrder>dbPurchaseOrder);
             })
             res.status(200).send({ PurchaseOrderWasSentSuccessfully: new Date })
@@ -113,7 +106,7 @@ APP.delete(PurchaseOrderRoute, async function (req, res: express.Response) {
         .removePurchaseOrder(PurchaseOrder.PurchaseOrderID)
         .then(async () => {
             if (PurchaseOrder.Refund) {
-                await new dbWalletManeger(StreamerID, PurchaseOrder.TwitchUserID)
+                await new dbWalletManager(StreamerID, PurchaseOrder.TwitchUserID)
                     .deposit(PurchaseOrder.SpentCoins)
             }
             return res.status(200).send({ PurchaseOrderRemovedSuccessfully: new Date })

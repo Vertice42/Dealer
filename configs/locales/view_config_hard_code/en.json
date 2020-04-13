@@ -30,6 +30,11 @@
         "Instruction": "Resets bets from where they keep the folders already created"
     },
     {
+        "id": "ApplyChangesButton",
+        "Text": "Apply",
+        "Instruction": "Apply all changes made to items"
+    },
+    {
         "id": "RevertChangesButton",
         "Text": "Revert",
         "Instruction": "Reverse all changes made to items"
@@ -43,11 +48,13 @@
         "id": "DistributionText",
         "Text": "Distributing earnings",
         "Instruction": ""
-    },{
+    },
+    {
         "id": "DistributionText",
         "Text": "Distribution Finished",
         "Instruction": ""
-    },{
+    },
+    {
         "id": "EmptyPurchaseOrdersText",
         "Text": "No items playing",
         "Instruction": ""
@@ -102,5 +109,4 @@
         "Text": "+",
         "Instruction": "Adds a new item to be wagered"
     }
-    
 ]

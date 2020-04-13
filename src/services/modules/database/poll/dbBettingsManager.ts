@@ -1,19 +1,19 @@
 import { dbManager } from "../dbManager";
-import { dbBet, Bet } from "../../../models/poll/dbBettings";
+import { dbBet, Bet } from "../../../models/poll/dbBetting";
 
-export class dbBettingsManager {
+export class dbBeatingsManager {
     private StreamerID: string;
     constructor(StreamerID: string) {
         this.StreamerID = StreamerID;
     }
 
     async getAllBets(){
-        return dbManager.getAccountData(this.StreamerID).dbCurrentBettings
+        return dbManager.getAccountData(this.StreamerID).dbCurrentBeatings
         .findAll();
     }
 
-    async getdbBet(TwitchUserID: string) {
-        return dbManager.getAccountData(this.StreamerID).dbCurrentBettings
+    async get_dbBet(TwitchUserID: string) {
+        return dbManager.getAccountData(this.StreamerID).dbCurrentBeatings
             .findOne({ where: { TwitchUserID: TwitchUserID } });
     }
 
@@ -22,7 +22,7 @@ export class dbBettingsManager {
     }
 
     async createBet(newBet: Bet) {
-        return dbManager.getAccountData(this.StreamerID).dbCurrentBettings
+        return dbManager.getAccountData(this.StreamerID).dbCurrentBeatings
             .create(newBet);
     }
 }

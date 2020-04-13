@@ -1,14 +1,12 @@
-[
-    {
-        "name": "SingleReproduction",
-        "description": "Only addo one item to the list at a time",
-        "itIsfree": false,
+{
+    "SingleReproduction": {
+        "description": "Only add one item to the list at a time",
+        "ItIsFree": false,
         "price": 10
     },
-    {
-        "name": "AudioVolume",
+    "AudioVolume": {
         "description": "Playback volume",
-        "itIsfree": true,
+        "ItIsFree": true,
         "price": 0
     }
-]
+}

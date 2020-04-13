@@ -1,7 +1,11 @@
-import { sleep } from "../../../utils/funtions";
+import { sleep } from "../../../utils/functions";
+import { ViewAdvertisement } from "./ViewAdvertising";
 
+/**
+ * Gives modules the functionality to be hidden, and to hide itself
+ */
 export class ViewMain {
-    private static HTML = <HTMLDivElement>document.getElementById('MainDiv');
+    static HTML = <HTMLDivElement>document.getElementById('MainDiv');
 
     HTML_PollModule = <HTMLDivElement>document.getElementById('PollModule');
     HTML_PollModuleTitle = <HTMLTitleElement>document.getElementById('PollModuleTitle');
@@ -38,10 +42,9 @@ export class ViewMain {
         let ISHide = localStorage.getItem(HTMLDivElement.id);
 
         return (HTMLDivElement.classList.contains('ModuleHide') || (ISHide) ? (ISHide === '0') : false)
-
     }
 
-    private setHideble(button: HTMLElement, Module: HTMLDivElement) {
+    private setHidden(button: HTMLElement, Module: HTMLDivElement) {
         if (this.ModuleIsHide(Module)) {
             this.setModuleHide(Module);
         }
@@ -64,9 +67,11 @@ export class ViewMain {
     }
 
     constructor() {
-        this.setHideble(this.HTML_PollModuleTitle, this.HTML_PollModule);
-        this.setHideble(this.HTML_SettingModuleTitle, this.HTML_SettingModule);
-        this.setHideble(this.HTML_StoreModuleTitle, this.HTML_StoreModule);
-        this.setHideble(this.HTML_WalletsModuleTitle, this.HTML_WalletsModule);
+        this.setHidden(this.HTML_PollModuleTitle, this.HTML_PollModule);
+        this.setHidden(this.HTML_SettingModuleTitle, this.HTML_SettingModule);
+        this.setHidden(this.HTML_StoreModuleTitle, this.HTML_StoreModule);
+        this.setHidden(this.HTML_WalletsModuleTitle, this.HTML_WalletsModule);
+
+        new ViewAdvertisement();
     }
 }

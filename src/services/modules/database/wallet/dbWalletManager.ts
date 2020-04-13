@@ -29,7 +29,7 @@ export async function getAllWallets(StreamerID: string, TwitchUserID: string) {
 /**
  * These classes include methods to manage Wallets in db
  */
-export class dbWalletManeger {
+export class dbWalletManager {
     private StreamerID: string;
     private TwitchUserID: string;
     constructor(StreamerID: string, TwitchUserID: string) {
@@ -56,9 +56,9 @@ export class dbWalletManeger {
         return wallet.update({ Coins: newValue });
     }
 
-    async updateLastMiningAttemp() {
+    async updateLastMiningAttempt() {
         let wallet = await getWallet(this.StreamerID, this.TwitchUserID);
-        return wallet.update({ LastMiningAttemp: new Date });
+        return wallet.update({ LastMiningAttempt: new Date });
     }
 }
 

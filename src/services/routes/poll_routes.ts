@@ -9,7 +9,7 @@ import { AddBetRequest } from "../models/poll/AddBetRequest";
 import { PollController } from "../controller/PollController";
 import { PollButton } from "../models/poll/PollButton";
 import { PollManagerRoute, AddBeatRoute, GetPollRoute } from "./routes";
-import { getSoketOfStreamer } from "../SocketsManager";
+import { getSocketOfStreamer } from "../SocketsManager";
 import IOListeners from "../IOListeners";
 import { Authenticate } from "../modules/Authentication";
 import { AuthenticateResult } from "../models/poll/AuthenticateResult";
@@ -44,7 +44,7 @@ APP.post(PollManagerRoute, async function (req, res: express.Response) {
     let pollController = new PollController(StreamerID);
 
     let PoolUpdateResult: { UpdatePollStatusRes: PollStatus, UpdateButtonGroupRes: UpdateButtonGroupResult };
-    let SrartDistribuitionResult: { DistributionStarted: Date; };
+    let StartDistributionResult: { DistributionStarted: Date; };
 
     let AccountData = dbManager.getAccountData(StreamerID);
     if (AccountData.CurrentPollStatus.PollWaxed) {
@@ -58,23 +58,23 @@ APP.post(PollManagerRoute, async function (req, res: express.Response) {
             if (AccountData.CurrentPollStatus.InDistribution &&
                 !AccountData.CurrentPollStatus.DistributionStarted) {
                 if (AccountData.CurrentPollStatus.PollWaxed) {
-                    pollController.stopDistribuition();
+                    pollController.stopDistributions();
                 } else if (ThereWinningButtonsInArray(PollRequest.PollButtons)) {
-                    pollController.OnDistribuitionEnd = (StatisticsOfDistribution) => {
+                    pollController.OnDistributionsEnd = (StatisticsOfDistribution) => {
 
                         AccountData.CurrentPollStatus.DistributionCompleted = true
                         AccountData.CurrentPollStatus.StatisticsOfDistribution = StatisticsOfDistribution;
 
-                        let SoketsOfStreamer = getSoketOfStreamer(StreamerID);
+                        let SocketsOfStreamer = getSocketOfStreamer(StreamerID);
 
-                        if (SoketsOfStreamer) {
-                            SoketsOfStreamer.forEach(socket => {
-                                socket.emit(IOListeners.onDistribuitionFinish);
+                        if (SocketsOfStreamer) {
+                            SocketsOfStreamer.forEach(socket => {
+                                socket.emit(IOListeners.onDistributionFinish);
                             });
                         }
                     }
                     try {
-                        SrartDistribuitionResult = await pollController.startDistribuition(PollRequest.PollButtons);
+                        StartDistributionResult = await pollController.startDistributions(PollRequest.PollButtons);
                     } catch (error) {
                         return res.status(500).send(error);
                     }
@@ -84,7 +84,7 @@ APP.post(PollManagerRoute, async function (req, res: express.Response) {
             }
         }
     }
-    return res.status(200).send({ PoolUpdateResult, DistribuitionResult: SrartDistribuitionResult });
+    return res.status(200).send({ PoolUpdateResult, DistributionsResult: StartDistributionResult });
 
 });
 APP.get(GetPollRoute, async function (req: { params: { StreamerID: string } }, res: express.Response) {
@@ -102,16 +102,14 @@ APP.get(GetPollRoute, async function (req: { params: { StreamerID: string } }, r
         .then((resolve: Poll) => {
             res.status(200).send(resolve);
         })
-        .catch((reje) => {
-            console.error(reje);
+        .catch((rej) => {
+            console.error(rej);
 
-            res.status(500).send(reje)
+            res.status(500).send(rej)
         })
 });
 APP.post(AddBeatRoute, async function (req, res: express.Response) {
-    let AddBetRequest = <AddBetRequest>req.body;
-    console.log(AddBetRequest);
-    
+    let AddBetRequest = <AddBetRequest>req.body;    
 
     let Result: AuthenticateResult
     try { Result = <AuthenticateResult> await Authenticate(AddBetRequest.Token)}
@@ -125,25 +123,25 @@ APP.post(AddBeatRoute, async function (req, res: express.Response) {
                 return ({ RequestError: "Token is no defined" })
         },
         () => {
-            let mensage: string;
+            let message: string;
             if (!AddBetRequest.Vote && AddBetRequest.Vote !== 0)
-                mensage = "Vote is no defined";
+                message = "Vote is no defined";
             else if (!Number.isInteger(AddBetRequest.Vote))
-                mensage = "Vote is no defined";
+                message = "Vote is no defined";
 
-            if (mensage) return { RequestError: mensage };
+            if (message) return { RequestError: message };
         },
         () => {
-            let mensage: string;
+            let message: string;
 
             if (!AddBetRequest.BetAmount && AddBetRequest.BetAmount !== 0)
-                mensage = "BetAmount is no defined";
+                message = "BetAmount is no defined";
             else if (!Number.isInteger(AddBetRequest.BetAmount))
-                mensage = "BetAmount not is Integer"
+                message = "BetAmount not is Integer"
             else if (AddBetRequest.BetAmount < 1)
-                mensage = "BetAmount not is Valid"
+                message = "BetAmount not is Valid"
 
-            if (mensage) return { RequestError: mensage };
+            if (message) return { RequestError: message };
         }
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
@@ -154,8 +152,8 @@ APP.post(AddBeatRoute, async function (req, res: express.Response) {
         AddBetRequest.TwitchUserName,
         AddBetRequest.Vote,
         AddBetRequest.BetAmount)
-        .then((reso) => {
-            res.status(200).send(reso);
+        .then((result) => {
+            res.status(200).send(result);
         })
         .catch((reject) => {
             if (reject.RequestError) res.status(400).send(reject);

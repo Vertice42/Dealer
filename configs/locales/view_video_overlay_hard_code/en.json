@@ -5,12 +5,12 @@
         "Instruction": ""
     },
     {
-        "id": "NavStoreButtom",
+        "id": "NavStoreButton",
         "Text": "Store",
         "Instruction": ""
     },
     {
-        "id": "NavSkinsButtom",
+        "id": "NavSkinsButton",
         "Text": "Skins",
         "Instruction": ""
     },

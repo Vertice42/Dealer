@@ -4,7 +4,7 @@ import { APP, CheckRequisition } from "..";
 import { dbWallet } from "../models/poll/dbWallet";
 import { WalletManagerRequest } from "../models/wallet/WalletManagerRequest";
 import { GetWalletRoute, WalletManager, GetWalletsRoute } from "./routes";
-import { getAllWallets, dbWalletManeger } from "../modules/database/wallet/dbWalletManager";
+import { getAllWallets, dbWalletManager } from "../modules/database/wallet/dbWalletManager";
 import { AuthenticateResult } from "../models/poll/AuthenticateResult";
 import { Authenticate } from "../modules/Authentication";
 
@@ -21,7 +21,7 @@ APP.get(GetWalletRoute, async function (req, res: express.Response) {
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
 
-    new dbWalletManeger(Request.StreamerID, Request.TwitchUserID)
+    new dbWalletManager(Request.StreamerID, Request.TwitchUserID)
         .getWallet()
         .then((wallet) => {
             res.status(200).send(wallet);
@@ -78,7 +78,7 @@ APP.post(WalletManager, async function (req, res: express.Response) {
 
     let StreamerID = Result.channel_id;
 
-    new dbWalletManeger(StreamerID, walletManagerRequest.TwitchUserID)
+    new dbWalletManager(StreamerID, walletManagerRequest.TwitchUserID)
         .update(walletManagerRequest.newValue)
         .then(() => {
             res.status(200).send({ WalletSuccessfullyChanged: new Date });

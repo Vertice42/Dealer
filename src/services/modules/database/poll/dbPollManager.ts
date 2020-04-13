@@ -3,10 +3,10 @@ import { PollButton } from "../../../models/poll/PollButton";
 import { PollBeat } from "../../../models/poll/PollBeat"
 import { dbButton, dbButtonType } from "../../../models/poll/dbButton";
 import { dbManager } from "../dbManager";
-import { Bet } from "../../../models/poll/dbBettings";
-import { sleep } from "../../../../utils/funtions";
+import { Bet } from "../../../models/poll/dbBetting";
+import { sleep } from "../../../../utils/functions";
 
-export class dbPollMager {
+export class dbPollManager {
     StreamerID: string;
     constructor(StreamerID: string) {
         this.StreamerID = StreamerID;
@@ -14,13 +14,13 @@ export class dbPollMager {
 
     /**
      * 
-     * @returns {dbBettings[]}
+     * @returns {dbBeatings[]}
      */
-    getAllBettings() {
-        if (!dbManager.getAccountData(this.StreamerID).dbCurrentBettings)
+    getAllBeatings() {
+        if (!dbManager.getAccountData(this.StreamerID).dbCurrentBeatings)
             return [];
 
-        return dbManager.getAccountData(this.StreamerID).dbCurrentBettings.findAll();
+        return dbManager.getAccountData(this.StreamerID).dbCurrentBeatings.findAll();
     }
 
     /**
@@ -28,13 +28,13 @@ export class dbPollMager {
      * @returns {Bets: PollBeat[]}
      */
     async getBeatsOfCurrentPoll() {
-        let Bettings = await this.getAllBettings();
+        let Beatings = await this.getAllBeatings();
         let Bets: PollBeat[] = [];
-        Bettings.forEach(Bettings => {
-            if (Bets[Bettings.Bet])
-                Bets[Bettings.Bet].NumberOfBets++;
+        Beatings.forEach(Beatings => {
+            if (Bets[Beatings.Bet])
+                Bets[Beatings.Bet].NumberOfBets++;
             else
-                Bets[Bettings.Bet] = new PollBeat(Bettings.Bet).setNumberOfBets(1);
+                Bets[Beatings.Bet] = new PollBeat(Beatings.Bet).setNumberOfBets(1);
         });
         return Bets;
     }
@@ -82,7 +82,7 @@ export class dbPollMager {
      * Calculation of the distribution of winnings used in the list of bets and options
      * or options shipped
      * 
-     * @param Bettings 
+     * @param Beatings 
      * @param WinningButtons 
      * @returns {
      * WageredCoins:number, 
@@ -90,16 +90,16 @@ export class dbPollMager {
      * LossDistributor:number}
      * 
      */
-    static CalculateDistribution(Bettings: Bet[], WinningButtons: PollButton[]): any {
+    static CalculateDistribution(Beatings: Bet[], WinningButtons: PollButton[]): any {
         let WageredCoins: number = 0;
         let LostWageredCoins: number = 0;
 
-        Bettings.forEach(Bettings => {
-            if (Bettings.BetAmount) {
-                if (dbPollMager.BetIsWinner(WinningButtons, Bettings.Bet))
-                    WageredCoins += Bettings.BetAmount;
+        Beatings.forEach(Beatings => {
+            if (Beatings.BetAmount) {
+                if (dbPollManager.BetIsWinner(WinningButtons, Beatings.Bet))
+                    WageredCoins += Beatings.BetAmount;
                 else
-                    LostWageredCoins += Bettings.BetAmount;
+                    LostWageredCoins += Beatings.BetAmount;
             }
         });
 
@@ -161,7 +161,7 @@ export class dbPollMager {
      * are deleted, if the array is empty nothing is deleted.
      * @param buttons:PollButton[]
      */
-    async DeleteButtonsThatAreNotIndb(buttons: PollButton[]) {
+    async DeleteButtonsThatAreNotIn_db(buttons: PollButton[]) {
         const db_buttons = await this.getAllButtonsOfCurrentPoll();
 
         let PromisesToDeleteButtons = [];

@@ -30,6 +30,11 @@
         "Instruction": "Redefine as apostas de onde elas mantêm as pastas já criadas"
     },
     {
+        "id": "ApplyChangesButton",
+        "Text": "Aplicar",
+        "Instruction": "Aplica todas as alterações feitas nos itens"
+    },
+    {
         "id": "RevertChangesButton",
         "Text": "Reverter",
         "Instruction": "Inverta todas as alterações feitas nos itens"

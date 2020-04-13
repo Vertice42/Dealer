@@ -14,7 +14,7 @@ describe('Settings', () => {
     describe('Miner', async function () {
         it('Get Miner Settings', async function () {
             expect(await StreamerSettingsManager.getMinerSettings(ID_FOR_SETTINGS))
-            .to.deep.equal(new MinerSettings(100));// defauth value in db
+            .to.deep.equal(new MinerSettings(0.2));
         })
 
         it('Update Miner Settings', async function () {
@@ -41,7 +41,7 @@ describe('Settings', () => {
         })
 
         it('Update Coins Settings', async function () {
-            let newCoinsSettings = new CoinsSettings('fon', 'jujuba.png');
+            let newCoinsSettings = new CoinsSettings('fon', 'test.png');
             await StreamerSettingsManager.UpdateOrCreateCoinsSettings(ID_FOR_SETTINGS, newCoinsSettings)
             expect(newCoinsSettings).to.deep.equal(await StreamerSettingsManager.getCoinsSettings(ID_FOR_SETTINGS))
         })

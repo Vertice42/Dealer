@@ -30,5 +30,13 @@
     {
         "id": "Refund",
         "Text": "Reembolsar"
+    },
+    {
+        "id": "DescriptionInput",
+        "Text": "Insira uma Descrição"
+    },
+    {
+        "id": "PriceInput",
+        "Text": "Insert Price"
     }
 ]

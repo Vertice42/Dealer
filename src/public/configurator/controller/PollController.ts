@@ -1,100 +1,102 @@
-import BackendConnections = require("../../BackendConnection");
 import { PollStatus } from "../../../services/models/poll/PollStatus";
 import { NotifyViewers, STREAMER_SOCKET } from "./MainController";
-import ViewPollManeger from "../view/ViewPollManeger";
+import ViewPollManager from "../view/ViewPollManager";
 import TwitchListeners from "../../../services/TwitchListeners";
 import IOListeners from "../../../services/IOListeners";
-import { Observer } from "../../BackendConnection";
 import { Poll } from "../../../services/models/poll/Poll";
+import { PollManager, getCurrentPoll } from "../../common/BackendConnection/Poll";
+import { PollRequest } from "../../../services/models/poll/PollRequest";
+import { Observer } from "../../../utils/Observer";
 
+/**
+ * It is intended to control the connection between a ux and the back end
+ * @param Token : JSON Web Token
+ * @param StreamerID : Identified from the streamer used the extension
+ */
 export default class PollController {
-    StreamerID: string;
-    Token: string;
-    ViewPollManeger: ViewPollManeger;
-    PollObserver: Observer;
+    private StreamerID: string;
+    private Token: string;
 
-    setAllCommands() {
-        this.ViewPollManeger.onCommandToCreateSent = async () => {
-            this.ViewPollManeger.PollStatus = new PollStatus();
-            return BackendConnections.SendToPollManager(this.StreamerID, this.Token, null, this.ViewPollManeger.PollStatus)
+    private ViewPollManager: ViewPollManager;
+    private PollObserver: Observer;
+
+    private setListeners() {
+        this.ViewPollManager.onCommandToCreateSent = async () => {
+            this.ViewPollManager.PollStatus = new PollStatus();
+            return PollManager(new PollRequest(this.Token, null, this.ViewPollManager.PollStatus))
                 .then(async () => {
-                    NotifyViewers({ ListenerName: TwitchListeners.onPollChange, data: await BackendConnections.getCurrentPoll(this.StreamerID) });
+                    NotifyViewers({ ListenerName: TwitchListeners.onPollChange, data: await getCurrentPoll(this.StreamerID) });
                 })
         };
-        this.ViewPollManeger.onCommandToWaxSent = async () => {
-            this.ViewPollManeger.PollStatus.PollWaxed = true;
-            return BackendConnections.SendToPollManager(this.StreamerID, this.Token, null, this.ViewPollManeger.PollStatus)
+        this.ViewPollManager.onCommandToWaxSent = async () => {
+            this.ViewPollManager.PollStatus.PollWaxed = true;
+            return PollManager(new PollRequest(this.Token, null, this.ViewPollManager.PollStatus))
                 .then(async () => {
                     this.PollObserver.stop();
-                    NotifyViewers({ ListenerName: TwitchListeners.onPollChange, data: await BackendConnections.getCurrentPoll(this.StreamerID) });
+                    NotifyViewers({ ListenerName: TwitchListeners.onPollChange, data: await getCurrentPoll(this.StreamerID) });
                 })
 
         };
-        this.ViewPollManeger.onCommandToStartSent = async () => {
-            this.ViewPollManeger.PollStatus.PollStarted = true;
-            return BackendConnections.SendToPollManager(this.StreamerID, this.Token, this.ViewPollManeger.getPollButtons(), this.ViewPollManeger.PollStatus)
+        this.ViewPollManager.onCommandToStartSent = async () => {
+            this.ViewPollManager.PollStatus.PollStarted = true;
+            return PollManager(new PollRequest(this.Token, null, this.ViewPollManager.PollStatus))
                 .then(async () => {
                     this.PollObserver.start();
-                    NotifyViewers({ ListenerName: TwitchListeners.onPollChange, data: await BackendConnections.getCurrentPoll(this.StreamerID) });
+                    NotifyViewers({ ListenerName: TwitchListeners.onPollChange, data: await getCurrentPoll(this.StreamerID) });
                 })
         };
-        this.ViewPollManeger.onCommandToApplyChangesSent = async () => {
-            return BackendConnections.SendToPollManager(this.StreamerID, this.Token, this.ViewPollManeger.getPollButtons(), this.ViewPollManeger.PollStatus)
+        this.ViewPollManager.onCommandToApplyChangesSent = async () => {
+            return PollManager(new PollRequest(this.Token, this.ViewPollManager.getPollButtons(), this.ViewPollManager.PollStatus))
                 .then(async () => {
-                    NotifyViewers({ ListenerName: TwitchListeners.onPollChange, data: await BackendConnections.getCurrentPoll(this.StreamerID) });
+                    NotifyViewers({ ListenerName: TwitchListeners.onPollChange, data: await getCurrentPoll(this.StreamerID) });
                 })
         }
-        this.ViewPollManeger.onCommandToStopSent = async () => {
-            this.ViewPollManeger.PollStatus.PollStoped = true;
-            return BackendConnections.SendToPollManager(this.StreamerID, this.Token, null, this.ViewPollManeger.PollStatus)
+        this.ViewPollManager.onCommandToStopSent = async () => {
+            this.ViewPollManager.PollStatus.PollStopped = true;
+            return PollManager(new PollRequest(this.Token, null, this.ViewPollManager.PollStatus))
                 .then(async () => {
                     this.PollObserver.stop();
-                    NotifyViewers({ ListenerName: TwitchListeners.onPollChange, data: await BackendConnections.getCurrentPoll(this.StreamerID) });
+                    NotifyViewers({ ListenerName: TwitchListeners.onPollChange, data: await getCurrentPoll(this.StreamerID) });
                 })
         }
-        this.ViewPollManeger.onCommandToRestartSent = async () => {
-            this.ViewPollManeger.PollStatus.PollStoped = false;
-            return BackendConnections.SendToPollManager(this.StreamerID, this.Token, null, this.ViewPollManeger.PollStatus)
+        this.ViewPollManager.onCommandToRestartSent = async () => {
+            this.ViewPollManager.PollStatus.PollStopped = false;
+            return PollManager(new PollRequest(this.Token, null, this.ViewPollManager.PollStatus))
                 .then(async () => {
                     this.PollObserver.start();
-                    NotifyViewers({ ListenerName: TwitchListeners.onPollChange, data: await BackendConnections.getCurrentPoll(this.StreamerID) });
+                    NotifyViewers({ ListenerName: TwitchListeners.onPollChange, data: await getCurrentPoll(this.StreamerID) });
                 })
 
         }
-        this.ViewPollManeger.onCommandToRevertChanges = async () => {
-            this.ViewPollManeger.updateItems(await BackendConnections.getCurrentPoll(this.StreamerID));
+        this.ViewPollManager.onCommandToRevertChanges = async () => {
+            this.ViewPollManager.updateItems(await getCurrentPoll(this.StreamerID));
         }
-        this.ViewPollManeger.onCommandToDistributeSent = async () => {
-            STREAMER_SOCKET.on(IOListeners.onDistribuitionFinish, async () => {
+        this.ViewPollManager.onCommandToDistributeSent = async () => {
+            STREAMER_SOCKET.on(IOListeners.onDistributionFinish, async () => {
 
-                let CurrentPoll = await BackendConnections.getCurrentPoll(this.StreamerID);
-                this.ViewPollManeger.PollStatus = CurrentPoll.PollStatus;
-                this.ViewPollManeger.setDistributioFninished();
+                let CurrentPoll = await getCurrentPoll(this.StreamerID);
+                this.ViewPollManager.PollStatus = CurrentPoll.PollStatus;
+                this.ViewPollManager.setDistributionsFinished();
 
                 NotifyViewers({ ListenerName: TwitchListeners.onPollChange, data: CurrentPoll });
 
-                STREAMER_SOCKET.on(IOListeners.onDistribuitionFinish, null);
+                STREAMER_SOCKET.on(IOListeners.onDistributionFinish, null);
             });
 
-            await BackendConnections.SendToPollManager(
-                this.StreamerID, this.Token,
-                this.ViewPollManeger.getPollButtons(),
-                new PollStatus(this.ViewPollManeger.PollStatus).startDistribution()
-            )
+            await PollManager(new PollRequest(this.Token, null, this.ViewPollManager.PollStatus));
         }
-
     }
-    async LoadingCurrentPoll() {
-        let Poll = await BackendConnections.getCurrentPoll(this.StreamerID)
-        this.ViewPollManeger = new ViewPollManeger(Poll);
+    private async LoadingCurrentPoll() {
+        let Poll = await getCurrentPoll(this.StreamerID)
+        this.ViewPollManager = new ViewPollManager(Poll);
 
-        this.PollObserver = new Observer(async () => BackendConnections.getCurrentPoll(this.StreamerID), 500);
-        this.PollObserver.OnWaitch = (Poll: Poll) => {
-            this.ViewPollManeger.uppdateVotesOfAllItems(Poll);
+        this.PollObserver = new Observer(async () => getCurrentPoll(this.StreamerID), 500);
+        this.PollObserver.OnWatch = (Poll: Poll) => {
+            this.ViewPollManager.updateVotesOfAllItems(Poll);
         }
 
-        this.ViewPollManeger.onStatusChange = (PollStatus) => {
-            if (PollStatus.PollStarted && !PollStatus.PollStoped) {
+        this.ViewPollManager.onStatusChange = (PollStatus) => {
+            if (PollStatus.PollStarted && !PollStatus.PollStopped) {
                 this.PollObserver.start();
             }
             else {
@@ -102,8 +104,9 @@ export default class PollController {
             }
 
         };
-        this.ViewPollManeger.PollStatus = Poll.PollStatus;
-        this.setAllCommands();
+        this.ViewPollManager.PollStatus = Poll.PollStatus;
+
+        this.setListeners();
     }
 
     constructor(Token: string, StreamerID: string) {

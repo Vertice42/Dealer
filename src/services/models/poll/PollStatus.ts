@@ -1,7 +1,7 @@
 export class PollStatus {
     PollWaxed: boolean;
     PollStarted: boolean;
-    PollStoped: boolean;
+    PollStopped: boolean;
     InDistribution: boolean;
     DistributionCompleted: boolean;
     DistributionStarted: boolean;
@@ -10,14 +10,14 @@ export class PollStatus {
         if (PollStatus) {
             this.PollWaxed = PollStatus.PollWaxed;
             this.PollStarted = PollStatus.PollStarted;
-            this.PollStoped = PollStatus.PollStoped;
+            this.PollStopped = PollStatus.PollStopped;
             this.DistributionStarted = PollStatus.DistributionStarted;
             this.InDistribution = PollStatus.InDistribution;
             this.DistributionCompleted = PollStatus.DistributionCompleted;
         } else {
             this.PollWaxed = false;
             this.PollStarted = false;
-            this.PollStoped = false;
+            this.PollStopped = false;
             this.DistributionStarted = false;
             this.InDistribution = false;
             this.DistributionCompleted = false;
@@ -29,12 +29,12 @@ export class PollStatus {
         return this;
     }
     stop() {
-        this.PollStoped = true;
+        this.PollStopped = true;
         return this;
 
     }
     restart() {
-        this.PollStoped = false;
+        this.PollStopped = false;
         return this;
 
     }
@@ -44,7 +44,7 @@ export class PollStatus {
         return this;
     }
 
-    waxe() {
+    wax() {
         this.PollWaxed = true;
         return this;
 

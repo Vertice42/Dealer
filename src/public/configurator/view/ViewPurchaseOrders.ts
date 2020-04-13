@@ -1,7 +1,7 @@
 import StoreItem from "../../../services/models/store/StoreItem";
 import PurchaseOrder from "../../../services/models/store/PurchaseOrder";
-import { PurchaseOrderItem } from "../controller/PurchaseOrderController";
-import { CrateLinerAnimation } from "../../common/model/ViewerFeatures";
+import { PurchaseOrderItem } from "../model/PurchaseOrderItem";
+import { CrateLinerAnimation } from "../../common/view/ViewerFeatures";
 import { Texts } from "../controller/MainController";
 
 class ViewPurchaseTime {
@@ -15,7 +15,7 @@ class ViewPurchaseTime {
         if (time < 60) {
             let TimeRound = Math.round(time);
             Texts.onLocaleChange = () => {
-                this.HTML.innerText = `${TimeRound} ${Texts.get('Second')}${(TimeRound > 1) ? 's' : ''}`;
+                this.HTML.innerText = `${TimeRound} ${Texts.getText('Second')}${(TimeRound > 1) ? 's' : ''}`;
             };
             return this.HTML.innerText;
         }
@@ -23,7 +23,7 @@ class ViewPurchaseTime {
         if (time < 60) {
             let TimeRound = Math.round(time);
             Texts.onLocaleChange = () => {
-                this.HTML.innerText = `${TimeRound} ${Texts.get('Minute')}${(TimeRound > 1) ? 's' : ''}`;
+                this.HTML.innerText = `${TimeRound} ${Texts.getText('Minute')}${(TimeRound > 1) ? 's' : ''}`;
             };
             return this.HTML.innerText
         }
@@ -31,14 +31,14 @@ class ViewPurchaseTime {
         if (time < 60) {
             let TimeRound = Math.round(time);
             Texts.onLocaleChange = () => {
-                this.HTML.innerText = `${TimeRound} ${Texts.get('Hour')}${(TimeRound > 1) ? 's' : ''}`;
+                this.HTML.innerText = `${TimeRound} ${Texts.getText('Hour')}${(TimeRound > 1) ? 's' : ''}`;
             }
             return this.HTML.innerText
         }
 
         let TimeRound = Math.round(time);
         Texts.onLocaleChange = () => {
-            this.HTML.innerText = `${TimeRound} ${Texts.get('Days')}`;
+            this.HTML.innerText = `${TimeRound} ${Texts.getText('Days')}`;
         }
         return this.HTML.innerText
     }
@@ -52,6 +52,9 @@ class ViewPurchaseTime {
     }
 }
 
+/**
+ * It is a viewer for the streamer to be able to view purchased items
+ */
 export class ViewPurchasedItem {
     private ID: number
     HTML: HTMLDivElement
@@ -88,7 +91,7 @@ export class ViewPurchasedItem {
         this.HTML_RefundButton = document.createElement('button');
         this.HTML_RefundButton.classList.add('RefundButton');
         Texts.onLocaleChange = () => {
-            this.HTML_RefundButton.innerText = Texts.get('Refund');
+            this.HTML_RefundButton.innerText = Texts.getText('Refund');
         }
         this.HTML_RefundButton.onclick = () => {
             this.onRefundButtonActive();
@@ -120,15 +123,19 @@ export class ViewPurchasedItem {
     }
 }
 
+/**
+ * Contains methods for show purchase orders and listeners to capture user actions
+ */
 export default class ViewPurchaseOrders {
     ResizeObserver: ResizeObserver;
+    ViewPurchaseOrdersArray: ViewPurchasedItem[] = [];
+
     AudioProgress: number;
 
-    ViewPurchaseOrdersArray: ViewPurchasedItem[] = [];
-    private HTML_PurchaseOrdersDiv = <HTMLDivElement>document.getElementById('PurchaseOrdersDiv');
-    private HTML_ReproducingMedia = <HTMLDivElement>document.getElementById('ReproducingMedia');
-    private HTML_PlaybackUserName = <HTMLSpanElement>document.getElementById('PlaybackUserName');
-    private HTML_PlaybackItemName = <HTMLSpanElement>document.getElementById('PlaybackItemName');
+    HTML_PurchaseOrdersDiv = <HTMLDivElement>document.getElementById('PurchaseOrdersDiv');
+    HTML_ReproducingMedia = <HTMLDivElement>document.getElementById('ReproducingMedia');
+    HTML_PlaybackUserName = <HTMLSpanElement>document.getElementById('PlaybackUserName');
+    HTML_PlaybackItemName = <HTMLSpanElement>document.getElementById('PlaybackItemName');
     HTML_PauseAudioPlayerButton = <HTMLDivElement>document.getElementById('PauseAudioPlayerButton');
     HTML_RefundCurrentAudioButton = <HTMLButtonElement>document.getElementById('RefundCurrentAudioButton');
     HTML_ListOfPurchasedItems = <HTMLDivElement>document.getElementById('ListOfPurchasedItems');
@@ -137,7 +144,7 @@ export default class ViewPurchaseOrders {
     HTML_PlaybackUnavailableAlert: HTMLDivElement;
 
     onButtonPurchaseOrderRefundActive = (ViewPurchasedItem: ViewPurchasedItem, PurchaseOrder: PurchaseOrder) => { };
-    onAddPuchaseOrder = (PurchaseOrderItem: PurchaseOrderItem) => { };
+    onAddPurchaseOrder = (PurchaseOrderItem: PurchaseOrderItem) => { };
 
     IsStarted() {
         return this.HTML_PauseAudioPlayerButton.classList.contains('Started');
@@ -211,7 +218,7 @@ export default class ViewPurchaseOrders {
         viewPurchasedItem.onRefundButtonActive = () => {
             this.onButtonPurchaseOrderRefundActive(viewPurchasedItem, PurchaseOrder);
         };
-        this.onAddPuchaseOrder(new PurchaseOrderItem(viewPurchasedItem, PurchaseOrder, StoreItem));
+        this.onAddPurchaseOrder(new PurchaseOrderItem(viewPurchasedItem, PurchaseOrder, StoreItem));
         this.HTML_ListOfPurchasedItems.appendChild(viewPurchasedItem.HTML);
     }
     removeViewPurchaseOrder(ViewPurchasedItem: ViewPurchasedItem) {
@@ -230,6 +237,7 @@ export default class ViewPurchaseOrders {
             this.updateViewPurchaseOrdersTime();
         }, (this.ViewPurchaseOrdersArray.length > 1) ? 1000 : 10000);
     }
+    
     constructor() {
         this.updateViewPurchaseOrdersTime();
     }
