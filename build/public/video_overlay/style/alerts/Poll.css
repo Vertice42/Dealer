@@ -85,7 +85,7 @@
 }
 
 .ButtonsDiv {
-    display: flow-root;
+    display: flex;
     width: fit-content;
     height: 100%;
     margin: -40px auto auto;
@@ -111,8 +111,8 @@
 }
 
 .PollButton h4 {
-    display: initial;
-    margin: 10px;
+    display: block;
+    margin: auto;
     font-family: Heroes;
     color: white;
 }

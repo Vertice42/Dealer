@@ -1,4 +1,4 @@
-export class PollBeat {
+export class PollBet {
     BetID: number;
     NumberOfBets: number;
     constructor(BetID: number) {

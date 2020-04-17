@@ -68,6 +68,7 @@ export class DivRelocatable {
     }
 }
 
+
 /**
  * Hide the element if the mouse is not moved and reactivate it if it moves again for a specified time
  * 
@@ -75,20 +76,43 @@ export class DivRelocatable {
  * @param Element :Element to hide
  * @param Time :Time for mouse to remain still before the element is hidden
  */
-export function EnableHideWhenMouseIsInactive(FatherElement: HTMLElement, Element: HTMLElement, Time = 500) {
-    let move = true;
-    FatherElement.addEventListener('mousemove', async (event) => {
-        if (move) {
-            move = false;
-            if (!Element.classList.contains('Visible'))
-                Element.classList.add('Visible');
-            await sleep(Time);
-            if (Element.classList.contains('Visible'))
-                Element.classList.remove('Visible');
-            move = true;
+export class AutomaticHidingDueInactivity {
+    private Action = true;
+    private Elements: HTMLElement[];
+    private WaitingTime: number;
+
+    public async show(permanently: boolean, WaitingTime = this.WaitingTime) {
+        if (this.Action) {
+            this.Action = false;
+
+            this.Elements.forEach(async Element => {
+                if (!Element.classList.contains('Visible')) {
+                    Element.classList.add('Visible');
+                }
+            });
+
+            await sleep(WaitingTime);
+            this.Action = true;
+
+            if (!permanently) {
+                this.Elements.forEach(async Element => {
+                    if (Element.classList.contains('Visible'))
+                        Element.classList.remove('Visible');
+                });
+            }
         }
-    })
+    }
+
+    constructor(FatherElement: HTMLElement, Element: HTMLElement[], Time = 500) {
+        this.Elements = Element;
+        this.WaitingTime = Time;
+
+        FatherElement.addEventListener('mousemove', async (event) => this.show(false));
+        FatherElement.addEventListener('click', async (event) => this.show(false));
+
+    }
 }
+
 /**
  * Generates a hexadecimal number for a random color
  */

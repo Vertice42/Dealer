@@ -53,8 +53,8 @@
 
 .Placing {
     display: block;
-    min-width: 15vw;
-    max-width: 15vw;
+    min-width: 8vw;
+    max-width: 13vw;
 
     margin: 0 auto ;
     padding: 1vw;
@@ -67,7 +67,7 @@
 
 .TwitchUserID {
     display: block;
-    min-width: 30vw;
+    min-width: 40vw;
     max-width: 40vw;
 
     margin: 0 auto ;

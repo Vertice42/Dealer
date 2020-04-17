@@ -52,6 +52,7 @@ require('./routes/store_routes');
 require('./routes/purchase_orders_routes');
 require('./routes/wallets_routes');
 require('./routes/files_routes');
+require('./routes/products_routes');
 
 const IO = Socket_io(SERVER).listen(SERVER);
 IO.on('connection', (socket) => {

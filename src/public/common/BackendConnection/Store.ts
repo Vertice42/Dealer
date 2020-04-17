@@ -15,7 +15,7 @@ export async function GetStore(StreamerID: string, StoreItemID = -1) {
         }    })
 }
 
-export async function PutStoreItem(Token: string, StoreItem: StoreItem) {
+export async function updateStoreItem(Token: string, StoreItem: StoreItem) {
     let H = new Headers();
     H.append("Content-Type", "application/json");
 

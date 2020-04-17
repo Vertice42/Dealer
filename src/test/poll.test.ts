@@ -8,15 +8,13 @@ import { dbManager } from "../services/modules/database/dbManager";
 
 import { Poll } from "../services/models/poll/Poll";
 
-
-import { PollBeat } from "../services/models/poll/PollBeat";
-
 import { dbWallet } from "../services/models/poll/dbWallet";
 import { PollController } from "../services/controller/PollController";
 import { resolve } from "bluebird";
 import { createAndStartStreamerDatabase, ID_FOR_MANAGER_POLL, deleteStreamerDatabase, db_PRE_CREATED, db_FOR_UPDATE_BUTTONS, createPoll, startPoll, ID_FOR_DISTRIBUTION, USERS_IDS_FOR_TESTS, ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS } from "./ForTests.test";
 import { dbWalletManager, getWallet } from "../services/modules/database/wallet/dbWalletManager";
 import { sleep } from "../utils/functions";
+import { PollBet } from "../services/models/poll/PollBeat";
 
 describe('Poll', () => {
   before(async function () {
@@ -197,8 +195,8 @@ describe('Poll', () => {
       let Poll = await pollController.getCurrentPoll();
 
       expect(Poll.Bets).to.deep.equal([
-        new PollBeat(0).setNumberOfBets(2),
-        new PollBeat(1).setNumberOfBets(1)]);
+        new PollBet(0).setNumberOfBets(2),
+        new PollBet(1).setNumberOfBets(1)]);
       expect(addBetResult_I).to.deep.equal({ BetAccepted: { Bet: BetAmountForTest_I } });
       //Tests if the answer or a bottomless bet returns an error
 

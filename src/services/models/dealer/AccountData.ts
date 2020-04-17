@@ -8,6 +8,7 @@ import { Sequelize } from "sequelize";
 import { dbManager } from "../../modules/database/dbManager";
 import { dbStoreItem } from "../store/dbStoreItem";
 import { dbPurchaseOrder } from "../store/dbPurchaseOrders";
+import { resolve } from "bluebird";
 export class AccountData {
     CurrentPollStatus: PollStatus;
 
@@ -17,11 +18,13 @@ export class AccountData {
 
     dbStreamer: Sequelize;
     dbCurrentPollButtons: typeof dbButton;
-    dbCurrentBeatings: typeof dbBet;
+    dbCurrentBets: typeof dbBet;
     dbWallets: typeof dbWallet;
     dbSettings: typeof dbSettings;
     dbStore: typeof dbStoreItem;
     dbPurchaseOrders: typeof dbPurchaseOrder;
+
+    DefinitionFinish: Promise<any> = resolve();
 
     MinerSettings: MinerSettings;
 
@@ -32,7 +35,7 @@ export class AccountData {
         this.StreamerID = StreamerID;
         this.dbStreamer = dbManager.getStreamerDataBase(StreamerID);
         this.dbCurrentPollButtons = null;
-        this.dbCurrentBeatings = null;
+        this.dbCurrentBets = null;
         this.dbWallets = null;
         this.dbSettings = null;
         this.MinerSettings = null;

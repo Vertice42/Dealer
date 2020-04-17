@@ -1,12 +1,12 @@
 import { PollButton } from "./PollButton";
 import { PollStatus } from "./PollStatus";
-import { PollBeat } from "./PollBeat";
+import { PollBet } from "./PollBeat";
 export class Poll {
     PollStatus: PollStatus;
     PollButtons: PollButton[];
     LossDistributorOfPoll: number;
     LastUpdate: number;
-    Bets: PollBeat[];
+    Bets: PollBet[];
     constructor(PollStatus: PollStatus, PollButtons: PollButton[], LossDistributorOfPoll: number, LastUpdate: number, Votes) {
         this.PollStatus = PollStatus;
         this.PollButtons = PollButtons;

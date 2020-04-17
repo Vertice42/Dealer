@@ -18,7 +18,7 @@ export class dbBet extends Model implements Bet {
     BetAmount: number
 }
 export const BettingDefiner = {
-    TableName: '_beatings',
+    TableName: '_Bets',
     attributes: {
         TwitchUserID: {
             type: sequelize.STRING,

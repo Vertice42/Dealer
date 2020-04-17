@@ -1,10 +1,10 @@
 import { Miner } from "../modules/Miner";
 import AlertController from "./AlertController";
-import StoreDisplayController from "./StoreDisplayController";
 import { InsertTextInHardCode as InsertTextInElements, LocalizedTexts } from "../../common/view/Texts";
 import { TwitchListener } from "../../common/model/TwitchListener";
 import { getLocaleFile } from "../../common/BackendConnection/BlobFiles";
 import { getUsername } from "../../common/TwitchConnections";
+import StoreDisplayController from "./StoreDisplayController";
 
 function makeID(length: number) {
   var result = "";
@@ -56,14 +56,18 @@ window.Twitch.ext.onAuthorized(async (auth) => {
     return 'TwitchUserID undefined';
   }
 
+  if (process.env.NODE_ENV !== 'production') {
+    window.Twitch.ext.bits.setUseLoopback(true);
+  }
+
   if(Initialized) return; else Initialized = true;  
 
   await new AlertController(auth.token, auth.channelId, TwitchUserName).Build();
 
-  var ControllerOfStoreDisplay = new StoreDisplayController(auth.token, auth.channelId, TwitchUserName);
+  var storeDisplayController = new StoreDisplayController(auth.token, auth.channelId, TwitchUserName);
   var MinerOfUser = new Miner(auth.channelId, TwitchUserName);
   MinerOfUser.onMine = (CurrentCoinsOfUserNumber, BalanceChange) => {
-    ControllerOfStoreDisplay.setViewBalance(CurrentCoinsOfUserNumber, BalanceChange)
+    storeDisplayController.ViewWalletDisplay.setViewBalance(CurrentCoinsOfUserNumber, BalanceChange)
   };
   MinerOfUser.startMining();
 

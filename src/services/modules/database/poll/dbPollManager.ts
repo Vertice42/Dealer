@@ -1,10 +1,10 @@
 import { resolve, reject } from "bluebird";
 import { PollButton } from "../../../models/poll/PollButton";
-import { PollBeat } from "../../../models/poll/PollBeat"
 import { dbButton, dbButtonType } from "../../../models/poll/dbButton";
 import { dbManager } from "../dbManager";
-import { Bet } from "../../../models/poll/dbBetting";
+import { Bet, dbBet } from "../../../models/poll/dbBetting";
 import { sleep } from "../../../../utils/functions";
+import { PollBet } from "../../../models/poll/PollBeat";
 
 export class dbPollManager {
     StreamerID: string;
@@ -12,36 +12,26 @@ export class dbPollManager {
         this.StreamerID = StreamerID;
     }
 
-    /**
-     * 
-     * @returns {dbBeatings[]}
-     */
-    getAllBeatings() {
-        if (!dbManager.getAccountData(this.StreamerID).dbCurrentBeatings)
-            return [];
+    async getAllBets(): Promise<dbBet[]> {
+        let AccountData = dbManager.getAccountData(this.StreamerID);
+        await AccountData.DefinitionFinish;
 
-        return dbManager.getAccountData(this.StreamerID).dbCurrentBeatings.findAll();
+        if (!AccountData.dbCurrentBets) return [];
+        return AccountData.dbCurrentBets.findAll();
     }
 
-    /**
-     * 
-     * @returns {Bets: PollBeat[]}
-     */
-    async getBeatsOfCurrentPoll() {
-        let Beatings = await this.getAllBeatings();
-        let Bets: PollBeat[] = [];
-        Beatings.forEach(Beatings => {
-            if (Bets[Beatings.Bet])
-                Bets[Beatings.Bet].NumberOfBets++;
+    async getBetsOfCurrentPoll(): Promise<PollBet[]> {
+        let dbBets = await this.getAllBets();
+        let Bets: PollBet[] = [];
+        dbBets.forEach(Bets => {
+            if (Bets[Bets.Bet])
+                Bets[Bets.Bet].NumberOfBets++;
             else
-                Bets[Beatings.Bet] = new PollBeat(Beatings.Bet).setNumberOfBets(1);
+                Bets[Bets.Bet] = new PollBet(Bets.Bet).setNumberOfBets(1);
         });
         return Bets;
     }
 
-    /**
-     * @returns Promise<dbButton[]>
-     */
     async getAllButtonsOfCurrentPoll() {
 
         let AccountData = dbManager.getAccountData(this.StreamerID);
@@ -65,8 +55,9 @@ export class dbPollManager {
      * 
      * @param ButtonID 
      */
-    getButtonOfCurrentPoll(ButtonID: number) {
+    async getButtonOfCurrentPoll(ButtonID: number) {
         let AccountData = dbManager.getAccountData(this.StreamerID);
+        await AccountData.DefinitionFinish;
 
         if (AccountData) {
             if (AccountData.dbCurrentPollButtons) {
@@ -82,7 +73,7 @@ export class dbPollManager {
      * Calculation of the distribution of winnings used in the list of bets and options
      * or options shipped
      * 
-     * @param Beatings 
+     * @param Bets 
      * @param WinningButtons 
      * @returns {
      * WageredCoins:number, 
@@ -90,16 +81,16 @@ export class dbPollManager {
      * LossDistributor:number}
      * 
      */
-    static CalculateDistribution(Beatings: Bet[], WinningButtons: PollButton[]): any {
+    static CalculateDistribution(Bets: Bet[], WinningButtons: PollButton[]): any {
         let WageredCoins: number = 0;
         let LostWageredCoins: number = 0;
 
-        Beatings.forEach(Beatings => {
-            if (Beatings.BetAmount) {
-                if (dbPollManager.BetIsWinner(WinningButtons, Beatings.Bet))
-                    WageredCoins += Beatings.BetAmount;
+        Bets.forEach(Bets => {
+            if (Bets.BetAmount) {
+                if (dbPollManager.BetIsWinner(WinningButtons, Bets.Bet))
+                    WageredCoins += Bets.BetAmount;
                 else
-                    LostWageredCoins += Beatings.BetAmount;
+                    LostWageredCoins += Bets.BetAmount;
             }
         });
 
@@ -130,9 +121,7 @@ export class dbPollManager {
     }
 
     /**
-     * 
      * @param Buttons: Array of PollButton
-     * @returns { CreatedButtons:number, UpdatedButtons:number }
      */
     async UpdateOrCreateButtonsOfPoll(Buttons: PollButton[]) {
         var CreatedButtons = 0;

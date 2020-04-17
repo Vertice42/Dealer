@@ -8,7 +8,7 @@ import { Poll } from "../models/poll/Poll";
 import { AddBetRequest } from "../models/poll/AddBetRequest";
 import { PollController } from "../controller/PollController";
 import { PollButton } from "../models/poll/PollButton";
-import { PollManagerRoute, AddBeatRoute, GetPollRoute } from "./routes";
+import { PollManagerRoute, AddBetRoute, GetPollRoute } from "./routes";
 import { getSocketOfStreamer } from "../SocketsManager";
 import IOListeners from "../IOListeners";
 import { Authenticate } from "../modules/Authentication";
@@ -53,15 +53,14 @@ APP.post(PollManagerRoute, async function (req, res: express.Response) {
 
         if (PollRequest.NewPollStatus) {
             AccountData.CurrentPollStatus = PollRequest.NewPollStatus;
-            PoolUpdateResult = await pollController.UpdatePoll(PollRequest.PollButtons);
+            PoolUpdateResult = await pollController.UpdatePoll(PollRequest.PollButtons);            
 
             if (AccountData.CurrentPollStatus.InDistribution &&
                 !AccountData.CurrentPollStatus.DistributionStarted) {
                 if (AccountData.CurrentPollStatus.PollWaxed) {
                     pollController.stopDistributions();
-                } else if (ThereWinningButtonsInArray(PollRequest.PollButtons)) {
-                    pollController.OnDistributionsEnd = (StatisticsOfDistribution) => {
-
+                } else if (ThereWinningButtonsInArray(PollRequest.PollButtons)) {                    
+                    pollController.OnDistributionsEnd = (StatisticsOfDistribution) => {                        
                         AccountData.CurrentPollStatus.DistributionCompleted = true
                         AccountData.CurrentPollStatus.StatisticsOfDistribution = StatisticsOfDistribution;
 
@@ -73,7 +72,7 @@ APP.post(PollManagerRoute, async function (req, res: express.Response) {
                             });
                         }
                     }
-                    try {
+                    try {                        
                         StartDistributionResult = await pollController.startDistributions(PollRequest.PollButtons);
                     } catch (error) {
                         return res.status(500).send(error);
@@ -108,8 +107,8 @@ APP.get(GetPollRoute, async function (req: { params: { StreamerID: string } }, r
             res.status(500).send(rej)
         })
 });
-APP.post(AddBeatRoute, async function (req, res: express.Response) {
-    let AddBetRequest = <AddBetRequest>req.body;    
+APP.post(AddBetRoute, async function (req, res: express.Response) {
+    let AddBetRequest = <AddBetRequest>req.body;          
 
     let Result: AuthenticateResult
     try { Result = <AuthenticateResult> await Authenticate(AddBetRequest.Token)}

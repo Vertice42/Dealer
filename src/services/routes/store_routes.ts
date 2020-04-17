@@ -41,10 +41,10 @@ APP.post(StoreManagerRoute, async function (req, res: express.Response) {
     try { Result = <AuthenticateResult>await Authenticate(Request.Token) }
     catch (error) { return res.status(401).send(error) }
 
-    let StreamerID = Result.channel_id;
+    let StreamerID = Result.channel_id;    
 
-    if ((await new ControllerOfPermissions(StreamerID).AllSettingsISLocked(Request.StoreItem.ItemsSettings))) {
-        return res.status(423).send({ mensage: 'This feature is blocked for you' })
+    if ((await new ControllerOfPermissions(StreamerID).ThereAreBlockedSettings(Request.StoreItem.ItemsSettings))) {       
+        return res.status(423).send({ message: 'This feature is blocked for you' })
     }    
 
     new dbStoreManager(StreamerID).UpdateOrCreateStoreItem(Request.StoreItem)

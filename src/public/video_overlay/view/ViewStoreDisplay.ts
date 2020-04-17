@@ -1,7 +1,7 @@
 import { sleep } from "../../../utils/functions";
 import PurchaseOrder from "../../../services/models/store/PurchaseOrder";
 import StoreItem, { getItemsSetting } from "../../../services/models/store/StoreItem";
-import { EnableHideWhenMouseIsInactive, DivRelocatable } from "../../common/view/ViewerFeatures";
+import { DivRelocatable, AutomaticHidingDueInactivity } from "../../common/view/ViewerFeatures";
 import { WalletSkin } from "../../../services/models/wallet/WalletSkin";
 import { Texts } from "../controller/MainController";
 import ItemSetting from "../../../services/models/store/item_settings/ItemSettings";
@@ -64,12 +64,21 @@ class ViewStoreItemDisplay {
     }
 }
 
-class ViewWalletSkin {
+export class ViewWalletSkin {
     HTML: HTMLDivElement;
     HTML_WalletSkinImg: HTMLImageElement;
     HTML_WalletSkinPrice: HTMLSpanElement;
-
     WalletSkin: WalletSkin;
+    private price = 0;
+
+    set Price(price: number) {
+        this.price = price
+        this.HTML_WalletSkinPrice.innerText = this.price + ' bits';
+    }
+
+    get Price() {
+        return this.price;
+    }
 
     get IsLock(): boolean {
         return this.HTML.classList.contains('WalletSkinLock');
@@ -91,7 +100,6 @@ class ViewWalletSkin {
     setUnlock() {
         this.HTML.classList.remove('WalletSkinLock');
         this.HTML_WalletSkinPrice.classList.remove('WalletSkinLock');
-
     }
 
     constructor(WalletSkin: WalletSkin, URLOfWalletSkinImg: string) {
@@ -107,7 +115,7 @@ class ViewWalletSkin {
 
         this.HTML_WalletSkinPrice = document.createElement('span');
         this.HTML_WalletSkinPrice.classList.add('WalletSkinPrice');
-        this.HTML_WalletSkinPrice.innerText = WalletSkin.Price + ' bits';
+        this.HTML_WalletSkinPrice.innerText = ''
         this.HTML.appendChild(this.HTML_WalletSkinPrice);
     }
 }
@@ -121,6 +129,9 @@ export default class ViewWalletDisplay {
     public ViewWalletSkins: ViewWalletSkin[];
     public WalletRelocatable: DivRelocatable;
     public CoinImgURL: string;
+    public CoinName: string;
+
+    public AutomaticHidingDueInactivity: AutomaticHidingDueInactivity;
 
     private HTML = <HTMLDivElement>document.getElementById("WalletDiv");
 
@@ -154,13 +165,12 @@ export default class ViewWalletDisplay {
         navButton.classList.add('NavButtonEnable');
     }
 
-    public setWalletSkins(WalletSkins: WalletSkin[], BitsDonatedByViewer: number, getWalletSkinsURl: (WalletSkinsName: string) => string) {
+    public setWalletsSkins(WalletSkins: WalletSkin[], getWalletSkinsURl: (WalletSkinsName: string) => string) {
         this.HTML_SkinsListDiv.innerHTML = '';
         this.ViewWalletSkins = [];
 
         WalletSkins.forEach(WalletSkin => {
             let viewWalletSkin = new ViewWalletSkin(WalletSkin, getWalletSkinsURl(WalletSkin.Name));
-            if (BitsDonatedByViewer < WalletSkin.Price) viewWalletSkin.setLock();
             if (window.localStorage['WalletSkinsSelectedName'] === WalletSkin.Name) viewWalletSkin.setSelected();
 
             this.ViewWalletSkins.push(viewWalletSkin);
@@ -177,6 +187,28 @@ export default class ViewWalletDisplay {
         this.ViewWalletSkins.forEach(viewWalletSkins => {
             viewWalletSkins.setUnSelected();
         });
+    }
+
+    public setViewBalance(Balance: number, BalanceChange = 0) {
+        if (BalanceChange > 0) {
+            this.startDepositAnimation(~~BalanceChange + 1);
+        }
+        else if (BalanceChange <= -1) {
+            this.startWithdrawalAnimation((~~BalanceChange + 1) * -1);
+        }
+        if (this.CoinName === undefined) this.CoinName = 'Coins';
+
+        let lastChar = this.CoinName.charAt(this.CoinName.length - 1)
+        this.HTML_CoinsOfUserView.innerText =
+            ` ${(~~Balance).toString()}$${this.CoinName}${(lastChar === 's' || lastChar === 'S') ? '' : 's'}`;
+    }
+
+    public setSkinOfWallet(WalletSkinsSelectedName: string, getURLOfWalletSkinsImg: (arg0: string, arg1: number) => string) {
+        this.HTML_Wallet_Mask_0.style.backgroundImage =
+            `url(${getURLOfWalletSkinsImg(WalletSkinsSelectedName, 0)})`;
+
+        this.HTML_Wallet_Mask_1.style.backgroundImage =
+            `url(${getURLOfWalletSkinsImg(WalletSkinsSelectedName, 1)})`;
     }
 
     private async DepositAnimation(Coin: HTMLDivElement, CoinNumber: number, onStart: () => void, onEnd: () => void) {
@@ -210,9 +242,12 @@ export default class ViewWalletDisplay {
 
         await sleep(500 + CoinNumber * 5);
         Coin.style.top = '30%';
+        
+        this.AutomaticHidingDueInactivity.show(false, (500 + CoinNumber) * 2.5);
     }
 
     private async WithdrawalAnimation(Coin: HTMLDivElement, CoinNumber: number, onStart: () => void, onEnd: () => void) {
+
         Coin.classList.add('Coin');
         if (this.CoinImgURL) Coin.style.backgroundImage = 'url(' + this.CoinImgURL + ')';
 
@@ -245,6 +280,8 @@ export default class ViewWalletDisplay {
         Coin.style.top = '-60%';
         Coin.style.left = `${(CoinNumber % 2 === 0) ? (Math.random() * -36) : (Math.random() * 80)}%`;
         Coin.style.opacity = '0';
+
+        this.AutomaticHidingDueInactivity.show(false);
     }
 
     private StartCoinsAnimation(reverse: boolean, CoinsNumber: number) {
@@ -302,9 +339,9 @@ export default class ViewWalletDisplay {
         this.HTML_ItemsList.innerHTML = '';
         StoreItems.forEach(StoreItem => {
             if (StoreItem.FileName && StoreItem.Description && StoreItem.Price) {
-                let viewStoreItem = new ViewStoreItemDisplay(StoreItem.Description, StoreItem.Price);                
+                let viewStoreItem = new ViewStoreItemDisplay(StoreItem.Description, StoreItem.Price);
 
-                let SingleReproduction: ItemSetting = getItemsSetting('SingleReproduction',StoreItem.ItemsSettings);
+                let SingleReproduction: ItemSetting = getItemsSetting('SingleReproduction', StoreItem.ItemsSettings);
                 let ThereAlreadyAnItemInList = false;
                 if (PurchaseOrders && SingleReproduction.Enable) {
                     ThereAlreadyAnItemInList = this.MakeSureItemIsAvailable(StoreItem.id, PurchaseOrders)
@@ -337,6 +374,7 @@ export default class ViewWalletDisplay {
 
     constructor() {
         this.HTML_Wallet_Mask_1.addEventListener('click', () => {
+            window.Twitch.ext.rig.log('kk')
 
             if (this.HTML_InsideOfWalletDiv.classList.contains('StoreHide')) {
                 this.HTML_InsideOfWalletDiv.classList.remove('StoreHide');
@@ -349,7 +387,7 @@ export default class ViewWalletDisplay {
 
         this.WalletRelocatable = new DivRelocatable(this.HTML, 0, 0);
 
-        EnableHideWhenMouseIsInactive(document.body, this.HTML, 2000);
+        this.AutomaticHidingDueInactivity = new AutomaticHidingDueInactivity(document.body, [this.HTML], 5000);
 
         this.HTML_NavStoreButton.onclick = () => {
             this.setNavSelected(this.HTML_NavStoreButton);

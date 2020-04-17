@@ -9,7 +9,7 @@ import { reject } from "bluebird";
 import FolderTypes from "../../../services/models/files_manager/FolderTypes";
 import { ViewAdvertisement } from "../view/ViewAdvertising";
 import IOListeners from "../../../services/IOListeners";
-import { PutStoreItem, DeleteStoreItem, GetStore } from "../../common/BackendConnection/Store";
+import { updateStoreItem, DeleteStoreItem, GetStore } from "../../common/BackendConnection/Store";
 import { getUrlOfFile, UploadFile } from "../../common/BackendConnection/BlobFiles";
 
 /**
@@ -26,9 +26,9 @@ export default class StoreController {
         NotifyViewers({ ListenerName: TwitchListeners.onStoreChange, data: undefined })
     }
 
-    async setListeners() {
+    private async setListeners() {
         this.ViewStore.onAddStoreItemSoundActive = async () => {
-            await PutStoreItem(this.Token,
+            await updateStoreItem(this.Token,
                 this.ViewStore.addViewStoreItem(new StoreItem(null, StoreTypes.Audio,
                     null, [new ItemSetting('SingleReproduction', false),
                     new ItemSetting('AudioVolume', false, 100)], null, null)));
@@ -56,7 +56,7 @@ export default class StoreController {
         }
         this.ViewStore.onDescriptionChange = (ViewStoreItem) => {
             ViewStoreItem.DescriptionInput.setChangedInput();
-            PutStoreItem(this.Token, <StoreItem>ViewStoreItem)
+            updateStoreItem(this.Token, <StoreItem>ViewStoreItem)
                 .then(async () => {
                     ViewStoreItem.DescriptionInput.setInputSuccessfully();
                     await sleep(500);
@@ -71,7 +71,7 @@ export default class StoreController {
         }
         this.ViewStore.onPriceChange = (ViewStoreItem) => {
             ViewStoreItem.PriceInput.setChangedInput();
-            PutStoreItem(this.Token, <StoreItem>ViewStoreItem)
+            updateStoreItem(this.Token, <StoreItem>ViewStoreItem)
                 .then(async () => {
                     ViewStoreItem.PriceInput.setInputSuccessfully();
                     await sleep(500);
@@ -89,14 +89,14 @@ export default class StoreController {
                 this.ViewStore.HTML_DemoAudioPlayer.currentTime = 0;
             }
 
-            PutStoreItem(this.Token, ViewStoreItem)
+            updateStoreItem(this.Token, ViewStoreItem)
                 .then(() => this.onStoreChange())
-                .catch((rej) => {                    
+                .catch((rej:Response) => {                    
                     if (ItemSettings.DonorFeatureName === 'SingleReproduction') {
                         ViewStoreItem.SingleReproductionSetting.HTML_Input.checked = false;
                         ItemSettings.Enable = false;
 
-                        ViewAdvertisement.Show();
+                        if(rej.status === 423) ViewAdvertisement.Show();
                     }
                 })
         }
@@ -123,7 +123,7 @@ export default class StoreController {
                 ).then(async (UploadFileResponse: UploadFileResponse) => {
                     let StoreItem = <StoreItem>ViewStoreItem;
                     StoreItem.FileName = UploadFileResponse.FileName;
-                    await PutStoreItem(this.Token, StoreItem);
+                    await updateStoreItem(this.Token, StoreItem);
 
                     ViewStoreItem.ResponsiveInputFile.setUpgradeable();
                     STREAMER_SOCKET.removeEventListener(IOListeners.UploadProgress, ioListener);

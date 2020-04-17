@@ -1,7 +1,8 @@
-export default class StreamerDate {
-    StreamerID: string;
-    DonatedBeats: number;
-    DateOfFirstDonation: Date; 
-    DateOflastDonation: Date;
+export default class TransactionsOfUser {
+    ID: string;
+    TransactionsArray: TwitchExtBitsTransaction[];
+    constructor(ID: string, TransactionsOfUser: TwitchExtBitsTransaction[]) {
+        this.ID = ID;
+        this.TransactionsArray = TransactionsOfUser;
+    }
 }
-

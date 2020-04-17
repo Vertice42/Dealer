@@ -1,7 +1,7 @@
 import { PollButton } from "../../../services/models/poll/PollButton";
 import { ResponsiveInput } from "../../common/view/Inputs";
 import { hexToRgb, sleep } from "../../../utils/functions";
-import { EnableHideWhenMouseIsInactive, DivRelocatable } from "../../common/view/viewerFeatures";
+import { DivRelocatable, AutomaticHidingDueInactivity } from "../../common/view/viewerFeatures";
 
 const GRADIENT_DARKENING_RATE = 1.5;
 
@@ -17,7 +17,7 @@ export class ViewPollButton {
         this.HTMLElement.classList.add("Selected");
     }
 
-    Unelect() {
+    Unselect() {
         this.HTMLElement.classList.remove("Selected");
     }
 
@@ -32,36 +32,36 @@ export class ViewPollButton {
             this.Select();
         };
 
-        let RGBcolor = hexToRgb(Button.Color);
-        if (RGBcolor) {
+        let RGB_Color = hexToRgb(Button.Color);
+        if (RGB_Color) {
             ViewButton.style.border = `border: 1px solid 
-            rgb(${RGBcolor.r / GRADIENT_DARKENING_RATE * 1.3}, 
-                ${RGBcolor.g / GRADIENT_DARKENING_RATE * 1.3},
-                ${RGBcolor.b / GRADIENT_DARKENING_RATE * 1.3})`;
+            rgb(${RGB_Color.r / GRADIENT_DARKENING_RATE * 1.3}, 
+                ${RGB_Color.g / GRADIENT_DARKENING_RATE * 1.3},
+                ${RGB_Color.b / GRADIENT_DARKENING_RATE * 1.3})`;
 
             ViewButton.style.backgroundImage = `linear-gradient(${Button.Color},
-            rgb(${RGBcolor.r / GRADIENT_DARKENING_RATE}, 
-                ${RGBcolor.g / GRADIENT_DARKENING_RATE},
-                ${RGBcolor.b / GRADIENT_DARKENING_RATE}))`;
+            rgb(${RGB_Color.r / GRADIENT_DARKENING_RATE}, 
+                ${RGB_Color.g / GRADIENT_DARKENING_RATE},
+                ${RGB_Color.b / GRADIENT_DARKENING_RATE}))`;
 
             ViewButton.style.boxShadow = `0px 6px 0px 
-            rgb(${RGBcolor.r / GRADIENT_DARKENING_RATE * 1.4}, 
-                ${RGBcolor.g / GRADIENT_DARKENING_RATE * 1.4},
-                ${RGBcolor.b / GRADIENT_DARKENING_RATE * 1.4}),
+            rgb(${RGB_Color.r / GRADIENT_DARKENING_RATE * 1.4}, 
+                ${RGB_Color.g / GRADIENT_DARKENING_RATE * 1.4},
+                ${RGB_Color.b / GRADIENT_DARKENING_RATE * 1.4}),
                 0px 3px 10px rgba(0, 0, 0, 0.4), inset 0px 1px 0px rgba(255, 255, 255, 0.288), inset 0px 0px 3px rgba(255, 255, 255, 0.411)`
 
             ViewButton.addEventListener('mousedown', () => {
                 ViewButton.style.boxShadow = `0px 2px 0px 
-                rgb(${RGBcolor.r / GRADIENT_DARKENING_RATE * 1.4}, 
-                        ${RGBcolor.g / GRADIENT_DARKENING_RATE * 1.4},
-                        ${RGBcolor.b / GRADIENT_DARKENING_RATE * 1.4}),
+                rgb(${RGB_Color.r / GRADIENT_DARKENING_RATE * 1.4}, 
+                        ${RGB_Color.g / GRADIENT_DARKENING_RATE * 1.4},
+                        ${RGB_Color.b / GRADIENT_DARKENING_RATE * 1.4}),
                         0px 3px 10px rgba(0, 0, 0, 0.4), inset 0px 1px 0px rgba(255, 255, 255, 0.288), inset 0px 0px 3px rgba(255, 255, 255, 0.411)`
             });
             ViewButton.addEventListener('mouseup', () => {
                 ViewButton.style.boxShadow = `0px 6px 0px 
-                rgb(${RGBcolor.r / GRADIENT_DARKENING_RATE * 1.4}, 
-                    ${RGBcolor.g / GRADIENT_DARKENING_RATE * 1.4},
-                    ${RGBcolor.b / GRADIENT_DARKENING_RATE * 1.4}),
+                rgb(${RGB_Color.r / GRADIENT_DARKENING_RATE * 1.4}, 
+                    ${RGB_Color.g / GRADIENT_DARKENING_RATE * 1.4},
+                    ${RGB_Color.b / GRADIENT_DARKENING_RATE * 1.4}),
                     0px 3px 10px rgba(0, 0, 0, 0.4), inset 0px 1px 0px rgba(255, 255, 255, 0.288), inset 0px 0px 3px rgba(255, 255, 255, 0.411)`
 
             })
@@ -82,12 +82,13 @@ export class ViewPollButton {
 
     }
 }
-export default class ViewAlerts {    
+export default class ViewAlerts {
     TwitchUserName: string;
     AlertsRelocatable: DivRelocatable;
+    AutomaticHidingDueInactivity: AutomaticHidingDueInactivity;
 
     public getBetValue: () => number;
-    public onBeatIDSelected = () => { };
+    public onBetIDSelected = () => { };
     public BetAmountInput = new ResponsiveInput(<HTMLInputElement>document.getElementById("BetAmountInput"));
 
     private ParticipatePollButton = <HTMLInputElement>document.getElementById("ParticipatePollButton");
@@ -112,21 +113,21 @@ export default class ViewAlerts {
             buttons.push(button);
             button.onSelected = () => {                
                 localStorage['sbi'+this.TwitchUserName] = pollButton.ID;                
-                this.onBeatIDSelected();
+                this.onBetIDSelected();
                 buttons.forEach(Button => {
-                    Button.Unelect();
+                    Button.Unselect();
                 });
             };
             this.ButtonsDiv.appendChild(button.HTMLElement);
         });
     }
-    public ShowAllert(div: HTMLDivElement) {
+    public ShowAlert(div: HTMLDivElement) {
         div.classList.remove("Disable");
         div.classList.remove("Hidden");
         div.classList.add("Enable");
         div.classList.add("Alert");
     }
-    public async HideAllert(div: HTMLDivElement) {
+    public async HideAlert(div: HTMLDivElement) {
         return new Promise(async (resolve, reject) => {
             if (div.classList.contains("Disable")) {
                 return resolve();
@@ -150,39 +151,39 @@ export default class ViewAlerts {
     }
     public async HideAllAlerts() {
         return Promise.all([
-            this.HideAllert(this.PollAlert),
-            this.HideAllert(this.StopAlert),
-            this.HideAllert(this.AlertOfWinner),
-            this.HideAllert(this.AlertOfLoser),
-            this.HideAllert(this.PollDiv)
+            this.HideAlert(this.PollAlert),
+            this.HideAlert(this.StopAlert),
+            this.HideAlert(this.AlertOfWinner),
+            this.HideAlert(this.AlertOfLoser),
+            this.HideAlert(this.PollDiv)
         ]);
     }
     private onclickOfParticipatePollButton() {
         this.HideAllAlerts().then(() => {
-            this.ShowAllert(this.PollDiv);
+            this.ShowAlert(this.PollDiv);
         });
     }
     ;
     setInBetMode(PollButtons: PollButton[]) {
         this.HideAllAlerts().then(() => {
             this.setButtonsInPollDiv(PollButtons);
-            this.ShowAllert(this.PollAlert);
+            this.ShowAlert(this.PollAlert);
         });
     }
     setInStopeMode() {
         this.HideAllAlerts().then(() => {
-            this.ShowAllert(this.StopAlert);
+            this.ShowAlert(this.StopAlert);
         });
     }
     setInWinnerMode(LossDistributorOfPoll: number) {
         this.HideAllAlerts().then(() => {
-            this.ShowAllert(this.AlertOfWinner);
+            this.ShowAlert(this.AlertOfWinner);
             this.EarningsView.innerText = (this.getBetValue() * LossDistributorOfPoll).toString();
         });
     }
     setInLoserMode() {
         this.HideAllAlerts().then(() => {
-            this.ShowAllert(this.AlertOfLoser);
+            this.ShowAlert(this.AlertOfLoser);
             this.LossView.innerText = this.getBetValue().toString();
         });
     }
@@ -198,11 +199,12 @@ export default class ViewAlerts {
         this.BetAmountInput.HTML.onmouseenter = () => this.AlertsRelocatable.Disable();
         this.BetAmountInput.HTML.onmouseleave = () => this.AlertsRelocatable.Disable();
 
-        EnableHideWhenMouseIsInactive(document.body, this.PollAlert);
-        EnableHideWhenMouseIsInactive(document.body, this.PollDiv);
-        EnableHideWhenMouseIsInactive(document.body, this.StopAlert);
-        EnableHideWhenMouseIsInactive(document.body, this.AlertOfWinner);
-        EnableHideWhenMouseIsInactive(document.body, this.AlertOfLoser);
+        this.AutomaticHidingDueInactivity = new AutomaticHidingDueInactivity(document.body,
+            [this.PollAlert,
+                this.PollDiv,
+                this.StopAlert,
+                this.AlertOfWinner,
+                this.AlertOfLoser])
 
 
         this.ParticipatePollButton.onclick = () => this.onclickOfParticipatePollButton();

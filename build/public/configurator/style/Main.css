@@ -16,6 +16,7 @@
 
 body {
     background: rgb(54, 54, 73);
+    overflow-x: hidden;
 }
 
 #MainDiv {

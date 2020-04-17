@@ -61,8 +61,8 @@
     },
     {
         "id": "CloseButton",
-        "Text": "Wax",
-        "Instruction": "Wax and arrow the bet"
+        "Text": "Close",
+        "Instruction": "Closes sampling of betting results"
     },
     {
         "id": "CreatePollButton",

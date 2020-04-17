@@ -5,12 +5,14 @@ import TwitchListeners from "../../../services/TwitchListeners";
 import { addTwitchListeners } from "./MainController";
 import { WalletSkin } from "../../../services/models/wallet/WalletSkin";
 import { TwitchListener } from "../../common/model/TwitchListener";
-import ViewWalletDisplay from "../view/ViewStoreDisplay";
+import ViewWalletDisplay, { ViewWalletSkin } from "../view/ViewStoreDisplay";
 import { GetCoinsSettings } from "../../common/BackendConnection/Coins";
 import { GetWallet } from "../../common/BackendConnection/Wallets";
 import { GetStore } from "../../common/BackendConnection/Store";
 import { getURLOfWalletSkinsImg, getWalletSkins, getUrlOfFile } from "../../common/BackendConnection/BlobFiles";
 import { addPurchaseOrder, GetPurchaseOrders } from "../../common/BackendConnection/PurchaseOrders";
+import { getTransitionsByUser as getTransitionsByUser, updateTransitionsByUser } from "../../common/BackendConnection/ExtensionProducts";
+import { UpdateProductsPurchasedByUserRequest as UpdateTransitionsByUserRequest } from "../../../services/models/dealer/UpdateProductsPurchasedByUserRequest";
 
 /**
  * Control the update and make store items available and intermediate 
@@ -20,68 +22,83 @@ export default class StoreDisplayController {
     private Token: string;
     private StreamerID: string;
     private TwitchUserID: string;
-    private CoinName: string;
-    private ViewStoreDisplay = new ViewWalletDisplay();
+    
+    ViewWalletDisplay:ViewWalletDisplay;
 
-    public setViewBalance(Balance: number, BalanceChange = 0) {
-        if (BalanceChange > 0) {
-            this.ViewStoreDisplay.startDepositAnimation(~~BalanceChange + 1);
-        }
-        else if (BalanceChange <= -1) {
-            this.ViewStoreDisplay.startWithdrawalAnimation((~~BalanceChange + 1) * -1);
-        }
-        if (this.CoinName === undefined) this.CoinName = 'Coins';
-
-        let lastChar = this.CoinName.charAt(this.CoinName.length - 1)
-        this.ViewStoreDisplay.HTML_CoinsOfUserView.innerText =
-            ` ${(~~Balance).toString()}$${this.CoinName}${(lastChar === 's' || lastChar === 'S') ? '' : 's'}`;
-    }
-
-    private setSkinOfWallet(WalletSkinsSelectedName: string) {
-        this.ViewStoreDisplay.HTML_Wallet_Mask_0.style.backgroundImage =
-            `url(${getURLOfWalletSkinsImg(WalletSkinsSelectedName, 0)})`;
-
-        this.ViewStoreDisplay.HTML_Wallet_Mask_1.style.backgroundImage =
-            `url(${getURLOfWalletSkinsImg(WalletSkinsSelectedName, 1)})`;
+    private SelectSkinOfWallet(ViewWalletSkins: ViewWalletSkin) {
+        this.ViewWalletDisplay.setSkinOfWallet(ViewWalletSkins.WalletSkin.Name, getURLOfWalletSkinsImg);
+        this.ViewWalletDisplay.DeselectAllWallets();
+        window.localStorage['WalletSkinsSelectedName'] = ViewWalletSkins.WalletSkin.Name;
+        ViewWalletSkins.setSelected();
     }
 
     private async setListeners() {
-        this.ViewStoreDisplay.onBuyItemButtonActive = (StoreItem: StoreItem) => {
+        this.ViewWalletDisplay.onBuyItemButtonActive = (StoreItem: StoreItem) => {
             addPurchaseOrder(this.Token, this.TwitchUserID, StoreItem);
         }
 
-        this.ViewStoreDisplay.onNavSkinsButtonActive = async () => {
+        this.ViewWalletDisplay.onNavSkinsButtonActive = async () => {
             let WalletSkins = <WalletSkin[]>await getWalletSkins();
-            this.ViewStoreDisplay.setWalletSkins(WalletSkins, 100, (WalletSkinsName: string) => {
+            this.ViewWalletDisplay.setWalletsSkins(WalletSkins, (WalletSkinsName: string) => {
                 return getURLOfWalletSkinsImg(WalletSkinsName, 0);
             })
+
+            let TransitionsByUser = [];
+            (await getTransitionsByUser(this.Token)).forEach(transition => {
+                TransitionsByUser[transition.product.sku] = transition;
+            });
+
+            console.log(TransitionsByUser);
+            
+
+            let products = [];
+            (await window.Twitch.ext.bits.getProducts()).forEach(product => {
+                products[product.sku] = product;
+            });
+
+            this.ViewWalletDisplay.ViewWalletSkins.forEach(ViewWalletSkin => {
+                let product: TwitchExtBitsProduct = products[ViewWalletSkin.WalletSkin.sku];
+                if (TransitionsByUser[ViewWalletSkin.WalletSkin.sku]) {
+                    
+                    ViewWalletSkin.setLock()
+                } else {
+                    ViewWalletSkin.setUnlock()
+                    ViewWalletSkin.Price = Number(product.cost.amount);
+                }
+            });
         }
 
-        this.ViewStoreDisplay.onWalletSkinSelected = (ViewWalletSkins) => {
-            this.setSkinOfWallet(ViewWalletSkins.WalletSkin.Name);
-            this.ViewStoreDisplay.DeselectAllWallets();
-            window.localStorage['WalletSkinsSelectedName'] = ViewWalletSkins.WalletSkin.Name;
-            ViewWalletSkins.setSelected();
+        this.ViewWalletDisplay.onWalletSkinSelected = (ViewWalletSkins) => {
+            if (ViewWalletSkins.IsLock) {
+                window.Twitch.ext.bits.useBits(ViewWalletSkins.WalletSkin.sku);
+                window.Twitch.ext.bits.onTransactionComplete(async (Transaction) => {
+                    await updateTransitionsByUser(new UpdateTransitionsByUserRequest(this.Token, Transaction))
+                    ViewWalletSkins.setUnlock();
+                    this.SelectSkinOfWallet(ViewWalletSkins);
+                })
+            } else {
+                this.SelectSkinOfWallet(ViewWalletSkins);
+            }
         }
 
         addTwitchListeners(new TwitchListener(TwitchListeners.onCoinNameChange, async (newCoinName: string) => {
-            this.CoinName = newCoinName;
+            this.ViewWalletDisplay.CoinName = newCoinName;
         }));
 
         addTwitchListeners(new TwitchListener(TwitchListeners.onStoreChange, async () => {
-            this.ViewStoreDisplay.updateStoreItems(
+            this.ViewWalletDisplay.updateStoreItems(
                 await GetStore(this.StreamerID, -1),
                 await GetPurchaseOrders(this.StreamerID));
         }));
 
         addTwitchListeners(new TwitchListener(TwitchListeners.onAddPurchasedItem, async () => {
-            this.ViewStoreDisplay.updateStoreItems(
+            this.ViewWalletDisplay.updateStoreItems(
                 await GetStore(this.StreamerID, -1),
                 await GetPurchaseOrders(this.StreamerID));
         }));
 
         addTwitchListeners(new TwitchListener(TwitchListeners.onDeletePurchaseOrder, async () => {
-            this.ViewStoreDisplay.updateStoreItems(
+            this.ViewWalletDisplay.updateStoreItems(
                 await GetStore(this.StreamerID, -1),
                 await GetPurchaseOrders(this.StreamerID));
         }))
@@ -90,14 +107,14 @@ export default class StoreDisplayController {
     private async LoadingStore() {
         let CoinsSettings: CoinsSettings = await GetCoinsSettings(this.StreamerID);
         if (CoinsSettings.FileNameOfCoinImage)
-            this.ViewStoreDisplay.CoinImgURL = getUrlOfFile(this.StreamerID, 'CoinImage', CoinsSettings.FileNameOfCoinImage);
+            this.ViewWalletDisplay.CoinImgURL = getUrlOfFile(this.StreamerID, 'CoinImage', CoinsSettings.FileNameOfCoinImage);
 
         let WalletOfUser: dbWallet = await GetWallet(this.StreamerID, this.TwitchUserID);
-        this.ViewStoreDisplay.HTML_CoinsOfUserView.innerText = (~~WalletOfUser.Coins).toString();
+        this.ViewWalletDisplay.HTML_CoinsOfUserView.innerText = (~~WalletOfUser.Coins).toString();
 
-        this.CoinName = (await GetCoinsSettings(this.StreamerID)).CoinName;
+        this.ViewWalletDisplay.CoinName = (await GetCoinsSettings(this.StreamerID)).CoinName;
 
-        this.ViewStoreDisplay.updateStoreItems(
+        this.ViewWalletDisplay.updateStoreItems(
             await GetStore(this.StreamerID, -1),
             await GetPurchaseOrders(this.StreamerID));
 
@@ -108,9 +125,7 @@ export default class StoreDisplayController {
             WalletSkinsSelectedName = WalletSkins[0].Name;
             window.localStorage['WalletSkinsSelectedName'] = WalletSkinsSelectedName;
         }
-
-        this.setSkinOfWallet(WalletSkinsSelectedName);
-
+        this.ViewWalletDisplay.setSkinOfWallet(WalletSkinsSelectedName, getURLOfWalletSkinsImg);
         this.setListeners();
     }
 
@@ -118,6 +133,8 @@ export default class StoreDisplayController {
         this.Token = Token;
         this.StreamerID = StreamerID;
         this.TwitchUserID = TwitchUserID;
+        this.ViewWalletDisplay = new ViewWalletDisplay();
+
         this.LoadingStore()
     }
 }

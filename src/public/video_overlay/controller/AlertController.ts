@@ -42,7 +42,7 @@ export default class AlertController {
     private ViewAlerts: ViewAlerts;
     private CurrentPollStatus: PollStatus;
 
-    private ChangeBeat = () => {
+    private ChangeBet = () => {
         if (localStorage['sbi' + this.TwitchUserName]) {
             this.ViewAlerts.BetAmountInput.setChangedInput();
             addBet(new AddBetRequest(this.Token, this.TwitchUserName,
@@ -62,8 +62,8 @@ export default class AlertController {
     }
 
     private async setListeners() {
-        this.ViewAlerts.onBeatIDSelected = this.ChangeBeat;
-        this.ViewAlerts.BetAmountInput.HTML.onchange = this.ChangeBeat;
+        this.ViewAlerts.onBetIDSelected = this.ChangeBet;
+        this.ViewAlerts.BetAmountInput.HTML.onchange = this.ChangeBet;
     }
 
     private async updateAlerts(Poll: Poll) {
@@ -77,7 +77,7 @@ export default class AlertController {
             }
 
             if (Poll.PollStatus.DistributionCompleted) {
-                if (!isNaN(Number(localStorage['sbi' + this.TwitchUserName]))) {
+                if (!Number.isNaN((Number(localStorage['sbi' + this.TwitchUserName])))) {
                     if (IsWinner(Poll.PollButtons, Number((localStorage['sbi' + this.TwitchUserName])))) {
                         this.ViewAlerts.setInWinnerMode(Poll.LossDistributorOfPoll);
                     } else {

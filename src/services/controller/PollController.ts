@@ -4,7 +4,7 @@ import { POLL_WAXED, NOT_IN_STRING, POLL_STOPPED, POLL_STARTED, dbManager } from
 
 import { dbWalletManager } from "../modules/database/wallet/dbWalletManager";
 
-import { reject, resolve } from "bluebird";
+import { reject, resolve, Promise } from "bluebird";
 
 import { RenameTable } from "../modules/database/dbUtil";
 
@@ -18,9 +18,9 @@ import { PollStatus } from "../models/poll/PollStatus";
 
 import { Poll } from "../models/poll/Poll";
 import UpdateButtonGroupResult from "../models/poll/UpdateButtonGroupResult";
-import { PollBeat } from "../models/poll/PollBeat";
 import { dbPollManager } from "../modules/database/poll/dbPollManager";
-import { dbBeatingsManager } from "../modules/database/poll/dbBettingsManager";
+import { dbBetsManager as dbBetsManager } from "../modules/database/poll/dbBettingsManager";
+import { PollBet } from "../models/poll/PollBeat";
 
 export class PollController {
     public StreamerID: string;
@@ -47,7 +47,7 @@ export class PollController {
 
         let WinningButtons = dbPollManager.getWinningButtons(Buttons);
 
-        let Betting = await new dbPollManager(this.StreamerID).getAllBeatings();
+        let Betting = await new dbPollManager(this.StreamerID).getAllBets();
 
         if (Betting.length < 2) return reject({ DistributionStartedError: 'insufficient number of bets' })
 
@@ -67,13 +67,12 @@ export class PollController {
             }
         });
 
-
         Promise.all(DistributionPromises)
             .catch((error) => {
                 if (error === 'DistributionsAsStopped') {
                     this.OnDistributionsEnd({
                         AccountResult: AccountResult,
-                        message:'DistributionsAsStopped',
+                        message: 'DistributionsAsStopped',
                         timeOfDistribution: new Date().getTime() - StartTime + ' ms'
                     });
                 }
@@ -98,15 +97,15 @@ export class PollController {
      * @param newBetAmount 
      */
     async AddBet(TwitchUserName: string, ChosenBetID: number, newBetAmount: number) {
-        let BetsManager = new dbBeatingsManager(this.StreamerID);
+        let BetsManager = new dbBetsManager(this.StreamerID);
         let WalletManager = new dbWalletManager(this.StreamerID, TwitchUserName);
         let UserWallet = await WalletManager.getWallet();
 
-        let dbBet = await BetsManager.get_dbBet(TwitchUserName);
+        let dbBets = await BetsManager.get_dbBet(TwitchUserName);
 
-        if (dbBet) {
-            if (dbBet.BetAmount !== newBetAmount) {
-                let DifferenceBetweenBets = dbBet.BetAmount - newBetAmount;
+        if (dbBets) {
+            if (dbBets.BetAmount !== newBetAmount) {
+                let DifferenceBetweenBets = dbBets.BetAmount - newBetAmount;
 
                 if (UserWallet.Coins < newBetAmount) {
                     return reject({
@@ -126,7 +125,7 @@ export class PollController {
                     await WalletManager.withdraw(DifferenceBetweenBets);
                 }
             }
-            await BetsManager.updateBet(dbBet, new Bet(TwitchUserName, ChosenBetID, newBetAmount));
+            await BetsManager.updateBet(dbBets, new Bet(TwitchUserName, ChosenBetID, newBetAmount));
 
         } else {
 
@@ -157,7 +156,7 @@ export class PollController {
          * the modified buttons are updated, the buttons that do not exist
          * in the database are added, if a button was not sent but exists
          * in the database it is deleted.
-         */         
+         */
 
         let db_pollManager = new dbPollManager(this.StreamerID);
 
@@ -180,39 +179,39 @@ export class PollController {
             return resolve(AccountData.CurrentPollStatus);
 
         let NewCurrentPollID = AccountData.CurrentPollID;
-        let NewCurrentBeatingsID = AccountData.CurrentBettingID;
+        let NewCurrentBetsID = AccountData.CurrentBettingID;
 
         if (AccountData.CurrentPollStatus.PollWaxed) {
             if (AccountData.CurrentPollID.indexOf(POLL_WAXED) === NOT_IN_STRING)
                 NewCurrentPollID += POLL_WAXED;
             if (AccountData.CurrentBettingID.indexOf(POLL_WAXED) === NOT_IN_STRING)
-                NewCurrentBeatingsID += POLL_WAXED;
+                NewCurrentBetsID += POLL_WAXED;
         }
         if (AccountData.CurrentPollStatus.PollStopped) {
             if (AccountData.CurrentPollID.indexOf(POLL_STOPPED) === NOT_IN_STRING)
                 NewCurrentPollID += POLL_STOPPED;
             if (AccountData.CurrentBettingID.indexOf(POLL_STOPPED) === NOT_IN_STRING)
-                NewCurrentBeatingsID += POLL_STOPPED;
+                NewCurrentBetsID += POLL_STOPPED;
         }
         else {
             NewCurrentPollID = NewCurrentPollID.replace(POLL_STOPPED, "");
-            NewCurrentBeatingsID = NewCurrentBeatingsID.replace(POLL_STOPPED, "");
+            NewCurrentBetsID = NewCurrentBetsID.replace(POLL_STOPPED, "");
         }
         if (AccountData.CurrentPollStatus.PollStarted) {
             if (AccountData.CurrentPollID.indexOf(POLL_STARTED) === NOT_IN_STRING)
                 NewCurrentPollID += POLL_STARTED;
             if (AccountData.CurrentBettingID.indexOf(POLL_STARTED) === NOT_IN_STRING)
-                NewCurrentBeatingsID += POLL_STARTED;
+                NewCurrentBetsID += POLL_STARTED;
         }
 
         if (AccountData.CurrentPollID !== NewCurrentPollID &&
-            AccountData.CurrentBettingID !== NewCurrentBeatingsID) {
+            AccountData.CurrentBettingID !== NewCurrentBetsID) {
 
             await RenameTable(AccountData.dbStreamer, AccountData.CurrentPollID, NewCurrentPollID);
-            await RenameTable(AccountData.dbStreamer, AccountData.CurrentBettingID, NewCurrentBeatingsID);
+            await RenameTable(AccountData.dbStreamer, AccountData.CurrentBettingID, NewCurrentBetsID);
 
             AccountData.CurrentPollID = NewCurrentPollID;
-            AccountData.CurrentBettingID = NewCurrentBeatingsID;
+            AccountData.CurrentBettingID = NewCurrentBetsID;
 
             await Define.CurrentPollButtons(AccountData);
             await Define.CurrentBetting(AccountData);
@@ -231,7 +230,7 @@ export class PollController {
         let UpdateButtonGroupRes: UpdateButtonGroupResult = null;
 
         if (AccountData.CurrentPollStatus)
-            UpdatePollStatusRes = await this.dbUpdatePollStatus();            
+            UpdatePollStatusRes = await this.dbUpdatePollStatus();
 
         if (Buttons && Buttons.length > 0)
             UpdateButtonGroupRes = await this.UpdateButtonsOfPoll(Buttons);
@@ -252,8 +251,11 @@ export class PollController {
         AccountData.CurrentPollID = ID + ButtonDefiner.tableName;
         AccountData.CurrentBettingID = ID + BettingDefiner.TableName;
         AccountData.CurrentPollStatus = new PollStatus();
-        await Define.CurrentPollButtons(AccountData);
-        await Define.CurrentBetting(AccountData);
+
+        await (AccountData.DefinitionFinish = Promise.all([
+            Define.CurrentBetting(AccountData),
+            Define.CurrentPollButtons(AccountData)
+        ]))
 
         AccountData.LastUpdate = new Date().getTime();
 
@@ -266,9 +268,8 @@ export class PollController {
      */
     async getCurrentPoll() {
         let AccountData = dbManager.getAccountData(this.StreamerID);
-
         let Buttons = [];
-        let Bets: PollBeat[];
+        let Bets: PollBet[];
 
         let db_pollManager = new dbPollManager(this.StreamerID);
 
@@ -280,7 +281,7 @@ export class PollController {
                 dbButton.IsWinner))
         }
 
-        Bets = await db_pollManager.getBeatsOfCurrentPoll();
+        Bets = await db_pollManager.getBetsOfCurrentPoll();
 
         return resolve(new Poll(
             AccountData.CurrentPollStatus,

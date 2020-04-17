@@ -20,11 +20,6 @@
         "Instruction": ""
     },
     {
-        "id": "Donatebutton",
-        "Text": "Donate Bits",
-        "Instruction": ""
-    },
-    {
         "id": "PollAlertText",
         "Text": "Bet in progress",
         "Instruction": ""

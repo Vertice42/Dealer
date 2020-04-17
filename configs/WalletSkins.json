@@ -1,18 +1,22 @@
 [
     {
-        "Name": "piggy_bank",
-        "Price": 100
+        "Name": "classic",
+        "sku": "wallet_classic",
+        "ItIsFree": true
     },
     {
-        "Name": "classic_wallet",
-        "Price": 1000
+        "Name": "piggy_bank",
+        "sku": "wallet_piggy_bank",
+        "ItIsFree": false
     },
     {
         "Name": "minecraft_chest",
-        "Price": 5000
+        "sku": "wallet_minecraft_chest",
+        "ItIsFree": false
     },
     {
         "Name": "pepe_monkas",
-        "Price": 10000
+        "sku": "wallet_pepe_monkas",
+        "ItIsFree": false
     }
 ]

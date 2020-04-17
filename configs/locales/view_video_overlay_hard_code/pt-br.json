@@ -20,11 +20,6 @@
         "Instruction": ""
     },
     {
-        "id": "Donatebutton",
-        "Text": "Doar Bits",
-        "Instruction": ""
-    },
-    {
         "id": "PollAlertText",
         "Text": "Aposta em progresso",
         "Instruction": ""

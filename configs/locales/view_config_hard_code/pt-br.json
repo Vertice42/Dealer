@@ -61,8 +61,8 @@
     },
     {
         "id": "CloseButton",
-        "Text": "Cera",
-        "Instruction": "Cera e flecha na aposta"
+        "Text": "Fechar",
+        "Instruction": "Fecha a amostragem do resultado das apostas"
     },
     {
         "id": "CreatePollButton",

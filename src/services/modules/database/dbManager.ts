@@ -10,7 +10,7 @@ export const POLL_WAXED = "_waxed";
 export const POLL_STARTED = "_started";
 export const POLL_STOPPED = "_stopped";
 
-const STREAMER_DATABASE_NAME = 'streamer_';
+const STREAMER_DATABASE_NAME = 'dealer_streamer_';
 
 const Mysql = new Sequelize(
     'mysql',

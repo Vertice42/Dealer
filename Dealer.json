@@ -1,6 +1,6 @@
 {
   "allowHttpBackend": false,
-  "backendCommand": "node build/services/index.js A8m25f7azgDJcOeVC/Jdk1b9n8PqK5PlN631kLH/s+k=",
+  "backendCommand": "node build/services/index.js jzGFE5sAj/lga+aBGumUdwEYjj9gOnTurGkgPCRuG7s= liu00zf4fub5qwkk37j7mb4f42jvnl puahqprmdz2kxnpt730dhek747bqc6",
   "backendFolderName": "C:\\Users\\ADM\\Documents\\Projetos Git\\Dealer",
   "certificateExceptions": [],
   "extensionViews": [
@@ -73,13 +73,59 @@
         "width": 854,
         "height": 480
       }
+    },
+    {
+      "id": "7",
+      "label": "",
+      "channelId": "97848974",
+      "configurationAnchor": "panel",
+      "displayChannelName": "vertise5x",
+      "type": "dashboard",
+      "features": {
+        "isBitsEnabled": true,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": false
+      },
+      "linked": true,
+      "linkedUserId": "265737932",
+      "mode": "dashboard",
+      "isPopout": false,
+      "role": "Broadcaster",
+      "orientation": "Portrait",
+      "frameSize": {
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "id": "8",
+      "label": "",
+      "channelId": "97848974",
+      "configurationAnchor": "panel",
+      "displayChannelName": "vertise5x",
+      "type": "mobile",
+      "features": {
+        "isBitsEnabled": true,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": false
+      },
+      "linked": true,
+      "linkedUserId": "97848974",
+      "mode": "viewer",
+      "isPopout": false,
+      "role": "Logged-In Viewer",
+      "orientation": "Portrait",
+      "frameSize": {
+        "width": 375,
+        "height": 822
+      }
     }
   ],
   "manifest": {
     "anchor": "panel",
     "assetUrls": [],
     "authorName": "Vertise5x",
-    "bitsEnabled": false,
+    "bitsEnabled": true,
     "canInstall": true,
     "configUrl": "https://localhost:8080/config.html",
     "configurationLocation": "none",

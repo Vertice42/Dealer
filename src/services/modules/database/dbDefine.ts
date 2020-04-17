@@ -38,8 +38,8 @@ export class Define {
         return AccountData.dbCurrentPollButtons.sync();
     }
     static async CurrentBetting(AccountData: AccountData) {
-        AccountData.dbCurrentBeatings = <typeof dbBet>AccountData.dbStreamer
+        AccountData.dbCurrentBets = <typeof dbBet>AccountData.dbStreamer
             .define(AccountData.CurrentBettingID, BettingDefiner.attributes, BettingDefiner.options);
-        return AccountData.dbCurrentBeatings.sync();
+        return AccountData.dbCurrentBets.sync();
     }
 }

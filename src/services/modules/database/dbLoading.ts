@@ -53,7 +53,7 @@ export class Loading {
         accountData.CurrentBettingID = await getTableName(tables[0], tables[0].length - (DefinitionPromises.length + 2));
         /**
          * The wallet and settings table are in the same database and will always be
-         * the first and second index, while the most recent Beatings poll tables will 
+         * the first and second index, while the most recent Bets poll tables will 
          * always be the 3rd and 4th index respectively
          */
 

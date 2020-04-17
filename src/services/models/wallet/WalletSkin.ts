@@ -1,9 +1,11 @@
 export class WalletSkin {
     Name:string;
-    Price:number;
+    sku:string;
+    ItIsFree:boolean;
 
-    constructor(Name: string,Price: number){
+    constructor(Name: string,sku: string,ItIsFree:boolean){
         this.Name = Name;
-        this.Price = Price;
+        this.sku = sku;
+        this.ItIsFree = ItIsFree;
     }
 }

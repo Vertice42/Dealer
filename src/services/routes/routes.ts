@@ -1,7 +1,7 @@
 export const PollManagerRoute = '/PollManager';
 export const GetPollRoute = '/Poll/:StreamerID';
 export const getPollRoute = (StreamerID: string) => { return '/Poll/' + StreamerID };
-export const AddBeatRoute = '/addBeat';
+export const AddBetRoute = '/addBet';
 //POLL
 export const MineCoinRoute = '/MinerCoin';
 //MINER
@@ -58,3 +58,6 @@ export const getLocale = (ViewName: string, Language: string) => {
     return '/Locales/' + ViewName + '/' + Language;
 }
 //FILES
+export const UpdateTransitionsByUser = '/UpdateTransitionsByUser';
+export const GetTransitionsByUser = '/GetTransitionsByUser'; 
+//ProductsPurchased
