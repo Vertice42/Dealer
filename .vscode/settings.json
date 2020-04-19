@@ -5,5 +5,9 @@
         "configurator",
         "fileupload",
         "onanimationend"
+    ],
+    "cSpell.language": "pt-BR,en-US",
+    "cSpell.enableFiletypes": [
+        "json"
     ]
 }

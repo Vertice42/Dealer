@@ -1,12 +1,12 @@
 [
     {
         "id": "AdvertisementText",
-        "Text": "Torne-se um doador para acessar todas as funcionalidades",
+        "Text": "Torne-se um apoiador para usar esta funcionalidades",
         "Instruction": ""
     },
     {
         "id": "AdvertisementButton",
-        "Text": "Doar",
+        "Text": "Apoiar",
         "Instruction": ""
     },
     {

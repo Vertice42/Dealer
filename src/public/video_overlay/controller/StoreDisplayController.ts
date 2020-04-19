@@ -22,8 +22,8 @@ export default class StoreDisplayController {
     private Token: string;
     private StreamerID: string;
     private TwitchUserID: string;
-    
-    ViewWalletDisplay:ViewWalletDisplay;
+
+    ViewWalletDisplay: ViewWalletDisplay;
 
     private SelectSkinOfWallet(ViewWalletSkins: ViewWalletSkin) {
         this.ViewWalletDisplay.setSkinOfWallet(ViewWalletSkins.WalletSkin.Name, getURLOfWalletSkinsImg);
@@ -48,9 +48,6 @@ export default class StoreDisplayController {
                 TransitionsByUser[transition.product.sku] = transition;
             });
 
-            console.log(TransitionsByUser);
-            
-
             let products = [];
             (await window.Twitch.ext.bits.getProducts()).forEach(product => {
                 products[product.sku] = product;
@@ -58,11 +55,10 @@ export default class StoreDisplayController {
 
             this.ViewWalletDisplay.ViewWalletSkins.forEach(ViewWalletSkin => {
                 let product: TwitchExtBitsProduct = products[ViewWalletSkin.WalletSkin.sku];
-                if (TransitionsByUser[ViewWalletSkin.WalletSkin.sku]) {
-                    
-                    ViewWalletSkin.setLock()
+                if (TransitionsByUser[ViewWalletSkin.WalletSkin.sku] || ViewWalletSkin.WalletSkin.ItIsFree) {
+                    ViewWalletSkin.setUnlock();
                 } else {
-                    ViewWalletSkin.setUnlock()
+                    ViewWalletSkin.setLock();
                     ViewWalletSkin.Price = Number(product.cost.amount);
                 }
             });

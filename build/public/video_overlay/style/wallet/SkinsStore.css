@@ -11,7 +11,7 @@
     display: flex;
     margin: auto;
     font-family: Heroes;
-    font-size: 1.5vw;
+    font-size: 1vw;
     color: white;
     text-align: center;
 }
@@ -40,10 +40,10 @@
 
 .WalletSkinDiv {
     display: inline-grid;
-    width: 10vw;
-    height: 9vw;
-    min-width: 10vw;
-    min-height: 9vw;
+    width: 12vw;
+    height: 11.5vw;
+    min-width: 12vw;
+    min-height: 11.5vw;
 
     margin: 1vw;
 
@@ -56,7 +56,18 @@
 }
 
 .WalletSkinDiv.WalletSkinLock{
+    width: 12vw;
+    height: 11.5vw;
+    min-width: 12vw;
+    min-height: 11.5vw;
     background-size: 20%, 100%;
+}
+
+.WalletSkinDiv.WalletSkinLock img {
+    width: 7vw;
+    height: 6vw;
+    margin: 10% 10%;
+    margin-bottom: 0vw;
 }
 
 .WalletSkinDiv.WalletSkinSelected{
@@ -64,10 +75,11 @@
 }
 
 .WalletSkinImg {
-    width: 7vw;
-    height: 6vw;
-    margin: 10% 10%;
-    margin-bottom: 0vw;
+    width: 80%;
+    height: 70%;
+    margin: auto;
+
+    transition: all 200ms;
 }
 
 .WalletSkinPrice {

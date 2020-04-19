@@ -41,9 +41,9 @@ APP.post(UpdateTransitionsByUser, async function (req, res: express.Response) {
         })
 })
 
-APP.get(GetTransitionsByUser, async function (req, res: express.Response) {    
-    let Token = <string> req.headers.token;
-    
+APP.get(GetTransitionsByUser, async function (req, res: express.Response) {
+    let Token = <string>req.headers.token;
+
     let ErrorList = CheckRequisition([
         () => {
             if (!Token)
@@ -58,9 +58,11 @@ APP.get(GetTransitionsByUser, async function (req, res: express.Response) {
 
     new dbDealerManager(AuthResult.channel_id).getTransactionsOfUser(AuthResult.user_id)
         .then(result => {
-            res.status(200).send(result.TransactionsArray);
+            res.status(200).send((result) ? result.TransactionsArray : []);
         })
         .catch(rej => {
+            console.error(rej);
+
             res.status(500).send(rej);
         })
 })

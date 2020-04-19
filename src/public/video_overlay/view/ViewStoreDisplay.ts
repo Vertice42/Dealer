@@ -73,7 +73,7 @@ export class ViewWalletSkin {
 
     set Price(price: number) {
         this.price = price
-        this.HTML_WalletSkinPrice.innerText = this.price + ' bits';
+        this.HTML_WalletSkinPrice.innerText = this.price + ' bits';        
     }
 
     get Price() {
@@ -189,12 +189,12 @@ export default class ViewWalletDisplay {
         });
     }
 
-    public setViewBalance(Balance: number, BalanceChange = 0) {
+    public setViewBalance(Balance: number, BalanceChange = 0) {        
         if (BalanceChange > 0) {
-            this.startDepositAnimation(~~BalanceChange + 1);
+            this.startDepositAnimation(~~BalanceChange+1);
         }
-        else if (BalanceChange <= -1) {
-            this.startWithdrawalAnimation((~~BalanceChange + 1) * -1);
+        else if (BalanceChange < -1) {
+            this.startWithdrawalAnimation((~~BalanceChange-1)* -1);
         }
         if (this.CoinName === undefined) this.CoinName = 'Coins';
 
@@ -374,8 +374,6 @@ export default class ViewWalletDisplay {
 
     constructor() {
         this.HTML_Wallet_Mask_1.addEventListener('click', () => {
-            window.Twitch.ext.rig.log('kk')
-
             if (this.HTML_InsideOfWalletDiv.classList.contains('StoreHide')) {
                 this.HTML_InsideOfWalletDiv.classList.remove('StoreHide');
                 this.HTML_InsideOfWalletDiv.classList.add('StoreSample');

@@ -1,12 +1,12 @@
 [
     {
         "id": "AdvertisementText",
-        "Text": "Become a donor to access all Functionalities",
+        "Text": "Become a supporter to use these features",
         "Instruction": ""
     },
     {
         "id": "AdvertisementButton",
-        "Text": "Become a Donor",
+        "Text": "Support",
         "Instruction": ""
     },
     {

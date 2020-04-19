@@ -45,12 +45,12 @@
 }
 
 #PollAlert h2 {
-    width: fit-content;
     margin: 20px auto 0px auto;
+    font: 1.2vw Heroes;
     display: table;
     color: white;
     text-align: center;
-    font: 1.5vw Heroes;
+    letter-spacing: 0.2vw;
     text-transform: uppercase;
 }
 

@@ -91,7 +91,7 @@
     width: 8vw;
     height: 8vw;
     background-color: rgba(0, 0, 0, 0);
-    background-image: url(../../images/delete_buton.png);
+    background-image: url(../../images/delete_button.png);
     background-size: 100%;
     background-repeat: no-repeat;
     background-position: center;
@@ -165,12 +165,17 @@
     animation: AdvertisementTextShowAnimation 1s 200ms reverse forwards;
 }
 
+#AdvertisementDiv .AdvertisementHide{
+    transform: rotate(0deg);
+    transition: transform 500ms;
+}
+
 /*AdvertisementText*/
 
 #bitImage100 {
     position: absolute;
     width: 10vw;
-    top: 19vw;
+    top: 17vh;
     left: 11vw;
     transform: rotate(-25deg);
 }
@@ -178,7 +183,7 @@
 #bitImage1000 {
     position: absolute;
     width: 10vw;
-    top: 19vw;
+    top: 17vh;
     left: 38vw;
     transform: rotate(25deg);
 }
@@ -222,9 +227,8 @@
     margin: 5% auto;
     width: 26vw;
     height: 6vw;
-    background-image: linear-gradient(to right, rgb(142, 85, 228), rgb(11, 166, 255), rgb(11, 255, 223) 95%);
-    background-size: 100%;
-    border: none;
+    background-image: linear-gradient(to right, rgb(43, 236, 202), rgb(42, 146, 234) 95%);
+    background-size: 100%;    background-size: 100%;
     border-radius: 6px;
     text-transform: uppercase;
     font-size: 3vw;
@@ -234,8 +238,16 @@
     transition: transform 200ms;
 }
 
+#AdvertisementButton:focus{
+    transform: scale(1.1);
+}
+
 #AdvertisementButton:hover {
     transform: scale(1.1);
+}
+
+#AdvertisementButton:focus#AdvertisementButton:hover {
+    transform: scale(1.2);
 }
 
 @keyframes AuraAnimation {

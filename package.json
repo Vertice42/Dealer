@@ -10,7 +10,7 @@
     "test_mining": "mocha 'build/test/mining.test.js'",
     "test_poll": "mocha 'build/test/poll.test.js'",
     "start": " nodemon build/services/index.js jzGFE5sAj/lga+aBGumUdwEYjj9gOnTurGkgPCRuG7s= liu00zf4fub5qwkk37j7mb4f42jvnl puahqprmdz2kxnpt730dhek747bqc6",
-    "nw": "node build/services/index.js jzGFE5sAj/lga+aBGumUdwEYjj9gOnTurGkgPCRuG7s= liu00zf4fub5qwkk37j7mb4f42jvnl puahqprmdz2kxnpt730dhek747bqc6"
+    "go": "node build/services/index.js jzGFE5sAj/lga+aBGumUdwEYjj9gOnTurGkgPCRuG7s= liu00zf4fub5qwkk37j7mb4f42jvnl puahqprmdz2kxnpt730dhek747bqc6"
   },
   "author": "Thiago Ruas Freire",
   "license": "ISC",
