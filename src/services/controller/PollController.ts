@@ -1,6 +1,6 @@
 import { PollButton } from "../models/poll/PollButton";
 
-import { POLL_WAXED, NOT_IN_STRING, POLL_STOPPED, POLL_STARTED, dbManager } from "../modules/database/dbManager";
+import { POLL_WAXED, NOT_IN_STRING, POLL_STOPPED, POLL_STARTED, dbManager, COMPLETED } from "../modules/database/dbManager";
 
 import { dbWalletManager } from "../modules/database/wallet/dbWalletManager";
 
@@ -202,6 +202,12 @@ export class PollController {
                 NewCurrentPollID += POLL_STARTED;
             if (AccountData.CurrentBettingID.indexOf(POLL_STARTED) === NOT_IN_STRING)
                 NewCurrentBetsID += POLL_STARTED;
+        }
+        if (AccountData.CurrentPollStatus.DistributionCompleted) {
+            if (AccountData.CurrentPollID.indexOf(COMPLETED) === NOT_IN_STRING)
+                NewCurrentPollID += COMPLETED;
+            if (AccountData.CurrentBettingID.indexOf(COMPLETED) === NOT_IN_STRING)
+                NewCurrentBetsID += COMPLETED;
         }
 
         if (AccountData.CurrentPollID !== NewCurrentPollID &&

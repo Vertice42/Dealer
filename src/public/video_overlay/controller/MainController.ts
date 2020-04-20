@@ -3,7 +3,7 @@ import AlertController from "./AlertController";
 import { InsertTextInHardCode as InsertTextInElements, LocalizedTexts } from "../../common/view/Texts";
 import { TwitchListener } from "../../common/model/TwitchListener";
 import { getLocaleFile } from "../../common/BackendConnection/BlobFiles";
-import { getUsername } from "../../common/TwitchConnections";
+import { getUsername } from "../../common/BackendConnection/TwitchConnections";
 import StoreDisplayController from "./StoreDisplayController";
 
 function makeID(length: number) {

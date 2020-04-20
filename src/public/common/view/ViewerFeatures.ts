@@ -12,15 +12,20 @@ export class DivRelocatable {
     private enable = false;
 
     private onmousemove = (event: MouseEvent) => {
-        this.X += event.movementX;
-        this.Y += event.movementY;
+        let newX = this.X + event.movementX;
+        let newY = this.Y + event.movementY;
 
-        this.Element.style.left = this.X + 'px';
-        this.Element.style.top = this.Y + 'px';
+        if (newX > 0 && newX < document.body.offsetWidth - this.Element.offsetWidth &&
+            newY > 0 && newY < document.body.offsetHeight - this.Element.offsetHeight) {
+            this.X = newX;
+            this.Y = newY;
 
-        localStorage[this.Element.id + 'X'] = this.X;
-        localStorage[this.Element.id + 'Y'] = this.Y;
+            this.Element.style.left = this.X + 'px';
+            this.Element.style.top = this.Y + 'px';
 
+            localStorage[this.Element.id + 'X'] = this.X;
+            localStorage[this.Element.id + 'Y'] = this.Y;
+        }
     }
     private onmousedown = () => {
         this.Element.style.cursor = 'grabbing';
@@ -31,6 +36,7 @@ export class DivRelocatable {
         this.Element.addEventListener('mousemove', this.onmousemove);
     }
     private onmouseleave = () => {
+        this.Element.style.cursor = 'default';
         this.Element.removeEventListener('mousemove', this.onmousemove);
     }
     private onmouseup = () => {

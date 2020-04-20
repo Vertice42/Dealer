@@ -1,7 +1,7 @@
 import { PollStatus } from "../../models/poll/PollStatus";
 import { MinerSettings } from "../../models/streamer_settings/MinerSettings";
 import { Define } from "./dbDefine";
-import { POLL_WAXED, NOT_IN_STRING, POLL_STARTED, POLL_STOPPED, dbManager } from "./dbManager";
+import { POLL_WAXED, NOT_IN_STRING, POLL_STARTED, POLL_STOPPED, dbManager, COMPLETED } from "./dbManager";
 import { AccountData } from "../../models/dealer/AccountData";
 import { getTableName } from "./dbUtil";
 import { resolve } from "bluebird";
@@ -21,7 +21,7 @@ export class Loading {
                     });
                     return Loading.MinerSettings(AccountData);
                 }
-                AccountData.MinerSettings = <MinerSettings>dbSetting.SettingsJson;                
+                AccountData.MinerSettings = <MinerSettings>dbSetting.SettingsJson;
                 return resolve(dbSetting.SettingsJson);
             })
     }
@@ -68,9 +68,12 @@ export class Loading {
             if (accountData.CurrentBettingID.indexOf(POLL_STOPPED) !== NOT_IN_STRING)
                 accountData.CurrentPollStatus.PollStopped = true;
 
+            if (accountData.CurrentBettingID.indexOf(COMPLETED) !== NOT_IN_STRING)
+                accountData.CurrentPollStatus.DistributionCompleted = true;
+
             await Define.CurrentPollButtons(accountData);
             await Define.CurrentBetting(accountData);
-        }        
+        }
         return accountData;
     }
 }
