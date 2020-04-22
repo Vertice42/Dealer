@@ -1,54 +1,83 @@
 import { resolve, reject } from "bluebird";
 import { PollButton } from "../../../models/poll/PollButton";
-import { dbButton, dbButtonType } from "../../../models/poll/dbButton";
+import { dbPollButton, dbButtonType } from "../../../models/poll/dbButton";
 import { dbManager } from "../dbManager";
-import { Bet, dbBet } from "../../../models/poll/dbBetting";
-import { sleep } from "../../../../utils/functions";
 import { PollBet } from "../../../models/poll/PollBeat";
+import { PollStatus } from "../../../models/poll/PollStatus";
+import { dbBet, Bet } from "../../../models/poll/dbBets";
+import { Define } from "../dbDefine";
+import { AccountData } from "../../../models/dealer/AccountData";
+import { getMaxIDOfTable } from "../dbUtil";
 
 export class dbPollManager {
-    StreamerID: string;
-    constructor(StreamerID: string) {
-        this.StreamerID = StreamerID;
+    AccountData: AccountData;
+
+    async get_dbButtons(): Promise<typeof dbPollButton> {
+        if (!this.AccountData.dbButtons) this.AccountData.dbButtons = await Define.dbButtons(this.AccountData, await this.getIdOfLastPollID());
+        return this.AccountData.dbButtons;
+    }
+
+    async get_dbBets(): Promise<typeof dbBet> {
+        if (!this.AccountData.dbBets) this.AccountData.dbBets = await Define.dbBets(this.AccountData, await this.getIdOfLastPollID());
+        return this.AccountData.dbBets;
+    }
+
+    async getLastPollStatus() {
+        if (!this.AccountData.LastPollStatus)
+            this.AccountData.LastPollStatus = await this.getPollStatus(await this.getIdOfLastPollID());
+
+        return this.AccountData.LastPollStatus;
+    }
+    async getPollStatusOf_db(IdOfPollIndex: number) {
+        return (await this.AccountData.PollsIndexes.findOne({ where: { id: IdOfPollIndex } }));
+    }
+
+    async createPollIndex(PollIndex: PollStatus) {
+        this.AccountData.LastPollStatus = undefined;
+        this.AccountData.dbBets = undefined;
+        this.AccountData.dbButtons = undefined;
+
+        this.AccountData.LastPollID++;
+        this.AccountData.dbBets = undefined
+
+        await this.AccountData.PollsIndexes.create(PollIndex);
+    }
+    async updatePollStatus(PollStatus: PollStatus) {
+        this.AccountData.LastPollStatus = undefined;
+        
+        return (await this.getPollStatusOf_db(PollStatus.id||this.AccountData.LastPollID)).update(PollStatus);
+    }
+    async getPollStatus(IdOfPollIndex: number) {
+        let dbPollStatus = await this.getPollStatusOf_db(IdOfPollIndex);
+        return (dbPollStatus) ? new PollStatus(dbPollStatus) : new PollStatus().wax();
+    }
+
+    async getIdOfLastPollID(): Promise<number> {
+        if (!this.AccountData.LastPollID) {
+            this.AccountData.LastPollID = await getMaxIDOfTable(this.AccountData.PollsIndexes);
+        }
+        return this.AccountData.LastPollID;
     }
 
     async getAllBets(): Promise<dbBet[]> {
-        let AccountData = dbManager.getAccountData(this.StreamerID);
-        await AccountData.DefinitionFinish;
-
-        if (!AccountData.dbCurrentBets) return [];
-        return AccountData.dbCurrentBets.findAll();
+        return (await this.get_dbBets()).findAll();
     }
 
-    async getBetsOfCurrentPoll(): Promise<PollBet[]> {
+    async getNumberOfBets(): Promise<PollBet[]> {
         let dbBets = await this.getAllBets();
+
         let Bets: PollBet[] = [];
-        dbBets.forEach(Bets => {
-            if (Bets[Bets.Bet])
-                Bets[Bets.Bet].NumberOfBets++;
+        dbBets.forEach(dbBet => {
+            if (Bets[dbBet.Bet])
+                Bets[dbBet.Bet].NumberOfBets++;
             else
-                Bets[Bets.Bet] = new PollBet(Bets.Bet).setNumberOfBets(1);
+                Bets[dbBet.Bet] = new PollBet(dbBet.Bet, 1);
         });
         return Bets;
     }
 
     async getAllButtonsOfCurrentPoll() {
-
-        let AccountData = dbManager.getAccountData(this.StreamerID);
-
-        if (AccountData) {
-            if (AccountData.dbCurrentPollButtons) {
-                return AccountData.dbCurrentPollButtons.findAll()
-                    .catch(async (rej) => {
-                        if (rej.parent.errno === 1146) {
-                            await sleep(500)
-                            return this.getAllButtonsOfCurrentPoll();
-                        }
-                    })
-            }
-            return [];
-        }
-        return reject('AccountData undefined');
+        return (await this.get_dbButtons()).findAll();
     }
 
     /**
@@ -56,45 +85,7 @@ export class dbPollManager {
      * @param ButtonID 
      */
     async getButtonOfCurrentPoll(ButtonID: number) {
-        let AccountData = dbManager.getAccountData(this.StreamerID);
-        await AccountData.DefinitionFinish;
-
-        if (AccountData) {
-            if (AccountData.dbCurrentPollButtons) {
-                return AccountData.dbCurrentPollButtons.findOne({ where: { ID: ButtonID } });
-            }
-            return reject('dbCurrentPollButtons undefined');
-
-        }
-        return reject('AccountData undefined');
-    }
-
-    /**
-     * Calculation of the distribution of winnings used in the list of bets and options
-     * or options shipped
-     * 
-     * @param Bets 
-     * @param WinningButtons 
-     * @returns {
-     * WageredCoins:number, 
-     * LostWageredCoins:number, 
-     * LossDistributor:number}
-     * 
-     */
-    static CalculateDistribution(Bets: Bet[], WinningButtons: PollButton[]): any {
-        let WageredCoins: number = 0;
-        let LostWageredCoins: number = 0;
-
-        Bets.forEach(Bets => {
-            if (Bets.BetAmount) {
-                if (dbPollManager.BetIsWinner(WinningButtons, Bets.Bet))
-                    WageredCoins += Bets.BetAmount;
-                else
-                    LostWageredCoins += Bets.BetAmount;
-            }
-        });
-
-        return { WageredCoins, LostWageredCoins, LossDistributor: LostWageredCoins / WageredCoins }
+        return (await this.get_dbButtons()).findOne({ where: { ID: ButtonID } })
     }
 
     /**
@@ -102,27 +93,18 @@ export class dbPollManager {
      * @param dbButton 
      * @param newButton 
      */
-    async UpdateButtonOfCurrentPoll(dbButton: dbButton, newButton: dbButtonType) {
+    async UpdateButtonOfCurrentPoll(dbButton: dbPollButton, newButton: dbButtonType) {
         return dbButton.update(newButton);
     }
-    /**
-     * 
-     * @param Button 
-     */
-    async AddButtonOfCurrentPoll(Button: dbButtonType) {
-        return dbManager.getAccountData(this.StreamerID).dbCurrentPollButtons.create(Button);
+
+    async AddButtonOfCurrentPoll(new_Button: PollButton) {
+        return (await this.get_dbButtons()).create(new_Button);
     }
-    /**
-     * 
-     * @param ButtonID 
-     */
+
     async DeleteButtonOfCurrentPoll(ButtonID: number) {
         return (await this.getButtonOfCurrentPoll(ButtonID)).destroy();
     }
 
-    /**
-     * @param Buttons: Array of PollButton
-     */
     async UpdateOrCreateButtonsOfPoll(Buttons: PollButton[]) {
         var CreatedButtons = 0;
         var UpdatedButtons = 0;
@@ -198,5 +180,20 @@ export class dbPollManager {
                 WinningButtons.push(Button);
         });
         return WinningButtons;
+    }
+
+    async get_dbBet(TwitchUserID: string) {
+        return (await this.get_dbBets()).findOne({ where: { TwitchUserID: TwitchUserID } });
+    }
+
+    async updateBet(dbBet: dbBet, newBet: Bet) {
+        return dbBet.update(newBet);
+    }
+
+    async createBet(newBet: Bet) {
+        return (await this.get_dbBets()).create(newBet);
+    }
+    constructor(StreamerID: string) {
+        this.AccountData = dbManager.getAccountData(StreamerID);
     }
 }

@@ -1,10 +1,12 @@
 import sequelize = require("sequelize");
 import { Model, ModelOptions, ModelAttributes } from "sequelize";
-export class dbButton extends Model {
+import { PollButton } from "./PollButton";
+export class dbPollButton extends Model implements PollButton {
     ID: number
     Name: string
     Color: string
-    IsWinner: boolean
+    IsWinner: boolean    
+    Votes: number;
 }
 
 export class dbButtonType  {

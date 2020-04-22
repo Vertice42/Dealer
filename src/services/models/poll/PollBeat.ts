@@ -1,12 +1,8 @@
 export class PollBet {
     BetID: number;
     NumberOfBets: number;
-    constructor(BetID: number) {
+    constructor(BetID: number,NumberOfBets = 0) {
         this.BetID = BetID;
-    }
-
-    setNumberOfBets(NumberOfBets: number) {
         this.NumberOfBets = NumberOfBets;
-        return this;
     }
 }

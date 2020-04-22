@@ -1,12 +1,11 @@
 import { PollButton } from "../services/models/poll/PollButton";
 import { MinerSettings } from "../services/models/streamer_settings/MinerSettings";
-import { PollController } from "../services/controller/PollController";
 import { Loading } from "../services/modules/database/dbLoading";
 import { dbManager } from "../services/modules/database/dbManager";
+import { PollStatus } from "../services/models/poll/PollStatus";
+import PollController from "../services/controller/PollController";
 
 export const USERS_IDS_FOR_TESTS = ['jukes', 'jato', 'naruto', 'saske', 'bankai'];
-
-export const db_PRE_CREATED = 'dava';
 
 export const ID_FOR_MANAGER_POLL = 'amaterasu';
 export const db_FOR_UPDATE_BUTTONS = 'lapis';
@@ -33,13 +32,12 @@ export async function deleteStreamerDatabase(StreamersID: string) {
 }
 
 export async function createPoll(StreamersID: string) {
-  return new PollController(StreamersID).CreatePoll()
+  return new PollController(StreamersID).CreatePoll(new PollStatus())
 }
 
 export async function startPoll(StreamersID: string) {
-  let AccountData = dbManager.getAccountData(StreamersID);
-  AccountData.CurrentPollStatus.PollStarted = true;
-  return new PollController(StreamersID).UpdatePoll([
+  let PollC = new PollController(StreamersID);
+  return PollC.UpdatePoll((await PollC.getCurrentPollStatus()).start(), [
     new PollButton(0, 'wait', '#FFFFFF', false),
     new PollButton(1, 'black', '#000000', false)])
 }

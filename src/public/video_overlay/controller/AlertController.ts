@@ -76,10 +76,15 @@ export default class AlertController {
                 return
             }
 
+
             if (Poll.PollStatus.DistributionCompleted) {
-                if (!Number.isNaN((Number(localStorage['sbi' + this.TwitchUserName])))) {
-                    if (IsWinner(Poll.PollButtons, Number((localStorage['sbi' + this.TwitchUserName])))) {
-                        this.ViewAlerts.setInWinnerMode(Poll.LossDistributorOfPoll);
+
+
+                let selected = (Number(localStorage['sbi' + this.TwitchUserName]));
+                if (!Number.isNaN(selected)) {
+                    if (IsWinner(Poll.PollButtons, selected)) {
+                        console.log(Poll.PollStatus);
+                        this.ViewAlerts.setInWinnerMode(Poll.PollStatus.StatisticsOfDistribution.CalculationResult.EarningsDistributor);
                     } else {
                         this.ViewAlerts.setInLoserMode();
                     }

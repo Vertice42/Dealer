@@ -7,7 +7,7 @@ export default class dbTransactionsOfUser extends Model implements TransactionsO
     TransactionsArray: TwitchExtBitsTransaction[];
 }
 
-const TableName = 'StreamerDataList';
+const TableName = 'purchases';
 const Attributes: ModelAttributes = {
     ID: {
         type: sequelize.STRING,

@@ -1,18 +1,16 @@
 import express = require("express");
 import { APP, CheckRequisition } from "..";
 import { PollRequest } from "../models/poll/PollRequest";
-import { PollStatus } from "../models/poll/PollStatus";
-import UpdateButtonGroupResult from "../models/poll/UpdateButtonGroupResult";
 import { dbManager } from "../modules/database/dbManager";
 import { Poll } from "../models/poll/Poll";
 import { AddBetRequest } from "../models/poll/AddBetRequest";
-import { PollController } from "../controller/PollController";
 import { PollButton } from "../models/poll/PollButton";
 import { PollManagerRoute, AddBetRoute, GetPollRoute } from "./routes";
 import { getSocketOfStreamer } from "../SocketsManager";
 import IOListeners from "../IOListeners";
 import { Authenticate } from "../modules/Authentication";
 import { AuthenticateResult } from "../models/poll/AuthenticateResult";
+import PollController from "../controller/PollController";
 
 function ThereWinningButtonsInArray(PollButtons: PollButton[]): boolean {
     for (let i = 0; i < PollButtons.length; i++)
@@ -24,8 +22,8 @@ APP.post(PollManagerRoute, async function (req, res: express.Response) {
     let PollRequest: PollRequest = req.body;
 
     let Result: AuthenticateResult
-    try { Result = <AuthenticateResult> await Authenticate(PollRequest.Token)}
-    catch (error) {return res.status(401).send(error)}
+    try { Result = <AuthenticateResult>await Authenticate(PollRequest.Token) }
+    catch (error) { return res.status(401).send(error) }
 
     let StreamerID = Result.channel_id;
 
@@ -37,53 +35,55 @@ APP.post(PollManagerRoute, async function (req, res: express.Response) {
         () => {
             if (!PollRequest.NewPollStatus)
                 return ({ RequestError: "CurrentPollStatus is no defined" })
+        },
+        () => {
+            if (!dbManager.getAccountData(StreamerID))
+                return ({ RequestError: "The streamer did not start the extension" })
         }
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList });
 
-    let pollController = new PollController(StreamerID);
+    try {
+        let PollC = new PollController(StreamerID);
 
-    let PoolUpdateResult: { UpdatePollStatusRes: PollStatus, UpdateButtonGroupRes: UpdateButtonGroupResult };
-    let StartDistributionResult: { DistributionStarted: Date; };
+        let PoolUpdateResult;
+        let StartDistributionResult;
 
-    let AccountData = dbManager.getAccountData(StreamerID);
-    if (AccountData.CurrentPollStatus.PollWaxed) {
-        return res.status(200).send(pollController.CreatePoll());
-    } else {
+        let CurrentPollStatus = await PollC.getCurrentPollStatus();
+        if (CurrentPollStatus.PollWaxed) {
+            PollC.stopDistributions();
+            return res.status(200).send(PollC.CreatePoll(PollRequest.NewPollStatus));
+        } else {
+            PoolUpdateResult = await PollC.UpdatePoll(PollRequest.NewPollStatus, PollRequest.PollButtons);
+            CurrentPollStatus = await PollC.getCurrentPollStatus();
 
-        if (PollRequest.NewPollStatus) {
-            AccountData.CurrentPollStatus = PollRequest.NewPollStatus;
-            PoolUpdateResult = await pollController.UpdatePoll(PollRequest.PollButtons);            
+            if (CurrentPollStatus.DistributionStarted &&
+                !CurrentPollStatus.InDistribution &&
+                !CurrentPollStatus.DistributionCompleted) {
 
-            if (AccountData.CurrentPollStatus.InDistribution &&
-                !AccountData.CurrentPollStatus.DistributionStarted) {
-                if (AccountData.CurrentPollStatus.PollWaxed) {
-                    pollController.stopDistributions();
-                } else if (ThereWinningButtonsInArray(PollRequest.PollButtons)) {                    
-                    pollController.OnDistributionsEnd = (StatisticsOfDistribution) => {                        
-                        AccountData.CurrentPollStatus.DistributionCompleted = true
-                        AccountData.CurrentPollStatus.StatisticsOfDistribution = StatisticsOfDistribution;
+                if (ThereWinningButtonsInArray(PollRequest.PollButtons)) {
+                    PollC.OnDistributionsEnd = async (StatisticsOfDistribution) => {
+                        CurrentPollStatus.setDistributionAsCompleted();
+                        CurrentPollStatus.StatisticsOfDistribution = StatisticsOfDistribution;
+                        PollC.UpdatePollStatus(CurrentPollStatus)
 
                         let SocketsOfStreamer = getSocketOfStreamer(StreamerID);
-
                         if (SocketsOfStreamer) {
                             SocketsOfStreamer.forEach(socket => {
                                 socket.emit(IOListeners.onDistributionFinish);
                             });
                         }
                     }
-                    try {                        
-                        StartDistributionResult = await pollController.startDistributions(PollRequest.PollButtons);
-                    } catch (error) {
-                        return res.status(500).send(error);
-                    }
+                    StartDistributionResult = await PollC.startDistributions(PollRequest.PollButtons);
                 } else {
-                    return res.status(500).send({ RequestError: 'There is no winning button' });
+                    return res.status(400).send({ RequestError: 'There is no winning button' });
                 }
             }
         }
+        res.status(200).send({ PoolUpdateResult, StartDistributionResult });
+    } catch (error) {
+        res.status(500).send(error);
     }
-    return res.status(200).send({ PoolUpdateResult, DistributionsResult: StartDistributionResult });
 
 });
 APP.get(GetPollRoute, async function (req: { params: { StreamerID: string } }, res: express.Response) {
@@ -102,17 +102,20 @@ APP.get(GetPollRoute, async function (req: { params: { StreamerID: string } }, r
             res.status(200).send(resolve);
         })
         .catch((rej) => {
-            console.error(rej);
-
-            res.status(500).send(rej)
+            if (rej.code) {
+                res.status(rej.code).send(rej.message);
+            } else {
+                console.error(rej);
+                res.status(500).send(rej)
+            }
         })
 });
 APP.post(AddBetRoute, async function (req, res: express.Response) {
-    let AddBetRequest = <AddBetRequest>req.body;          
+    let AddBetRequest = <AddBetRequest>req.body;
 
     let Result: AuthenticateResult
-    try { Result = <AuthenticateResult> await Authenticate(AddBetRequest.Token)}
-    catch (error) {return res.status(401).send(error)}
+    try { Result = <AuthenticateResult>await Authenticate(AddBetRequest.Token) }
+    catch (error) { return res.status(401).send(error) }
 
     let StreamerID = Result.channel_id;
 

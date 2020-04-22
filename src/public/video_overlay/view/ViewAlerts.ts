@@ -175,10 +175,10 @@ export default class ViewAlerts {
             this.ShowAlert(this.StopAlert);
         });
     }
-    setInWinnerMode(LossDistributorOfPoll: number) {
+    setInWinnerMode(EarningsDistributor: number) {        
         this.HideAllAlerts().then(() => {
             this.ShowAlert(this.AlertOfWinner);
-            this.EarningsView.innerText = (this.getBetValue() * LossDistributorOfPoll).toString();
+            this.EarningsView.innerText = (this.getBetValue() * EarningsDistributor).toString();
         });
     }
     setInLoserMode() {

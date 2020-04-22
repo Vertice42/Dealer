@@ -341,7 +341,6 @@ export default class ViewPollManager {
     }
     setStartedPoll() {
         this.ShowButton(this.StopPollButton);
-        this.EnableButton(this.StopPollButton, this.onClickOfStopPollButton);
         this.HideButton(this.StartPollButton);
     }
     setStoppedPoll() {
@@ -562,6 +561,9 @@ export default class ViewPollManager {
         }
     }
     updateVotesOfAllItems(Poll: Poll) {
+        if (Poll.Bets.length > 1 && Poll.Bets.length < 3)
+            this.EnableButton(this.StopPollButton, this.onClickOfStopPollButton);
+
         this.PollItemsViewers.forEach(PollItem => {
             PollItem.setVoteCounterOutputValue(0);
             Poll.Bets.forEach(bet => {
@@ -596,7 +598,7 @@ export default class ViewPollManager {
             }
             if (Poll.PollStatus.PollStopped)
                 this.setStoppedPoll();
-            if (Poll.PollStatus.InDistribution)
+            if (Poll.PollStatus.DistributionStarted)
                 this.setInDistribution();
             if (Poll.PollStatus.DistributionCompleted)
                 this.setDistributionsFinished();

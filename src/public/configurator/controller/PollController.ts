@@ -1,4 +1,3 @@
-import { PollStatus } from "../../../services/models/poll/PollStatus";
 import { NotifyViewers, STREAMER_SOCKET } from "./MainController";
 import ViewPollManager from "../view/ViewPollManager";
 import TwitchListeners from "../../../services/TwitchListeners";
@@ -7,6 +6,7 @@ import { Poll } from "../../../services/models/poll/Poll";
 import { PollManager, getCurrentPoll } from "../../common/BackendConnection/Poll";
 import { PollRequest } from "../../../services/models/poll/PollRequest";
 import { Observer } from "../../../utils/Observer";
+import { PollStatus } from "../../../services/models/poll/PollStatus";
 
 /**
  * It is intended to control the connection between a ux and the back end
@@ -81,7 +81,7 @@ export default class PollController {
                 STREAMER_SOCKET.removeEventListener(IOListeners.onDistributionFinish, onDistributionFinish)
             }
             STREAMER_SOCKET.addEventListener(IOListeners.onDistributionFinish, onDistributionFinish);
-            this.ViewPollManager.PollStatus.InDistribution = true;
+            this.ViewPollManager.PollStatus.DistributionStarted = true;
             await PollManager(new PollRequest(this.Token, this.ViewPollManager.getPollButtons(), this.ViewPollManager.PollStatus));
         }
     }

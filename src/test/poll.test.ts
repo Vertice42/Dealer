@@ -4,71 +4,54 @@ import { PollStatus } from "../services/models/poll/PollStatus";
 
 import { PollButton } from "../services/models/poll/PollButton";
 
-import { dbManager } from "../services/modules/database/dbManager";
-
 import { Poll } from "../services/models/poll/Poll";
 
 import { dbWallet } from "../services/models/poll/dbWallet";
-import { PollController } from "../services/controller/PollController";
 import { resolve } from "bluebird";
-import { createAndStartStreamerDatabase, ID_FOR_MANAGER_POLL, deleteStreamerDatabase, db_PRE_CREATED, db_FOR_UPDATE_BUTTONS, createPoll, startPoll, ID_FOR_DISTRIBUTION, USERS_IDS_FOR_TESTS, ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS } from "./ForTests.test";
+import { createAndStartStreamerDatabase, ID_FOR_MANAGER_POLL, deleteStreamerDatabase, db_FOR_UPDATE_BUTTONS, createPoll, startPoll, ID_FOR_DISTRIBUTION, USERS_IDS_FOR_TESTS, ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS } from "./ForTests.test";
 import { dbWalletManager, getWallet } from "../services/modules/database/wallet/dbWalletManager";
 import { sleep } from "../utils/functions";
 import { PollBet } from "../services/models/poll/PollBeat";
+import PollController from "../services/controller/PollController";
 
 describe('Poll', () => {
   before(async function () {
-    await createAndStartStreamerDatabase(db_PRE_CREATED);
     await createAndStartStreamerDatabase(ID_FOR_MANAGER_POLL);
   });
   after(async function () {
     await deleteStreamerDatabase(ID_FOR_MANAGER_POLL);
   })
 
-  it('Load poll already created in db already created', async function () {
-    let Poll = await new PollController(db_PRE_CREATED).getCurrentPoll();
-    expect(Poll.PollStatus).to.deep.equal(new PollStatus().start());
-    expect(Poll.PollButtons).to.deep.equal([
-      new PollButton(0, '', '#2cd571', false),
-      new PollButton(1, '', '#8a65c3', false)]);
-    expect(Poll.Bets).to.deep.equal([{
-      BetID: 0,
-      NumberOfBets: 1
-    }]);
-
-  })
-
   it('First Get Poll', async function () {
-    expect((await new PollController(ID_FOR_MANAGER_POLL).getCurrentPoll()).PollStatus)
+    expect((await new PollController(ID_FOR_MANAGER_POLL).getCurrentPollStatus()))
       .to.deep.equal(new PollStatus().wax());
   })
 
   it('CreatePoll', async function () {
-    expect(await new PollController(ID_FOR_MANAGER_POLL).CreatePoll()).to.include.keys('PollCreated');
+    expect(await new PollController(ID_FOR_MANAGER_POLL).CreatePoll(new PollStatus())).to.include.keys('PollCreated');
   })
 
   var ButtonsToTest = [];
   it('Start Poll', async function () {
-    let AccountData = dbManager.getAccountData(ID_FOR_MANAGER_POLL);
-    AccountData.CurrentPollStatus.start();
-
     ButtonsToTest.push(new PollButton(0, 'waite', '#FFFFFF', false))
     ButtonsToTest.push(new PollButton(1, 'black', '#000000', false))
 
-    let UpdatePollResult = await new PollController(ID_FOR_MANAGER_POLL).UpdatePoll(ButtonsToTest)
+    let pollC = new PollController(ID_FOR_MANAGER_POLL);
 
-    expect(UpdatePollResult.UpdatePollStatusRes).to.include({ PollStarted: true });
-    expect(UpdatePollResult.UpdateButtonGroupRes).to.include(
+    let UpdatePollResult = await pollC.UpdatePoll((await pollC.getCurrentPollStatus()).start(), ButtonsToTest)
+
+    expect(UpdatePollResult[0].PollStarted).to.deep.equal(true);
+    expect(UpdatePollResult[1]).to.deep.include(
       { CreatedButtons: 2, UpdatedButtons: 0, DeletedButtons: 0 });
   })
 
   it('Get Poll', async function () {
-    let poll: Poll = await new PollController(ID_FOR_MANAGER_POLL).getCurrentPoll();
+    let poll = await new PollController(ID_FOR_MANAGER_POLL).getCurrentPoll();
 
-    let PollForTest = new PollStatus();
-    PollForTest.PollStarted = true;
+    let PollStatusForTest = new PollStatus().start();
+    PollStatusForTest.id = 1;
 
-    expect(poll.PollStatus).to.deep.equal(PollForTest);
+    expect(poll.PollStatus).to.deep.equal(PollStatusForTest);
     expect(poll.PollButtons).to.deep.equal(ButtonsToTest);
 
   })
@@ -86,7 +69,7 @@ describe('Poll', () => {
     })
 
     it('Modify buttons', async function () {
-      this.slow(300);
+      this.slow(600);
       await sleep(500);
 
       let ButtonsToTest = [];
@@ -97,17 +80,19 @@ describe('Poll', () => {
 
       let pollController = new PollController(db_FOR_UPDATE_BUTTONS);
 
-
-      expect((await pollController.UpdatePoll(ButtonsToTest)).UpdateButtonGroupRes).to.include(
+      expect((await pollController.UpdateButtonsOfPoll(ButtonsToTest))).to.include(
         { CreatedButtons: 2, UpdatedButtons: 1, DeletedButtons: 1 });
 
       let poll = await pollController.getCurrentPoll();
 
+      let PollStatusForTest = new PollStatus().start();
+      PollStatusForTest.id = 1;
+
       let pollForCompare = new Poll(
-        new PollStatus().start(),
+        PollStatusForTest,
         ButtonsToTest,
         new Date().getTime(),
-        undefined, []);
+        []);
 
       expect(poll.PollStatus).to.deep.equal(pollForCompare.PollStatus);
       expect(poll.PollButtons).to.deep.equal(pollForCompare.PollButtons);
@@ -117,24 +102,22 @@ describe('Poll', () => {
   })
 
   it('Stop Poll', async function () {
-    dbManager.getAccountData(ID_FOR_MANAGER_POLL).CurrentPollStatus.stop();
+    let pollController = new PollController(ID_FOR_MANAGER_POLL);
 
-    expect((await new PollController(ID_FOR_MANAGER_POLL).UpdatePoll(undefined)).UpdatePollStatusRes)
-      .to.include({ PollStarted: true, PollStopped: true });
+    expect((await pollController.UpdatePollStatus((await pollController.getCurrentPollStatus()).stop()))).to.include({ PollStarted: true, PollStopped: true });
 
   });
 
   it('Restart Poll', async function () {
-    dbManager.getAccountData(ID_FOR_MANAGER_POLL).CurrentPollStatus.restart();
+    let PollC = new PollController(ID_FOR_MANAGER_POLL);
 
-    expect((await new PollController(ID_FOR_MANAGER_POLL).UpdatePoll(undefined)).UpdatePollStatusRes)
+    expect(await (PollC.UpdatePollStatus((await PollC.getCurrentPollStatus()).restart())))
       .to.include({ PollStarted: true, PollStopped: false });
   });
 
   it('Wax Poll', async function () {
-    dbManager.getAccountData(ID_FOR_MANAGER_POLL).CurrentPollStatus.wax();
-
-    expect((await new PollController(ID_FOR_MANAGER_POLL).UpdatePoll(undefined)).UpdatePollStatusRes)
+    let PollC = new PollController(ID_FOR_MANAGER_POLL);
+    expect(await (PollC.UpdatePollStatus((await PollC.getCurrentPollStatus()).wax())))
       .to.include({ PollWaxed: true });
   })
 
@@ -163,19 +146,12 @@ describe('Poll', () => {
       await new dbWalletManager(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS, USERS_IDS_FOR_TESTS[3]).deposit(50);
 
     })
-    after(async () => {
-      await deleteStreamerDatabase(ID_FOR_DISTRIBUTION);
-      await deleteStreamerDatabase(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS);
-
-    })
 
     it('Add Bet', async function () {
-
       let pollController = new PollController(ID_FOR_DISTRIBUTION);
 
       const BetAmountForTest_I = 2;
       const BetAmountForTest_III = 2000;
-
 
       let addBetResult_I = await pollController.AddBet(
         USERS_IDS_FOR_TESTS[0],
@@ -191,15 +167,6 @@ describe('Poll', () => {
         USERS_IDS_FOR_TESTS[2],
         0,
         BetAmountForTest_I);
-
-      let Poll = await pollController.getCurrentPoll();
-
-      expect(Poll.Bets).to.deep.equal([
-        new PollBet(0).setNumberOfBets(2),
-        new PollBet(1).setNumberOfBets(1)]);
-      expect(addBetResult_I).to.deep.equal({ BetAccepted: { Bet: BetAmountForTest_I } });
-      //Tests if the answer or a bottomless bet returns an error
-
       await pollController.AddBet(
         USERS_IDS_FOR_TESTS[3],
         1,
@@ -208,23 +175,31 @@ describe('Poll', () => {
           expect(addBetResult_III.RequestError).to.exist.and.have.key('InsufficientFunds')
           return resolve();
         })
+
+      expect(addBetResult_I).to.deep.equal({ BetAccepted: { Bet: BetAmountForTest_I } });
+
+      let Poll = await pollController.getCurrentPoll();
+      expect(Poll.Bets).to.deep.equal([
+        new PollBet(0, 2),
+        new PollBet(1, 1)])
     })
 
     async function waitDistributionCompleted(pollController: PollController) {
-      let Poll: any = await pollController.getCurrentPoll();
-      if (Poll.PollStatus.DistributionCompleted) {
-        return resolve();
-      } else waitDistributionCompleted(pollController);
+      let CurrentPollStatus = await pollController.getCurrentPollStatus();
 
-      await sleep(50);
+      if (!CurrentPollStatus.DistributionCompleted) {
+        await sleep(50);
+        await waitDistributionCompleted(pollController);
+      }
+      return resolve();
     }
 
     it('Distribution', async function () {
 
-      let pollController = new PollController(ID_FOR_DISTRIBUTION);
+      let pollC = new PollController(ID_FOR_DISTRIBUTION);
 
-      await pollController.AddBet(USERS_IDS_FOR_TESTS[0], 0, 10);
-      await pollController.AddBet(USERS_IDS_FOR_TESTS[1], 1, 5);
+      await pollC.AddBet(USERS_IDS_FOR_TESTS[0], 0, 10);
+      await pollC.AddBet(USERS_IDS_FOR_TESTS[1], 1, 5);
 
       let ButtonsToTestWithWinners = [
         new PollButton(0, 'wait', '#FFFFFF', false),
@@ -237,10 +212,14 @@ describe('Poll', () => {
       expect(wallet_I.Coins).to.deep.equal(40);
       expect(wallet_II.Coins).to.deep.equal(45);
 
-      expect(await pollController.startDistributions(
+      pollC.OnDistributionsEnd = async () => {
+        pollC.UpdatePollStatus((await pollC.getCurrentPollStatus()).setDistributionAsCompleted());
+      }
+
+      expect(await pollC.startDistributions(
         ButtonsToTestWithWinners)).to.include.keys('DistributionStarted');
 
-      await waitDistributionCompleted(pollController);
+      await waitDistributionCompleted(pollC);
 
       wallet_I = await getWallet(ID_FOR_DISTRIBUTION, USERS_IDS_FOR_TESTS[0]);
       wallet_II = await getWallet(ID_FOR_DISTRIBUTION, USERS_IDS_FOR_TESTS[1]);
@@ -251,14 +230,14 @@ describe('Poll', () => {
     })
 
     it('Distribution for multiple results', async function () {
-      this.timeout(4000);
+      this.timeout(7000);
 
-      let pollController = new PollController(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS);
+      let pollC = new PollController(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS);
 
-      await pollController.AddBet(USERS_IDS_FOR_TESTS[0], 1, 10);
-      await pollController.AddBet(USERS_IDS_FOR_TESTS[1], 1, 15);
-      await pollController.AddBet(USERS_IDS_FOR_TESTS[2], 2, 20);
-      await pollController.AddBet(USERS_IDS_FOR_TESTS[3], 3, 30);
+      await pollC.AddBet(USERS_IDS_FOR_TESTS[0], 1, 10);
+      await pollC.AddBet(USERS_IDS_FOR_TESTS[1], 1, 15);
+      await pollC.AddBet(USERS_IDS_FOR_TESTS[2], 2, 20);
+      await pollC.AddBet(USERS_IDS_FOR_TESTS[3], 3, 30);
 
       let wallets = [];
       for (let i = 0; i < 4; i++) {
@@ -276,10 +255,15 @@ describe('Poll', () => {
         new PollButton(2, 'yellow', '#000000', true),
         new PollButton(3, 'blue', '#000000', true)
       ];
-      expect(await pollController.startDistributions(
+
+      pollC.OnDistributionsEnd = async () => {
+        pollC.UpdatePollStatus((await pollC.getCurrentPollStatus()).setDistributionAsCompleted());
+      }
+
+      expect(await pollC.startDistributions(
         ButtonsToTestWithWinners)).to.include.keys('DistributionStarted');
 
-      await waitDistributionCompleted(pollController);      
+      await waitDistributionCompleted(pollC);
 
       wallets = [];
       for (let i = 0; i < 4; i++) {
@@ -290,6 +274,11 @@ describe('Poll', () => {
       expect(wallets[2].Coins).to.deep.equal(40);
       expect(wallets[3].Coins).to.deep.equal(35);
 
+    })
+
+    after(async () => {
+      await deleteStreamerDatabase(ID_FOR_DISTRIBUTION);
+      await deleteStreamerDatabase(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS);
     })
   })
 })

@@ -13,7 +13,7 @@ export default class dbDealerManager {
 
     private async Loading() {
         if (dbDealer) return resolve();
-        dbDealer = await dbManager.CreateIfNotExistSDataBase('Dealer');
+        dbDealer = await dbManager.CreateIfNotExistSDataBase('dealer');
         dbPurchasesExtensionProductsTable = <typeof dbTransactionsOfUser>dbDealer.define(TableName, Attributes, Options);
         return dbPurchasesExtensionProductsTable.sync();
     }

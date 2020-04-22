@@ -1,10 +1,11 @@
 import { dbWallet, WalletDefiner } from "../../models/poll/dbWallet";
-import { BettingDefiner, dbBet } from "../../models/poll/dbBetting";
+import { BettingDefiner, dbBet } from "../../models/poll/dbBets";
 import { SettingsDefiner, dbSettings } from "../../models/streamer_settings/dbSettings";
 import { AccountData } from "../../models/dealer/AccountData";
-import { ButtonDefiner, dbButton } from "../../models/poll/dbButton";
+import { ButtonDefiner, dbPollButton } from "../../models/poll/dbButton";
 import { StoreDefiner, dbStoreItem } from "../../models/store/dbStoreItem";
 import { dbPurchaseOrder, PurchaseOrdersDefiner } from "../../models/store/dbPurchaseOrders";
+import dbPollIndex, { Attributes, TableName } from "../../models/poll/dbPollIndex";
 /**
  * Loads and / or creates sequelize models by defining them
  */
@@ -25,21 +26,26 @@ export class Define {
             .define(SettingsDefiner.name, SettingsDefiner.attributes, SettingsDefiner.options);
         return AccountData.dbSettings.sync();
     }
-
     static async Wallets(AccountData: AccountData) {
         AccountData.dbWallets = <typeof dbWallet>AccountData.dbStreamer
             .define(WalletDefiner.Name, WalletDefiner.attributes, WalletDefiner.options);
         return AccountData.dbWallets.sync();
     }
-
-    static async CurrentPollButtons(AccountData: AccountData) {
-        AccountData.dbCurrentPollButtons = <typeof dbButton>AccountData.dbStreamer
-            .define(AccountData.CurrentPollID, ButtonDefiner.attributes, ButtonDefiner.options);
-        return AccountData.dbCurrentPollButtons.sync();
+    static async dbButtons(AccountData: AccountData, PollID: number) {
+        let dbButtons = <typeof dbPollButton>AccountData.dbStreamer
+            .define('_poll_buttons_' + PollID, ButtonDefiner.attributes, ButtonDefiner.options);
+        await dbButtons.sync();
+        return dbButtons;
     }
-    static async CurrentBetting(AccountData: AccountData) {
-        AccountData.dbCurrentBets = <typeof dbBet>AccountData.dbStreamer
-            .define(AccountData.CurrentBettingID, BettingDefiner.attributes, BettingDefiner.options);
-        return AccountData.dbCurrentBets.sync();
+    static async dbBets(AccountData: AccountData, PollID: number) {        
+        let dbBets = <typeof dbBet>AccountData.dbStreamer
+            .define('_bets_' + PollID, BettingDefiner.attributes, BettingDefiner.options);
+        await dbBets.sync();
+        return dbBets;
+    }
+    static async PollsIndex(AccountData: AccountData) {
+        AccountData.PollsIndexes = <typeof dbPollIndex>AccountData.dbStreamer
+            .define(TableName, Attributes, BettingDefiner.options);
+        return AccountData.PollsIndexes.sync();
     }
 }
