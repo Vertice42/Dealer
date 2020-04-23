@@ -93,7 +93,7 @@ export default class ViewAlerts {
 
     private ParticipatePollButton = <HTMLInputElement>document.getElementById("ParticipatePollButton");
     private AlertsDiv = <HTMLDivElement>document.getElementById("AlertsDiv");
-    
+
     private PollAlert = <HTMLDivElement>document.getElementById("PollAlert");
     private StopAlert = <HTMLDivElement>document.getElementById("StopAlert");
     private AlertOfWinner = <HTMLDivElement>document.getElementById("AlertOfWinner");
@@ -105,14 +105,14 @@ export default class ViewAlerts {
     private ButtonsDiv = <HTMLDivElement>document.getElementById("ButtonsDiv");
 
     public setButtonsInPollDiv(PollButtons: PollButton[]) {
-        localStorage['sbi'+this.TwitchUserName] = undefined;
+        localStorage['sbi' + this.TwitchUserName] = undefined;
         this.ButtonsDiv.innerHTML = "";
         let buttons = [];
         PollButtons.forEach(pollButton => {
             let button = new ViewPollButton(pollButton);
             buttons.push(button);
-            button.onSelected = () => {                
-                localStorage['sbi'+this.TwitchUserName] = pollButton.ID;                
+            button.onSelected = () => {
+                localStorage['sbi' + this.TwitchUserName] = pollButton.ID;
                 this.onBetIDSelected();
                 buttons.forEach(Button => {
                     Button.Unselect();
@@ -164,30 +164,28 @@ export default class ViewAlerts {
         });
     }
     ;
-    setInBetMode(PollButtons: PollButton[]) {
-        this.HideAllAlerts().then(() => {
+    async setInBetMode(PollButtons: PollButton[]) {
+        await this.HideAllAlerts();
             this.setButtonsInPollDiv(PollButtons);
             this.ShowAlert(this.PollAlert);
-        });
     }
-    setInStopeMode() {
-        this.HideAllAlerts().then(() => {
-            this.ShowAlert(this.StopAlert);
-        });
+    async setInStopeMode() {
+        await this.HideAllAlerts();
+        this.ShowAlert(this.StopAlert);
     }
-    setInWinnerMode(EarningsDistributor: number) {        
-        this.HideAllAlerts().then(() => {
-            this.ShowAlert(this.AlertOfWinner);
-            this.EarningsView.innerText = (this.getBetValue() * EarningsDistributor).toString();
-        });
+    async setInWinnerMode(EarningsDistributor: number) {
+        await this.HideAllAlerts();
+        this.ShowAlert(this.AlertOfWinner);
+        this.EarningsView.innerText = (this.getBetValue() * EarningsDistributor).toString();
+
     }
-    setInLoserMode() {
-        this.HideAllAlerts().then(() => {
-            this.ShowAlert(this.AlertOfLoser);
-            this.LossView.innerText = this.getBetValue().toString();
-        });
+    async setInLoserMode() {
+        await this.HideAllAlerts();
+        this.ShowAlert(this.AlertOfLoser);
+        this.LossView.innerText = this.getBetValue().toString();
+
     }
-    constructor(TwitchUserName:string) {
+    constructor(TwitchUserName: string) {
         this.TwitchUserName = TwitchUserName;
 
         let display = document.getElementById('display');
@@ -201,10 +199,10 @@ export default class ViewAlerts {
 
         this.AutomaticHidingDueInactivity = new AutomaticHidingDueInactivity(document.body,
             [this.PollAlert,
-                this.PollDiv,
-                this.StopAlert,
-                this.AlertOfWinner,
-                this.AlertOfLoser])
+            this.PollDiv,
+            this.StopAlert,
+            this.AlertOfWinner,
+            this.AlertOfLoser])
 
 
         this.ParticipatePollButton.onclick = () => this.onclickOfParticipatePollButton();

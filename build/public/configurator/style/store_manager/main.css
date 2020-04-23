@@ -1,7 +1,7 @@
 @import url(./PurchaseOrders.css);
 @import url(./SwitchCheckbox.css);
 @import url(./VolumeInput.css);
-#StoreManeger {
+#StoreManager {
     display: table;
     background-color: rgb(48, 29, 63);
     margin: 1vw 5vw;
@@ -172,7 +172,7 @@ input[type='file'] {
 
 .Upgradeable {
     background-size: 101%;
-    background-image: url(../../images/uptade_icon.png);
+    background-image: url(../../images/update_icon.png);
 }
 
 .Default.AddUpdateFileIconInFocus {

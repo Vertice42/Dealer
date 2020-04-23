@@ -9,6 +9,7 @@ export class PollStatus {
     DistributionCompleted: boolean;
     InDistribution: boolean;
     StatisticsOfDistribution: StatisticsOfDistribution;
+    updated_at:Date;
 
     constructor(PollStatus?: PollStatus) {
         if (PollStatus) {

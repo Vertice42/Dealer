@@ -44,7 +44,7 @@ export class dbPollManager {
     }
     async updatePollStatus(PollStatus: PollStatus) {
         this.AccountData.LastPollStatus = undefined;
-        
+        PollStatus.updated_at = new Date;
         return (await this.getPollStatusOf_db(PollStatus.id||this.AccountData.LastPollID)).update(PollStatus);
     }
     async getPollStatus(IdOfPollIndex: number) {

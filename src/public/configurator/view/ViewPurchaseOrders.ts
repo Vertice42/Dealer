@@ -172,15 +172,15 @@ export default class ViewPurchaseOrders {
         this.HTML_ReproducingMedia.classList.add('PurchaseOrdersEmpty');
     }
 
-    setAudioPlayerProgress(newProgres: number) {
-        CrateLinerAnimation(this.AudioProgress, newProgres, 200, (newProgres) => {
-            let left = newProgres;
-            let rigth = newProgres;
+    setAudioPlayerProgress(newProgress: number) {
+        CrateLinerAnimation(this.AudioProgress, newProgress, 200, (newProgress) => {
+            let left = newProgress;
+            let right = newProgress;
             this.HTML_LoadingBarOfAudioPlayer.style.backgroundImage =
-                `linear-gradient(to left, rgb(80, 40, 134) ${rigth}%, rgb(116, 30, 251) ${left}%,rgb(87, 47, 148) 90%)`;
+                `linear-gradient(to left, rgb(80, 40, 134) ${right}%, rgb(116, 30, 251) ${left}%,rgb(87, 47, 148) 90%)`;
         })
 
-        this.AudioProgress = newProgres;
+        this.AudioProgress = newProgress;
     }
     setRunningOrder(TwitchUserName: string, StoreItemName: string) {
         this.HTML_PlaybackUserName.innerText = TwitchUserName;

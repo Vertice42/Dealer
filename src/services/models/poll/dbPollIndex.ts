@@ -12,6 +12,8 @@ export default class dbPollIndex extends Model implements PollStatus {
     DistributionCompleted: boolean;
     InDistribution: boolean;
     StatisticsOfDistribution;
+    created_at:Date;
+    updated_at:Date;
 
     start() {
         this.PollStarted = true;
@@ -31,7 +33,7 @@ export default class dbPollIndex extends Model implements PollStatus {
         this.DistributionStarted = true;
         return this;
     }
-    setDistributionAsCompleted(){
+    setDistributionAsCompleted() {
         this.DistributionCompleted = true;
         return this;
     }
@@ -69,12 +71,12 @@ const Attributes: ModelAttributes = {
         type: 'TIMESTAMP',
         defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
         allowNull: false
-      },
-      updated_at: {
+    },
+    updated_at: {
         type: 'TIMESTAMP',
         defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
         allowNull: false
-      }
+    }
 }
 
 const Options: ModelOptions = {

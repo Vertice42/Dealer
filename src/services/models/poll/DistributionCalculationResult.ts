@@ -10,15 +10,14 @@ export class DistributionCalculationResult {
         NumberOfLosers: number,
         NumberOfWinners: number,
         Lost: number,
-        Won: number,
-        TotalBetAmount: number, ) {
+        Won: number) {
 
         this.NumberOfLosers = NumberOfLosers;
         this.NumberOfWinners = NumberOfWinners;
         this.Lost = Lost;
         this.Won = Won;
-        this.TotalBetAmount = TotalBetAmount;
-        this.EarningsDistributor = TotalBetAmount / NumberOfWinners;
+        this.TotalBetAmount = Lost + Won;
+        this.EarningsDistributor = this.TotalBetAmount / Won;
 
     }
 }

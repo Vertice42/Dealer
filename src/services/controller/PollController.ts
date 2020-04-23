@@ -34,17 +34,15 @@ function CalculateDistribution(Bets: Bet[], WinningButtons: PollButton[]) {
         if (Bets.BetAmount) {
             if (dbPollManager.BetIsWinner(WinningButtons, Bets.Bet)) {
                 NumberOfWinners++;
-                Won += Bets.Bet;
+                Won += Bets.BetAmount;
             } else {
                 NumberOfLosers++;
-                Lost += Bets.Bet;
+                Lost += Bets.BetAmount;
             }
         }
     });
 
-    let TotalBetAmount = Lost + Won;
-
-    return new DistributionCalculationResult(NumberOfLosers,NumberOfWinners,Lost,Won,TotalBetAmount)
+    return new DistributionCalculationResult(NumberOfLosers,NumberOfWinners,Lost,Won)
 }
 
 export default class PollController {
@@ -75,9 +73,10 @@ export default class PollController {
             if (this.StopDistributions) throw 'Error in distribution';
             if (Betting) {
                 let walletManager = new dbWalletManager(this.StreamerID, Betting.TwitchUserID);
-
+                
                 if (dbPollManager.BetIsWinner(WinningButtons, Betting.Bet))
-                    DistributionPromises.push(walletManager.deposit(Betting.BetAmount * DistributionCalculationResult.EarningsDistributor))
+                    DistributionPromises.push(walletManager.deposit
+                        (Betting.BetAmount * DistributionCalculationResult.EarningsDistributor))
             }
         });
 

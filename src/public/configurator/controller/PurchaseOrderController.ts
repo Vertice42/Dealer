@@ -37,6 +37,7 @@ export default class PurchaseOrderController {
         }
 
         this.ViewPurchaseOrders.HTML_PauseAudioPlayerButton.onclick = () => {
+            window.navigator.vibrate(50);
 
             if (this.ViewPurchaseOrders.IsStarted()) {
                 this.ViewPurchaseOrders.setInPause();

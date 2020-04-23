@@ -50,6 +50,7 @@ describe('Poll', () => {
 
     let PollStatusForTest = new PollStatus().start();
     PollStatusForTest.id = 1;
+    PollStatusForTest.StatisticsOfDistribution = null;
 
     expect(poll.PollStatus).to.deep.equal(PollStatusForTest);
     expect(poll.PollButtons).to.deep.equal(ButtonsToTest);
@@ -87,6 +88,7 @@ describe('Poll', () => {
 
       let PollStatusForTest = new PollStatus().start();
       PollStatusForTest.id = 1;
+      PollStatusForTest.StatisticsOfDistribution = null;
 
       let pollForCompare = new Poll(
         PollStatusForTest,
@@ -225,12 +227,12 @@ describe('Poll', () => {
       wallet_II = await getWallet(ID_FOR_DISTRIBUTION, USERS_IDS_FOR_TESTS[1]);
 
       expect(wallet_I.Coins).to.equal(40);
-      expect(wallet_II.Coins).to.equal(57);
+      expect(wallet_II.Coins).to.equal(50);
 
     })
 
     it('Distribution for multiple results', async function () {
-      this.timeout(7000);
+      this.timeout(10000);
 
       let pollC = new PollController(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS);
 
@@ -271,8 +273,8 @@ describe('Poll', () => {
       }
       expect(wallets[0].Coins).to.deep.equal(40);
       expect(wallets[1].Coins).to.deep.equal(35);
-      expect(wallets[2].Coins).to.deep.equal(40);
-      expect(wallets[3].Coins).to.deep.equal(35);
+      expect(wallets[2].Coins).to.deep.equal(100);
+      expect(wallets[3].Coins).to.deep.equal(125);
 
     })
 

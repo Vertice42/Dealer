@@ -76,27 +76,25 @@ export default class AlertController {
                 return
             }
 
-
             if (Poll.PollStatus.DistributionCompleted) {
-
 
                 let selected = (Number(localStorage['sbi' + this.TwitchUserName]));
                 if (!Number.isNaN(selected)) {
                     if (IsWinner(Poll.PollButtons, selected)) {
                         console.log(Poll.PollStatus);
-                        this.ViewAlerts.setInWinnerMode(Poll.PollStatus.StatisticsOfDistribution.CalculationResult.EarningsDistributor);
+                        await this.ViewAlerts.setInWinnerMode(Poll.PollStatus.StatisticsOfDistribution.CalculationResult.EarningsDistributor);
                     } else {
-                        this.ViewAlerts.setInLoserMode();
+                        await this.ViewAlerts.setInLoserMode();
                     }
                 }
                 return
             }
             if (Poll.PollStatus.PollStopped) {
-                this.ViewAlerts.setInStopeMode();
+                await this.ViewAlerts.setInStopeMode();
                 return
             }
             if (Poll.PollStatus.PollStarted) {
-                this.ViewAlerts.setInBetMode(Poll.PollButtons);
+                await this.ViewAlerts.setInBetMode(Poll.PollButtons);
                 return
             }
         }
