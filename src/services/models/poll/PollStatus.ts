@@ -21,6 +21,7 @@ export class PollStatus {
             this.DistributionStarted = PollStatus.DistributionStarted;
             this.DistributionCompleted = PollStatus.DistributionCompleted;
             this.StatisticsOfDistribution = PollStatus.StatisticsOfDistribution;
+            this.updated_at = PollStatus.updated_at;
         } else {
             this.PollWaxed = false;
             this.PollStarted = false;

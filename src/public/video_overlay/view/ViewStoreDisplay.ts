@@ -73,7 +73,7 @@ export class ViewWalletSkin {
 
     set Price(price: number) {
         this.price = price
-        this.HTML_WalletSkinPrice.innerText = this.price + ' bits';        
+        this.HTML_WalletSkinPrice.innerText = this.price + ' bits';
     }
 
     get Price() {
@@ -189,12 +189,12 @@ export default class ViewWalletDisplay {
         });
     }
 
-    public setViewBalance(Balance: number, BalanceChange = 0) {        
+    public setViewBalance(Balance: number, BalanceChange = 0) {
         if (BalanceChange > 0) {
-            this.startDepositAnimation(~~BalanceChange+1);
+            this.startDepositAnimation(~~BalanceChange + 1);
         }
         else if (BalanceChange < -1) {
-            this.startWithdrawalAnimation((~~BalanceChange-1)* -1);
+            this.startWithdrawalAnimation((~~BalanceChange - 1) * -1);
         }
         if (this.CoinName === undefined) this.CoinName = 'Coins';
 
@@ -242,7 +242,7 @@ export default class ViewWalletDisplay {
 
         await sleep(500 + CoinNumber * 5);
         Coin.style.top = '30%';
-        
+
         this.AutomaticHidingDueInactivity.show(false, (500 + CoinNumber) * 2.5);
     }
 
@@ -287,6 +287,8 @@ export default class ViewWalletDisplay {
     private StartCoinsAnimation(reverse: boolean, CoinsNumber: number) {
         this.HTML_CoinsDiv.innerHTML = null;
 
+        CoinsNumber = (CoinsNumber > 100) ? 100 : CoinsNumber;
+
         let addX = 0.1 / CoinsNumber;
         let addY = 0.2 / CoinsNumber;
 
@@ -320,6 +322,7 @@ export default class ViewWalletDisplay {
     }
 
     public startDepositAnimation(Deposit: number) {
+        this.AutomaticHidingDueInactivity.show(false, (500) * 2.5);
         this.StartCoinsAnimation(false, Deposit);
     };
 

@@ -145,7 +145,8 @@ export default class ViewAlerts {
                 div.classList.add("Disable");
 
                 await sleep(1100);
-                onEnd();
+                if (div.classList.contains('Disable') && !div.classList.contains('Hidden'))
+                    onEnd();
             }
         });
     }
@@ -166,8 +167,8 @@ export default class ViewAlerts {
     ;
     async setInBetMode(PollButtons: PollButton[]) {
         await this.HideAllAlerts();
-            this.setButtonsInPollDiv(PollButtons);
-            this.ShowAlert(this.PollAlert);
+        this.setButtonsInPollDiv(PollButtons);
+        this.ShowAlert(this.PollAlert);
     }
     async setInStopeMode() {
         await this.HideAllAlerts();

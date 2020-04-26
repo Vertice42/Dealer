@@ -1,5 +1,5 @@
 import ViewAlerts from "../view/ViewAlerts";
-import { sleep, isEquivalent } from "../../../utils/functions";
+import { sleep } from "../../../utils/functions";
 import { Poll } from "../../../services/models/poll/Poll";
 import { PollStatus } from "../../../services/models/poll/PollStatus";
 import { PollButton } from "../../../services/models/poll/PollButton";
@@ -66,40 +66,41 @@ export default class AlertController {
         this.ViewAlerts.BetAmountInput.HTML.onchange = this.ChangeBet;
     }
 
+    private updatePromise: Promise<any>;
+
     private async updateAlerts(Poll: Poll) {
-        if (isEquivalent(this.CurrentPollStatus, Poll.PollStatus)) {
-            this.ViewAlerts.setButtonsInPollDiv(Poll.PollButtons)
-        }
-        else {
-            await this.ViewAlerts.HideAllAlerts();
+        let CurrentPollStatus = this.CurrentPollStatus;
+        this.CurrentPollStatus = Poll.PollStatus;
+        let selected = (Number(localStorage['sbi' + this.TwitchUserName]));
+
+        if ((!CurrentPollStatus) || (CurrentPollStatus.updated_at !== Poll.PollStatus.updated_at)) {
             if (Poll.PollStatus.PollWaxed) {
-                return
+                return await this.ViewAlerts.HideAllAlerts();
             }
 
             if (Poll.PollStatus.DistributionCompleted) {
-
-                let selected = (Number(localStorage['sbi' + this.TwitchUserName]));
                 if (!Number.isNaN(selected)) {
                     if (IsWinner(Poll.PollButtons, selected)) {
-                        console.log(Poll.PollStatus);
-                        await this.ViewAlerts.setInWinnerMode(Poll.PollStatus.StatisticsOfDistribution.CalculationResult.EarningsDistributor);
+                        return await this.ViewAlerts.setInWinnerMode(Poll.PollStatus.StatisticsOfDistribution.CalculationResult.EarningsDistributor);
                     } else {
-                        await this.ViewAlerts.setInLoserMode();
+                        return await this.ViewAlerts.setInLoserMode();
                     }
                 }
                 return
             }
-            if (Poll.PollStatus.PollStopped) {
-                await this.ViewAlerts.setInStopeMode();
-                return
-            }
-            if (Poll.PollStatus.PollStarted) {
-                await this.ViewAlerts.setInBetMode(Poll.PollButtons);
-                return
-            }
-        }
 
-        this.CurrentPollStatus = Poll.PollStatus;
+            if (Poll.PollStatus.PollStopped) {
+                if (!selected) return;
+                return await this.ViewAlerts.setInStopeMode();
+            }
+
+            if (Poll.PollStatus.PollStarted) {
+                return await this.ViewAlerts.setInBetMode(Poll.PollButtons);
+            }
+
+        } else {
+            return this.ViewAlerts.setButtonsInPollDiv(Poll.PollButtons)
+        }
     }
 
     private TryGetCurrentPoll = async () => {
@@ -122,10 +123,11 @@ export default class AlertController {
     public async Build() {
         return this.TryGetCurrentPoll()
             .then((Poll: Poll) => {
-                this.updateAlerts(Poll);
+                this.updatePromise = this.updateAlerts(Poll);
 
                 addTwitchListeners(new TwitchListener(TwitchListeners.onPollChange, async (Poll: Poll) => {
-                    this.updateAlerts(Poll);
+                    await this.updatePromise;
+                    this.updatePromise = this.updateAlerts(Poll);
                 }))
 
                 this.setListeners();

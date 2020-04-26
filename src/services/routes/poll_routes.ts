@@ -19,7 +19,7 @@ function ThereWinningButtonsInArray(PollButtons: PollButton[]): boolean {
 }
 
 APP.post(PollManagerRoute, async function (req, res: express.Response) {
-    let PollRequest: PollRequest = req.body;
+    let PollRequest: PollRequest = req.body;    
 
     let Result: AuthenticateResult
     try { Result = <AuthenticateResult>await Authenticate(PollRequest.Token) }

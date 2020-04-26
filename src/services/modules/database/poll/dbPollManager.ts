@@ -59,12 +59,12 @@ export class dbPollManager {
         return this.AccountData.LastPollID;
     }
 
-    async getAllBets(): Promise<dbBet[]> {
+    async getAllBetsOfCurrentPoll(): Promise<dbBet[]> {
         return (await this.get_dbBets()).findAll();
     }
 
     async getNumberOfBets(): Promise<PollBet[]> {
-        let dbBets = await this.getAllBets();
+        let dbBets = await this.getAllBetsOfCurrentPoll();
 
         let Bets: PollBet[] = [];
         dbBets.forEach(dbBet => {
@@ -111,7 +111,7 @@ export class dbPollManager {
         let CreationAndUpdatePromises = [];
 
         for (const Button of Buttons) {
-            let ButtonOfPoll = await this.getButtonOfCurrentPoll(Button.ID);
+            let ButtonOfPoll = await this.getButtonOfCurrentPoll(Button.ID);            
 
             if (ButtonOfPoll) {
                 CreationAndUpdatePromises.push(this.UpdateButtonOfCurrentPoll(ButtonOfPoll, Button))

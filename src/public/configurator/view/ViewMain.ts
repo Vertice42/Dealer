@@ -19,18 +19,18 @@ export class ViewMain {
     HTML_WalletsModule = <HTMLDivElement>document.getElementById('WalletsModule');
     HTML_WalletsModuleTitle = <HTMLTitleElement>document.getElementById('WalletsModuleTitle');
 
-    private async setModuleHide(HTMLDivElement: HTMLDivElement) {
+    private async setModuleHide(HTMLDivElement: HTMLDivElement, timeAwait = 500) {
         HTMLDivElement.classList.remove('ModuleSample');
         HTMLDivElement.classList.add('ModuleHide');
         localStorage.setItem(HTMLDivElement.id, '0');
 
-        await sleep(500);
+        await sleep(timeAwait);
         HTMLDivElement.style.display = 'none';
     }
 
-    private async setModuleSample(HTMLDivElement: HTMLDivElement) {
+    private async setModuleSample(HTMLDivElement: HTMLDivElement, timeAwait = 100) {
         HTMLDivElement.style.display = '';
-        await sleep(100);
+        await sleep(timeAwait);
 
         HTMLDivElement.classList.remove('ModuleHide');
         HTMLDivElement.classList.add('ModuleSample');
@@ -40,13 +40,14 @@ export class ViewMain {
 
     private ModuleIsHide(HTMLDivElement: HTMLDivElement) {
         let ISHide = localStorage.getItem(HTMLDivElement.id);
-
-        return (HTMLDivElement.classList.contains('ModuleHide') || (ISHide) ? (ISHide === '0') : false)
+        return ((ISHide) ? (ISHide === '0') : true)
     }
 
-    private setHidden(button: HTMLElement, Module: HTMLDivElement) {
+    private initializeModule(button: HTMLElement, Module: HTMLDivElement) {
         if (this.ModuleIsHide(Module)) {
-            this.setModuleHide(Module);
+            this.setModuleHide(Module, 0);
+        } else {            
+            this.setModuleSample(Module, 0);
         }
 
         button.onclick = () => {
@@ -67,10 +68,10 @@ export class ViewMain {
     }
 
     constructor() {
-        this.setHidden(this.HTML_PollModuleTitle, this.HTML_PollModule);
-        this.setHidden(this.HTML_SettingModuleTitle, this.HTML_SettingModule);
-        this.setHidden(this.HTML_StoreModuleTitle, this.HTML_StoreModule);
-        this.setHidden(this.HTML_WalletsModuleTitle, this.HTML_WalletsModule);
+        this.initializeModule(this.HTML_PollModuleTitle, this.HTML_PollModule);
+        this.initializeModule(this.HTML_SettingModuleTitle, this.HTML_SettingModule);
+        this.initializeModule(this.HTML_StoreModuleTitle, this.HTML_StoreModule);
+        this.initializeModule(this.HTML_WalletsModuleTitle, this.HTML_WalletsModule);
 
         new ViewAdvertisement();
     }
