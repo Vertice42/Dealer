@@ -9,12 +9,12 @@ import { ViewMain } from "../view/ViewMain";
 import { InsertTextInHardCode, LocalizedTexts } from '../../common/view/Texts';
 import { TwitchListener } from '../../common/model/TwitchListener';
 import { getLocaleFile } from '../../common/BackendConnection/BlobFiles';
-import ServerConfigs from '../../../configs/ServerConfigs';
 import { ViewAdvertisement } from '../view/ViewAdvertising';
 import { updateTransitionsByUser as updateTransactionOfUser } from '../../common/BackendConnection/ExtensionProducts';
-import { UpdateProductsPurchasedByUserRequest as UpdateTransactionOfUserRequest } from '../../../services/models/dealer/UpdateProductsPurchasedByUserRequest';
+import { UpdateTransitionsByUserRequest as UpdateTransactionOfUserRequest } from '../../../services/models/dealer/UpdateProductsPurchasedByUserRequest';
+import config from '../../common/BackendConnection/config';
 
-export const STREAMER_SOCKET = io(ServerConfigs.URL);
+export const STREAMER_SOCKET = io(config.URL);
 export var Texts: LocalizedTexts;
 
 var Initialized = false;

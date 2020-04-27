@@ -7,7 +7,6 @@ import { Loading } from "./modules/database/dbLoading";
 import IOListeners from "./IOListeners";
 import { dbManager } from "./modules/database/dbManager";
 import { addSocketOfStreamer, removeSocketOfStreamer } from "./SocketsManager";
-import ServerConfigs from "../configs/ServerConfigs";
 
 export function CheckRequisition(CheckList: (() => Object)[]) {
     let ErrorList = [];
@@ -21,6 +20,7 @@ export const APP = express();
 const SERVER = http.createServer(APP);
 
 var AcceptedOrigin = process.env.AcceptedOrigin;
+
 
 if (process.env.NODE_ENV !== 'production') AcceptedOrigin = 'http://localhost';
 
@@ -79,4 +79,6 @@ IO.on('connection', (socket) => {
 });
 
 SERVER.on('listening', () => console.log('**** SERVER AS STARTED ****'));
-SERVER.listen(ServerConfigs.Port);
+console.log(process.env);
+
+SERVER.listen(process.env.Door);

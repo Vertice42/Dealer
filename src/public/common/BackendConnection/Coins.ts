@@ -2,10 +2,10 @@ import { CoinsSettings } from "../../../services/models/streamer_settings/CoinsS
 import { getCoinsSettingsRoute, CoinsSettingsManagerRoute } from "../../../services/routes/routes";
 import { reject } from "bluebird";
 import { CoinsSettingsManagerRequest } from "../../../services/models/streamer_settings/CoinsSettingsManagerRequest";
-import ServerConfigs from "../../../configs/ServerConfigs";
+import config from "./config";
 
 export async function GetCoinsSettings(StreamerID: string): Promise<CoinsSettings> {
-  return fetch(ServerConfigs.URL + getCoinsSettingsRoute(StreamerID), {
+  return fetch(config.URL + getCoinsSettingsRoute(StreamerID), {
     method: "GET"
   }).then((result) => {
     if (result.ok) return result.json();
@@ -17,7 +17,7 @@ export async function ManagerCoinsSettings(CoinsSettingsManagerRequest: CoinsSet
   let H = new Headers();
   H.append("Content-Type", "application/json");
 
-  return fetch(ServerConfigs.URL + CoinsSettingsManagerRoute, {
+  return fetch(config.URL + CoinsSettingsManagerRoute, {
     method: "POST",
     headers: H,
     body: JSON.stringify(CoinsSettingsManagerRequest)

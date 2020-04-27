@@ -13,7 +13,7 @@ async function getOAuth() {
     if (OAuth) {
         return OAuth
     } else {
-        OAuth = await (await fetch(`https://id.twitch.tv/oauth2/token?client_id=${process.argv[3]}&client_secret=${process.argv[4]}&grant_type=client_credentials`, {
+        OAuth = await (await fetch(`https://id.twitch.tv/oauth2/token?client_id=${process.env.ExtensionSecret}&client_secret=${process.env.ClientSecret}&grant_type=client_credentials`, {
             method: 'POST'
         })).json();
         await sleep(OAuth.expires_in);
@@ -23,7 +23,7 @@ async function getOAuth() {
 }
 
 async function GetExtensionTransactions(id?: string, pagination = '') {
-    return (await fetch(`https://api.twitch.tv/helix/extensions/transactions?extension_id=${process.argv[3]}${(id) ? '&id=' + id : ''}${pagination}`, {
+    return (await fetch(`https://api.twitch.tv/helix/extensions/transactions?extension_id=${process.env.ExtensionID}${(id) ? '&id=' + id : ''}${pagination}`, {
         method: 'GET',
         headers: {
             Authorization: 'Bearer ' + (await getOAuth()).access_token

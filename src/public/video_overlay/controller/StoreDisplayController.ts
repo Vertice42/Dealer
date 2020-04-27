@@ -12,7 +12,7 @@ import { GetStore } from "../../common/BackendConnection/Store";
 import { getURLOfWalletSkinsImg, getWalletSkins, getUrlOfFile } from "../../common/BackendConnection/BlobFiles";
 import { addPurchaseOrder, GetPurchaseOrders } from "../../common/BackendConnection/PurchaseOrders";
 import { getTransitionsByUser as getTransitionsByUser, updateTransitionsByUser } from "../../common/BackendConnection/ExtensionProducts";
-import { UpdateProductsPurchasedByUserRequest as UpdateTransitionsByUserRequest } from "../../../services/models/dealer/UpdateProductsPurchasedByUserRequest";
+import { UpdateTransitionsByUserRequest as UpdateTransitionsByUserRequest } from "../../../services/models/dealer/UpdateProductsPurchasedByUserRequest";
 
 /**
  * Control the update and make store items available and intermediate 

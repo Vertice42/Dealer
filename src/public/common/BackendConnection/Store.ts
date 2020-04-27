@@ -2,10 +2,10 @@ import { getStoreRoute, StoreManagerRoute } from "../../../services/routes/route
 import { reject } from "bluebird";
 import StoreManagerRequest from "../../../services/models/store/StoreManagerRequest";
 import StoreItem from "../../../services/models/store/StoreItem";
-import ServerConfigs from "../../../configs/ServerConfigs";
+import config from "./config";
 
 export async function GetStore(StreamerID: string, StoreItemID = -1) {
-    return fetch(ServerConfigs.URL + getStoreRoute(StreamerID, StoreItemID), {
+    return fetch(config.URL + getStoreRoute(StreamerID, StoreItemID), {
         method: "GET"
     }).then((result) => {
         if (result.ok) return result.json();
@@ -19,7 +19,7 @@ export async function updateStoreItem(Token: string, StoreItem: StoreItem) {
     let H = new Headers();
     H.append("Content-Type", "application/json");
 
-    return fetch(ServerConfigs.URL + StoreManagerRoute, {
+    return fetch(config.URL + StoreManagerRoute, {
         method: "POST",
         headers: H,
         body: JSON.stringify(new StoreManagerRequest(Token, StoreItem))
@@ -36,7 +36,7 @@ export async function DeleteStoreItem(Token: string, StoreItem: StoreItem) {
     let H = new Headers();
     H.append("Content-Type", "application/json");
 
-    return fetch(ServerConfigs.URL + StoreManagerRoute, {
+    return fetch(config.URL + StoreManagerRoute, {
         method: "DELETE",
         headers: H,
         body: JSON.stringify(new StoreManagerRequest(Token, StoreItem))

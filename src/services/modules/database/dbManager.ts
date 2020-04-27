@@ -2,7 +2,6 @@ import { Sequelize } from "sequelize";
 
 import { resolve, reject } from "bluebird";
 import { AccountData } from "../../models/dealer/AccountData";
-import dbConfigs from "./dbConfigs";
 
 export const NOT_IN_STRING = -1;
 
@@ -15,9 +14,13 @@ const STREAMER_DATABASE_NAME = 'dealer_streamer_';
 
 const Mysql = new Sequelize(
     'mysql',
-    dbConfigs.User,
-    dbConfigs.Password,
-    dbConfigs.SequelizeOptions);
+    process.env.DB_USER,
+    process.env.Password,
+    {
+        dialect: 'mysql',
+        host: process.env.DB_HOST,
+        logging: (process.env.LOGGING === 'true')
+    });
 
 var AccountDataArray: AccountData[] = [];
 /**
@@ -27,15 +30,19 @@ export class dbManager {
     static getStreamerDataBase(StreamerID: string) {
         return new Sequelize(
             STREAMER_DATABASE_NAME + StreamerID,
-            dbConfigs.User,
-            dbConfigs.Password,
-            dbConfigs.SequelizeOptions)
+            process.env.DB_USER,
+            process.env.Password,
+            {
+                dialect: 'mysql',
+                host: process.env.DB_HOST,
+                logging: (process.env.LOGGING === 'true')
+            })
     }
 
-    static getAccountData(StreamerID: string): AccountData {                
+    static getAccountData(StreamerID: string): AccountData {
         return AccountDataArray[StreamerID];
     }
-    static setAccountData(AccountData: AccountData):AccountData {
+    static setAccountData(AccountData: AccountData): AccountData {
         AccountDataArray[AccountData.StreamerID] = AccountData;
         return AccountDataArray[AccountData.StreamerID];
     }
@@ -67,10 +74,14 @@ export class dbManager {
 
     static async getDataBase(DataBaseName: string) {
         return new Sequelize(
-            DataBaseName
-            , dbConfigs.User,
-            dbConfigs.Password,
-            dbConfigs.SequelizeOptions)
+            DataBaseName,
+            process.env.DB_USER,
+            process.env.Password,
+            {
+                dialect: 'mysql',
+                host: process.env.DB_HOST,
+                logging: (process.env.LOGGING === 'true')
+            })
     }
 
     static async CreateIfNotExistSDataBase(DataBaseName: string) {

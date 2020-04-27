@@ -2,13 +2,13 @@ import { MinerManagerRoute, getMinerSettingsRoute, MineCoinRoute } from "../../.
 import { MinerManagerRequest } from "../../../services/models/miner/MinerManagerRequest";
 import { reject } from "bluebird";
 import { MinerRequest } from "../../../services/models/miner/MinerRequest";
-import ServerConfigs from "../../../configs/ServerConfigs";
+import config from "./config";
 
 export async function ManagerMiner(MinerManagerRequest:MinerManagerRequest) {
     let H = new Headers();
     H.append("Content-Type", "application/json");
 
-    return fetch(ServerConfigs.URL + MinerManagerRoute, {
+    return fetch(config.URL + MinerManagerRoute, {
         method: "POST",
         headers: H,
         body: JSON.stringify(MinerManagerRequest)
@@ -21,7 +21,7 @@ export async function ManagerMiner(MinerManagerRequest:MinerManagerRequest) {
 }
 
 export async function GetMinerSettings(StreamerID: string) {
-    return fetch(ServerConfigs.URL + getMinerSettingsRoute(StreamerID), {
+    return fetch(config.URL + getMinerSettingsRoute(StreamerID), {
         method: "GET"
     }).then((result) => {
         if (result.ok) return result.json();
@@ -34,7 +34,7 @@ export async function GetMinerSettings(StreamerID: string) {
 export async function MineCoin(MinerRequest:MinerRequest) {
     let H = new Headers();
     H.append("Content-Type", "application/json");
-    return fetch(ServerConfigs.URL + MineCoinRoute, {
+    return fetch(config.URL + MineCoinRoute, {
       method: "POST",
       headers: H,
       body: JSON.stringify(MinerRequest)

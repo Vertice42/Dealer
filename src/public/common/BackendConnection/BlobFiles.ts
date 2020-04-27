@@ -1,6 +1,6 @@
 import { UploadFileRoute, getFilesRoute, getWalletSkinImage, GetWalletSkins, getLocale } from "../../../services/routes/routes";
 import { reject } from "bluebird";
-import ServerConfigs from "../../../configs/ServerConfigs";
+import config from "./config";
 
 export async function UploadFile(Token: string, FolderName: string, FileName: string, File: File) {
     let headers = new Headers();
@@ -8,7 +8,7 @@ export async function UploadFile(Token: string, FolderName: string, FileName: st
     headers.append('token', Token);
     headers.append("file-name", FileName);
     headers.append("file-id", FolderName);
-    return fetch(ServerConfigs.URL + UploadFileRoute,
+    return fetch(config.URL + UploadFileRoute,
         {
             method: "POST",
             headers: headers,
@@ -22,15 +22,15 @@ export async function UploadFile(Token: string, FolderName: string, FileName: st
 }
 
 export function getUrlOfFile(StreamerID: string, Folder: string, FileName: string) {
-    return ServerConfigs.URL + getFilesRoute(StreamerID, Folder, FileName);
+    return config.URL + getFilesRoute(StreamerID, Folder, FileName);
 }
 
 export function getURLOfWalletSkinsImg(SkinImageName: string, MaskNumber: number) {
-    return ServerConfigs.URL + getWalletSkinImage(SkinImageName, MaskNumber);
+    return config.URL + getWalletSkinImage(SkinImageName, MaskNumber);
 }
 
 export async function getWalletSkins() {
-    return fetch(ServerConfigs.URL + GetWalletSkins, {
+    return fetch(config.URL + GetWalletSkins, {
         method: "GET"
     }).then((result) => {
         if (result.ok) return result.json();
@@ -41,7 +41,7 @@ export async function getWalletSkins() {
 }
 
 export async function getLocaleFile(ViewName: string, Locale: string) {
-    return fetch(ServerConfigs.URL + getLocale(ViewName, Locale), {
+    return fetch(config.URL + getLocale(ViewName, Locale), {
         method: "GET"
     }).then((result) => {
         if (result.ok) return result.json();

@@ -3,10 +3,10 @@ import { getPollRoute, AddBetRoute, PollManagerRoute } from "../../../services/r
 import { AddBetRequest } from "../../../services/models/poll/AddBetRequest";
 import { PollRequest } from "../../../services/models/poll/PollRequest";
 import { reject } from "bluebird";
-import ServerConfigs from "../../../configs/ServerConfigs";
+import config from "./config";
 
 export async function getCurrentPoll(StreamerID: string): Promise<Poll> {
-    return fetch(ServerConfigs.URL + getPollRoute(StreamerID), {
+    return fetch(config.URL + getPollRoute(StreamerID), {
         method: "GET"
     }).then((result) => {
         if (result.ok) return result.json();
@@ -19,7 +19,7 @@ export async function getCurrentPoll(StreamerID: string): Promise<Poll> {
 export async function addBet(AddBetRequest:AddBetRequest) {
     let H = new Headers();
     H.append("Content-Type", "application/json");
-    return fetch(ServerConfigs.URL + AddBetRoute, {
+    return fetch(config.URL + AddBetRoute, {
         method: "POST",
         headers: H,
         body: JSON.stringify(AddBetRequest)
@@ -36,7 +36,7 @@ export async function PollManager(PollRequest:PollRequest) {
     let H = new Headers();
     H.append("Content-Type", "application/json");
 
-    return fetch(ServerConfigs.URL + PollManagerRoute, {
+    return fetch(config.URL + PollManagerRoute, {
         method: "POST",
         headers: H,
         body: JSON.stringify(PollRequest)

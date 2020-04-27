@@ -1,4 +1,4 @@
-export class UpdateProductsPurchasedByUserRequest {
+export class UpdateTransitionsByUserRequest {
     Token: string;
     Transaction: TwitchExtBitsTransaction;
 

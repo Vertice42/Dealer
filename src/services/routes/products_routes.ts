@@ -1,14 +1,14 @@
 import express = require("express");
 import { APP, CheckRequisition } from "..";
 import { UpdateTransitionsByUser, GetTransitionsByUser } from "./routes";
-import { UpdateProductsPurchasedByUserRequest } from "../models/dealer/UpdateProductsPurchasedByUserRequest";
+import { UpdateTransitionsByUserRequest } from "../models/dealer/UpdateProductsPurchasedByUserRequest";
 import dbDealerManager from "../modules/database/dbDealerManager";
 import { AuthenticateResult } from "../models/poll/AuthenticateResult";
 import { Authenticate } from "../modules/Authentication";
 import { VerifyOwnershipOfProduct } from "../controller/ControllerOfPermissions";
 
 APP.post(UpdateTransitionsByUser, async function (req, res: express.Response) {
-    let Request: UpdateProductsPurchasedByUserRequest = req.body;
+    let Request: UpdateTransitionsByUserRequest = req.body;
     let ErrorList = CheckRequisition([
         () => {
             if (!Request.Token)
