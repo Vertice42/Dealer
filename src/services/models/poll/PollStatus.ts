@@ -1,5 +1,3 @@
-import { StatisticsOfDistribution } from "./DistributionCalculationResult";
-
 export class PollStatus {
     id: number;
     PollWaxed: boolean;
@@ -8,7 +6,7 @@ export class PollStatus {
     DistributionStarted: boolean;
     DistributionCompleted: boolean;
     InDistribution: boolean;
-    StatisticsOfDistribution: StatisticsOfDistribution;
+    StatisticsOfDistributionJson: string;
     updated_at:Date;
 
     constructor(PollStatus?: PollStatus) {
@@ -20,7 +18,7 @@ export class PollStatus {
             this.InDistribution = PollStatus.InDistribution;
             this.DistributionStarted = PollStatus.DistributionStarted;
             this.DistributionCompleted = PollStatus.DistributionCompleted;
-            this.StatisticsOfDistribution = PollStatus.StatisticsOfDistribution;
+            this.StatisticsOfDistributionJson = PollStatus.StatisticsOfDistributionJson;
             this.updated_at = PollStatus.updated_at;
         } else {
             this.PollWaxed = false;

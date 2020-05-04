@@ -3,11 +3,11 @@ import { APP, CheckRequisition } from "..";
 import { CoinsSettingsManagerRequest } from "../models/streamer_settings/CoinsSettingsManagerRequest";
 import { CoinsSettings } from "../models/streamer_settings/CoinsSettings";
 import { CoinsSettingsManagerRoute, GetCoinsSettingsRoute, MinerManagerRoute, GetMinerSettingsRoute } from "./routes";
-import StreamerSettingsManager from "../modules/database/streamer_settings/StreamerSettingsManager";
 import { MinerManagerRequest } from "../models/miner/MinerManagerRequest";
 import { MinerSettings } from "../models/streamer_settings/MinerSettings";
 import { AuthenticateResult } from "../models/poll/AuthenticateResult";
 import { Authenticate } from "../modules/Authentication";
+import StreamerSettingsManager from "../modules/databaseManager/streamer_settings/StreamerSettingsManager";
 
 APP.post(CoinsSettingsManagerRoute, async function (req, res: express.Response) {
     let CoinsSettingsManagerRequest: CoinsSettingsManagerRequest = req.body;

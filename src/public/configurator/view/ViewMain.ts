@@ -1,4 +1,4 @@
-import { sleep } from "../../../utils/functions";
+import { sleep } from "../../../services/utils/functions";
 import { ViewAdvertisement } from "./ViewAdvertising";
 
 /**

@@ -1,4 +1,4 @@
-import { sleep } from "../../../utils/functions";
+import { sleep } from "../../../services/utils/functions";
 import { ViewMain } from "./ViewMain";
 /**
  * Contains methods to control advertising for the streamer

@@ -5,6 +5,7 @@ import sequelize = require("sequelize");
 export default class dbTransactionsOfUser extends Model implements TransactionsOfUser {
     ID: string;
     TransactionsArray: TwitchExtBitsTransaction[];
+    TransactionsArrayJson: string;
 }
 
 const TableName = 'purchases';
@@ -13,7 +14,7 @@ const Attributes: ModelAttributes = {
         type: sequelize.STRING,
         primaryKey: true
     },
-    TransactionsArray: sequelize.JSON
+    TransactionsArray: sequelize.STRING
 }
 
 const Options: ModelOptions = {

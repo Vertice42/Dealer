@@ -3,7 +3,6 @@ export default class ItemSetting {
     public Enable: boolean;
     public value: any;
 
-
     constructor(DonorFeatureName: string, Enable: boolean, Value?: any) {
         this.DonorFeatureName = DonorFeatureName;
         this.Enable = Enable;

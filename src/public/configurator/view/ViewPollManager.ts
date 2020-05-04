@@ -3,7 +3,7 @@ import { Poll } from "../../../services/models/poll/Poll";
 import { PollButton } from "../../../services/models/poll/PollButton";
 import { GenerateColor } from "../../common/view/ViewerFeatures";
 import { Texts } from "../controller/MainController";
-import { sleep } from "../../../utils/functions";
+import { sleep } from "../../../services/utils/functions";
 
 class NameInput {
     public HTMLElement: HTMLDivElement;

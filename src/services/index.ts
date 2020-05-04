@@ -1,12 +1,16 @@
 import express = require("express");
 import cors = require("cors");
 import bodyParser = require("body-parser");
-import http = require('http')
+import http = require('http');
+import path = require('path');
 import Socket_io = require('socket.io')
-import { Loading } from "./modules/database/dbLoading";
 import IOListeners from "./IOListeners";
-import { dbManager } from "./modules/database/dbManager";
 import { addSocketOfStreamer, removeSocketOfStreamer } from "./SocketsManager";
+import { dbManager } from "./modules/databaseManager/dbManager";
+import { Loading } from "./modules/databaseManager/dbLoading";
+
+const APP = express();
+export {APP};
 
 export function CheckRequisition(CheckList: (() => Object)[]) {
     let ErrorList = [];
@@ -16,13 +20,9 @@ export function CheckRequisition(CheckList: (() => Object)[]) {
     });
     return ErrorList
 }
-export const APP = express();
 const SERVER = http.createServer(APP);
 
 var AcceptedOrigin = process.env.AcceptedOrigin;
-
-
-if (process.env.NODE_ENV !== 'production') AcceptedOrigin = 'http://localhost';
 
 function ValidateOrigin(origin: string, i = 0) {
     if (origin.charAt(i) === AcceptedOrigin.charAt(i)) {
@@ -34,7 +34,7 @@ function ValidateOrigin(origin: string, i = 0) {
 }
 
 var corsOptionsDelegate = function (req: express.Request, callback) {
-    var corsOptions:cors.CorsOptions;
+    var corsOptions: cors.CorsOptions;
 
     if (req.method !== 'GET') {
         corsOptions = { origin: ValidateOrigin(req.header('Origin')) }
@@ -54,10 +54,13 @@ require('./routes/wallets_routes');
 require('./routes/files_routes');
 require('./routes/products_routes');
 
+APP.get('/', function (req, res) {
+    res.sendFile(path.resolve('./index.html'));
+})
+
 const IO = Socket_io(SERVER).listen(SERVER);
 IO.on('connection', (socket) => {
-    socket.on(IOListeners.RegisterStreamer, async (StreamerID) => {
-
+    socket.on(IOListeners.RegisterStreamer, async (StreamerID) => {        
         if (!dbManager.getAccountData(StreamerID))
             dbManager.setAccountData(await Loading.StreamerAccountData(StreamerID));
 
@@ -79,6 +82,4 @@ IO.on('connection', (socket) => {
 });
 
 SERVER.on('listening', () => console.log('**** SERVER AS STARTED ****'));
-console.log(process.env);
-
-SERVER.listen(process.env.Door);
+SERVER.listen(process.env.PORT);

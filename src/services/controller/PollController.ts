@@ -1,9 +1,5 @@
 import { PollButton } from "../models/poll/PollButton";
 
-import { dbManager } from "../modules/database/dbManager";
-
-import { dbWalletManager } from "../modules/database/wallet/dbWalletManager";
-
 import { reject, resolve, Promise } from "bluebird";
 
 import { Bet } from "../models/poll/dbBets";
@@ -11,10 +7,12 @@ import { Bet } from "../models/poll/dbBets";
 import { PollStatus } from "../models/poll/PollStatus";
 
 import { Poll } from "../models/poll/Poll";
-import { dbPollManager } from "../modules/database/poll/dbPollManager";
 import { PollBet } from "../models/poll/PollBeat";
 import UpdateButtonGroupResult from "../models/poll/UpdateButtonGroupResult";
 import { DistributionCalculationResult, StatisticsOfDistribution } from "../models/poll/DistributionCalculationResult";
+import { dbPollManager } from "../modules/databaseManager/poll/dbPollManager";
+import { dbWalletManager } from "../modules/databaseManager/wallet/dbWalletManager";
+import { dbManager } from "../modules/databaseManager/dbManager";
 
 /**
 * Calculation of the distribution of winnings used in the list of bets and options

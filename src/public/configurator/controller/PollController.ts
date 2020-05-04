@@ -5,8 +5,8 @@ import IOListeners from "../../../services/IOListeners";
 import { Poll } from "../../../services/models/poll/Poll";
 import { PollManager, getCurrentPoll } from "../../common/BackendConnection/Poll";
 import { PollRequest } from "../../../services/models/poll/PollRequest";
-import { Observer } from "../../../utils/Observer";
 import { PollStatus } from "../../../services/models/poll/PollStatus";
+import { Observer } from "../../../services/utils/Observer";
 
 /**
  * It is intended to control the connection between a ux and the back end

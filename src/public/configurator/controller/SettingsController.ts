@@ -1,5 +1,5 @@
 import { MinerSettings } from "../../../services/models/streamer_settings/MinerSettings";
-import { sleep } from "../../../utils/functions";
+import { sleep } from "../../../services/utils/functions";
 import UploadFileResponse from "../../../services/models/files_manager/UploadFileResponse";
 import { CoinsSettings } from "../../../services/models/streamer_settings/CoinsSettings";
 import ViewSettings from "../view/ViewSettings";

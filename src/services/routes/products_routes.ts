@@ -2,10 +2,10 @@ import express = require("express");
 import { APP, CheckRequisition } from "..";
 import { UpdateTransitionsByUser, GetTransitionsByUser } from "./routes";
 import { UpdateTransitionsByUserRequest } from "../models/dealer/UpdateProductsPurchasedByUserRequest";
-import dbDealerManager from "../modules/database/dbDealerManager";
 import { AuthenticateResult } from "../models/poll/AuthenticateResult";
 import { Authenticate } from "../modules/Authentication";
 import { VerifyOwnershipOfProduct } from "../controller/ControllerOfPermissions";
+import dbDealerManager from "../modules/databaseManager/dbDealerManager";
 
 APP.post(UpdateTransitionsByUser, async function (req, res: express.Response) {
     let Request: UpdateTransitionsByUserRequest = req.body;

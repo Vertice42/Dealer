@@ -102,7 +102,7 @@ export class ViewStoreItem implements StoreItem {
   Type: number;
   Description: string;
   ItemsSettings: ItemSetting[];
-  ItemSettingsJson: string;
+  ItemsSettingsJson: string;
   FileName: string;
   Price: number;
   SingleReproductionSetting: SingleReproductionSettings;
@@ -150,8 +150,8 @@ export class ViewStoreItem implements StoreItem {
 
     this.ResponsiveInputFile = new ResponsiveInputFile(this.ElementHTML_ID, '.mp3,.wav');
 
-    this.ViewStoreType = new ViewStoreType(this.Type, getItemsSetting('AudioVolume',this.ItemsSettings));
-    this.SingleReproductionSetting = new SingleReproductionSettings(getItemsSetting('SingleReproduction',this.ItemsSettings))
+    this.ViewStoreType = new ViewStoreType(this.Type, getItemsSetting('AudioVolume', this.ItemsSettings));
+    this.SingleReproductionSetting = new SingleReproductionSettings(getItemsSetting('SingleReproduction', this.ItemsSettings))
 
     this.HTML = document.createElement('div');
     this.HTML.classList.add('StoreItem');
@@ -163,13 +163,13 @@ export class ViewStoreItem implements StoreItem {
     this.HTML.appendChild(this.createDeleteButton());
 
     this.SingleReproductionSetting.HTML.onchange = () => {
-      let ItemSetting: ItemSetting = getItemsSetting('SingleReproduction',this.ItemsSettings);
+      let ItemSetting: ItemSetting = getItemsSetting('SingleReproduction', this.ItemsSettings);
       ItemSetting.Enable = this.SingleReproductionSetting.HTML_Input.checked;
       this.onSettingChange(this, ItemSetting);
     }
 
     this.ViewStoreType.HTML_InputAudioVolume.onchange = () => {
-      let ItemSetting: ItemSetting = getItemsSetting('AudioVolume',this.ItemsSettings);
+      let ItemSetting: ItemSetting = getItemsSetting('AudioVolume', this.ItemsSettings);
       ItemSetting.Enable = true;
       ItemSetting.value = this.ViewStoreType.HTML_InputAudioVolume.value;
       this.onSettingChange(this, ItemSetting);

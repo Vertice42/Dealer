@@ -1,15 +1,15 @@
 import { expect } from "chai";
-import { createAndStartStreamerDatabase, deleteStreamerDatabase, ID_FOR_SETTINGS, HOURLY_REWARD_FOR_TEST } from "./ForTests.test";
-import StreamerSettingsManager from "../services/modules/database/streamer_settings/StreamerSettingsManager";
+import { createStreamerTables, deleteStreamerTables, ID_FOR_SETTINGS, HOURLY_REWARD_FOR_TEST } from "./ForTests.test";
 import { MinerSettings } from "../services/models/streamer_settings/MinerSettings";
 import { CoinsSettings } from "../services/models/streamer_settings/CoinsSettings";
+import StreamerSettingsManager from "../services/modules/databaseManager/streamer_settings/StreamerSettingsManager";
 
 describe('Settings', () => {
     before(async () => {
-        await createAndStartStreamerDatabase(ID_FOR_SETTINGS);
+        await createStreamerTables(ID_FOR_SETTINGS);
     })
     after(async () => {
-        await deleteStreamerDatabase(ID_FOR_SETTINGS);
+        await deleteStreamerTables(ID_FOR_SETTINGS);
     })
     describe('Miner', async function () {
         it('Get Miner Settings', async function () {

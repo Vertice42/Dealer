@@ -1,9 +1,9 @@
-import { sleep } from "../../../utils/functions";
+import { sleep } from "../../../services/utils/functions";
 import { Wallet } from "../../../services/models/poll/dbWallet";
 import ViewWallets from "../view/ViewWallets";
 import { GetWallets, ManagerWallets } from "../../common/BackendConnection/Wallets";
 import { WalletManagerRequest } from "../../../services/models/wallet/WalletManagerRequest";
-import { Observer } from "../../../utils/Observer";
+import { Observer } from "../../../services/utils/Observer";
 
 /**
  * Connects the streamer actions to the back end to manage the users wallets

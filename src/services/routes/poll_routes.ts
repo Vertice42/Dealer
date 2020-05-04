@@ -1,16 +1,18 @@
 import express = require("express");
+
+import IOListeners from "../IOListeners";
+import PollController from "../controller/PollController";
+
 import { APP, CheckRequisition } from "..";
 import { PollRequest } from "../models/poll/PollRequest";
-import { dbManager } from "../modules/database/dbManager";
-import { Poll } from "../models/poll/Poll";
 import { AddBetRequest } from "../models/poll/AddBetRequest";
 import { PollButton } from "../models/poll/PollButton";
 import { PollManagerRoute, AddBetRoute, GetPollRoute } from "./routes";
 import { getSocketOfStreamer } from "../SocketsManager";
-import IOListeners from "../IOListeners";
 import { Authenticate } from "../modules/Authentication";
 import { AuthenticateResult } from "../models/poll/AuthenticateResult";
-import PollController from "../controller/PollController";
+import { dbManager } from "../modules/databaseManager/dbManager";
+import { Poll } from "../models/poll/Poll";
 
 function ThereWinningButtonsInArray(PollButtons: PollButton[]): boolean {
     for (let i = 0; i < PollButtons.length; i++)
@@ -64,8 +66,8 @@ APP.post(PollManagerRoute, async function (req, res: express.Response) {
                 if (ThereWinningButtonsInArray(PollRequest.PollButtons)) {
                     PollC.OnDistributionsEnd = async (StatisticsOfDistribution) => {
                         CurrentPollStatus.setDistributionAsCompleted();
-                        CurrentPollStatus.StatisticsOfDistribution = StatisticsOfDistribution;
-                        PollC.UpdatePollStatus(CurrentPollStatus)
+                        CurrentPollStatus.StatisticsOfDistributionJson = JSON.stringify(StatisticsOfDistribution);
+                        PollC.UpdatePollStatus(CurrentPollStatus);
 
                         let SocketsOfStreamer = getSocketOfStreamer(StreamerID);
                         if (SocketsOfStreamer) {

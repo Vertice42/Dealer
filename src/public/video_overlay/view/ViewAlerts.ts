@@ -1,6 +1,6 @@
 import { PollButton } from "../../../services/models/poll/PollButton";
 import { ResponsiveInput } from "../../common/view/Inputs";
-import { hexToRgb, sleep } from "../../../utils/functions";
+import { hexToRgb, sleep } from "../../../services/utils/functions";
 import { DivRelocatable, AutomaticHidingDueInactivity } from "../../common/view/viewerFeatures";
 
 const GRADIENT_DARKENING_RATE = 1.5;

@@ -4,12 +4,11 @@ import StoreItem from "./StoreItem";
 import ItemSetting from "./item_settings/ItemSettings";
 
 export class dbStoreItem extends Model implements StoreItem {
-    ItemsSettings: ItemSetting[];
-
     id: number;
     Type: number;
     Description: string;
-    itemsSettings;
+    ItemsSettingsJson: string;    
+    ItemsSettings: ItemSetting[];
     FileName: string;
     Price: number;
 }
@@ -28,8 +27,8 @@ export const StoreDefiner = {
             type: sequelize.STRING,
             allowNull: true
         },
-        ItemsSettings: {
-            type: sequelize.JSON,
+        ItemsSettingsJson: {
+            type: sequelize.TEXT,
             allowNull: true
         },
         Price: {

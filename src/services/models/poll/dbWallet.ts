@@ -25,10 +25,10 @@ export class dbWallet extends Model implements Wallet {
 }
 
 const WalletDefiner = {
-    Name: 'wallets',
+    name: 'wallets',
     attributes: {
         TwitchUserID: {
-            type: sequelize.STRING,
+            type: sequelize.CHAR(100),
             primaryKey: true
         },
         Coins: {

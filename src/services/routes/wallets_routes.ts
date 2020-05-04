@@ -4,9 +4,9 @@ import { APP, CheckRequisition } from "..";
 import { dbWallet } from "../models/poll/dbWallet";
 import { WalletManagerRequest } from "../models/wallet/WalletManagerRequest";
 import { GetWalletRoute, WalletManager, GetWalletsRoute } from "./routes";
-import { getAllWallets, dbWalletManager } from "../modules/database/wallet/dbWalletManager";
 import { AuthenticateResult } from "../models/poll/AuthenticateResult";
 import { Authenticate } from "../modules/Authentication";
+import { dbWalletManager, getAllWallets } from "../modules/databaseManager/wallet/dbWalletManager";
 
 APP.get(GetWalletRoute, async function (req, res: express.Response) {
     var Request = <{ StreamerID: string, TwitchUserID: string }>req.params;

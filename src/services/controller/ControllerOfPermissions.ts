@@ -1,11 +1,11 @@
 import ExtensionProduct from "../models/store/item_settings/ExtensionProduct";
-import dbDealerManager from "../modules/database/dbDealerManager";
 import ItemSetting from "../models/store/item_settings/ItemSettings";
 import fs = require('fs');
 import path = require('path');
 import fetch from 'node-fetch';
 import { resolve, reject } from "bluebird";
-import { sleep } from "../../utils/functions";
+import { sleep } from "../utils/functions";
+import dbDealerManager from "../modules/databaseManager/dbDealerManager";
 
 var OAuth = undefined;
 

@@ -1,5 +1,5 @@
 import ViewAlerts from "../view/ViewAlerts";
-import { sleep } from "../../../utils/functions";
+import { sleep } from "../../../services/utils/functions";
 import { Poll } from "../../../services/models/poll/Poll";
 import { PollStatus } from "../../../services/models/poll/PollStatus";
 import { PollButton } from "../../../services/models/poll/PollButton";
@@ -9,6 +9,7 @@ import { reject, resolve } from "bluebird";
 import { TwitchListener } from "../../common/model/TwitchListener";
 import { addBet, getCurrentPoll } from "../../common/BackendConnection/Poll";
 import { AddBetRequest } from "../../../services/models/poll/AddBetRequest";
+import { StatisticsOfDistribution } from "../../../services/models/poll/DistributionCalculationResult";
 
 /**
  * Checks whether a user's pasta was a winner
@@ -81,7 +82,8 @@ export default class AlertController {
             if (Poll.PollStatus.DistributionCompleted) {
                 if (!Number.isNaN(selected)) {
                     if (IsWinner(Poll.PollButtons, selected)) {
-                        return await this.ViewAlerts.setInWinnerMode(Poll.PollStatus.StatisticsOfDistribution.CalculationResult.EarningsDistributor);
+                        let StatisticsOfDistribution:StatisticsOfDistribution = JSON.parse(Poll.PollStatus.StatisticsOfDistributionJson)
+                        return await this.ViewAlerts.setInWinnerMode(StatisticsOfDistribution.CalculationResult.EarningsDistributor);
                     } else {
                         return await this.ViewAlerts.setInLoserMode();
                     }

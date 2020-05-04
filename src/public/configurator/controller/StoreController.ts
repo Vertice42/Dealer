@@ -1,4 +1,3 @@
-import { sleep } from "../../../utils/functions";
 import UploadFileResponse from "../../../services/models/files_manager/UploadFileResponse";
 import StoreItem, { StoreTypes, getItemsSetting } from "../../../services/models/store/StoreItem";
 import ViewStoreManager from "../view/ViewStore";
@@ -11,6 +10,7 @@ import { ViewAdvertisement } from "../view/ViewAdvertising";
 import IOListeners from "../../../services/IOListeners";
 import { updateStoreItem, DeleteStoreItem, GetStore } from "../../common/BackendConnection/Store";
 import { getUrlOfFile, UploadFile } from "../../common/BackendConnection/BlobFiles";
+import { sleep } from "../../../services/utils/functions";
 
 /**
  * Connects the streamer actions to the back end to manage your Store

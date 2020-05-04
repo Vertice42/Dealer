@@ -1,15 +1,14 @@
 import express = require("express");
 import { APP, CheckRequisition } from "..";
-import dbStoreManager from "../modules/database/store/dbStoreManager";
 import StoreManagerRequest from "../models/store/StoreManagerRequest";
 import ControllerOfPermissions from "../controller/ControllerOfPermissions";
 import StoreItem from "../models/store/StoreItem";
 import { StoreManagerRoute, GetStoreRoute } from "./routes";
 import del = require("del");
 import FolderTypes from "../models/files_manager/FolderTypes";
-import { isEquivalent } from "../../utils/functions";
 import { AuthenticateResult } from "../models/poll/AuthenticateResult";
 import { Authenticate } from "../modules/Authentication";
+import dbStoreManager from "../modules/databaseManager/store/dbStoreManager";
 
 APP.post(StoreManagerRoute, async function (req, res: express.Response) {
     let Request: StoreManagerRequest = req.body;

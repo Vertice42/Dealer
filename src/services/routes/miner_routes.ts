@@ -1,9 +1,9 @@
 import express = require("express");
 import { APP, CheckRequisition } from "..";
-import MinerManager from "../modules/database/miner/dbMinerManager";
 import { MiningResponse } from "../models/miner/MiningResponse";
 import { MinerRequest } from "../models/miner/MinerRequest";
 import { MineCoinRoute } from "./routes";
+import MinerManager from "../modules/databaseManager/miner/dbMinerManager";
 
 APP.post(MineCoinRoute, async function (req, res: express.Response) {
     let MinerRequest = <MinerRequest>req.body;

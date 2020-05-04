@@ -11,7 +11,7 @@ export default class dbPollIndex extends Model implements PollStatus {
     DistributionStarted: boolean;
     DistributionCompleted: boolean;
     InDistribution: boolean;
-    StatisticsOfDistribution;
+    StatisticsOfDistributionJson: string;
     created_at:Date;
     updated_at:Date;
 
@@ -44,8 +44,8 @@ export default class dbPollIndex extends Model implements PollStatus {
     }
 }
 
-const TableName = 'Polls';
-const Attributes: ModelAttributes = {
+const name = 'Polls';
+const attributes: ModelAttributes = {
     PollWaxed: {
         type: sequelize.BOOLEAN
     },
@@ -65,7 +65,7 @@ const Attributes: ModelAttributes = {
         type: sequelize.BOOLEAN
     },
     StatisticsOfDistribution: {
-        type: sequelize.JSON
+        type: sequelize.STRING
     },
     created_at: {
         type: 'TIMESTAMP',
@@ -79,8 +79,8 @@ const Attributes: ModelAttributes = {
     }
 }
 
-const Options: ModelOptions = {
+const options: ModelOptions = {
     freezeTableName: true
 }
 
-export { TableName, Attributes, Options }
+export const PollIndexDefiner = { name, attributes, options }

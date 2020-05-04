@@ -1,23 +1,24 @@
 import { expect } from "chai";
 
-import MinerManager from "../services/modules/database/miner/dbMinerManager";
-import { createAndStartStreamerDatabase, ID_FOR_MINING, deleteStreamerDatabase, USERS_IDS_FOR_TESTS, REWARD_FOR_TEST_ATTEMPT, HOURLY_REWARD_FOR_TEST } from "./ForTests.test";
-import { sleep } from "../utils/functions";
-import StreamerSettingsManager from "../services/modules/database/streamer_settings/StreamerSettingsManager";
+import { createStreamerTables, ID_FOR_MINING, deleteStreamerTables, USERS_IDS_FOR_TESTS, REWARD_FOR_TEST_ATTEMPT, HOURLY_REWARD_FOR_TEST } from "./ForTests.test";
+import { sleep } from "../services/utils/functions";
 import { MinerSettings } from "../services/models/streamer_settings/MinerSettings";
+import StreamerSettingsManager from "../services/modules/databaseManager/streamer_settings/StreamerSettingsManager";
+import MinerManager from "../services/modules/databaseManager/miner/dbMinerManager";
 
 describe('Mining', () => {
 
   before(async () => {
-    await createAndStartStreamerDatabase(ID_FOR_MINING);
+    await createStreamerTables(ID_FOR_MINING);
     await StreamerSettingsManager.UpdateMinerSettings(ID_FOR_MINING,new MinerSettings(HOURLY_REWARD_FOR_TEST));
   })
   after(async () => {
-    await deleteStreamerDatabase(ID_FOR_MINING)
+    await deleteStreamerTables(ID_FOR_MINING)
   })
 
   it('Mining Coins', async function () {
-    this.slow(1500);
+    this.timeout(6000)
+    this.slow(3000);
     let result1 = await MinerManager.MineCoin(ID_FOR_MINING, USERS_IDS_FOR_TESTS[0]);        
     expect(result1.CoinsOfUser).to.deep.equal(0);
     

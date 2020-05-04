@@ -8,18 +8,18 @@ import { Poll } from "../services/models/poll/Poll";
 
 import { dbWallet } from "../services/models/poll/dbWallet";
 import { resolve } from "bluebird";
-import { createAndStartStreamerDatabase, ID_FOR_MANAGER_POLL, deleteStreamerDatabase, db_FOR_UPDATE_BUTTONS, createPoll, startPoll, ID_FOR_DISTRIBUTION, USERS_IDS_FOR_TESTS, ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS } from "./ForTests.test";
-import { dbWalletManager, getWallet } from "../services/modules/database/wallet/dbWalletManager";
-import { sleep } from "../utils/functions";
+import { createStreamerTables, ID_FOR_MANAGER_POLL, deleteStreamerTables, db_FOR_UPDATE_BUTTONS, createPoll, startPoll, ID_FOR_DISTRIBUTION, USERS_IDS_FOR_TESTS, ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS } from "./ForTests.test";
+import { sleep } from "../services/utils/functions";
 import { PollBet } from "../services/models/poll/PollBeat";
 import PollController from "../services/controller/PollController";
+import { dbWalletManager, getWallet } from "../services/modules/databaseManager/wallet/dbWalletManager";
 
 describe('Poll', () => {
   before(async function () {
-    await createAndStartStreamerDatabase(ID_FOR_MANAGER_POLL);
+    await createStreamerTables(ID_FOR_MANAGER_POLL);
   });
   after(async function () {
-    await deleteStreamerDatabase(ID_FOR_MANAGER_POLL);
+    await deleteStreamerTables(ID_FOR_MANAGER_POLL);
   })
 
   it('First Get Poll', async function () {
@@ -48,11 +48,12 @@ describe('Poll', () => {
   it('Get Poll', async function () {
     let poll = await new PollController(ID_FOR_MANAGER_POLL).getCurrentPoll();
 
-    let PollStatusForTest = new PollStatus().start();
-    PollStatusForTest.id = 1;
-    PollStatusForTest.StatisticsOfDistribution = null;
+    let PollStatusExpected = new PollStatus().start();
+    PollStatusExpected.id = 1;
+    PollStatusExpected.updated_at = poll.PollStatus.updated_at;
+    PollStatusExpected.StatisticsOfDistributionJson = undefined;
 
-    expect(poll.PollStatus).to.deep.equal(PollStatusForTest);
+    expect(poll.PollStatus).to.deep.equal(PollStatusExpected);
     expect(poll.PollButtons).to.deep.equal(ButtonsToTest);
 
   })
@@ -61,12 +62,12 @@ describe('Poll', () => {
     this.timeout(4000);
 
     before(async function () {
-      await createAndStartStreamerDatabase(db_FOR_UPDATE_BUTTONS);
+      await createStreamerTables(db_FOR_UPDATE_BUTTONS);
       await createPoll(db_FOR_UPDATE_BUTTONS);
       await startPoll(db_FOR_UPDATE_BUTTONS);
     })
     after(async () => {
-      await deleteStreamerDatabase(db_FOR_UPDATE_BUTTONS);
+      await deleteStreamerTables(db_FOR_UPDATE_BUTTONS);
     })
 
     it('Modify buttons', async function () {
@@ -88,7 +89,8 @@ describe('Poll', () => {
 
       let PollStatusForTest = new PollStatus().start();
       PollStatusForTest.id = 1;
-      PollStatusForTest.StatisticsOfDistribution = null;
+      PollStatusForTest.StatisticsOfDistributionJson = undefined;
+      PollStatusForTest.updated_at = poll.PollStatus.updated_at;
 
       let pollForCompare = new Poll(
         PollStatusForTest,
@@ -127,7 +129,7 @@ describe('Poll', () => {
     this.timeout(7000);
 
     before(async () => {
-      await createAndStartStreamerDatabase(ID_FOR_DISTRIBUTION);
+      await createStreamerTables(ID_FOR_DISTRIBUTION);
       await createPoll(ID_FOR_DISTRIBUTION);
       await startPoll(ID_FOR_DISTRIBUTION);
 
@@ -138,7 +140,7 @@ describe('Poll', () => {
 
       ///////////////////////////////////////////////////////////////////////////////
 
-      await createAndStartStreamerDatabase(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS);
+      await createStreamerTables(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS);
       await createPoll(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS);
       await startPoll(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS);
 
@@ -197,6 +199,7 @@ describe('Poll', () => {
     }
 
     it('Distribution', async function () {
+      this.timeout(30000);
 
       let pollC = new PollController(ID_FOR_DISTRIBUTION);
 
@@ -227,12 +230,12 @@ describe('Poll', () => {
       wallet_II = await getWallet(ID_FOR_DISTRIBUTION, USERS_IDS_FOR_TESTS[1]);
 
       expect(wallet_I.Coins).to.equal(40);
-      expect(wallet_II.Coins).to.equal(50);
+      expect(wallet_II.Coins).to.equal(62);
 
     })
 
     it('Distribution for multiple results', async function () {
-      this.timeout(10000);
+      this.timeout(30000);
 
       let pollC = new PollController(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS);
 
@@ -273,14 +276,14 @@ describe('Poll', () => {
       }
       expect(wallets[0].Coins).to.deep.equal(40);
       expect(wallets[1].Coins).to.deep.equal(35);
-      expect(wallets[2].Coins).to.deep.equal(100);
-      expect(wallets[3].Coins).to.deep.equal(125);
+      expect(wallets[2].Coins).to.deep.equal(60);
+      expect(wallets[3].Coins).to.deep.equal(65);
 
     })
 
     after(async () => {
-      await deleteStreamerDatabase(ID_FOR_DISTRIBUTION);
-      await deleteStreamerDatabase(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS);
+      await deleteStreamerTables(ID_FOR_DISTRIBUTION);
+      await deleteStreamerTables(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS);
     })
   })
 })

@@ -11,7 +11,12 @@ export default class dbStoreManger {
 
     async getItem(StoreItemID: number) {
         let AccountData = dbManager.getAccountData(this.StreamerID);
-        return AccountData.dbStore.findOne({ where: { id: StoreItemID } });
+        let StoreItem = await AccountData.dbStore.findOne({ where: { id: StoreItemID } });
+        if (StoreItem.ItemsSettingsJson) {
+            StoreItem.ItemsSettings = JSON.parse(StoreItem.ItemsSettingsJson);
+            StoreItem.ItemsSettingsJson = undefined;
+        }
+        return StoreItem;
     }
 
     async UpdateOrCreateStoreItem(StoreItem: StoreItem) {
@@ -28,9 +33,11 @@ export default class dbStoreManger {
                 }
         }
 
-
         let AccountData = dbManager.getAccountData(this.StreamerID);
         let dbStoreItem = await AccountData.dbStore.findOne({ where: { id: StoreItem.id } });
+
+        StoreItem.ItemsSettingsJson = JSON.stringify(StoreItem.ItemsSettings);
+        StoreItem.ItemsSettings = null;
 
         if (dbStoreItem) {
             await dbStoreItem.update(StoreItem);

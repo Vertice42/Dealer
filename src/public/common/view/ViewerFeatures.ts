@@ -1,4 +1,4 @@
-import { sleep } from "../../../utils/functions";
+import { sleep } from "../../../services/utils/functions";
 /**
  * Allows the ability to allocate to an element with absolute position.
  * The start position must be inserted in the constructor together to the element.

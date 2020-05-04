@@ -1,19 +1,19 @@
 import express = require("express");
 
-import dbPurchaseOrderManager from "../modules/database/store/dbPurchaseOrderManager";
 import PurchaseOrder from "../models/store/PurchaseOrder";
 import IO_Listeners from "../IOListeners";
 import { dbPurchaseOrder } from "../models/store/dbPurchaseOrders";
 import PurchaseOrderRequest from "../models/store/PurchaseOrderRequest";
-import dbStoreManager from "../modules/database/store/dbStoreManager";
 import { PurchaseOrderRoute, GetPurchaseOrderRoute } from "./routes";
 import DeletePurchaseOrderRequest from "../models/store/DeletePurchaseOrderRequest";
 import { APP, CheckRequisition } from "..";
 import { getSocketOfStreamer } from "../SocketsManager";
-import { dbWalletManager as dbWalletManager } from "../modules/database/wallet/dbWalletManager";
 import { AuthenticateResult } from "../models/poll/AuthenticateResult";
 import { Authenticate } from "../modules/Authentication";
 import { getItemsSetting } from "../models/store/StoreItem";
+import { dbWalletManager } from "../modules/databaseManager/wallet/dbWalletManager";
+import dbStoreManager from "../modules/databaseManager/store/dbStoreManager";
+import dbPurchaseOrderManager from "../modules/databaseManager/store/dbPurchaseOrderManager";
 
 APP.post(PurchaseOrderRoute, async function (req, res: express.Response) {
     let PurchaseOrderRequest: PurchaseOrderRequest = req.body;

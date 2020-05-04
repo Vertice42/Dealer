@@ -16,6 +16,7 @@ export default class StoreItem {
     Type: number;
     Description: string;
     ItemsSettings: ItemSetting[];
+    ItemsSettingsJson: string;
     FileName: string
     Price: number;
 

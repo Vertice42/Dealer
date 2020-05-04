@@ -73,52 +73,6 @@
         "width": 854,
         "height": 480
       }
-    },
-    {
-      "id": "7",
-      "label": "",
-      "channelId": "97848974",
-      "configurationAnchor": "panel",
-      "displayChannelName": "vertise5x",
-      "type": "dashboard",
-      "features": {
-        "isBitsEnabled": true,
-        "isChatEnabled": false,
-        "isSubscriptionStatusAvailable": false
-      },
-      "linked": true,
-      "linkedUserId": "265737932",
-      "mode": "dashboard",
-      "isPopout": false,
-      "role": "Broadcaster",
-      "orientation": "Portrait",
-      "frameSize": {
-        "width": 1280,
-        "height": 720
-      }
-    },
-    {
-      "id": "8",
-      "label": "",
-      "channelId": "97848974",
-      "configurationAnchor": "panel",
-      "displayChannelName": "vertise5x",
-      "type": "mobile",
-      "features": {
-        "isBitsEnabled": true,
-        "isChatEnabled": false,
-        "isSubscriptionStatusAvailable": false
-      },
-      "linked": true,
-      "linkedUserId": "97848974",
-      "mode": "viewer",
-      "isPopout": false,
-      "role": "Logged-In Viewer",
-      "orientation": "Portrait",
-      "frameSize": {
-        "width": 375,
-        "height": 822
-      }
     }
   ],
   "manifest": {

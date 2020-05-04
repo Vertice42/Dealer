@@ -21,16 +21,16 @@ export const PurchaseOrdersDefiner = {
     name: 'purchase_orders',
     attributes: {
         UserId: {
-            type: sequelize.STRING
+            type: sequelize.CHAR(100),
         },
         SpentCoins: {
             type: sequelize.INTEGER
         },
         TwitchUserID: {
-            type: sequelize.STRING
+            type: sequelize.CHAR(100),
         },
         StoreItemID: {
-            type: sequelize.INTEGER
+            type: sequelize.CHAR(100),
         }
     }, options: {
         freezeTableName: true

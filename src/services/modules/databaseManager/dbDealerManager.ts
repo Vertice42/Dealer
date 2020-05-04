@@ -1,35 +1,38 @@
-import { dbManager } from "./dbManager";
 import dbTransactionsOfUser, { TableName, Options, Attributes } from "../../models/dealer/dbPurchasesExtensionProducts";
-import { Sequelize } from "sequelize/types";
 import TransactionsOfUser from "../../models/dealer/StreamerDate";
-import { resolve } from "bluebird";
+import { dbDealer } from "./dbManager";
 
-var dbDealer: Sequelize;
 var dbPurchasesExtensionProductsTable: typeof dbTransactionsOfUser;
 
 export default class dbDealerManager {
     ID: string;
     private PreparePromises: Promise<any>;
 
-    private async Loading() {
-        if (dbDealer) return resolve();
-        dbDealer = await dbManager.CreateIfNotExistSDataBase('dealer');
-        dbPurchasesExtensionProductsTable = <typeof dbTransactionsOfUser>dbDealer.define(TableName, Attributes, Options);
+    private async Loading() {    
+        dbPurchasesExtensionProductsTable = <typeof dbTransactionsOfUser>
+        dbDealer.define(TableName, Attributes, Options);
         return dbPurchasesExtensionProductsTable.sync();
     }
+    
     async getTransactionsOfUser(ID = this.ID) {
         await this.PreparePromises;
-        return dbPurchasesExtensionProductsTable.findOne({ where: { ID: ID } });
+        let dbTransactionsOfUser = await dbPurchasesExtensionProductsTable.findOne({ where: { ID: ID } });
+        dbTransactionsOfUser.TransactionsArray = JSON.parse(dbTransactionsOfUser.TransactionsArrayJson);
+        dbTransactionsOfUser.TransactionsArrayJson = undefined;
+        return dbTransactionsOfUser;
     }
     async addTransactionOfUser(TransactionOfUser: TwitchExtBitsTransaction) {
         let dbTransactionOfUser = await this.getTransactionsOfUser();
+
         if (dbTransactionOfUser) {
-            let newTransactionsOfUser = new TransactionsOfUser
-                (this.ID, dbTransactionOfUser.TransactionsArray);
+            let newTransactionsOfUser = new TransactionsOfUser(this.ID, dbTransactionOfUser.TransactionsArray);
             newTransactionsOfUser.TransactionsArray.push(TransactionOfUser);
+            newTransactionsOfUser.TransactionsArrayJson = JSON.stringify(newTransactionsOfUser.TransactionsArray);
+            newTransactionsOfUser.TransactionsArray = undefined;
             return dbTransactionOfUser.update(newTransactionsOfUser);
         } else {
             let productsPurchasedByUser = new TransactionsOfUser(this.ID, [TransactionOfUser]);
+            productsPurchasedByUser.TransactionsArrayJson = JSON.stringify(productsPurchasedByUser.TransactionsArray);
             return dbPurchasesExtensionProductsTable.create(productsPurchasedByUser);
         }
     }

@@ -1,6 +1,5 @@
 import express = require("express");
 import fs = require('fs');
-import del = require('del');
 import path = require('path');
 
 import { APP, CheckRequisition } from "..";
@@ -10,6 +9,7 @@ import { getSocketOfStreamer } from "../SocketsManager";
 import IOListeners from "../IOListeners";
 import { Authenticate } from "../modules/Authentication";
 import { AuthenticateResult } from "../models/poll/AuthenticateResult";
+import del = require("del");
 
 APP.post(UploadFileRoute, async function (req, res: express.Response) {
     let ErrorList = CheckRequisition([

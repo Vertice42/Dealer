@@ -1,16 +1,16 @@
 import { expect } from "chai";
 
-import { createAndStartStreamerDatabase, deleteStreamerDatabase, ID_FOR_WALLETS } from "./ForTests.test";
+import { createStreamerTables, deleteStreamerTables, ID_FOR_WALLETS } from "./ForTests.test";
 import { dbWallet } from "../services/models/poll/dbWallet";
-import { dbWalletManager } from "../services/modules/database/wallet/dbWalletManager";
+import { dbWalletManager } from "../services/modules/databaseManager/wallet/dbWalletManager";
 
 describe('Wallet', () => {
   let UserIdForTest = 'fin'
   before(async () => {
-    await createAndStartStreamerDatabase(ID_FOR_WALLETS);
+    await createStreamerTables(ID_FOR_WALLETS);
   })
   after(async () => {
-    await deleteStreamerDatabase(ID_FOR_WALLETS)
+    await deleteStreamerTables(ID_FOR_WALLETS)
   })
 
   it('Create and Get Wallet', async function () {

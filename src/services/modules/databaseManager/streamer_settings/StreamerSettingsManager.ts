@@ -2,6 +2,8 @@ import { dbManager } from "../dbManager";
 import { resolve } from "bluebird";
 import { MinerSettings } from "../../../models/streamer_settings/MinerSettings";
 import { CoinsSettings } from "../../../models/streamer_settings/CoinsSettings";
+import { Json } from "sequelize/types/lib/utils";
+import { DealerSettings } from "../../../models/streamer_settings/dbSettings";
 
 export default class StreamerSettingsManager {
 
@@ -50,7 +52,9 @@ export default class StreamerSettingsManager {
     static async UpdateMinerSettings(StreamerID: string, NewMinerSettings: MinerSettings) {
         let AccountData = dbManager.getAccountData(StreamerID);
         AccountData.MinerSettings = NewMinerSettings;
-        await AccountData.dbSettings.update({ SettingsJson: NewMinerSettings }, { where: { SettingName: MinerSettings.name } })
+        await (await AccountData.dbSettings.findOne({ where: { SettingName: MinerSettings.name } }))
+            .update(new DealerSettings(MinerSettings.name, NewMinerSettings));
+            
         return resolve({ SuccessfullyUpdatedMinerSettings: AccountData.MinerSettings });
     }
 

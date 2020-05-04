@@ -1,4 +1,4 @@
-import { sleep } from "../../../utils/functions";
+import { sleep } from "../../../services/utils/functions";
 import PurchaseOrder from "../../../services/models/store/PurchaseOrder";
 import StoreItem, { getItemsSetting } from "../../../services/models/store/StoreItem";
 import { DivRelocatable, AutomaticHidingDueInactivity } from "../../common/view/ViewerFeatures";

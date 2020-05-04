@@ -1,9 +1,13 @@
+require('dotenv').config({  
+  path: ".env"
+})
+
 import { PollButton } from "../services/models/poll/PollButton";
 import { MinerSettings } from "../services/models/streamer_settings/MinerSettings";
-import { Loading } from "../services/modules/database/dbLoading";
-import { dbManager } from "../services/modules/database/dbManager";
 import { PollStatus } from "../services/models/poll/PollStatus";
 import PollController from "../services/controller/PollController";
+import { dbManager } from "../services/modules/databaseManager/dbManager";
+import { Loading } from "../services/modules/databaseManager/dbLoading";
 
 export const USERS_IDS_FOR_TESTS = ['jukes', 'jato', 'naruto', 'saske', 'bankai'];
 
@@ -21,14 +25,12 @@ export const ID_FOR_WALLETS = 'rhaast'
 export const HOURLY_REWARD_FOR_TEST = 60;
 export const REWARD_FOR_TEST_ATTEMPT = new MinerSettings(HOURLY_REWARD_FOR_TEST).RewardPerMining;
 
-export async function createAndStartStreamerDatabase(StreamersID: string) {
-  let CreateResult = await dbManager.CreateIfNotExistStreamerDataBase(StreamersID);
-  dbManager.setAccountData(await Loading.StreamerAccountData(StreamersID));
-  return CreateResult;
+export async function createStreamerTables(StreamersID: string) {
+  return dbManager.setAccountData(await Loading.StreamerAccountData(StreamersID));
 }
 
-export async function deleteStreamerDatabase(StreamersID: string) {
-  return dbManager.DeleteStreamerDataBase(StreamersID);
+export async function deleteStreamerTables(StreamersID: string) {
+  return dbManager.deleteStreamerData(StreamersID);
 }
 
 export async function createPoll(StreamersID: string) {

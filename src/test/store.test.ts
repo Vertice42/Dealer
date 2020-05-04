@@ -1,45 +1,48 @@
 import StoreItem from "../services/models/store/StoreItem";
-
 import ItemSetting from "../services/models/store/item_settings/ItemSettings";
-
-import dbStoreManager from "../services/modules/database/store/dbStoreManager";
-
 import { expect } from "chai";
-import { createAndStartStreamerDatabase, ID_FOR_STORE, deleteStreamerDatabase, ID_FOR_PURCHASE_ORDER } from "./ForTests.test";
-import { dbStoreItem } from "../services/models/store/dbStoreItem";
-import dbPurchaseOrderManager from "../services/modules/database/store/dbPurchaseOrderManager";
-import PurchaseOrder from "../services/models/store/PurchaseOrder";
+import { createStreamerTables, ID_FOR_STORE, deleteStreamerTables, ID_FOR_PURCHASE_ORDER } from "./ForTests.test";
 import { dbPurchaseOrder } from "../services/models/store/dbPurchaseOrders";
+import PurchaseOrder from "../services/models/store/PurchaseOrder";
+import dbPurchaseOrderManager from "../services/modules/databaseManager/store/dbPurchaseOrderManager";
+import dbStoreManager from "../services/modules/databaseManager/store/dbStoreManager";
 
 describe('Store Manager', () => {
-    let StoreItemForTest: StoreItem;
+    let StoreItemToSpectated: StoreItem;
     before(async () => {
-        await createAndStartStreamerDatabase(ID_FOR_STORE);
+        await createStreamerTables(ID_FOR_STORE);
 
-        StoreItemForTest = new StoreItem(1, 2, 'Descriptions test', new ItemSetting('ItemSettingsTest', false, 2), 'test.mp3', 2);
+        StoreItemToSpectated = new StoreItem(1, 2, 'Descriptions test', new ItemSetting('ItemSettingsTest', false, 2), 'test.mp3', 2);
         let Manager = new dbStoreManager(ID_FOR_STORE);
-        await Manager.UpdateOrCreateStoreItem(StoreItemForTest);
+        await Manager.UpdateOrCreateStoreItem(StoreItemToSpectated);
     })
     after(async () => {
-        await deleteStreamerDatabase(ID_FOR_STORE)
+        await deleteStreamerTables(ID_FOR_STORE)
     })
 
     it('Create and Get StoreItem', async function () {
         let Manager = new dbStoreManager(ID_FOR_STORE);
-        let StoreItemForTest = new StoreItem(2, 2, 'Descriptions test', new ItemSetting('ItemSettingsTest', false, 2), 'test.mp3', 2);
-        let CreateRes = await Manager.UpdateOrCreateStoreItem(StoreItemForTest);
+        let StoreItemToTest = new StoreItem(2, 2, 'Descriptions test', new ItemSetting('ItemSettingsTest', false, 2), 'test.mp3', 2);
+        let CreateRes = await Manager.UpdateOrCreateStoreItem(StoreItemToTest);
         expect(CreateRes).to.include.keys('SuccessfullyCreatedItem');
-        let storeItem = await Manager.getItem(StoreItemForTest.id);
-        expect(new StoreItem(storeItem.id, storeItem.Type, storeItem.Description,
-            storeItem.ItemsSettings, storeItem.FileName, storeItem.Price))
-            .to.deep.equal(StoreItemForTest);
+        let storeItem = await Manager.getItem(StoreItemToTest.id);
+
+        let StoreItemExpected = new StoreItem(storeItem.id, storeItem.Type,
+            storeItem.Description, storeItem.ItemsSettings,
+            storeItem.FileName, storeItem.Price)
+
+        StoreItemToTest.ItemsSettings = JSON.parse(StoreItemToTest.ItemsSettingsJson);
+        StoreItemToTest.ItemsSettingsJson = undefined;
+        StoreItemExpected.ItemsSettingsJson = undefined;
+
+        expect(StoreItemExpected).to.deep.equal(StoreItemToTest);
     })
     it('Delete Store Item', async function () {
-        StoreItemForTest = new StoreItem(1, 2, 'Descriptions test', new ItemSetting('ItemSettingsTest', false, 2), 'test.mp3', 2);
+        StoreItemToSpectated = new StoreItem(1, 2, 'Descriptions test', new ItemSetting('ItemSettingsTest', false, 2), 'test.mp3', 2);
         let Manager = new dbStoreManager(ID_FOR_STORE);
-        await Manager.UpdateOrCreateStoreItem(StoreItemForTest);
-        await Manager.DeleteStoreItem(StoreItemForTest);
-        expect(await Manager.getItem(StoreItemForTest.id)).to.deep.equal(null);
+        await Manager.UpdateOrCreateStoreItem(StoreItemToSpectated);
+        await Manager.DeleteStoreItem(StoreItemToSpectated);
+        expect(await Manager.getItem(StoreItemToSpectated.id)).to.deep.equal(null);
     })
     it('Get All Items', async function () {
         this.slow(120);
@@ -58,7 +61,7 @@ describe('Store Manager', () => {
         }
 
         let dbItems = await Manager.getAllItems();
-        
+
         let converted_dbItems = [];
         dbItems.forEach(storeItem => {
             converted_dbItems.push(new StoreItem(storeItem.id, storeItem.Type, storeItem.Description,
@@ -75,7 +78,7 @@ describe('Purchase Order Manager', () => {
     let PurchaseOrderForTest_II: PurchaseOrder;
     let ItemIDForTest = 5;
     before(async () => {
-        await createAndStartStreamerDatabase(ID_FOR_PURCHASE_ORDER);
+        await createStreamerTables(ID_FOR_PURCHASE_ORDER);
 
         Manager = new dbPurchaseOrderManager(ID_FOR_PURCHASE_ORDER);
         PurchaseOrderForTest_I = new PurchaseOrder(20, ID_FOR_PURCHASE_ORDER, ItemIDForTest)
@@ -83,7 +86,7 @@ describe('Purchase Order Manager', () => {
 
     })
     after(async () => {
-        await deleteStreamerDatabase(ID_FOR_PURCHASE_ORDER)
+        await deleteStreamerTables(ID_FOR_PURCHASE_ORDER)
     })
 
     it('Add and Get PurchaseOrder', async () => {
