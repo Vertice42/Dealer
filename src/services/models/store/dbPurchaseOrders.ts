@@ -30,7 +30,7 @@ export const PurchaseOrdersDefiner = {
             type: sequelize.CHAR(100),
         },
         StoreItemID: {
-            type: sequelize.CHAR(100),
+            type: sequelize.INTEGER,
         }
     }, options: {
         freezeTableName: true

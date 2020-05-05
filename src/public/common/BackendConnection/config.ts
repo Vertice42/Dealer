@@ -1,7 +1,3 @@
-var URL: string;
-URL = 'http://dealerextension.ddns.net';
-URL = 'http://localhost:7777';
-
 export default {
-    URL: URL
+    URL: 'http://localhost:7777' //'http://dealerextension.ddns.net';
 }

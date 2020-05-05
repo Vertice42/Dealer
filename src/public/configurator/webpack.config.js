@@ -8,7 +8,7 @@ module.exports = {
   node: {
     fs: "empty"
  },
-  mode: 'production',
+  mode: 'development',
   module: {
     rules: [
       {

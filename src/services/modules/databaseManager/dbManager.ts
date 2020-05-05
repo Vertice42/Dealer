@@ -26,7 +26,7 @@ var AccountDataArray: AccountData[] = [];
 /**
  * Contains methods for managing a streamer database
  */
-export class dbManager {
+export default class dbManager {
 
     static getAccountData(StreamerID: string): AccountData {
         return AccountDataArray[StreamerID];

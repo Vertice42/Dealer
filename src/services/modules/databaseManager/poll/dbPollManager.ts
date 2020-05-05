@@ -1,7 +1,7 @@
 import { resolve, reject } from "bluebird";
 import { PollButton } from "../../../models/poll/PollButton";
 import { dbPollButton, dbButtonType } from "../../../models/poll/dbButton";
-import { dbManager } from "../dbManager";
+import dbManager from "../dbManager";
 import { PollBet } from "../../../models/poll/PollBeat";
 import { PollStatus } from "../../../models/poll/PollStatus";
 import { dbBet, Bet } from "../../../models/poll/dbBets";

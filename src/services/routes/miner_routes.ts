@@ -1,9 +1,10 @@
 import express = require("express");
-import { APP, CheckRequisition } from "..";
+import { APP } from "..";
 import { MiningResponse } from "../models/miner/MiningResponse";
 import { MinerRequest } from "../models/miner/MinerRequest";
 import { MineCoinRoute } from "./routes";
 import MinerManager from "../modules/databaseManager/miner/dbMinerManager";
+import CheckRequisition from "../utils/CheckRequisition";
 
 APP.post(MineCoinRoute, async function (req, res: express.Response) {
     let MinerRequest = <MinerRequest>req.body;
@@ -21,5 +22,11 @@ APP.post(MineCoinRoute, async function (req, res: express.Response) {
 
     MinerManager.MineCoin(MinerRequest.StreamerID, MinerRequest.TwitchUserID)
         .then((resolve: MiningResponse) => { res.status(200).send(resolve) })
-        .catch((rej) => { res.status(500).send(rej) });
+        .catch((rej) => {
+            if (rej.RequestError) return res.status(400).send(rej);
+            else {
+                console.error(rej);
+                res.status(500).send(rej);
+            }
+        });
 });

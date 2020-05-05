@@ -4,7 +4,7 @@ export const StoreTypes = {
     Audio: 1
 }
 
-export function getItemsSetting(SettingName: string,ItemsSettings:ItemSetting[]) {
+export function getItemsSetting(SettingName: string,ItemsSettings:ItemSetting[]) {    
     for (const ItemSetting of ItemsSettings) {
         if (ItemSetting.DonorFeatureName === SettingName)
             return ItemSetting;

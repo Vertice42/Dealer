@@ -64,8 +64,8 @@ const attributes: ModelAttributes = {
     DistributionStarted: {
         type: sequelize.BOOLEAN
     },
-    StatisticsOfDistribution: {
-        type: sequelize.STRING
+    StatisticsOfDistributionJson: {
+        type: sequelize.TEXT
     },
     created_at: {
         type: 'TIMESTAMP',

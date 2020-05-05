@@ -4,7 +4,7 @@ import SettingsController from "./SettingsController";
 import StoreController from "./StoreController";
 import PurchaseOrderController from "./PurchaseOrderController";
 import WalletsController from "./WalletsController";
-import IOListeners from "../../../services/IOListeners";
+import IOListeners from "../../../services/models/listeners/IOListeners";
 import { ViewMain } from "../view/ViewMain";
 import { InsertTextInHardCode, LocalizedTexts } from '../../common/view/Texts';
 import { TwitchListener } from '../../common/model/TwitchListener';

@@ -1,8 +1,8 @@
 import { reject } from "bluebird";
 import { MINIMUM_TIME_FOR_MINING } from "../../../models/streamer_settings/MinerSettings";
 import { MiningResponse } from "../../../models/miner/MiningResponse";
-import { dbManager } from "../dbManager";
 import { dbWalletManager } from "../wallet/dbWalletManager";
+import dbManager from "../dbManager";
 
 export default class MinerManager {
     /**

@@ -12,7 +12,7 @@ import UpdateButtonGroupResult from "../models/poll/UpdateButtonGroupResult";
 import { DistributionCalculationResult, StatisticsOfDistribution } from "../models/poll/DistributionCalculationResult";
 import { dbPollManager } from "../modules/databaseManager/poll/dbPollManager";
 import { dbWalletManager } from "../modules/databaseManager/wallet/dbWalletManager";
-import { dbManager } from "../modules/databaseManager/dbManager";
+import dbManager from "../modules/databaseManager/dbManager";
 
 /**
 * Calculation of the distribution of winnings used in the list of bets and options
@@ -194,12 +194,7 @@ export default class PollController {
         /**Generate a handle with the current time
          * to create the tables
          */
-        let AccountData = dbManager.getAccountData(this.StreamerID);
-
         await new dbPollManager(this.StreamerID).createPollIndex(PollStatus);
-
-        AccountData.LastUpdate = new Date().getTime();
-
         return resolve({ PollCreated: new Date });
     }
     async UpdatePoll(PollStatus: PollStatus, Buttons: PollButton[]) {
@@ -242,7 +237,6 @@ export default class PollController {
         return resolve(new Poll(
             PollStatus,
             Buttons,
-            AccountData.LastUpdate,
             Bets));
     }
 

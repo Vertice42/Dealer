@@ -1,5 +1,5 @@
 import express = require("express");
-import { APP, CheckRequisition } from "..";
+import { APP } from "..";
 import StoreManagerRequest from "../models/store/StoreManagerRequest";
 import ControllerOfPermissions from "../controller/ControllerOfPermissions";
 import StoreItem from "../models/store/StoreItem";
@@ -9,6 +9,7 @@ import FolderTypes from "../models/files_manager/FolderTypes";
 import { AuthenticateResult } from "../models/poll/AuthenticateResult";
 import { Authenticate } from "../modules/Authentication";
 import dbStoreManager from "../modules/databaseManager/store/dbStoreManager";
+import CheckRequisition from "../utils/CheckRequisition";
 
 APP.post(StoreManagerRoute, async function (req, res: express.Response) {
     let Request: StoreManagerRequest = req.body;
@@ -56,6 +57,7 @@ APP.post(StoreManagerRoute, async function (req, res: express.Response) {
             if (reject.RequestError) {
                 res.status(400).send(reject);
             } else {
+                console.error(reject);
                 res.status(500).send(reject);
             }
         })
@@ -82,6 +84,7 @@ APP.delete(StoreManagerRoute, async function (req, res: express.Response) {
             res.status(200).send(result);
         })
         .catch((reject) => {
+            console.error(reject);
             res.status(500).send(reject);
         })
 })
@@ -107,7 +110,6 @@ APP.get(GetStoreRoute, async function (req: { params: { StreamerID: string, Stor
             })
             .catch((rej) => {
                 console.error(rej);
-
                 res.status(500).send(rej);
             })
 
@@ -117,6 +119,7 @@ APP.get(GetStoreRoute, async function (req: { params: { StreamerID: string, Stor
                 res.status(200).send(<StoreItem>Item);
             })
             .catch((rej) => {
+                console.error(rej);
                 res.status(500).send(rej)
             })
     }

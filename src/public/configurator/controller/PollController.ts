@@ -1,7 +1,7 @@
 import { NotifyViewers, STREAMER_SOCKET } from "./MainController";
 import ViewPollManager from "../view/ViewPollManager";
-import TwitchListeners from "../../../services/TwitchListeners";
-import IOListeners from "../../../services/IOListeners";
+import TwitchListeners from "../../../services/models/listeners/TwitchListeners";
+import IOListeners from "../../../services/models/listeners/IOListeners";
 import { Poll } from "../../../services/models/poll/Poll";
 import { PollManager, getCurrentPoll } from "../../common/BackendConnection/Poll";
 import { PollRequest } from "../../../services/models/poll/PollRequest";

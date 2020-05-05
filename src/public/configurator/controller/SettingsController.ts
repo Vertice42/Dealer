@@ -4,7 +4,7 @@ import UploadFileResponse from "../../../services/models/files_manager/UploadFil
 import { CoinsSettings } from "../../../services/models/streamer_settings/CoinsSettings";
 import ViewSettings from "../view/ViewSettings";
 import { NotifyViewers } from "./MainController";
-import TwitchListeners from "../../../services/TwitchListeners";
+import TwitchListeners from "../../../services/models/listeners/TwitchListeners";
 import { ManagerMiner, GetMinerSettings } from "../../common/BackendConnection/Miner";
 import { MinerManagerRequest } from "../../../services/models/miner/MinerManagerRequest";
 import { ManagerCoinsSettings, GetCoinsSettings } from "../../common/BackendConnection/Coins";

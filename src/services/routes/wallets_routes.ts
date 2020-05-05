@@ -1,12 +1,13 @@
 import express = require("express");
 
-import { APP, CheckRequisition } from "..";
+import { APP } from "..";
 import { dbWallet } from "../models/poll/dbWallet";
 import { WalletManagerRequest } from "../models/wallet/WalletManagerRequest";
 import { GetWalletRoute, WalletManager, GetWalletsRoute } from "./routes";
 import { AuthenticateResult } from "../models/poll/AuthenticateResult";
 import { Authenticate } from "../modules/Authentication";
 import { dbWalletManager, getAllWallets } from "../modules/databaseManager/wallet/dbWalletManager";
+import CheckRequisition from "../utils/CheckRequisition";
 
 APP.get(GetWalletRoute, async function (req, res: express.Response) {
     var Request = <{ StreamerID: string, TwitchUserID: string }>req.params;
@@ -27,6 +28,7 @@ APP.get(GetWalletRoute, async function (req, res: express.Response) {
             res.status(200).send(wallet);
         })
         .catch((rej) => {
+            console.error(rej);
             res.status(500).send(rej);
         })
 

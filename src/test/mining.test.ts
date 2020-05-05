@@ -7,7 +7,6 @@ import StreamerSettingsManager from "../services/modules/databaseManager/streame
 import MinerManager from "../services/modules/databaseManager/miner/dbMinerManager";
 
 describe('Mining', () => {
-
   before(async () => {
     await createStreamerTables(ID_FOR_MINING);
     await StreamerSettingsManager.UpdateMinerSettings(ID_FOR_MINING,new MinerSettings(HOURLY_REWARD_FOR_TEST));

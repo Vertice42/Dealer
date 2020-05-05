@@ -1,6 +1,7 @@
-import { dbManager } from "../dbManager";
 import PurchaseOrder from "../../../models/store/PurchaseOrder";
 import { dbPurchaseOrder } from "../../../models/store/dbPurchaseOrders";
+import { resolve } from "bluebird";
+import dbManager from "../dbManager";
 
 export default class dbPurchaseOrderManager {
     private StreamerID: string;
@@ -19,10 +20,11 @@ export default class dbPurchaseOrderManager {
         let AccountData = dbManager.getAccountData(this.StreamerID);
         let dbPurchaseOrder = await AccountData.dbPurchaseOrders
             .findOne({ where: { id: PurchaseOrderID } });
+        if (!dbPurchaseOrder) return resolve();
         return dbPurchaseOrder.destroy();
     }
 
-    async getAllPurchaseOrders(StoreItemID: number | string) {        
+    async getAllPurchaseOrders(StoreItemID: number | string) {
         if (StoreItemID === '*')
             return dbManager.getAccountData(this.StreamerID).dbPurchaseOrders.findAll();
         else

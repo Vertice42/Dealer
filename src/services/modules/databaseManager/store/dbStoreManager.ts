@@ -1,4 +1,4 @@
-import { dbManager } from "../dbManager";
+import dbManager from "../dbManager";
 import StoreItem, { StoreTypes } from "../../../models/store/StoreItem";
 import { reject } from "bluebird";
 
@@ -6,17 +6,31 @@ export default class dbStoreManger {
     private StreamerID: string;
 
     async getAllItems() {
-        return dbManager.getAccountData(this.StreamerID).dbStore.findAll() || [];
+        let dbItems = await dbManager.getAccountData(this.StreamerID).dbStore.findAll();
+        let Items = [];
+
+        if (dbItems) {
+            dbItems.forEach(Item => {
+                Items.push(new StoreItem(Item.id, Item.Type, Item.Description,
+                    JSON.parse(Item.ItemsSettingsJson), Item.FileName, Item.Price))
+            })
+        }
+        return Items;
+    }
+
+    async get_dbItem(StoreItemID: number) {
+        return dbManager.getAccountData(this.StreamerID).dbStore.findOne({ where: { id: StoreItemID } });
     }
 
     async getItem(StoreItemID: number) {
         let AccountData = dbManager.getAccountData(this.StreamerID);
-        let StoreItem = await AccountData.dbStore.findOne({ where: { id: StoreItemID } });
-        if (StoreItem.ItemsSettingsJson) {
-            StoreItem.ItemsSettings = JSON.parse(StoreItem.ItemsSettingsJson);
-            StoreItem.ItemsSettingsJson = undefined;
+        let dbStoreItem = await AccountData.dbStore.findOne({ where: { id: StoreItemID } });
+
+        if (dbStoreItem) {
+            return new StoreItem(dbStoreItem.id, dbStoreItem.Type, dbStoreItem.Description,
+                JSON.parse(dbStoreItem.ItemsSettingsJson), dbStoreItem.FileName, dbStoreItem.Price);
         }
-        return StoreItem;
+        return dbStoreItem;
     }
 
     async UpdateOrCreateStoreItem(StoreItem: StoreItem) {
@@ -33,11 +47,13 @@ export default class dbStoreManger {
                 }
         }
 
-        let AccountData = dbManager.getAccountData(this.StreamerID);
-        let dbStoreItem = await AccountData.dbStore.findOne({ where: { id: StoreItem.id } });
+        if (StoreItem.ItemsSettings) {
+            StoreItem.ItemsSettingsJson = JSON.stringify(StoreItem.ItemsSettings);
+            StoreItem.ItemsSettings = null;
+        }
 
-        StoreItem.ItemsSettingsJson = JSON.stringify(StoreItem.ItemsSettings);
-        StoreItem.ItemsSettings = null;
+        let AccountData = dbManager.getAccountData(this.StreamerID);
+        let dbStoreItem = await this.get_dbItem(StoreItem.id);
 
         if (dbStoreItem) {
             await dbStoreItem.update(StoreItem);
@@ -50,8 +66,7 @@ export default class dbStoreManger {
     }
 
     async DeleteStoreItem(StoreItem: StoreItem) {
-        let dbStoreItem = await this.getItem(StoreItem.id);
-        return dbStoreItem.destroy();
+        return (await this.get_dbItem(StoreItem.id)).destroy();
     }
 
     constructor(StreamerID: string) {

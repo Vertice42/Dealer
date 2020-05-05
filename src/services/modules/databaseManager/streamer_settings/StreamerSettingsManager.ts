@@ -1,4 +1,4 @@
-import { dbManager } from "../dbManager";
+import dbManager from "../dbManager";
 import { resolve } from "bluebird";
 import { MinerSettings } from "../../../models/streamer_settings/MinerSettings";
 import { CoinsSettings } from "../../../models/streamer_settings/CoinsSettings";
@@ -14,7 +14,7 @@ export default class StreamerSettingsManager {
     static async getCoinsSettings(StreamerID: string) {
         let accountData = dbManager.getAccountData(StreamerID);
         let dbSetting = await accountData.dbSettings.findOne({ where: { SettingName: CoinsSettings.name } })
-        if (dbSetting) return dbSetting.SettingsJson;
+        if (dbSetting) return JSON.parse(dbSetting.SettingsJson);
 
         return {};
     }
@@ -25,17 +25,15 @@ export default class StreamerSettingsManager {
      */
     static async UpdateOrCreateCoinsSettings(StreamerID: string, NewCoinsSettings: CoinsSettings) {
         let AccountData = dbManager.getAccountData(StreamerID);
-        return AccountData.dbSettings.update({ SettingsJson: NewCoinsSettings }, { where: { SettingName: CoinsSettings.name } })
-            .then(async (result) => {
-                if (!result[0]) {
-                    result = await AccountData.dbSettings.create({
-                        SettingName: CoinsSettings.name,
-                        SettingsJson: NewCoinsSettings
-                    })[0];
-                }
-                return resolve({ SuccessfullyUpdateCoinsSettings: result })
+        let dealerSettings = new DealerSettings(CoinsSettings.name, NewCoinsSettings);
 
-            });
+        let dbSetting = await AccountData.dbSettings.findOne({ where: { SettingName: dealerSettings.SettingName } });
+
+        if (dbSetting) {
+            return dbSetting.update(dealerSettings)
+        } else {
+            return AccountData.dbSettings.create(dealerSettings);
+        }
     }
     /**
    * 
@@ -54,7 +52,7 @@ export default class StreamerSettingsManager {
         AccountData.MinerSettings = NewMinerSettings;
         await (await AccountData.dbSettings.findOne({ where: { SettingName: MinerSettings.name } }))
             .update(new DealerSettings(MinerSettings.name, NewMinerSettings));
-            
+
         return resolve({ SuccessfullyUpdatedMinerSettings: AccountData.MinerSettings });
     }
 

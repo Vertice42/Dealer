@@ -51,7 +51,7 @@ describe('Poll', () => {
     let PollStatusExpected = new PollStatus().start();
     PollStatusExpected.id = 1;
     PollStatusExpected.updated_at = poll.PollStatus.updated_at;
-    PollStatusExpected.StatisticsOfDistributionJson = undefined;
+    PollStatusExpected.StatisticsOfDistributionJson = null;
 
     expect(poll.PollStatus).to.deep.equal(PollStatusExpected);
     expect(poll.PollButtons).to.deep.equal(ButtonsToTest);
@@ -89,13 +89,12 @@ describe('Poll', () => {
 
       let PollStatusForTest = new PollStatus().start();
       PollStatusForTest.id = 1;
-      PollStatusForTest.StatisticsOfDistributionJson = undefined;
+      PollStatusForTest.StatisticsOfDistributionJson = null;
       PollStatusForTest.updated_at = poll.PollStatus.updated_at;
 
       let pollForCompare = new Poll(
         PollStatusForTest,
         ButtonsToTest,
-        new Date().getTime(),
         []);
 
       expect(poll.PollStatus).to.deep.equal(pollForCompare.PollStatus);

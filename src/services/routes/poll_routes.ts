@@ -1,18 +1,19 @@
 import express = require("express");
 
-import IOListeners from "../IOListeners";
+import IOListeners from "../models/listeners/IOListeners";
 import PollController from "../controller/PollController";
 
-import { APP, CheckRequisition } from "..";
+import { APP } from "..";
 import { PollRequest } from "../models/poll/PollRequest";
 import { AddBetRequest } from "../models/poll/AddBetRequest";
 import { PollButton } from "../models/poll/PollButton";
 import { PollManagerRoute, AddBetRoute, GetPollRoute } from "./routes";
-import { getSocketOfStreamer } from "../SocketsManager";
+import { getSocketOfStreamer } from "../modules/SocketsManager";
 import { Authenticate } from "../modules/Authentication";
 import { AuthenticateResult } from "../models/poll/AuthenticateResult";
-import { dbManager } from "../modules/databaseManager/dbManager";
+import dbManager from "../modules/databaseManager/dbManager";
 import { Poll } from "../models/poll/Poll";
+import CheckRequisition from "../utils/CheckRequisition";
 
 function ThereWinningButtonsInArray(PollButtons: PollButton[]): boolean {
     for (let i = 0; i < PollButtons.length; i++)
@@ -21,7 +22,7 @@ function ThereWinningButtonsInArray(PollButtons: PollButton[]): boolean {
 }
 
 APP.post(PollManagerRoute, async function (req, res: express.Response) {
-    let PollRequest: PollRequest = req.body;    
+    let PollRequest: PollRequest = req.body;
 
     let Result: AuthenticateResult
     try { Result = <AuthenticateResult>await Authenticate(PollRequest.Token) }
@@ -84,6 +85,7 @@ APP.post(PollManagerRoute, async function (req, res: express.Response) {
         }
         res.status(200).send({ PoolUpdateResult, StartDistributionResult });
     } catch (error) {
+        console.error(error);
         res.status(500).send(error);
     }
 
@@ -160,7 +162,11 @@ APP.post(AddBetRoute, async function (req, res: express.Response) {
             res.status(200).send(result);
         })
         .catch((reject) => {
-            if (reject.RequestError) res.status(400).send(reject);
-            else res.status(500).send(reject);
+            if (reject.RequestError) {
+                res.status(400).send(reject);
+            } else {
+                console.error(reject);
+                res.status(500).send(reject);
+            }
         })
 });

@@ -4,8 +4,8 @@ import { Model } from "sequelize";
 export class DealerSettings {
     SettingName: string;
     SettingsJson: string;
-    constructor(SettingName: string,SettingsObject:Object) {
-        this.SettingName = SettingName;
+    constructor(SettingName: string, SettingsObject: Object) {
+        this.SettingName = SettingName;        
         this.SettingsJson = JSON.stringify(SettingsObject);
     }
 }

@@ -2,14 +2,15 @@ import express = require("express");
 import fs = require('fs');
 import path = require('path');
 
-import { APP, CheckRequisition } from "..";
+import { APP } from "..";
 import UploadFileResponse from "../models/files_manager/UploadFileResponse";
 import { UploadFileRoute, GetFileRoute, GetWalletSkinImage, GetWalletSkins, GetLocale } from "./routes";
-import { getSocketOfStreamer } from "../SocketsManager";
-import IOListeners from "../IOListeners";
+import { getSocketOfStreamer } from "../modules/SocketsManager";
+import IOListeners from "../models/listeners/IOListeners";
 import { Authenticate } from "../modules/Authentication";
 import { AuthenticateResult } from "../models/poll/AuthenticateResult";
 import del = require("del");
+import CheckRequisition from "../utils/CheckRequisition";
 
 APP.post(UploadFileRoute, async function (req, res: express.Response) {
     let ErrorList = CheckRequisition([

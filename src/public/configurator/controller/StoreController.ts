@@ -2,12 +2,12 @@ import UploadFileResponse from "../../../services/models/files_manager/UploadFil
 import StoreItem, { StoreTypes, getItemsSetting } from "../../../services/models/store/StoreItem";
 import ViewStoreManager from "../view/ViewStore";
 import ItemSetting from "../../../services/models/store/item_settings/ItemSettings";
-import TwitchListeners from "../../../services/TwitchListeners";
+import TwitchListeners from "../../../services/models/listeners/TwitchListeners";
 import { NotifyViewers, STREAMER_SOCKET } from "./MainController";
 import { reject } from "bluebird";
 import FolderTypes from "../../../services/models/files_manager/FolderTypes";
 import { ViewAdvertisement } from "../view/ViewAdvertising";
-import IOListeners from "../../../services/IOListeners";
+import IOListeners from "../../../services/models/listeners/IOListeners";
 import { updateStoreItem, DeleteStoreItem, GetStore } from "../../common/BackendConnection/Store";
 import { getUrlOfFile, UploadFile } from "../../common/BackendConnection/BlobFiles";
 import { sleep } from "../../../services/utils/functions";
@@ -91,7 +91,7 @@ export default class StoreController {
 
             updateStoreItem(this.Token, ViewStoreItem)
                 .then(() => this.onStoreChange())
-                .catch((rej:Response) => {                    
+                .catch((rej:Response) => {      
                     if (ItemSettings.DonorFeatureName === 'SingleReproduction') {
                         ViewStoreItem.SingleReproductionSetting.HTML_Input.checked = false;
                         ItemSettings.Enable = false;

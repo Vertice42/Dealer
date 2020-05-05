@@ -24,12 +24,10 @@ export class AccountData {
 
     MinerSettings: MinerSettings;
 
-    LastUpdate: number;
     constructor(StreamerID: string) {
         this.StreamerID = StreamerID;
         this.dbWallets = null;
         this.dbSettings = null;
         this.MinerSettings = null;
-        this.LastUpdate = null;
     }
 }

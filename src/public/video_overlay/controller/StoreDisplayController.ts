@@ -1,7 +1,7 @@
 import { CoinsSettings } from "../../../services/models/streamer_settings/CoinsSettings";
 import { dbWallet } from "../../../services/models/poll/dbWallet";
 import StoreItem from "../../../services/models/store/StoreItem";
-import TwitchListeners from "../../../services/TwitchListeners";
+import TwitchListeners from "../../../services/models/listeners/TwitchListeners";
 import { addTwitchListeners } from "./MainController";
 import { WalletSkin } from "../../../services/models/wallet/WalletSkin";
 import { TwitchListener } from "../../common/model/TwitchListener";

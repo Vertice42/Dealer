@@ -1,5 +1,5 @@
 import express = require("express");
-import { APP, CheckRequisition } from "..";
+import { APP } from "..";
 import { CoinsSettingsManagerRequest } from "../models/streamer_settings/CoinsSettingsManagerRequest";
 import { CoinsSettings } from "../models/streamer_settings/CoinsSettings";
 import { CoinsSettingsManagerRoute, GetCoinsSettingsRoute, MinerManagerRoute, GetMinerSettingsRoute } from "./routes";
@@ -8,6 +8,7 @@ import { MinerSettings } from "../models/streamer_settings/MinerSettings";
 import { AuthenticateResult } from "../models/poll/AuthenticateResult";
 import { Authenticate } from "../modules/Authentication";
 import StreamerSettingsManager from "../modules/databaseManager/streamer_settings/StreamerSettingsManager";
+import CheckRequisition from "../utils/CheckRequisition";
 
 APP.post(CoinsSettingsManagerRoute, async function (req, res: express.Response) {
     let CoinsSettingsManagerRequest: CoinsSettingsManagerRequest = req.body;
@@ -31,7 +32,10 @@ APP.post(CoinsSettingsManagerRoute, async function (req, res: express.Response) 
 
     StreamerSettingsManager.UpdateOrCreateCoinsSettings(StreamerID, CoinsSettingsManagerRequest.Setting)
         .then((resolve) => { res.status(200).send(resolve) })
-        .catch((reject) => { res.status(500).send(reject) });
+        .catch((reject) => { 
+            console.error(reject);
+            res.status(500).send(reject);
+        });
 });
 APP.get(GetCoinsSettingsRoute, async function (req: { params: { StreamerID: string } }, res: express.Response) {
     let ErrorList = CheckRequisition([
@@ -46,6 +50,7 @@ APP.get(GetCoinsSettingsRoute, async function (req: { params: { StreamerID: stri
             res.status(200).send(CoinsSettings);
         })
         .catch((rej) => {
+            console.error(rej);
             res.status(500).send(rej);
         })
 });
@@ -77,7 +82,10 @@ APP.post(MinerManagerRoute, async function (req, res: express.Response) {
 
     StreamerSettingsManager.UpdateMinerSettings(StreamerID, MinerManagerRequest.Setting)
         .then((resolve) => { res.status(200).send(resolve) })
-        .catch((reject) => { res.status(500).send(reject) });
+        .catch((reject) => { 
+            console.error(reject);
+            res.status(500).send(reject) 
+        });
 });
 
 APP.get(GetMinerSettingsRoute, async function (req: { params: { StreamerID: string } }, res: express.Response) {
@@ -93,6 +101,7 @@ APP.get(GetMinerSettingsRoute, async function (req: { params: { StreamerID: stri
             res.status(200).send(MinerSettings);
         })
         .catch((rej) => {
+            console.error(rej);
             res.status(500).send(rej);
         })
 });

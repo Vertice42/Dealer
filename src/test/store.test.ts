@@ -6,6 +6,7 @@ import { dbPurchaseOrder } from "../services/models/store/dbPurchaseOrders";
 import PurchaseOrder from "../services/models/store/PurchaseOrder";
 import dbPurchaseOrderManager from "../services/modules/databaseManager/store/dbPurchaseOrderManager";
 import dbStoreManager from "../services/modules/databaseManager/store/dbStoreManager";
+import { dbStoreItem } from "../services/models/store/dbStoreItem";
 
 describe('Store Manager', () => {
     let StoreItemToSpectated: StoreItem;
@@ -23,18 +24,16 @@ describe('Store Manager', () => {
     it('Create and Get StoreItem', async function () {
         let Manager = new dbStoreManager(ID_FOR_STORE);
         let StoreItemToTest = new StoreItem(2, 2, 'Descriptions test', new ItemSetting('ItemSettingsTest', false, 2), 'test.mp3', 2);
-        let CreateRes = await Manager.UpdateOrCreateStoreItem(StoreItemToTest);
-        expect(CreateRes).to.include.keys('SuccessfullyCreatedItem');
-        let storeItem = await Manager.getItem(StoreItemToTest.id);
+        await Manager.UpdateOrCreateStoreItem(StoreItemToTest);
 
-        let StoreItemExpected = new StoreItem(storeItem.id, storeItem.Type,
-            storeItem.Description, storeItem.ItemsSettings,
-            storeItem.FileName, storeItem.Price)
+        let StoreItemObtained = await Manager.getItem(StoreItemToTest.id);
+        let StoreItemExpected = new StoreItem(
+            StoreItemObtained.id, StoreItemObtained.Type,
+            StoreItemObtained.Description, StoreItemObtained.ItemsSettings,
+            StoreItemObtained.FileName, StoreItemObtained.Price);
 
         StoreItemToTest.ItemsSettings = JSON.parse(StoreItemToTest.ItemsSettingsJson);
-        StoreItemToTest.ItemsSettingsJson = undefined;
-        StoreItemExpected.ItemsSettingsJson = undefined;
-
+        delete StoreItemToTest.ItemsSettingsJson;
         expect(StoreItemExpected).to.deep.equal(StoreItemToTest);
     })
     it('Delete Store Item', async function () {
@@ -54,7 +53,6 @@ describe('Store Manager', () => {
             new StoreItem(2, 2, 'Descriptions test', new ItemSetting('ItemSettingsTest', false, 2), 'test.mp3', 2),
             new StoreItem(3, 2, 'Descriptions test', new ItemSetting('ItemSettingsTest', false, 2), 'test.mp3', 2),
             new StoreItem(4, 2, 'Descriptions test', new ItemSetting('ItemSettingsTest', false, 2), 'test.mp3', 2)
-
         ]
         for (const index in StoreItemsForTest) {
             await Manager.UpdateOrCreateStoreItem(StoreItemsForTest[index]);
@@ -63,12 +61,16 @@ describe('Store Manager', () => {
         let dbItems = await Manager.getAllItems();
 
         let converted_dbItems = [];
-        dbItems.forEach(storeItem => {
-            converted_dbItems.push(new StoreItem(storeItem.id, storeItem.Type, storeItem.Description,
-                storeItem.ItemsSettings, storeItem.FileName, storeItem.Price))
+        dbItems.forEach((StoreItemObtained: dbStoreItem) => {            
+            converted_dbItems.push(new StoreItem(StoreItemObtained.id, StoreItemObtained.Type, StoreItemObtained.Description,
+                StoreItemObtained.ItemsSettings, StoreItemObtained.FileName, StoreItemObtained.Price))
         });
 
-        expect(StoreItemsForTest).to.deep.equal(converted_dbItems);
+        StoreItemsForTest.forEach(StoreItemForTest => {
+            StoreItemForTest.ItemsSettings = JSON.parse(StoreItemForTest.ItemsSettingsJson);
+            delete StoreItemForTest.ItemsSettingsJson;
+        })        
+        expect(converted_dbItems).to.deep.equal(StoreItemsForTest);
     })
 })
 

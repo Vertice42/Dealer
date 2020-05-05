@@ -42,8 +42,8 @@ describe('Settings', () => {
 
         it('Update Coins Settings', async function () {
             let newCoinsSettings = new CoinsSettings('fon', 'test.png');
-            await StreamerSettingsManager.UpdateOrCreateCoinsSettings(ID_FOR_SETTINGS, newCoinsSettings)
-            expect(newCoinsSettings).to.deep.equal(await StreamerSettingsManager.getCoinsSettings(ID_FOR_SETTINGS))
+            await StreamerSettingsManager.UpdateOrCreateCoinsSettings(ID_FOR_SETTINGS, newCoinsSettings);
+            expect(newCoinsSettings).to.deep.equal(await StreamerSettingsManager.getCoinsSettings(ID_FOR_SETTINGS));
         })
     })
 

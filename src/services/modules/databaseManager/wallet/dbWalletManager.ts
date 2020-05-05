@@ -1,4 +1,4 @@
-import { dbManager } from "../dbManager";
+import dbManager from "../dbManager";
 import { reject } from "bluebird";
 import { Op } from "sequelize";
 

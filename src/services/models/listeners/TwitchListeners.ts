@@ -1,3 +1,5 @@
+import { listeners } from "cluster";
+
 export default {
     onStoreChange:'0',
     onAddPurchasedItem:'1',

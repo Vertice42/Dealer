@@ -3,7 +3,7 @@ import { Define } from "./dbDefine";
 import { AccountData } from "../../models/dealer/AccountData";
 import { resolve, reject } from "bluebird";
 import { DealerSettings } from "../../models/streamer_settings/dbSettings";
-export class Loading {
+export default class Loading {
     /**
      * Loads everything needed for all services to work properly
      * @returns AccountData

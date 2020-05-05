@@ -4,12 +4,10 @@ import { PollBet } from "./PollBeat";
 export class Poll {
     PollStatus: PollStatus;
     PollButtons: PollButton[];
-    LastUpdate: number;
     Bets: PollBet[];
-    constructor(PollStatus: PollStatus, PollButtons: PollButton[], LastUpdate: number, Votes) {
+    constructor(PollStatus: PollStatus, PollButtons: PollButton[],Bets: PollBet[]) {
         this.PollStatus = PollStatus;
         this.PollButtons = PollButtons;
-        this.LastUpdate = LastUpdate;
-        this.Bets = Votes;
+        this.Bets = Bets;
     }
 }

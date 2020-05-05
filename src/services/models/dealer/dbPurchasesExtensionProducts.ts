@@ -11,10 +11,10 @@ export default class dbTransactionsOfUser extends Model implements TransactionsO
 const TableName = 'purchases';
 const Attributes: ModelAttributes = {
     ID: {
-        type: sequelize.STRING,
+        type: sequelize.CHAR(100),
         primaryKey: true
     },
-    TransactionsArray: sequelize.STRING
+    TransactionsArray: sequelize.TEXT
 }
 
 const Options: ModelOptions = {

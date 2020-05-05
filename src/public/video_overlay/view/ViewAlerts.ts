@@ -105,14 +105,13 @@ export default class ViewAlerts {
     private ButtonsDiv = <HTMLDivElement>document.getElementById("ButtonsDiv");
 
     public setButtonsInPollDiv(PollButtons: PollButton[]) {
-        localStorage['sbi' + this.TwitchUserName] = undefined;
         this.ButtonsDiv.innerHTML = "";
         let buttons = [];
         PollButtons.forEach(pollButton => {
             let button = new ViewPollButton(pollButton);
             buttons.push(button);
             button.onSelected = () => {
-                localStorage['sbi' + this.TwitchUserName] = pollButton.ID;
+                localStorage['ChosenBet' + this.TwitchUserName] = pollButton.ID;
                 this.onBetIDSelected();
                 buttons.forEach(Button => {
                     Button.Unselect();
@@ -167,6 +166,7 @@ export default class ViewAlerts {
     ;
     async setInBetMode(PollButtons: PollButton[]) {
         await this.HideAllAlerts();
+        localStorage['ChosenBet' + this.TwitchUserName] = undefined;
         this.setButtonsInPollDiv(PollButtons);
         this.ShowAlert(this.PollAlert);
     }

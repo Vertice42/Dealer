@@ -8,17 +8,19 @@ export default class dbDealerManager {
     ID: string;
     private PreparePromises: Promise<any>;
 
-    private async Loading() {    
+    private async Loading() {
         dbPurchasesExtensionProductsTable = <typeof dbTransactionsOfUser>
-        dbDealer.define(TableName, Attributes, Options);
+            dbDealer.define(TableName, Attributes, Options);
         return dbPurchasesExtensionProductsTable.sync();
     }
-    
+
     async getTransactionsOfUser(ID = this.ID) {
         await this.PreparePromises;
         let dbTransactionsOfUser = await dbPurchasesExtensionProductsTable.findOne({ where: { ID: ID } });
-        dbTransactionsOfUser.TransactionsArray = JSON.parse(dbTransactionsOfUser.TransactionsArrayJson);
-        dbTransactionsOfUser.TransactionsArrayJson = undefined;
+        if (dbTransactionsOfUser) {
+            dbTransactionsOfUser.TransactionsArray = JSON.parse(dbTransactionsOfUser.TransactionsArrayJson);
+            delete dbTransactionsOfUser.TransactionsArrayJson;
+        }
         return dbTransactionsOfUser;
     }
     async addTransactionOfUser(TransactionOfUser: TwitchExtBitsTransaction) {

@@ -6,8 +6,8 @@ import { PollButton } from "../services/models/poll/PollButton";
 import { MinerSettings } from "../services/models/streamer_settings/MinerSettings";
 import { PollStatus } from "../services/models/poll/PollStatus";
 import PollController from "../services/controller/PollController";
-import { dbManager } from "../services/modules/databaseManager/dbManager";
-import { Loading } from "../services/modules/databaseManager/dbLoading";
+import dbManager from "../services/modules/databaseManager/dbManager";
+import Loading from "../services/modules/databaseManager/dbLoading";
 
 export const USERS_IDS_FOR_TESTS = ['jukes', 'jato', 'naruto', 'saske', 'bankai'];
 

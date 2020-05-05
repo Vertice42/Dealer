@@ -1,9 +1,9 @@
 import StoreItem, { getItemsSetting } from "../../../services/models/store/StoreItem";
 import PurchaseOrder from "../../../services/models/store/PurchaseOrder";
 import ViewPurchaseOrders from "../view/ViewPurchaseOrders";
-import IO_Listeners from "../../../services/IOListeners";
+import IO_Listeners from "../../../services/models/listeners/IOListeners";
 import { NotifyViewers } from "./MainController";
-import TwitchListeners from "../../../services/TwitchListeners";
+import TwitchListeners from "../../../services/models/listeners/TwitchListeners";
 import FolderTypes from "../../../services/models/files_manager/FolderTypes";
 import { PurchaseOrderItem } from "../model/PurchaseOrderItem";
 import ItemSetting from "../../../services/models/store/item_settings/ItemSettings";
@@ -22,14 +22,13 @@ export default class PurchaseOrderController {
     private PurchaseOrdersList: PurchaseOrderItem[] = [];
     private AudioPlayerIsUnlocked = true;
 
-    private ExecuteOrder(PurchaseOrderItemList: PurchaseOrderItem) {
-
-        this.ViewPurchaseOrders.HTML_AudioPlayer.src = getUrlOfFile(this.StreamerID, FolderTypes.StoreItem + PurchaseOrderItemList.StoreItem.id, PurchaseOrderItemList.StoreItem.FileName);
-        this.ViewPurchaseOrders.HTML_AudioPlayer.volume = getItemsSetting('AudioVolume',PurchaseOrderItemList.StoreItem.ItemsSettings).value / 100;
+    private ExecuteOrder(PurchaseOrderItem: PurchaseOrderItem) {        
+        this.ViewPurchaseOrders.HTML_AudioPlayer.src = getUrlOfFile(this.StreamerID, FolderTypes.StoreItem + PurchaseOrderItem.StoreItem.id, PurchaseOrderItem.StoreItem.FileName);
+        this.ViewPurchaseOrders.HTML_AudioPlayer.volume = getItemsSetting('AudioVolume',PurchaseOrderItem.StoreItem.ItemsSettings).value / 100;
 
         this.ViewPurchaseOrders.HTML_AudioPlayer.onplay = () => {
-            this.ViewPurchaseOrders.removeViewPurchaseOrder(PurchaseOrderItemList.ViewPurchasedItem);
-            this.ViewPurchaseOrders.setRunningOrder(PurchaseOrderItemList.PurchaseOrder.TwitchUserID, PurchaseOrderItemList.StoreItem.Description);
+            this.ViewPurchaseOrders.removeViewPurchaseOrder(PurchaseOrderItem.ViewPurchasedItem);
+            this.ViewPurchaseOrders.setRunningOrder(PurchaseOrderItem.PurchaseOrder.TwitchUserID, PurchaseOrderItem.StoreItem.Description);
 
             this.ViewPurchaseOrders.EnableAudioPlayerButtons();
             this.ViewPurchaseOrders.setStarted();
@@ -93,12 +92,13 @@ export default class PurchaseOrderController {
         }
     }
     private async loadingPurchaseOrders() {
-        this.ViewPurchaseOrders.onAddPurchaseOrder = (PurchaseOrderItem: PurchaseOrderItem) => {
+        this.ViewPurchaseOrders.onAddPurchaseOrder = (PurchaseOrderItem: PurchaseOrderItem) => {            
             this.PurchaseOrdersList.push(PurchaseOrderItem);
             if (this.PurchaseOrdersList.length === 1) this.ExecuteOrder(PurchaseOrderItem)
         }
 
         let PurchaseOrders = await GetPurchaseOrders(this.StreamerID);
+        
         PurchaseOrders.forEach(async (PurchaseOrder: PurchaseOrder) => {
             let StoreItem = await GetStore(this.StreamerID, PurchaseOrder.StoreItemID)
             if (StoreItem) {
@@ -109,7 +109,7 @@ export default class PurchaseOrderController {
         })
 
         this.Socket.on(IO_Listeners.onAddPurchasedItem, async (PurchaseOrder: PurchaseOrder) => {
-            let StoreItem: StoreItem = await GetStore(this.StreamerID, PurchaseOrder.StoreItemID)
+            let StoreItem: StoreItem = await GetStore(this.StreamerID, PurchaseOrder.StoreItemID)            
             this.ViewPurchaseOrders.addViewPurchaseOrder(PurchaseOrder, StoreItem);
             let ItemsSetting: ItemSetting = getItemsSetting('SingleReproduction',StoreItem.ItemsSettings);
             if (ItemsSetting.Enable) {

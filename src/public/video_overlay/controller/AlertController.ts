@@ -4,7 +4,7 @@ import { Poll } from "../../../services/models/poll/Poll";
 import { PollStatus } from "../../../services/models/poll/PollStatus";
 import { PollButton } from "../../../services/models/poll/PollButton";
 import { addTwitchListeners } from "./MainController";
-import TwitchListeners from "../../../services/TwitchListeners";
+import TwitchListeners from "../../../services/models/listeners/TwitchListeners";
 import { reject, resolve } from "bluebird";
 import { TwitchListener } from "../../common/model/TwitchListener";
 import { addBet, getCurrentPoll } from "../../common/BackendConnection/Poll";
@@ -44,10 +44,10 @@ export default class AlertController {
     private CurrentPollStatus: PollStatus;
 
     private ChangeBet = () => {
-        if (localStorage['sbi' + this.TwitchUserName]) {
+        if (localStorage['ChosenBet' + this.TwitchUserName]) {
             this.ViewAlerts.BetAmountInput.setChangedInput();
             addBet(new AddBetRequest(this.Token, this.TwitchUserName,
-                Number(localStorage['sbi' + this.TwitchUserName]),
+                Number(localStorage['ChosenBet' + this.TwitchUserName]),
                 this.ViewAlerts.getBetValue()))
                 .then(async () => {
                     this.ViewAlerts.BetAmountInput.setInputSuccessfully();
@@ -69,10 +69,10 @@ export default class AlertController {
 
     private updatePromise: Promise<any>;
 
-    private async updateAlerts(Poll: Poll) {
+    private async updateAlerts(Poll: Poll) {        
         let CurrentPollStatus = this.CurrentPollStatus;
         this.CurrentPollStatus = Poll.PollStatus;
-        let selected = (Number(localStorage['sbi' + this.TwitchUserName]));
+        let selected = Number(localStorage['ChosenBet' + this.TwitchUserName]);        
 
         if ((!CurrentPollStatus) || (CurrentPollStatus.updated_at !== Poll.PollStatus.updated_at)) {
             if (Poll.PollStatus.PollWaxed) {
@@ -92,7 +92,7 @@ export default class AlertController {
             }
 
             if (Poll.PollStatus.PollStopped) {
-                if (!selected) return;
+                if (selected === undefined) return this.ViewAlerts.HideAllAlerts();
                 return await this.ViewAlerts.setInStopeMode();
             }
 
@@ -128,7 +128,7 @@ export default class AlertController {
                 this.updatePromise = this.updateAlerts(Poll);
 
                 addTwitchListeners(new TwitchListener(TwitchListeners.onPollChange, async (Poll: Poll) => {
-                    await this.updatePromise;
+                    await this.updatePromise;                    
                     this.updatePromise = this.updateAlerts(Poll);
                 }))
 

@@ -1,19 +1,20 @@
 import express = require("express");
 
 import PurchaseOrder from "../models/store/PurchaseOrder";
-import IO_Listeners from "../IOListeners";
+import IO_Listeners from "../models/listeners/IOListeners";
 import { dbPurchaseOrder } from "../models/store/dbPurchaseOrders";
 import PurchaseOrderRequest from "../models/store/PurchaseOrderRequest";
 import { PurchaseOrderRoute, GetPurchaseOrderRoute } from "./routes";
 import DeletePurchaseOrderRequest from "../models/store/DeletePurchaseOrderRequest";
-import { APP, CheckRequisition } from "..";
-import { getSocketOfStreamer } from "../SocketsManager";
+import { APP } from "..";
+import { getSocketOfStreamer } from "../modules/SocketsManager";
 import { AuthenticateResult } from "../models/poll/AuthenticateResult";
 import { Authenticate } from "../modules/Authentication";
 import { getItemsSetting } from "../models/store/StoreItem";
 import { dbWalletManager } from "../modules/databaseManager/wallet/dbWalletManager";
 import dbStoreManager from "../modules/databaseManager/store/dbStoreManager";
 import dbPurchaseOrderManager from "../modules/databaseManager/store/dbPurchaseOrderManager";
+import CheckRequisition from "../utils/CheckRequisition";
 
 APP.post(PurchaseOrderRoute, async function (req, res: express.Response) {
     let PurchaseOrderRequest: PurchaseOrderRequest = req.body;
@@ -134,6 +135,7 @@ APP.get(GetPurchaseOrderRoute, async function (req: { params: { StreamerID: stri
             res.status(200).send(<dbPurchaseOrder[]>result);
         })
         .catch((rej) => {
-            res.status(500).send(rej)
+            console.error(rej);
+            res.status(500).send(rej);
         })
 })
