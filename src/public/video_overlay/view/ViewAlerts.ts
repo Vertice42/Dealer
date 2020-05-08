@@ -177,7 +177,7 @@ export default class ViewAlerts {
     async setInWinnerMode(EarningsDistributor: number) {
         await this.HideAllAlerts();
         this.ShowAlert(this.AlertOfWinner);
-        this.EarningsView.innerText = (this.getBetValue() * EarningsDistributor).toString();
+        this.EarningsView.innerText = (Math.round(this.getBetValue() * (EarningsDistributor))).toString();
 
     }
     async setInLoserMode() {

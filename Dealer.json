@@ -73,6 +73,29 @@
         "width": 854,
         "height": 480
       }
+    },
+    {
+      "id": "7",
+      "label": "",
+      "channelId": "97848974",
+      "configurationAnchor": "panel",
+      "displayChannelName": "vertise5x",
+      "type": "component",
+      "features": {
+        "isBitsEnabled": true,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": false
+      },
+      "linked": false,
+      "linkedUserId": "",
+      "mode": "viewer",
+      "isPopout": false,
+      "role": "Broadcaster",
+      "orientation": "Portrait",
+      "frameSize": {
+        "width": 854,
+        "height": 480
+      }
     }
   ],
   "manifest": {

@@ -7,20 +7,22 @@ import IOListeners from "./models/listeners/IOListeners";
 import { addSocketOfStreamer, removeSocketOfStreamer } from "./modules/SocketsManager";
 import dbManager from "./modules/databaseManager/dbManager";
 import Loading from "./modules/databaseManager/dbLoading";
+import { sleep } from "./utils/functions";
 
 export const APP = express();
 export const SERVER = http.createServer(APP);
 export const IO = Socket_io(SERVER).listen(SERVER);
 
+APP.disable('x-powered-by');
 APP.use(cors(function (req: express.Request, callback) {
     var corsOptions: cors.CorsOptions;
 
     function ValidateOrigin(origin: string, i = 0) {
-        if (origin.charAt(i) === process.env.AcceptedOrigin.charAt(i)) {
+        if (origin.charAt(i) === process.env.AcceptedOrigin.charAt(i) && i !== process.env.AcceptedOrigin.length - 1) {
             i++;
             return ValidateOrigin(origin, i);
         } else {
-            return (i > process.env.AcceptedOrigin.length - 1)
+            return (i >= process.env.AcceptedOrigin.length - 1)
         }
     }
     if (req.method !== 'GET') {
@@ -50,11 +52,12 @@ IO.on('connection', (socket) => {
         addSocketOfStreamer(StreamerID, socket);
 
         socket.on('disconnect', () => {
-            console.log(StreamerID + 'socket disconnect');
-            removeSocketOfStreamer(StreamerID, socket, () => {
+            console.log(StreamerID + ' socket disconnect');
+            removeSocketOfStreamer(StreamerID, socket, async () => {
                 if (dbManager.getAccountData(StreamerID)) {
-                    dbManager.removeAccountData(StreamerID);
                     console.log(StreamerID + ' is completely disconnected');
+                    await sleep(1800000)
+                    dbManager.removeAccountData(StreamerID);
                 }
             })
         })
