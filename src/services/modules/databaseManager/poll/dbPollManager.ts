@@ -47,7 +47,7 @@ export class dbPollManager {
         this.AccountData.dbBets = undefined;
         this.AccountData.dbButtons = undefined;
 
-        this.AccountData.LastPollID++;
+        this.AccountData.LastPollID = await this.getIdOfLastPollID() + 1;
         this.AccountData.dbBets = undefined
 
         await this.AccountData.dbPollsIndexes.create(PollIndex);

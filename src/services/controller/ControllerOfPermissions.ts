@@ -3,7 +3,7 @@ import ItemSetting from "../models/store/item_settings/ItemSettings";
 import fs = require('fs');
 import path = require('path');
 import fetch from 'node-fetch';
-import { resolve, reject } from "bluebird";
+import { resolve } from "bluebird";
 import { sleep } from "../utils/functions";
 import dbDealerManager from "../modules/databaseManager/dbDealerManager";
 
@@ -63,7 +63,7 @@ export default class ControllerOfPermissions {
             })
         }
         if (have) return resolve(true);
-        else return reject(false);
+        else throw false;
     }
 
     private async UserHaveProduct(ExtensionProduct: ExtensionProduct) {

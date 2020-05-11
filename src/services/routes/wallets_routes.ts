@@ -28,10 +28,9 @@ APP.get(GetWalletRoute, async function (req, res: express.Response) {
             res.status(200).send(wallet);
         })
         .catch((rej) => {
-            console.error(rej);
+            console.error('Error in getWallet',rej);
             res.status(500).send(rej);
         })
-
 });
 
 APP.get(GetWalletsRoute, async function (req: express.Request, res: express.Response) {
@@ -52,7 +51,7 @@ APP.get(GetWalletsRoute, async function (req: express.Request, res: express.Resp
             res.status(200).send(<dbWallet[]>Wallets);
         })
         .catch((rej) => {
-            console.error(rej);
+            console.error('Error in getAllWallets',rej);
             res.status(500).send(rej);
         })
 });
@@ -86,7 +85,7 @@ APP.post(WalletManager, async function (req, res: express.Response) {
             res.status(200).send({ WalletSuccessfullyChanged: new Date });
         })
         .catch((rej) => {
-            console.error(rej);
+            console.error('Error in update dbWalletManager',rej);
             res.status(500).send(rej);
         })
 })

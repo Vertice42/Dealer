@@ -5,6 +5,7 @@ import { sleep } from "../../../services/utils/functions";
  */
 export class DivRelocatable {
     private Element: HTMLElement;
+    private Display = document.getElementById('display');
 
     private X: number;
     private Y: number;
@@ -15,8 +16,8 @@ export class DivRelocatable {
         let newX = this.X + event.movementX;
         let newY = this.Y + event.movementY;
 
-        if (newX > 0 && newX < document.body.offsetWidth - this.Element.offsetWidth &&
-            newY > 0 && newY < document.body.offsetHeight - this.Element.offsetHeight) {
+        if (newX > 0 && newX < this.Display.offsetWidth - this.Element.offsetWidth &&
+            newY > 0 && newY < this.Display.offsetHeight - this.Element.offsetHeight) {
             this.X = newX;
             this.Y = newY;
 

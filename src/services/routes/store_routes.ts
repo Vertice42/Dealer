@@ -57,7 +57,7 @@ APP.post(StoreManagerRoute, async function (req, res: express.Response) {
             if (reject.RequestError) {
                 res.status(400).send(reject);
             } else {
-                console.error(reject);
+                console.error('Error in UpdateOrCreateStoreItem',reject);
                 res.status(500).send(reject);
             }
         })
@@ -84,7 +84,7 @@ APP.delete(StoreManagerRoute, async function (req, res: express.Response) {
             res.status(200).send(result);
         })
         .catch((reject) => {
-            console.error(reject);
+            console.error('Error in DeleteStoreItem',reject);
             res.status(500).send(reject);
         })
 })
@@ -109,7 +109,7 @@ APP.get(GetStoreRoute, async function (req: { params: { StreamerID: string, Stor
                 res.status(200).send(StoreItems);
             })
             .catch((rej) => {
-                console.error(rej);
+                console.error('Error in getAllItems dbStoreManager',rej);
                 res.status(500).send(rej);
             })
 
@@ -119,7 +119,7 @@ APP.get(GetStoreRoute, async function (req: { params: { StreamerID: string, Stor
                 res.status(200).send(<StoreItem>Item);
             })
             .catch((rej) => {
-                console.error(rej);
+                console.error('Error in getItem dbStoreManager',rej);
                 res.status(500).send(rej)
             })
     }

@@ -1,3 +1,33 @@
+@media (orientation: landscape) {
+    #AlertOfWinner h2 {
+        font-size: 1.6vw;
+        margin-top: 3vw;
+    }
+    #AlertOfWinner .AlertResultDiv {
+        margin: auto;
+        margin-top: -3vw;
+        font-size: 1.3vw;
+    }
+    .AlertResultDiv span {
+        margin: 1vw;
+    }
+}
+
+@media (orientation: portrait) {
+    #AlertOfWinner h2 {
+        font-size: 3.2vw;
+        margin-top: 4vw;
+    }
+    #AlertOfWinner .AlertResultDiv {
+        margin: auto;
+        margin-top: -6vw;
+        font-size: 2.6vw;
+    }
+    .AlertResultDiv span {
+        margin: 2vw;
+    }
+}
+
 #AlertOfWinner {
     filter: none;
 }
@@ -56,40 +86,34 @@
     animation: HideAlertOfWinner 1s forwards;
 }
 
-@keyframes GradienetAnimation {
+@keyframes GradienteAnimation {
     to {
         background-position: 3000px;
     }
 }
 
 #AlertOfWinner h2 {
-    margin-top: 3vw;
     text-align: center;
     font-family: Heroes;
-    font-size: 1.6vw;
     background-image: -webkit-linear-gradient(left, #f55151, #fffb00, #72ff65, #4be5f0, #7257e9, #bf75d6, #ec6060);
     background-clip: border-box;
     -webkit-background-clip: text;
     -moz-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: GradienetAnimation 20s infinite, ShowText 0.8s;
+    animation: GradienteAnimation 20s infinite, ShowText 0.8s;
 }
 
 #AlertOfWinner .AlertResultDiv {
     display: flex;
     width: fit-content;
     text-align: center;
-    margin: auto;
-    margin-top: -3vw;
     font-family: Heroes;
     color: white;
-    font-size: 1.3vw;
     animation: ShowText 0.8s;
 }
 
 .AlertResultDiv span {
     height: fit-content;
-    margin: 1vw;
 }
 
 #AlertOfWinner::before {

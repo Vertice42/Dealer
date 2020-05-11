@@ -36,7 +36,7 @@ class ViewStoreItemDisplay {
     private createBuyButton() {
         this.HTML_BuyButton = document.createElement('button');
         Texts.onLocaleChange = () => {
-            this.HTML_BuyButton.innerText = Texts.getText('Buy');
+            this.HTML_BuyButton.innerText = Texts.get('Buy');
         }
         return this.HTML_BuyButton;
     }
@@ -123,7 +123,7 @@ export class ViewWalletSkin {
 /**
  * Contains the html elements and the necessary methods for the user's iteration with
  * the streamer store and with the wallet Skins, the wallet also serves as a display 
- * of the viewer's currency balance
+ * of the viewer's Coin balance
  */
 export default class ViewWalletDisplay {
     public ViewWalletSkins: ViewWalletSkin[];

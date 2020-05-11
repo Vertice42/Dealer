@@ -61,7 +61,7 @@ export default class PollController {
 
         let Bets = await new dbPollManager(this.StreamerID).getAllBetsOfCurrentPoll();
 
-        if (Bets.length < 2) return reject({ DistributionStartedError: 'insufficient number of bets' })
+        if (Bets.length < 2) throw { DistributionStartedError: 'insufficient number of bets' };
 
         let DistributionCalculationResult = CalculateDistribution(Bets, WinningButtons);
 
@@ -115,14 +115,14 @@ export default class PollController {
                 let DifferenceBetweenBets = dbBet.BetAmount - newBetAmount;
 
                 if (UserWallet.Coins < newBetAmount) {
-                    return reject({
+                    throw {
                         RequestError: {
                             InsufficientFunds: {
                                 BetAmount: newBetAmount,
                                 Coins: UserWallet.Coins
                             }
                         }
-                    });
+                    };
                 }
 
                 if (DifferenceBetweenBets > 0) {
@@ -137,14 +137,14 @@ export default class PollController {
         } else {
 
             if (UserWallet.Coins < newBetAmount) {
-                return reject({
+                throw {
                     RequestError: {
                         InsufficientFunds: {
                             BetAmount: newBetAmount,
                             Coins: UserWallet.Coins
                         }
                     }
-                });
+                }
             }
 
             await WalletManager.withdraw(newBetAmount);
@@ -215,7 +215,7 @@ export default class PollController {
      */
     async getCurrentPoll() {
         let AccountData = dbManager.getAccountData(this.StreamerID);
-        if (!AccountData) return reject({ code: 400, message: 'Extension not initiated by the Streamer' });
+        if (!AccountData) throw { code: 400, message: 'Extension not initiated by the Streamer' };
 
         let Buttons = [];
         let Bets: PollBet[];

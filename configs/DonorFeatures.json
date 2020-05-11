@@ -2,7 +2,7 @@
     "SingleReproduction": {
         "sku":"Premium",
         "description": "Only add one item to the list at a time",
-        "ItIsFree": false
+        "ItIsFree": true
     },
     "AudioVolume": {
         "sku":"Premium",

@@ -45,6 +45,11 @@
     width: 5vw;
     height: 5vw;
     margin: auto;
+    transition: transform 500ms;
+}
+
+.TypeDisplayIMG:hover {
+    transform: scale(1.2);
 }
 
 .ViewStoreTypeSound {

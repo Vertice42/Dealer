@@ -15,7 +15,7 @@ class ViewPurchaseTime {
         if (time < 60) {
             let TimeRound = Math.round(time);
             Texts.onLocaleChange = () => {
-                this.HTML.innerText = `${TimeRound} ${Texts.getText('Second')}${(TimeRound > 1) ? 's' : ''}`;
+                this.HTML.innerText = `${TimeRound} ${Texts.get('Second')}${(TimeRound > 1) ? 's' : ''}`;
             };
             return this.HTML.innerText;
         }
@@ -23,7 +23,7 @@ class ViewPurchaseTime {
         if (time < 60) {
             let TimeRound = Math.round(time);
             Texts.onLocaleChange = () => {
-                this.HTML.innerText = `${TimeRound} ${Texts.getText('Minute')}${(TimeRound > 1) ? 's' : ''}`;
+                this.HTML.innerText = `${TimeRound} ${Texts.get('Minute')}${(TimeRound > 1) ? 's' : ''}`;
             };
             return this.HTML.innerText
         }
@@ -31,14 +31,14 @@ class ViewPurchaseTime {
         if (time < 60) {
             let TimeRound = Math.round(time);
             Texts.onLocaleChange = () => {
-                this.HTML.innerText = `${TimeRound} ${Texts.getText('Hour')}${(TimeRound > 1) ? 's' : ''}`;
+                this.HTML.innerText = `${TimeRound} ${Texts.get('Hour')}${(TimeRound > 1) ? 's' : ''}`;
             }
             return this.HTML.innerText
         }
 
         let TimeRound = Math.round(time);
         Texts.onLocaleChange = () => {
-            this.HTML.innerText = `${TimeRound} ${Texts.getText('Days')}`;
+            this.HTML.innerText = `${TimeRound} ${Texts.get('Days')}`;
         }
         return this.HTML.innerText
     }
@@ -91,7 +91,7 @@ export class ViewPurchasedItem {
         this.HTML_RefundButton = document.createElement('button');
         this.HTML_RefundButton.classList.add('RefundButton');
         Texts.onLocaleChange = () => {
-            this.HTML_RefundButton.innerText = Texts.getText('Refund');
+            this.HTML_RefundButton.innerText = Texts.get('Refund');
         }
         this.HTML_RefundButton.onclick = () => {
             this.onRefundButtonActive();

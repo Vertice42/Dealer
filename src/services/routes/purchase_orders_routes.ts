@@ -67,7 +67,7 @@ APP.post(PurchaseOrderRoute, async function (req, res: express.Response) {
             res.status(200).send({ PurchaseOrderWasSentSuccessfully: new Date })
         })
         .catch((rej) => {
-            console.error(rej);
+            console.error('Error in addPurchaseOrder',rej);
             res.status(500).send(rej);
         })
 })
@@ -113,7 +113,7 @@ APP.delete(PurchaseOrderRoute, async function (req, res: express.Response) {
             return res.status(200).send({ PurchaseOrderRemovedSuccessfully: new Date })
         })
         .catch((rej) => {
-            console.error(rej);
+            console.error('Error in removePurchaseOrder',rej);
             res.status(500).send(rej);
         })
 })
@@ -135,7 +135,7 @@ APP.get(GetPurchaseOrderRoute, async function (req: { params: { StreamerID: stri
             res.status(200).send(<dbPurchaseOrder[]>result);
         })
         .catch((rej) => {
-            console.error(rej);
+            console.error('Error in getAllPurchaseOrders',rej);
             res.status(500).send(rej);
         })
 })

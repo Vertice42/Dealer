@@ -1,3 +1,55 @@
+@media (orientation: landscape) {
+    #PromoteText {
+        font-size: 1vw;
+    }
+    .WalletSkinDiv {
+        width: 12vw;
+        height: 11.5vw;
+        min-width: 12vw;
+        min-height: 11.5vw;
+        margin: 1vw;
+    }
+    .WalletSkinDiv.WalletSkinLock {
+        width: 12vw;
+        height: 11.5vw;
+        min-width: 12vw;
+        min-height: 11.5vw;
+    }
+    .WalletSkinDiv.WalletSkinLock img {
+        width: 7vw;
+        height: 6vw;
+    }
+    .WalletSkinPrice {
+        font-size: 1vw;
+    }
+}
+
+@media (orientation: portrait) {
+    #PromoteText {
+        font-size: 2vw;
+    }
+    .WalletSkinDiv {
+        width: 24vw;
+        height: 23vw;
+        min-width: 24vw;
+        min-height: 23vw;
+        margin: 2vw;
+    }
+    .WalletSkinDiv.WalletSkinLock {
+        width: 24vw;
+        height: 23vw;
+        min-width: 24vw;
+        min-height: 23vw;
+    }
+    .WalletSkinDiv.WalletSkinLock img {
+        width: 14vw;
+        height: 12vw;
+    }
+    .WalletSkinPrice {
+        font-size: 2vw;
+    }
+}
+
 #SkinsPageDiv {
     height: 100%;
 }
@@ -11,7 +63,6 @@
     display: flex;
     margin: auto;
     font-family: Heroes;
-    font-size: 1vw;
     color: white;
     text-align: center;
 }
@@ -21,7 +72,7 @@
     width: 100%;
     overflow-y: auto;
 }
-    
+
 #SkinsListDiv {
     display: flex;
     width: 150%;
@@ -30,47 +81,34 @@
 #SkinsDivToScroll::-webkit-scrollbar-track {
     background: #3144ee;
 }
+
 #SkinsDivToScroll::-webkit-scrollbar {
     width: 6px;
     background: rgb(66, 27, 173);
 }
+
 #SkinsDivToScroll::-webkit-scrollbar-thumb {
     background: #094aac;
 }
 
 .WalletSkinDiv {
     display: inline-grid;
-    width: 12vw;
-    height: 11.5vw;
-    min-width: 12vw;
-    min-height: 11.5vw;
-
-    margin: 1vw;
-
-    background:url(../../images/lock_icon.png),
-    linear-gradient(45deg ,rgba(99, 139, 248, 0.815), rgba(40, 94, 241, 0.815));
-
+    background: url(../../images/lock_icon.png), linear-gradient(45deg, rgba(99, 139, 248, 0.815), rgba(40, 94, 241, 0.815));
     background-repeat: no-repeat;
     background-size: 0%, 100%;
     background-position: right top;
 }
 
-.WalletSkinDiv.WalletSkinLock{
-    width: 12vw;
-    height: 11.5vw;
-    min-width: 12vw;
-    min-height: 11.5vw;
+.WalletSkinDiv.WalletSkinLock {
     background-size: 20%, 100%;
 }
 
 .WalletSkinDiv.WalletSkinLock img {
-    width: 7vw;
-    height: 6vw;
     margin: 10% 10%;
     margin-bottom: 0vw;
 }
 
-.WalletSkinDiv.WalletSkinSelected{
+.WalletSkinDiv.WalletSkinSelected {
     border: solid white;
 }
 
@@ -78,7 +116,6 @@
     width: 80%;
     height: 70%;
     margin: auto;
-
     transition: all 200ms;
 }
 
@@ -88,10 +125,9 @@
     width: fit-content;
     height: fit-content;
     font-family: heroes;
-    font-size: 1vw;
     color: rgb(30, 28, 131);
 }
 
-.WalletSkinPrice.WalletSkinLock{
+.WalletSkinPrice.WalletSkinLock {
     display: block;
 }

@@ -32,8 +32,8 @@ APP.post(CoinsSettingsManagerRoute, async function (req, res: express.Response) 
 
     StreamerSettingsManager.UpdateOrCreateCoinsSettings(StreamerID, CoinsSettingsManagerRequest.Setting)
         .then((resolve) => { res.status(200).send(resolve) })
-        .catch((reject) => { 
-            console.error(reject);
+        .catch((reject) => {
+            console.error('Error in UpdateOrCreateCoinsSettings', reject);
             res.status(500).send(reject);
         });
 });
@@ -50,7 +50,7 @@ APP.get(GetCoinsSettingsRoute, async function (req: { params: { StreamerID: stri
             res.status(200).send(CoinsSettings);
         })
         .catch((rej) => {
-            console.error(rej);
+            console.error('Error in getCoinsSettings',rej);
             res.status(500).send(rej);
         })
 });
@@ -67,7 +67,7 @@ APP.post(MinerManagerRoute, async function (req, res: express.Response) {
                 return ({ RequestError: "Setting is no defined" })
         },
         () => {
-            if (!((MinerManagerRequest.Setting.RewardPerMinute < 1.1 && 
+            if (!((MinerManagerRequest.Setting.RewardPerMinute < 1.1 &&
                 (MinerManagerRequest.Setting.RewardPerMinute > 0))))
                 return ({ RequestError: "RewardPerMinute invalid" })
         }
@@ -82,9 +82,9 @@ APP.post(MinerManagerRoute, async function (req, res: express.Response) {
 
     StreamerSettingsManager.UpdateMinerSettings(StreamerID, MinerManagerRequest.Setting)
         .then((resolve) => { res.status(200).send(resolve) })
-        .catch((reject) => { 
-            console.error(reject);
-            res.status(500).send(reject) 
+        .catch((reject) => {
+            console.error('Error in UpdateMinerSettings',reject);
+            res.status(500).send(reject)
         });
 });
 
@@ -101,7 +101,7 @@ APP.get(GetMinerSettingsRoute, async function (req: { params: { StreamerID: stri
             res.status(200).send(MinerSettings);
         })
         .catch((rej) => {
-            console.error(rej);
+            console.error('Error in getMinerSettings',rej);
             res.status(500).send(rej);
         })
 });

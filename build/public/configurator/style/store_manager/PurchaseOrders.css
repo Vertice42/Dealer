@@ -166,13 +166,13 @@
 }
 
 .UserName {
-    min-width: 10vw;
-    max-width: 10vw;
+    min-width: 20vw;
+    max-width: 20vw;
 }
 
 .PurchaseTime {
-    min-width: 18vw;
-    max-width: 18vw;
+    min-width: 10vw;
+    max-width: 10vw;
 }
 
 .ItemName {

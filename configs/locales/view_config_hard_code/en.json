@@ -81,12 +81,12 @@
     },
     {
         "id": "CoinNameTitle",
-        "Text": "Currency Name",
+        "Text": "Coin Name",
         "Instruction": ""
     },
     {
         "id": "CoinImageTitle",
-        "Text": "Currency Image",
+        "Text": "Coin Image",
         "Instruction": ""
     },
     {

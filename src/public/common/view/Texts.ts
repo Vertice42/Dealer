@@ -20,16 +20,16 @@ export class LocalizedText {
  */
 export class LocalizedTexts {
     private LocalizedTexts: LocalizedText[] = [];
-    private Listerners = [];
+    private Listeners = [];
 
     public update(LocalizedTexts: LocalizedText[]) {
         LocalizedTexts.forEach(localizedText => {
             this.LocalizedTexts[localizedText.id] = localizedText;
         });        
-        this.Listerners.forEach(Listerner => Listerner());
+        this.Listeners.forEach(Listener => Listener());
     }
 
-    public getText(id: string): string {
+    public get(id: string): string {
         return this.LocalizedTexts[id].Text;
     }
 
@@ -37,9 +37,9 @@ export class LocalizedTexts {
         return this.LocalizedTexts[id].Instruction;
     }
 
-    public set onLocaleChange(Listerner: () => any) {
-        this.Listerners.push(Listerner);
-        Listerner();
+    public set onLocaleChange(Listener: () => any) {
+        this.Listeners.push(Listener);
+        Listener();
     }
 
     constructor(LocalizedTexts: LocalizedText[]) {

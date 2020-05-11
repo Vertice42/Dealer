@@ -80,7 +80,30 @@
       "channelId": "97848974",
       "configurationAnchor": "panel",
       "displayChannelName": "vertise5x",
-      "type": "component",
+      "type": "mobile",
+      "features": {
+        "isBitsEnabled": true,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": false
+      },
+      "linked": false,
+      "linkedUserId": "",
+      "mode": "viewer",
+      "isPopout": false,
+      "role": "Broadcaster",
+      "orientation": "Landscape",
+      "frameSize": {
+        "width": 480,
+        "height": 853
+      }
+    },
+    {
+      "id": "8",
+      "label": "",
+      "channelId": "97848974",
+      "configurationAnchor": "panel",
+      "displayChannelName": "vertise5x",
+      "type": "mobile",
       "features": {
         "isBitsEnabled": true,
         "isChatEnabled": false,
@@ -93,8 +116,8 @@
       "role": "Broadcaster",
       "orientation": "Portrait",
       "frameSize": {
-        "width": 854,
-        "height": 480
+        "width": 480,
+        "height": 853
       }
     }
   ],

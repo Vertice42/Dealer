@@ -21,12 +21,15 @@ APP.post(MineCoinRoute, async function (req, res: express.Response) {
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
 
     MinerManager.MineCoin(MinerRequest.StreamerID, MinerRequest.TwitchUserID)
-        .then((resolve: MiningResponse) => { res.status(200).send(resolve) })
-        .catch((rej) => {
-            if (rej.RequestError) return res.status(400).send(rej);
-            else {
-                console.error(rej);
-                res.status(500).send(rej);
+        .then((resolve: MiningResponse) => {
+            res.status(200).send(resolve)
+        })
+        .catch((reject) => {            
+            if (reject.RequestError) {
+                res.status(400).send(reject);
+            } else {
+                console.error('Error in MineCoin', reject);
+                res.status(500).send(reject);
             }
         });
 });

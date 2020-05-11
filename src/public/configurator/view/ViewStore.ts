@@ -22,6 +22,7 @@ class SingleReproductionSettings {
     this.HTML_span = document.createElement('span');
     this.HTML_span.classList.add('slider');
     this.HTML_span.classList.add('round');
+    Texts.onLocaleChange = () => this.HTML_span.title = Texts.get('SingleReproductionSettingsDescription');
     this.HTML.appendChild(this.HTML_span);
 
   }
@@ -143,10 +144,10 @@ export class ViewStoreItem implements StoreItem {
     this.ElementHTML_ID = 'InputFile' + this.id;
 
     this.DescriptionInput = new OrientedInput('text', 'DescriptionInput');
-    Texts.onLocaleChange = () => this.DescriptionInput.Guidance = Texts.getText('DescriptionInput');
+    Texts.onLocaleChange = () => this.DescriptionInput.Guidance = Texts.get('DescriptionInput');
 
     this.PriceInput = new OrientedInput('number', 'PriceInput');
-    Texts.onLocaleChange = () => this.PriceInput.Guidance = Texts.getText('PriceInput');
+    Texts.onLocaleChange = () => this.PriceInput.Guidance = Texts.get('PriceInput');
 
     this.ResponsiveInputFile = new ResponsiveInputFile(this.ElementHTML_ID, '.mp3,.wav');
 

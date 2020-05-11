@@ -37,7 +37,7 @@ APP.post(UpdateTransitionsByUser, async function (req, res: express.Response) {
             res.status(200).send(result);
         })
         .catch(rej => {
-            console.error(rej);
+            console.error('Error in addTransactionOfUser',rej);
             res.status(500).send(rej);
         })
 })
@@ -62,7 +62,7 @@ APP.get(GetTransitionsByUser, async function (req, res: express.Response) {
             res.status(200).send((result) ? result.TransactionsArray : []);
         })
         .catch(rej => {
-            console.error(rej);
+            console.error('Error in getTransactionsOfUser',rej);
             res.status(500).send(rej);
         })
 })

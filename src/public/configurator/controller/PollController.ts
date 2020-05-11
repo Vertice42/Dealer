@@ -39,7 +39,9 @@ export default class PollController {
         };
         this.ViewPollManager.onCommandToStartSent = async () => {
             this.ViewPollManager.PollStatus.PollStarted = true;
-            return PollManager(new PollRequest(this.Token, this.ViewPollManager.getPollButtons(), this.ViewPollManager.PollStatus))
+            return PollManager(new PollRequest(this.Token,
+                this.ViewPollManager.getPollButtons(),
+                this.ViewPollManager.PollStatus))
                 .then(async () => {
                     this.PollObserver.start();
                     NotifyViewers({ ListenerName: TwitchListeners.onPollChange, data: await getCurrentPoll(this.StreamerID) });

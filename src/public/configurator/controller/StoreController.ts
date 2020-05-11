@@ -50,7 +50,7 @@ export default class StoreController {
                     FolderTypes.StoreItem + ViewStoreItemActive.id,
                     ViewStoreItemActive.FileName);
 
-                this.ViewStore.HTML_DemoAudioPlayer.volume = getItemsSetting('AudioVolume',ViewStoreItemActive.ItemsSettings).value / 100;
+                this.ViewStore.HTML_DemoAudioPlayer.volume = getItemsSetting('AudioVolume', ViewStoreItemActive.ItemsSettings).value / 100;
                 this.ViewStore.HTML_DemoAudioPlayer.play();
             }
         }
@@ -91,12 +91,12 @@ export default class StoreController {
 
             updateStoreItem(this.Token, ViewStoreItem)
                 .then(() => this.onStoreChange())
-                .catch((rej:Response) => {      
+                .catch((rej: Response) => {
                     if (ItemSettings.DonorFeatureName === 'SingleReproduction') {
                         ViewStoreItem.SingleReproductionSetting.HTML_Input.checked = false;
                         ItemSettings.Enable = false;
 
-                        if(rej.status === 423) ViewAdvertisement.Show();
+                        if (rej.status === 423) ViewAdvertisement.Show();
                     }
                 })
         }
@@ -106,7 +106,7 @@ export default class StoreController {
                 switch (ViewStoreItem.Type) {
                     case StoreTypes.Audio:
                         if (!(file.type === 'audio/mp3' || file.type === 'audio/wav'))
-                            return reject({ typeError: file.type })
+                            throw { typeError: file.type };
 
                     default:
                         break;
@@ -147,7 +147,7 @@ export default class StoreController {
     }
 
     private async loadingStoreItems() {
-        
+
         this.StoreItems = (await GetStore(this.StreamerID));
 
         this.StoreItems.forEach((StoreItem: StoreItem) => {

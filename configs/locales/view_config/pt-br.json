@@ -38,5 +38,9 @@
     {
         "id": "PriceInput",
         "Text": "Insert Price"
+    },
+    {
+        "id": "SingleReproductionSettingsDescription",
+        "Text": "Limita á um único item por vez na fila de reprodução"
     }
 ]

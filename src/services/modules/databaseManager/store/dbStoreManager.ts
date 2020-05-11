@@ -41,7 +41,7 @@ export default class dbStoreManger {
 
                     let FileExtension = StoreItem.FileName.split('.').pop();
                     if (!(FileExtension === 'mp3' || FileExtension === 'wav')) {
-                        return reject({ RequestError: `Invalid file "${FileExtension}"` })
+                        throw { RequestError: `Invalid file "${FileExtension}"` };
                     }
                     break;
                 }

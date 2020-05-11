@@ -38,5 +38,9 @@
     {
         "id": "PriceInput",
         "Text": "Enter a Price"
+    },
+    {
+        "id": "SingleReproductionSettingsDescription",
+        "Text": "Limits to one item at a time in the play queue"
     }
 ]

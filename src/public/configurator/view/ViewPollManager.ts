@@ -23,7 +23,7 @@ class NameInput {
         name_input_div.classList.add('ItemInputDiv')
         let text_name = document.createElement("h3");
         Texts.onLocaleChange = () => {
-            text_name.innerText = Texts.getText("Name") + " |";
+            text_name.innerText = Texts.get("Name") + " |";
         }
         name_input_div.appendChild(text_name);
         // name to indicate input function
@@ -46,7 +46,7 @@ class ColorInput {
         color_input_div.classList.add('ItemInputDiv')
         let text_color = document.createElement("h3");
         Texts.onLocaleChange = () => {
-            text_color.innerText = Texts.getText("Color") + " |";
+            text_color.innerText = Texts.get("Color") + " |";
         }
         color_input_div.appendChild(text_color);
         // name to indicate input function
@@ -74,7 +74,7 @@ class VoteCounterOutput {
         vote_output_div.classList.add('ItemInputDiv');
         let text_Vote = document.createElement("h3");
         Texts.onLocaleChange = () => {
-            text_Vote.innerText = Texts.getText("Betting") + " |";
+            text_Vote.innerText = Texts.get("Betting") + " |";
         }
         vote_output_div.appendChild(text_Vote);
         //name to indicate output function
@@ -533,11 +533,11 @@ export default class ViewPollManager {
         });
     }
 
-    getPollButtons(): PollButton[] {
+    getPollButtons(): PollButton[] {        
         let Buttons = [];
         this.PollItemsViewers.forEach(PollItemViewer => {
             Buttons.push(new PollButton(PollItemViewer.ID, PollItemViewer.getNameInputValue(), PollItemViewer.getColorInputValue(), PollItemViewer.IsWinner()));
-        });
+        });        
         return Buttons;
     }
     addItem(ID: number, Name: string, Color: string, IsWinner: boolean) {

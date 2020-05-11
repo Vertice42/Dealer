@@ -22,7 +22,7 @@ function ThereWinningButtonsInArray(PollButtons: PollButton[]): boolean {
 }
 
 APP.post(PollManagerRoute, async function (req, res: express.Response) {
-    let PollRequest: PollRequest = req.body;
+    let PollRequest: PollRequest = req.body;    
 
     let Result: AuthenticateResult
     try { Result = <AuthenticateResult>await Authenticate(PollRequest.Token) }
@@ -52,11 +52,11 @@ APP.post(PollManagerRoute, async function (req, res: express.Response) {
         let PoolUpdateResult;
         let StartDistributionResult;
 
-        let CurrentPollStatus = await PollC.getCurrentPollStatus();
+        let CurrentPollStatus = await PollC.getCurrentPollStatus();        
         if (CurrentPollStatus.PollWaxed) {
             PollC.stopDistributions();
             return res.status(200).send(PollC.CreatePoll(PollRequest.NewPollStatus));
-        } else {
+        } else {            
             PoolUpdateResult = await PollC.UpdatePoll(PollRequest.NewPollStatus, PollRequest.PollButtons);
             CurrentPollStatus = await PollC.getCurrentPollStatus();
 
@@ -85,7 +85,7 @@ APP.post(PollManagerRoute, async function (req, res: express.Response) {
         }
         res.status(200).send({ PoolUpdateResult, StartDistributionResult });
     } catch (error) {
-        console.error(error);
+        console.error('Error in PollManager',error);
         res.status(500).send(error);
     }
 
@@ -109,7 +109,7 @@ APP.get(GetPollRoute, async function (req: { params: { StreamerID: string } }, r
             if (rej.code) {
                 res.status(rej.code).send(rej.message);
             } else {
-                console.error(rej);
+                console.error('Error in getCurrentPoll',rej);
                 res.status(500).send(rej)
             }
         })
@@ -165,7 +165,7 @@ APP.post(AddBetRoute, async function (req, res: express.Response) {
             if (reject.RequestError) {
                 res.status(400).send(reject);
             } else {
-                console.error(reject);
+                console.error('Error in AddBet', reject);
                 res.status(500).send(reject);
             }
         })
