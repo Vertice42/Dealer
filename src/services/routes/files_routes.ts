@@ -39,17 +39,23 @@ APP.post(UploadFileRoute, async function (req, res: express.Response) {
 
     const StreamerID = Result.channel_id;
 
-    let dir = `uploads/${StreamerID}/${FileID}`;
+    let Dir = `./uploads/${StreamerID}`;
 
-    if (fs.existsSync(dir)) {
-        del.sync(dir + '/*');
+    if (!fs.existsSync(Dir)) {
+        await fs.promises.mkdir(Dir);
+    }
+
+    Dir = `${Dir}/${FileID}`;
+
+    if (fs.existsSync(Dir)) {
+        del.sync(Dir + '/*');
     } else {
-        await fs.promises.mkdir('./' + dir);
+        await fs.promises.mkdir(Dir);
     }
 
     let fileSize = Number(req.headers['content-length']);
 
-    let file = fs.createWriteStream('./' + dir + '/' + FileName);
+    let file = fs.createWriteStream(`${Dir}/${FileName}`);
 
     req.on('data', chunk => {
         file.write(chunk);
@@ -66,7 +72,7 @@ APP.post(UploadFileRoute, async function (req, res: express.Response) {
     })
 })
 
-APP.get(GetFileRoute, async function (req, res: express.Response) {    
+APP.get(GetFileRoute, async function (req, res: express.Response) {
     res.status(200).sendFile(path.resolve(`./uploads/${req.params.StreamerID}/${req.params.Folder}/${req.params.FileName}`))
 })
 

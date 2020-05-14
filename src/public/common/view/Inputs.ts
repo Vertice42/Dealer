@@ -153,7 +153,7 @@ export class ResponsiveInputFile {
   setUploadPercentage(UploadPercentage: number) {
     if (this.UploadPercentage !== UploadPercentage) {
       this.UploadPercentage = UploadPercentage;
-      this.HTML_LabelForInput.style.backgroundImage = `url(../configurator/images/circle.png), conic-gradient(rgb(255, 255, 255) 3% ,#fff ${this.UploadPercentage}% ,rgb(0, 102, 255) ${this.UploadPercentage + 2}% )`;
+      this.HTML_LabelForInput.style.backgroundImage = `conic-gradient(rgb(255, 255, 255) 3% ,#fff ${this.UploadPercentage}% ,rgb(0, 102, 255) ${this.UploadPercentage + 2}% )`;
       this.HTML_PercentageSpan.innerText = Math.round(UploadPercentage) + '%';
     }
   }

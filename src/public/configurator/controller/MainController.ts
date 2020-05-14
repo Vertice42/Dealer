@@ -27,14 +27,15 @@ export function NotifyViewers(TwitchListener: TwitchListener) {
   window.Twitch.ext.send("broadcast", "json", JSON.stringify(TwitchListener));
 }
 
-window.Twitch.ext.onContext(async (context) => {
+window.Twitch.ext.onAuthorized(async (auth) => {
 
-  InsertTextInHardCode(await getLocaleFile('view_config_hard_code', context.language));
+  window.Twitch.ext.onContext(async (context) => {
+    var language = navigator.language || 'en';
+    InsertTextInHardCode(await getLocaleFile('view_config_hard_code', language));
 
-  if (!Texts) Texts = new LocalizedTexts(await getLocaleFile('view_config', context.language));
-  else Texts.update(await getLocaleFile('view_config', context.language));
+    if (!Texts) Texts = new LocalizedTexts(await getLocaleFile('view_config', language));
+    else Texts.update(await getLocaleFile('view_config', language));
 
-  window.Twitch.ext.onAuthorized(async (auth) => {
     STREAMER_SOCKET.emit(IOListeners.RegisterStreamer, auth.channelId);
 
     STREAMER_SOCKET.on('connect', () => {

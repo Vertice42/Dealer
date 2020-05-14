@@ -39,16 +39,17 @@ window.Twitch.ext.listen('broadcast', (topic, contentType, json: string) => {
 
 export var Texts: LocalizedTexts;
 window.Twitch.ext.onContext(async (context) => {
-  InsertTextInElements(await getLocaleFile('view_video_overlay_hard_code', context.language));
+  var language = navigator.language.toLowerCase() || 'en';
+  InsertTextInElements(await getLocaleFile('view_video_overlay_hard_code', language));
 
   if (Texts) {
-    Texts.update(await getLocaleFile('view_video_overlay', context.language));
+    Texts.update(await getLocaleFile('view_video_overlay', language));
   } else {
-    Texts = new LocalizedTexts(await getLocaleFile('view_video_overlay', context.language));
+    Texts = new LocalizedTexts(await getLocaleFile('view_video_overlay', language));
   }
 });
 
-window.Twitch.ext.onAuthorized(async (auth) => { 
+window.Twitch.ext.onAuthorized(async (auth) => {
   var TwitchUserName = (await getUsername(auth.userId.replace(/[^\d]+/g, ''), auth.clientId)).name;
 
   if (!TwitchUserName) {
@@ -60,7 +61,7 @@ window.Twitch.ext.onAuthorized(async (auth) => {
     window.Twitch.ext.bits.setUseLoopback(true);
   }
 
-  if(Initialized) return; else Initialized = true;  
+  if (Initialized) return; else Initialized = true;
 
   await new AlertController(auth.token, auth.channelId, TwitchUserName).Build();
 

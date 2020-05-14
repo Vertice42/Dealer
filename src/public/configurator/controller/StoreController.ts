@@ -105,7 +105,9 @@ export default class StoreController {
             if (file) {
                 switch (ViewStoreItem.Type) {
                     case StoreTypes.Audio:
-                        if (!(file.type === 'audio/mp3' || file.type === 'audio/wav'))
+                        if (!(file.type === 'audio/mp3' ||
+                            file.type === 'audio/wav' ||
+                            file.type === 'audio/mpeg'))
                             throw { typeError: file.type };
 
                     default:
