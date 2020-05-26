@@ -22,7 +22,7 @@ class SingleReproductionSettings {
     this.HTML_span = document.createElement('span');
     this.HTML_span.classList.add('slider');
     this.HTML_span.classList.add('round');
-    Texts.onLocaleChange = () => this.HTML_span.title = Texts.get('SingleReproductionSettingsDescription');
+    Texts.onLocaleChange = () => this.HTML_span.title = Texts.get('SingleReproductionDescription');
     this.HTML.appendChild(this.HTML_span);
 
   }

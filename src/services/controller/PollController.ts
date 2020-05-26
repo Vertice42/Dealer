@@ -67,16 +67,16 @@ export default class PollController {
 
         let DistributionPromises = [];
 
-        Bets.forEach(async Betting => {
+        for (const Bet of Bets) {
             if (this.StopDistributions) throw 'Error in distribution';
-            if (Betting) {
-                let walletManager = new dbWalletManager(this.StreamerID, Betting.TwitchUserID);
+            if (Bet) {
+                let walletManager = new dbWalletManager(this.StreamerID, Bet.TwitchUserID);
 
-                if (dbPollManager.BetIsWinner(WinningButtons, Betting.Bet))
+                if (dbPollManager.BetIsWinner(WinningButtons, Bet.Bet))
                     DistributionPromises.push(walletManager.deposit
-                        (Betting.BetAmount * DistributionCalculationResult.EarningsDistributor))
+                        (Bet.BetAmount * DistributionCalculationResult.EarningsDistributor))
             }
-        });
+        };
 
         Promise.all(DistributionPromises)
             .catch((error) => {
@@ -100,9 +100,9 @@ export default class PollController {
      * 
      * @param TwitchUserName 
      * @param ChosenOppositeID 
-     * @param newBetAmount 
+     * @param NewBetAmount 
      */
-    async AddBet(TwitchUserName: string, ChosenBetID: number, newBetAmount: number) {
+    async AddBet(TwitchUserName: string, ChosenBetID: number, NewBetAmount: number) {
         let WalletManager = new dbWalletManager(this.StreamerID, TwitchUserName);
         let UserWallet = await WalletManager.getWallet();
 
@@ -111,47 +111,46 @@ export default class PollController {
         let dbBet = await db_pollManager.get_dbBet(TwitchUserName);
 
         if (dbBet) {
-            if (dbBet.BetAmount !== newBetAmount) {
-                let DifferenceBetweenBets = dbBet.BetAmount - newBetAmount;
+            if (dbBet.BetAmount !== NewBetAmount) {
 
-                if (UserWallet.Coins < newBetAmount) {
+                if (NewBetAmount > UserWallet.Coins + dbBet.BetAmount) {
                     throw {
                         RequestError: {
                             InsufficientFunds: {
-                                BetAmount: newBetAmount,
+                                BetAmount: NewBetAmount,
                                 Coins: UserWallet.Coins
                             }
                         }
                     };
                 }
 
+                let DifferenceBetweenBets = dbBet.BetAmount - NewBetAmount;
                 if (DifferenceBetweenBets > 0) {
                     await WalletManager.deposit(DifferenceBetweenBets);
-
                 } else {
                     await WalletManager.withdraw(DifferenceBetweenBets);
                 }
             }
-            await db_pollManager.updateBet(dbBet, new Bet(TwitchUserName, ChosenBetID, newBetAmount));
+            await db_pollManager.updateBet(dbBet, new Bet(TwitchUserName, ChosenBetID, NewBetAmount));
 
         } else {
 
-            if (UserWallet.Coins < newBetAmount) {
+            if (UserWallet.Coins < NewBetAmount) {
                 throw {
                     RequestError: {
                         InsufficientFunds: {
-                            BetAmount: newBetAmount,
+                            BetAmount: NewBetAmount,
                             Coins: UserWallet.Coins
                         }
                     }
                 }
             }
 
-            await WalletManager.withdraw(newBetAmount);
-            await db_pollManager.createBet(new Bet(TwitchUserName, ChosenBetID, newBetAmount));
+            await WalletManager.withdraw(NewBetAmount);
+            await db_pollManager.createBet(new Bet(TwitchUserName, ChosenBetID, NewBetAmount));
         }
 
-        return resolve({ BetAccepted: { Bet: newBetAmount } });
+        return resolve({ BetAccepted: { Bet: NewBetAmount } });
 
     }
     /**

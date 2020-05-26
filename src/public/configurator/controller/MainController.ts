@@ -28,49 +28,46 @@ export function NotifyViewers(TwitchListener: TwitchListener) {
 }
 
 window.Twitch.ext.onAuthorized(async (auth) => {
+  var language = navigator.language.toLowerCase() || 'en';  
+  InsertTextInHardCode(await getLocaleFile('view_config_hard_code', language));
 
-  window.Twitch.ext.onContext(async (context) => {
-    var language = navigator.language || 'en';
-    InsertTextInHardCode(await getLocaleFile('view_config_hard_code', language));
+  if (!Texts) Texts = new LocalizedTexts(await getLocaleFile('view_config', language));
+  else Texts.update(await getLocaleFile('view_config', language));
 
-    if (!Texts) Texts = new LocalizedTexts(await getLocaleFile('view_config', language));
-    else Texts.update(await getLocaleFile('view_config', language));
+  STREAMER_SOCKET.emit(IOListeners.RegisterStreamer, auth.channelId);
 
+  STREAMER_SOCKET.on('connect', () => {
     STREAMER_SOCKET.emit(IOListeners.RegisterStreamer, auth.channelId);
+  })
 
-    STREAMER_SOCKET.on('connect', () => {
-      STREAMER_SOCKET.emit(IOListeners.RegisterStreamer, auth.channelId);
-    })
+  STREAMER_SOCKET.on(IOListeners.onStreamerAsRegistered, async () => {
+    if (Initialized) return; else Initialized = true;
+    new ViewMain();
 
-    STREAMER_SOCKET.on(IOListeners.onStreamerAsRegistered, async () => {
-      if (Initialized) return; else Initialized = true;
-      new ViewMain();
+    if (process.env.NODE_ENV !== 'production') {
+      window.Twitch.ext.bits.setUseLoopback(true);
+    }
 
-      if (process.env.NODE_ENV !== 'production') {
-        window.Twitch.ext.bits.setUseLoopback(true);
-      }
+    ViewAdvertisement.onAdvertisementButtonActive = () => {
+      window.Twitch.ext.bits.onTransactionComplete(async (Transaction) => {
+        await updateTransactionOfUser(new UpdateTransactionOfUserRequest(auth.token, Transaction));
+        ViewAdvertisement.Hide();
+      })
+      window.Twitch.ext.bits.useBits('Premium');
 
-      ViewAdvertisement.onAdvertisementButtonActive = () => {
-        window.Twitch.ext.bits.onTransactionComplete(async (Transaction) => {
-          await updateTransactionOfUser(new UpdateTransactionOfUserRequest(auth.token, Transaction));
-          ViewAdvertisement.Hide();
-        })
-        window.Twitch.ext.bits.useBits('Premium');
+      window.Twitch.ext.bits.onTransactionCancelled(() => {
+        ViewAdvertisement.Hide();
+      })
+    }
 
-        window.Twitch.ext.bits.onTransactionCancelled(() => {
-          ViewAdvertisement.Hide();
-        })
-      }
+    new PollController(auth.token, auth.channelId);
 
-      new PollController(auth.token, auth.channelId);
+    new SettingsController(auth.token, auth.channelId);
 
-      new SettingsController(auth.token, auth.channelId);
+    new StoreController(auth.token, auth.channelId);
 
-      new StoreController(auth.token, auth.channelId);
+    new PurchaseOrderController(auth.token, auth.channelId, STREAMER_SOCKET);
 
-      new PurchaseOrderController(auth.token, auth.channelId, STREAMER_SOCKET);
-
-      new WalletsController(auth.token, auth.channelId);
-    })
-  });
+    new WalletsController(auth.token, auth.channelId);
+  })
 });

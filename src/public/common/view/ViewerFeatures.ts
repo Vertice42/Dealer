@@ -6,6 +6,7 @@ import { sleep } from "../../../services/utils/functions";
 export class DivRelocatable {
     private Element: HTMLElement;
     private Display = document.getElementById('display');
+    private ResizeObserver: ResizeObserver;
 
     private X: number;
     private Y: number;
@@ -72,6 +73,27 @@ export class DivRelocatable {
     constructor(Element: HTMLElement, StartingLocationX: number, StartingLocationY: number) {
         this.Element = Element;
         this.Enable(StartingLocationX, StartingLocationY);
+
+        this.ResizeObserver = new ResizeObserver(() => {
+
+            if (this.X > this.Display.offsetWidth - this.Element.offsetWidth){
+                this.X = (this.Display.offsetWidth - this.Element.offsetWidth);
+
+                this.Element.style.left = this.X + 'px';
+
+                localStorage[this.Element.id + 'X'] = this.X;
+            }
+
+            if (this.Y > this.Display.offsetHeight - this.Element.offsetHeight) {
+                this.Y = (this.Display.offsetHeight - this.Element.offsetHeight);
+
+                this.Element.style.top = this.Y + 'px';
+
+                localStorage[this.Element.id + 'Y'] = this.Y;
+            }
+        });
+
+        this.ResizeObserver.observe(this.Display);
     }
 }
 

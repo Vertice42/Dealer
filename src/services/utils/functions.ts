@@ -1,4 +1,4 @@
-export function isEquivalent (a, b) {
+export function isEquivalent(a, b) {
     if (!a || !b) return false;
 
     // Create arrays of property names
@@ -26,7 +26,7 @@ export function isEquivalent (a, b) {
     return true;
 }
 
-export function sleep (ms) {
+export function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
@@ -37,4 +37,15 @@ export function hexToRgb(hex) {
         g: parseInt(result[2], 16),
         b: parseInt(result[3], 16)
     } : null;
+}
+
+export function CheckWord(Word: string, BlackList: string[]) {
+    let word = Word.toLowerCase();
+    if (word.charAt(word.length - 1) === 's') {
+        word = word.substring(0, word.length - 1);        
+    }
+    for (const WordForbidden of BlackList) {
+        if (word === WordForbidden) return true;
+    }
+    return false;
 }

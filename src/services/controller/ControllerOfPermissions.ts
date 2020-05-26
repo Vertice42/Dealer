@@ -23,7 +23,7 @@ async function getOAuth() {
 }
 
 async function GetExtensionTransactions(id?: string, pagination = '') {    
-    return (await fetch(`https://api.twitch.tv/helix/extensions/transactions?extension_id=${process.env.ExtensionID}${(id) ? '&id=' + id : ''}${pagination}`, {
+    return (await fetch(`https://api.twitch.tv/helix/extensions/transactions?extension_id=${process.env.ClientID}${(id) ? '&id=' + id : ''}${pagination}`, {
         method: 'GET',
         headers: {
             Authorization: 'Bearer ' + (await getOAuth()).access_token

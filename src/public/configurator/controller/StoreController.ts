@@ -114,6 +114,7 @@ export default class StoreController {
                         break;
                 }
                 ViewStoreItem.ResponsiveInputFile.setInUpload();
+                ViewStoreItem.ResponsiveInputFile.setUploadPercentage(0);
 
                 let ioListener = (UploadPercentage: number) => {
                     ViewStoreItem.ResponsiveInputFile.setUploadPercentage(UploadPercentage);

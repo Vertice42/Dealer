@@ -25,16 +25,16 @@ export class LocalizedTexts {
     public update(LocalizedTexts: LocalizedText[]) {
         LocalizedTexts.forEach(localizedText => {
             this.LocalizedTexts[localizedText.id] = localizedText;
-        });        
+        });
         this.Listeners.forEach(Listener => Listener());
     }
 
     public get(id: string): string {
-        return this.LocalizedTexts[id].Text;
+        return (this.LocalizedTexts[id]) ? this.LocalizedTexts[id].Text : '';
     }
 
     public getInstruction(id: string): string {
-        return this.LocalizedTexts[id].Instruction;
+        return (this.LocalizedTexts[id]) ? this.LocalizedTexts[id].Instruction : '';
     }
 
     public set onLocaleChange(Listener: () => any) {
@@ -51,9 +51,9 @@ export class LocalizedTexts {
  * Include text in All hard HTML code
  */
 export function InsertTextInHardCode(LocaleFiles: LocalizedText[]) {
-    LocaleFiles.forEach(LocaleFile => {
-        let HTML_Element = document.getElementById(LocaleFile.id);
-        HTML_Element.innerHTML = LocaleFile.Text;
-        HTML_Element.title = LocaleFile.Instruction;
+    LocaleFiles.forEach(localeFile => {
+        let HTML_Element = document.getElementById(localeFile.id);
+        HTML_Element.innerHTML = localeFile.Text;
+        HTML_Element.title = localeFile.Instruction;
     });
 }

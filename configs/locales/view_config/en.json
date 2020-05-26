@@ -40,7 +40,7 @@
         "Text": "Enter a Price"
     },
     {
-        "id": "SingleReproductionSettingsDescription",
+        "id": "SingleReproductionDescription",
         "Text": "Limits to one item at a time in the play queue"
     }
 ]

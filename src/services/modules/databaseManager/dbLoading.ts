@@ -1,7 +1,7 @@
 import { MinerSettings } from "../../models/streamer_settings/MinerSettings";
 import { Define } from "./dbDefine";
 import { AccountData } from "../../models/dealer/AccountData";
-import { resolve, reject } from "bluebird";
+import { resolve } from "bluebird";
 import { DealerSettings } from "../../models/streamer_settings/dbSettings";
 export default class Loading {
     /**

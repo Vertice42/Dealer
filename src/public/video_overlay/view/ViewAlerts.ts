@@ -195,16 +195,12 @@ export default class ViewAlerts {
 
         this.AlertsRelocatable = new DivRelocatable(this.AlertsDiv, X / 2.5, Y / 1.9);
 
-        this.BetAmountInput.HTML.onmouseenter = () => this.AlertsRelocatable.Disable();
-        this.BetAmountInput.HTML.onmouseleave = () => this.AlertsRelocatable.Disable();
-
         this.AutomaticHidingDueInactivity = new AutomaticHidingDueInactivity(document.body,
             [this.PollAlert,
             this.PollDiv,
             this.StopAlert,
             this.AlertOfWinner,
-            this.AlertOfLoser])
-
+            this.AlertOfLoser]);
 
         this.ParticipatePollButton.onclick = () => this.onclickOfParticipatePollButton();
         this.getBetValue = () => { return Number(this.BetAmountInput.HTML.value); };

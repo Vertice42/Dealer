@@ -9,6 +9,9 @@ import { AuthenticateResult } from "../models/poll/AuthenticateResult";
 import { Authenticate } from "../modules/Authentication";
 import StreamerSettingsManager from "../modules/databaseManager/streamer_settings/StreamerSettingsManager";
 import CheckRequisition from "../utils/CheckRequisition";
+import { CheckWord } from "../utils/functions";
+
+const BlackListOfCoinsName = ['bit', 'twitch'];
 
 APP.post(CoinsSettingsManagerRoute, async function (req, res: express.Response) {
     let CoinsSettingsManagerRequest: CoinsSettingsManagerRequest = req.body;
@@ -20,6 +23,11 @@ APP.post(CoinsSettingsManagerRoute, async function (req, res: express.Response) 
         () => {
             if (!CoinsSettingsManagerRequest.Setting)
                 return ({ RequestError: "Setting is no defined" })
+        }
+        ,
+        () => {
+            if (CheckWord(CoinsSettingsManagerRequest.Setting.CoinName, BlackListOfCoinsName)) 
+            { return ({ RequestError: `CoinName "${CoinsSettingsManagerRequest.Setting.CoinName}" is prohibited`}) }
         }
     ])
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList: ErrorList });
@@ -50,7 +58,7 @@ APP.get(GetCoinsSettingsRoute, async function (req: { params: { StreamerID: stri
             res.status(200).send(CoinsSettings);
         })
         .catch((rej) => {
-            console.error('Error in getCoinsSettings',rej);
+            console.error('Error in getCoinsSettings', rej);
             res.status(500).send(rej);
         })
 });
@@ -83,7 +91,7 @@ APP.post(MinerManagerRoute, async function (req, res: express.Response) {
     StreamerSettingsManager.UpdateMinerSettings(StreamerID, MinerManagerRequest.Setting)
         .then((resolve) => { res.status(200).send(resolve) })
         .catch((reject) => {
-            console.error('Error in UpdateMinerSettings',reject);
+            console.error('Error in UpdateMinerSettings', reject);
             res.status(500).send(reject)
         });
 });
@@ -101,7 +109,7 @@ APP.get(GetMinerSettingsRoute, async function (req: { params: { StreamerID: stri
             res.status(200).send(MinerSettings);
         })
         .catch((rej) => {
-            console.error('Error in getMinerSettings',rej);
+            console.error('Error in getMinerSettings', rej);
             res.status(500).send(rej);
         })
 });

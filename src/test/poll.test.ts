@@ -125,7 +125,7 @@ describe('Poll', () => {
   })
 
   describe('Distribution', function () {
-    this.timeout(7000);
+    this.timeout(20000);
 
     before(async () => {
       await createStreamerTables(ID_FOR_DISTRIBUTION);

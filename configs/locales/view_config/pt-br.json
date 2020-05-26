@@ -16,7 +16,7 @@
         "Text": "segundo"
     },
     {
-        "id": "Minuto",
+        "id": "Minute",
         "Text": "minuto"
     },
     {
@@ -40,7 +40,7 @@
         "Text": "Insert Price"
     },
     {
-        "id": "SingleReproductionSettingsDescription",
+        "id": "SingleReproductionDescription",
         "Text": "Limita á um único item por vez na fila de reprodução"
     }
 ]

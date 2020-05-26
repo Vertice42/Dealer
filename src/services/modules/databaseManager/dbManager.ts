@@ -1,15 +1,7 @@
 import { Sequelize } from "sequelize";
-
 import { AccountData } from "../../models/dealer/AccountData";
 import { dbPollManager } from "./poll/dbPollManager";
 import { DeleteTable } from "./dbUtil";
-
-export const NOT_IN_STRING = -1;
-
-export const POLL_WAXED = "_waxed";
-export const POLL_STARTED = "_started";
-export const POLL_STOPPED = "_stopped";
-export const COMPLETED = "_completed";
 
 export const dbDealer = new Sequelize(
     'dealer',
