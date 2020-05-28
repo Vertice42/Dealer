@@ -561,7 +561,7 @@ export default class ViewPollManager {
         }
     }
     updateVotesOfAllItems(Poll: Poll) {
-        if (Poll.Bets.length > 1 && Poll.Bets.length < 3)
+        if (Poll.Bets.length > 0 && Poll.Bets.length < 2)
             this.EnableButton(this.StopPollButton, this.onClickOfStopPollButton);
 
         this.PollItemsViewers.forEach(PollItem => {

@@ -198,7 +198,7 @@ describe('Poll', () => {
     }
 
     it('Distribution', async function () {
-      this.timeout(30000);
+      this.timeout(1000);
 
       let pollC = new PollController(ID_FOR_DISTRIBUTION);
 
@@ -234,7 +234,7 @@ describe('Poll', () => {
     })
 
     it('Distribution for multiple results', async function () {
-      this.timeout(30000);
+      this.timeout(10000);
 
       let pollC = new PollController(ID_FOR_DISTRIBUTION_OF_MULTIPLE_RESULTS);
 

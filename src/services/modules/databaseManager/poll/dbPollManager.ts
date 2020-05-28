@@ -46,10 +46,9 @@ export class dbPollManager {
         this.AccountData.LastPollStatus = undefined;
         this.AccountData.dbBets = undefined;
         this.AccountData.dbButtons = undefined;
-
-        this.AccountData.LastPollID = await this.getIdOfLastPollID() + 1;
         this.AccountData.dbBets = undefined
 
+        this.AccountData.LastPollID = await this.getIdOfLastPollID() + 1;
         await this.AccountData.dbPollsIndexes.create(PollIndex);
     }
     async updatePollStatus(PollStatus: PollStatus) {
@@ -57,9 +56,9 @@ export class dbPollManager {
         PollStatus.updated_at = new Date;
         return (await this.getPollStatusOf_db(PollStatus.id || this.AccountData.LastPollID)).update(PollStatus);
     }
-    async getPollStatus(IdOfPollIndex: number) {
-        let dbPollStatus = await this.getPollStatusOf_db(IdOfPollIndex);
-        return (dbPollStatus) ? new PollStatus(dbPollStatus) : new PollStatus().wax();
+    async getPollStatus(IdOfPollIndex: number) {        
+        if (IdOfPollIndex) return this.getPollStatusOf_db(IdOfPollIndex);
+        else return new PollStatus().wax();
     }
 
     async getIdOfLastPollID(): Promise<number> {

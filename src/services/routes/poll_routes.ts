@@ -22,7 +22,7 @@ function ThereWinningButtonsInArray(PollButtons: PollButton[]): boolean {
 }
 
 APP.post(PollManagerRoute, async function (req, res: express.Response) {
-    let PollRequest: PollRequest = req.body;    
+    let PollRequest: PollRequest = req.body;
 
     let Result: AuthenticateResult
     try { Result = <AuthenticateResult>await Authenticate(PollRequest.Token) }
@@ -52,21 +52,23 @@ APP.post(PollManagerRoute, async function (req, res: express.Response) {
         let PoolUpdateResult;
         let StartDistributionResult;
 
-        let CurrentPollStatus = await PollC.getCurrentPollStatus();        
+        let CurrentPollStatus = await PollC.getCurrentPollStatus();
         if (CurrentPollStatus.PollWaxed) {
             PollC.stopDistributions();
-            return res.status(200).send(PollC.CreatePoll(PollRequest.NewPollStatus));
-        } else {            
+            let CreateResult = await PollC.CreatePoll(PollRequest.NewPollStatus)
+            return res.status(200).send(CreateResult);
+        } else {
             PoolUpdateResult = await PollC.UpdatePoll(PollRequest.NewPollStatus, PollRequest.PollButtons);
             CurrentPollStatus = await PollC.getCurrentPollStatus();
 
             if (CurrentPollStatus.DistributionStarted &&
                 !CurrentPollStatus.InDistribution &&
-                !CurrentPollStatus.DistributionCompleted) {
+                !CurrentPollStatus.DistributionCompleted &&
+                PollRequest.PollButtons) {
 
                 if (ThereWinningButtonsInArray(PollRequest.PollButtons)) {
                     PollC.OnDistributionsEnd = async (StatisticsOfDistribution) => {
-                        CurrentPollStatus.setDistributionAsCompleted();
+                        CurrentPollStatus.DistributionCompleted = true;
                         CurrentPollStatus.StatisticsOfDistributionJson = JSON.stringify(StatisticsOfDistribution);
                         PollC.UpdatePollStatus(CurrentPollStatus);
 
@@ -85,7 +87,7 @@ APP.post(PollManagerRoute, async function (req, res: express.Response) {
         }
         res.status(200).send({ PoolUpdateResult, StartDistributionResult });
     } catch (error) {
-        console.error('Error in PollManager',error);
+        console.error('Error in PollManager', error);
         res.status(500).send(error);
     }
 
@@ -109,7 +111,7 @@ APP.get(GetPollRoute, async function (req: { params: { StreamerID: string } }, r
             if (rej.code) {
                 res.status(rej.code).send(rej.message);
             } else {
-                console.error('Error in getCurrentPoll',rej);
+                console.error('Error in getCurrentPoll', rej);
                 res.status(500).send(rej)
             }
         })

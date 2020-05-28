@@ -61,7 +61,7 @@ export default class PollController {
 
         let Bets = await new dbPollManager(this.StreamerID).getAllBetsOfCurrentPoll();
 
-        if (Bets.length < 2) throw { DistributionStartedError: 'insufficient number of bets' };
+        if (Bets.length < 1) throw { DistributionStartedError: 'insufficient number of bets' };
 
         let DistributionCalculationResult = CalculateDistribution(Bets, WinningButtons);
 

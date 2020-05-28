@@ -4,7 +4,7 @@ import bodyParser = require("body-parser");
 import http = require('http');
 import Socket_io = require('socket.io')
 import IOListeners from "./models/listeners/IOListeners";
-import { addSocketOfStreamer, removeSocketOfStreamer } from "./modules/SocketsManager";
+import { addSocketOfStreamer, removeSocketOfStreamer, getSocketOfStreamer } from "./modules/SocketsManager";
 import dbManager from "./modules/databaseManager/dbManager";
 import Loading from "./modules/databaseManager/dbLoading";
 import { sleep } from "./utils/functions";
@@ -54,9 +54,9 @@ IO.on('connection', (socket) => {
         socket.on('disconnect', () => {
             console.log(StreamerID + ' socket disconnect');
             removeSocketOfStreamer(StreamerID, socket, async () => {
-                if (dbManager.getAccountData(StreamerID)) {
+                await sleep(1800000);
+                if (dbManager.getAccountData(StreamerID) && getSocketOfStreamer(StreamerID).length < 1){
                     console.log(StreamerID + ' is completely disconnected');
-                    await sleep(1800000)
                     dbManager.removeAccountData(StreamerID);
                 }
             })

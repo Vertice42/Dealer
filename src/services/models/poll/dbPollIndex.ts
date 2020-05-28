@@ -68,12 +68,12 @@ const attributes: ModelAttributes = {
         type: sequelize.TEXT
     },
     created_at: {
-        type: 'TIMESTAMP',
+        type: sequelize.DATE,
         defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
         allowNull: false
     },
     updated_at: {
-        type: 'TIMESTAMP',
+        type: sequelize.DATE,
         defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
         allowNull: false
     }
