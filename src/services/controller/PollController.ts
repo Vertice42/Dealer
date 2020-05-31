@@ -13,6 +13,7 @@ import { DistributionCalculationResult, StatisticsOfDistribution } from "../mode
 import { dbPollManager } from "../modules/databaseManager/poll/dbPollManager";
 import { dbWalletManager } from "../modules/databaseManager/wallet/dbWalletManager";
 import dbManager from "../modules/databaseManager/dbManager";
+import { sleep } from "../utils/functions";
 
 /**
 * Calculation of the distribution of winnings used in the list of bets and options
@@ -46,7 +47,6 @@ function CalculateDistribution(Bets: Bet[], WinningButtons: PollButton[]) {
 export default class PollController {
     public StreamerID: string;
     private StopDistributions = false;
-
     OnDistributionsEnd = (StatisticsOfDistribution: StatisticsOfDistribution) => { };
 
     /**
@@ -68,10 +68,9 @@ export default class PollController {
         let DistributionPromises = [];
 
         for (const Bet of Bets) {
-            if (this.StopDistributions) throw 'Error in distribution';
+            if (this.StopDistributions) throw 'Distribution Stopped';
             if (Bet) {
                 let walletManager = new dbWalletManager(this.StreamerID, Bet.TwitchUserID);
-
                 if (dbPollManager.BetIsWinner(WinningButtons, Bet.Bet))
                     DistributionPromises.push(walletManager.deposit
                         (Bet.BetAmount * DistributionCalculationResult.EarningsDistributor))
@@ -85,7 +84,8 @@ export default class PollController {
                         DistributionCalculationResult, error, StartTime, true));
                 }
             })
-            .then(() => {
+            .then(async () => {
+                await sleep(3000);
                 this.OnDistributionsEnd(new StatisticsOfDistribution(
                     DistributionCalculationResult, 'Destruction done successfully', StartTime));
             })
@@ -176,18 +176,17 @@ export default class PollController {
 
     }
     async UpdatePollStatus(PollStatus: PollStatus) {
-        let PollManager = new dbPollManager(this.StreamerID);
+        let dbManager = new dbPollManager(this.StreamerID);
 
         if (PollStatus.PollWaxed && !PollStatus.DistributionCompleted) {
             let ReturnPromises = [];
-            (await PollManager.getAllBetsOfCurrentPoll()).forEach(bet => {
+            (await dbManager.getAllBetsOfCurrentPoll()).forEach(bet => {
                 ReturnPromises.push(new dbWalletManager(this.StreamerID, bet.TwitchUserID)
                     .deposit(bet.BetAmount))
             });
             await Promise.all(ReturnPromises);
         }
-
-        return PollManager.updatePollStatus(PollStatus);
+        return dbManager.updatePollStatus(PollStatus);
     }
     async CreatePoll(PollStatus: PollStatus): Promise<any> {
         /**Generate a handle with the current time
@@ -204,9 +203,8 @@ export default class PollController {
     }
 
     async getCurrentPollStatus(db_pollManager = new dbPollManager(this.StreamerID)) {
-        return db_pollManager.getLastPollStatus();
+        return new PollStatus(await db_pollManager.getLastPollStatus());
     }
-
     /**
      * Returns the most recent poll in the database if there is one, otherwise it returns a poll 
      * with the status of 'WAXED'
@@ -221,7 +219,7 @@ export default class PollController {
 
         let db_pollManager = new dbPollManager(this.StreamerID);
 
-        let PollStatus: PollStatus = await db_pollManager.getLastPollStatus();
+        let PollStatus: PollStatus = await this.getCurrentPollStatus();
 
         for (const dbButton of await db_pollManager.getAllButtonsOfCurrentPoll()) {
             Buttons.push(new PollButton(

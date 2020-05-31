@@ -42,5 +42,13 @@
     {
         "id": "SingleReproductionDescription",
         "Text": "Limita á um único item por vez na fila de reprodução"
+    },
+    {
+        "id": "DistributionText",
+        "Text": "Distribuindo de ganhos"
+    },
+    {
+        "id": "DistributionsFinishedText",
+        "Text": "Distribuição concluída"
     }
 ]

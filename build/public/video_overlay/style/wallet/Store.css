@@ -114,7 +114,7 @@
 }
 
 .StoreItem span {
-    margin: auto 0;
+    margin: auto 0.3vw;
     background: rgb(48, 25, 100);
     font-family: fantasy;
     text-align: center;
@@ -127,7 +127,7 @@
     width: 100%;
     text-transform: uppercase;
     color: white;
-    transition: all 200ms;
+    transition: all 100ms;
 }
 
 .StoreItem button:active {

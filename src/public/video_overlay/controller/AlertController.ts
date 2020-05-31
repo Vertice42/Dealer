@@ -69,12 +69,13 @@ export default class AlertController {
 
     private updatePromise: Promise<any>;
 
-    private async updateAlerts(Poll: Poll) {        
+    private async updateAlerts(Poll: Poll) {
+
         let CurrentPollStatus = this.CurrentPollStatus;
         this.CurrentPollStatus = Poll.PollStatus;
-        let selected = Number(localStorage['ChosenBet' + this.TwitchUserName]);        
+        let selected = Number(localStorage['ChosenBet' + this.TwitchUserName]);
 
-        if ((!CurrentPollStatus) || (CurrentPollStatus.updated_at !== Poll.PollStatus.updated_at)) {
+        if ((!CurrentPollStatus) || (CurrentPollStatus.updatedAt !== Poll.PollStatus.updatedAt)) {
             if (Poll.PollStatus.PollWaxed) {
                 return await this.ViewAlerts.HideAllAlerts();
             }
@@ -82,7 +83,7 @@ export default class AlertController {
             if (Poll.PollStatus.DistributionCompleted) {
                 if (!Number.isNaN(selected)) {
                     if (IsWinner(Poll.PollButtons, selected)) {
-                        let StatisticsOfDistribution:StatisticsOfDistribution = JSON.parse(Poll.PollStatus.StatisticsOfDistributionJson)
+                        let StatisticsOfDistribution: StatisticsOfDistribution = JSON.parse(Poll.PollStatus.DistributionStatisticsJson)
                         return await this.ViewAlerts.setInWinnerMode(StatisticsOfDistribution.CalculationResult.EarningsDistributor);
                     } else {
                         return await this.ViewAlerts.setInLoserMode();
@@ -126,9 +127,8 @@ export default class AlertController {
         return this.TryGetCurrentPoll()
             .then((Poll: Poll) => {
                 this.updatePromise = this.updateAlerts(Poll);
-
                 addTwitchListeners(new TwitchListener(TwitchListeners.onPollChange, async (Poll: Poll) => {
-                    await this.updatePromise;                    
+                    await this.updatePromise;
                     this.updatePromise = this.updateAlerts(Poll);
                 }))
 

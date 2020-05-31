@@ -38,8 +38,8 @@ export class dbPollManager {
 
         return this.AccountData.LastPollStatus;
     }
-    async getPollStatusOf_db(IdOfPollIndex: number) {
-        return (await this.AccountData.dbPollsIndexes.findOne({ where: { id: IdOfPollIndex } }));
+    async getPollStatusOf_db(IdOfPoll: number) {
+        return (await this.AccountData.dbPollsIndexes.findOne({ where: { id: IdOfPoll } }));
     }
 
     async createPollIndex(PollIndex: PollStatus) {
@@ -49,14 +49,18 @@ export class dbPollManager {
         this.AccountData.dbBets = undefined
 
         this.AccountData.LastPollID = await this.getIdOfLastPollID() + 1;
-        await this.AccountData.dbPollsIndexes.create(PollIndex);
+        return this.AccountData.dbPollsIndexes.create(PollIndex);
     }
-    async updatePollStatus(PollStatus: PollStatus) {
+    async updatePollStatus(pollStatus: PollStatus) {
         this.AccountData.LastPollStatus = undefined;
-        PollStatus.updated_at = new Date;
-        return (await this.getPollStatusOf_db(PollStatus.id || this.AccountData.LastPollID)).update(PollStatus);
+        let newPollStatus = new PollStatus(pollStatus);
+        let oldPollStatus = await this.getPollStatusOf_db(pollStatus.id || await this.getIdOfLastPollID());
+        if (!newPollStatus.DistributionStatisticsJson)
+            newPollStatus.DistributionStatisticsJson = oldPollStatus.DistributionStatisticsJson;
+
+        return oldPollStatus.update(newPollStatus);
     }
-    async getPollStatus(IdOfPollIndex: number) {        
+    getPollStatus(IdOfPollIndex: number) {
         if (IdOfPollIndex) return this.getPollStatusOf_db(IdOfPollIndex);
         else return new PollStatus().wax();
     }

@@ -34,7 +34,7 @@ export class StatisticsOfDistribution {
         error = false) {
         this.CalculationResult = DistributionCalculationResult;
         this.message = message;
-        this.timeOfDistribution = timeOfDistribution;
+        this.timeOfDistribution = new Date().getTime() - timeOfDistribution
         this.error = error;
     }
 }

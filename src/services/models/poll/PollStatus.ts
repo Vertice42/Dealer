@@ -6,8 +6,8 @@ export class PollStatus {
     DistributionStarted: boolean;
     DistributionCompleted: boolean;
     InDistribution: boolean;
-    StatisticsOfDistributionJson: string;
-    updated_at:Date;
+    DistributionStatisticsJson: string;
+    updatedAt:Date;
 
     constructor(PollStatus?: PollStatus) {
         if (PollStatus) {
@@ -17,16 +17,20 @@ export class PollStatus {
             this.PollStopped = PollStatus.PollStopped;
             this.InDistribution = PollStatus.InDistribution;
             this.DistributionStarted = PollStatus.DistributionStarted;
-            this.DistributionCompleted = PollStatus.DistributionCompleted;
-            this.StatisticsOfDistributionJson = PollStatus.StatisticsOfDistributionJson;
-            this.updated_at = PollStatus.updated_at;
+            this.DistributionCompleted = PollStatus.DistributionCompleted;            
+            this.DistributionStatisticsJson = PollStatus.DistributionStatisticsJson;
+            this.updatedAt = PollStatus.updatedAt;
         } else {
+            this.id = undefined;
             this.PollWaxed = false;
             this.PollStarted = false;
             this.PollStopped = false;
             this.InDistribution = false;
             this.DistributionStarted = false;
             this.DistributionCompleted = false;
+            this.DistributionStatisticsJson = undefined;
+            this.updatedAt = undefined;
+
         }
     }
 
@@ -47,6 +51,10 @@ export class PollStatus {
     startDistribution() {
         this.DistributionStarted = true;
         return this;
+    }
+    setInDistribution(){
+        this.InDistribution = true;
+        return this
     }
     setDistributionAsCompleted() {
         this.DistributionCompleted = true;

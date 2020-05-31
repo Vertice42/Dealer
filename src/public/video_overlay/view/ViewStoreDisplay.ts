@@ -26,10 +26,10 @@ class ViewStoreItemDisplay {
         return this.HTML_Description;
     }
 
-    private createPrice(Price: number,CoinChar: string) {
+    private createPrice(Price: number, CoinChar: string) {
         this.HTML_Price = document.createElement('span');
         this.HTML_Price.classList.add('Price');
-        this.HTML_Price.innerText = Price +' '+ CoinChar.toUpperCase();
+        this.HTML_Price.innerText = Price + ' ' + CoinChar.toUpperCase();
         return this.HTML_Price;
     }
 
@@ -53,13 +53,13 @@ class ViewStoreItemDisplay {
 
     }
 
-    constructor(Description: string, Price: number,CoinChar:string) {
+    constructor(Description: string, Price: number, CoinChar: string) {
         this.HTML = <HTMLDivElement>document.createElement('div');
         this.HTML.classList.add('StoreItem');
 
         this.HTML.appendChild(this.createTypeDisplay())
         this.HTML.appendChild(this.createDescription(Description))
-        this.HTML.appendChild(this.createPrice(Price,CoinChar))
+        this.HTML.appendChild(this.createPrice(Price, CoinChar))
         this.HTML.appendChild(this.createBuyButton())
     }
 }
@@ -196,7 +196,8 @@ export default class ViewWalletDisplay {
         else if (BalanceChange < -1) {
             this.startWithdrawalAnimation((~~BalanceChange - 1) * -1);
         }
-        if (this.CoinName === undefined) this.CoinName = 'Coins';
+
+        if (!this.CoinName) this.CoinName = 'Coins';
 
         let lastChar = this.CoinName.charAt(this.CoinName.length - 1)
         this.HTML_CoinsOfUserView.innerText =
@@ -342,7 +343,8 @@ export default class ViewWalletDisplay {
         this.HTML_ItemsList.innerHTML = '';
         StoreItems.forEach(StoreItem => {
             if (StoreItem.FileName && StoreItem.Description && StoreItem.Price) {
-                let viewStoreItem = new ViewStoreItemDisplay(StoreItem.Description,StoreItem.Price,this.CoinName.charAt(0));
+                let viewStoreItem = new ViewStoreItemDisplay(StoreItem.Description, StoreItem.Price,
+                    (this.CoinName) ? this.CoinName.charAt(0) : '$');
 
                 let SingleReproduction: ItemSetting = getItemsSetting('SingleReproduction', StoreItem.ItemsSettings);
                 let ThereAlreadyAnItemInList = false;

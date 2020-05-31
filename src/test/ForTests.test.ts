@@ -38,8 +38,8 @@ export async function createPoll(StreamersID: string) {
 }
 
 export async function startPoll(StreamersID: string) {
-  let PollC = new PollController(StreamersID);
-  return PollC.UpdatePoll((await PollC.getCurrentPollStatus()).start(), [
+  let PollControl = new PollController(StreamersID);
+  return PollControl.UpdatePoll(new PollStatus(await PollControl.getCurrentPollStatus()).start(), [
     new PollButton(0, 'wait', '#FFFFFF', false),
     new PollButton(1, 'black', '#000000', false)])
 }

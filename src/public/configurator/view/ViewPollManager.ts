@@ -296,6 +296,7 @@ export default class ViewPollManager {
     }
 
     DistributionDiv = <HTMLDivElement>document.getElementById("DistributionDiv");
+    DistributionText = <HTMLHeadElement>document.getElementById('DistributionText');
     PollManagerDiv = <HTMLDivElement>document.getElementById("PollManagerDiv");
     PollItemsDiv = <HTMLDivElement>document.getElementById("PollItemsDiv");
     CreatePollButton = <HTMLButtonElement>document.getElementById("CreatePollButton");
@@ -368,10 +369,16 @@ export default class ViewPollManager {
         this.ShowButton(this.CloseButton);
         this.EnableButton(this.CloseButton, this.onClickOfCloseButton);
         this.DistributionDiv.classList.remove('DistributionsFinished');
+        Texts.onLocaleChange = () => {
+            this.DistributionText.innerText = Texts.get('DistributionText');
+        }
     }
     async setDistributionsFinished() {
         await sleep(500);
         this.DistributionDiv.classList.add('DistributionsFinished');
+        Texts.onLocaleChange = () => {
+            this.DistributionText.innerText = Texts.get('DistributionsFinishedText');
+        }
     }
     InitializeButtons() {
         this.CreatePollButton.onclick = this.onClickOfCreatePollButton;
@@ -522,6 +529,9 @@ export default class ViewPollManager {
         Button.classList.add("ButtonDisable");
         Button.onclick = null;
     }
+    private ButtonIsEnable(Button: HTMLButtonElement) {
+        return Button.classList.contains("ButtonEnable");
+    }
     private ShowWinnersPicks() {
         this.PollItemsViewers.forEach(PollItemViewer => {
             PollItemViewer.ShowWinnerPick();
@@ -533,11 +543,11 @@ export default class ViewPollManager {
         });
     }
 
-    getPollButtons(): PollButton[] {        
+    getPollButtons(): PollButton[] {
         let Buttons = [];
         this.PollItemsViewers.forEach(PollItemViewer => {
             Buttons.push(new PollButton(PollItemViewer.ID, PollItemViewer.getNameInputValue(), PollItemViewer.getColorInputValue(), PollItemViewer.IsWinner()));
-        });        
+        });
         return Buttons;
     }
     addItem(ID: number, Name: string, Color: string, IsWinner: boolean) {
@@ -561,7 +571,7 @@ export default class ViewPollManager {
         }
     }
     updateVotesOfAllItems(Poll: Poll) {
-        if (Poll.Bets.length > 0 && Poll.Bets.length < 2)
+        if (Poll.Bets.length > 0 && !this.ButtonIsEnable(this.StopPollButton))
             this.EnableButton(this.StopPollButton, this.onClickOfStopPollButton);
 
         this.PollItemsViewers.forEach(PollItem => {

@@ -27,7 +27,7 @@
     {
         "id": "RestartButton",
         "Text": "Reiniciar",
-        "Instruction": "Redefine as apostas de onde elas mantêm as pastas já criadas"
+        "Instruction": "Reinicia as apostas, mantêm as apostas já criadas"
     },
     {
         "id": "ApplyChangesButton",
@@ -43,16 +43,6 @@
         "id": "DistributeButton",
         "Text": "Iniciar distribuição",
         "Instruction": "inicia a distribuição dos ganhos aos vencedores"
-    },
-    {
-        "id": "DistributionText",
-        "Text": "Distribuição de ganhos",
-        "Instruction": ""
-    },
-    {
-        "id": "DistributionText",
-        "Text": "Distribuição concluída",
-        "Instruction": ""
     },
     {
         "id": "EmptyPurchaseOrdersText",

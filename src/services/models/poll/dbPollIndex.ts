@@ -5,15 +5,18 @@ import sequelize = require("sequelize");
 export default class dbPollIndex extends Model implements PollStatus {
 
     id: number;
+
     PollWaxed: boolean;
     PollStarted: boolean;
     PollStopped: boolean;
     DistributionStarted: boolean;
     DistributionCompleted: boolean;
     InDistribution: boolean;
-    StatisticsOfDistributionJson: string;
-    created_at:Date;
-    updated_at:Date;
+
+    DistributionStatisticsJson: string;
+
+    createdAt:Date;
+    updatedAt:Date;
 
     start() {
         this.PollStarted = true;
@@ -32,6 +35,10 @@ export default class dbPollIndex extends Model implements PollStatus {
     startDistribution() {
         this.DistributionStarted = true;
         return this;
+    }
+    setInDistribution(){
+        this.InDistribution = true;
+        return this
     }
     setDistributionAsCompleted() {
         this.DistributionCompleted = true;
@@ -64,18 +71,8 @@ const attributes: ModelAttributes = {
     DistributionStarted: {
         type: sequelize.BOOLEAN
     },
-    StatisticsOfDistributionJson: {
+    DistributionStatisticsJson: {
         type: sequelize.TEXT
-    },
-    created_at: {
-        type: sequelize.DATE,
-        defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
-        allowNull: false
-    },
-    updated_at: {
-        type: sequelize.DATE,
-        defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
-        allowNull: false
     }
 }
 

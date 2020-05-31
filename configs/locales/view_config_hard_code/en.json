@@ -27,7 +27,7 @@
     {
         "id": "RestartButton",
         "Text": "Restart",
-        "Instruction": "Resets bets from where they keep the folders already created"
+        "Instruction": "Restart the bets, keep the bets already created"
     },
     {
         "id": "ApplyChangesButton",
@@ -43,16 +43,6 @@
         "id": "DistributeButton",
         "Text": "Start Distribution",
         "Instruction": "starts distribution of winnings to winners"
-    },
-    {
-        "id": "DistributionText",
-        "Text": "Distributing earnings",
-        "Instruction": ""
-    },
-    {
-        "id": "DistributionText",
-        "Text": "Distribution Finished",
-        "Instruction": ""
     },
     {
         "id": "EmptyPurchaseOrdersText",

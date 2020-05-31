@@ -42,5 +42,13 @@
     {
         "id": "SingleReproductionDescription",
         "Text": "Limits to one item at a time in the play queue"
+    },
+    {
+        "id": "DistributionText",
+        "Text": "Distributing earnings",
+    },
+    {
+        "id": "DistributionsFinishedText",
+        "Text": "Distribution Finished",
     }
 ]

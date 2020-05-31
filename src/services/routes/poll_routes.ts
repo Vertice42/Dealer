@@ -47,31 +47,31 @@ APP.post(PollManagerRoute, async function (req, res: express.Response) {
     if (ErrorList.length > 0) return res.status(400).send({ ErrorList });
 
     try {
-        let PollC = new PollController(StreamerID);
+        let PollControl = new PollController(StreamerID);
 
         let PoolUpdateResult;
         let StartDistributionResult;
 
-        let CurrentPollStatus = await PollC.getCurrentPollStatus();
+        let CurrentPollStatus = await PollControl.getCurrentPollStatus();
         if (CurrentPollStatus.PollWaxed) {
-            PollC.stopDistributions();
-            let CreateResult = await PollC.CreatePoll(PollRequest.NewPollStatus)
+            PollControl.stopDistributions();
+            let CreateResult = await PollControl.CreatePoll(PollRequest.NewPollStatus)
             return res.status(200).send(CreateResult);
         } else {
-            PoolUpdateResult = await PollC.UpdatePoll(PollRequest.NewPollStatus, PollRequest.PollButtons);
-            CurrentPollStatus = await PollC.getCurrentPollStatus();
+            PoolUpdateResult = await PollControl.UpdatePoll(PollRequest.NewPollStatus, PollRequest.PollButtons);
+            CurrentPollStatus = await PollControl.getCurrentPollStatus();
 
             if (CurrentPollStatus.DistributionStarted &&
-                !CurrentPollStatus.InDistribution &&
                 !CurrentPollStatus.DistributionCompleted &&
+                !CurrentPollStatus.InDistribution &&
                 PollRequest.PollButtons) {
-
+                CurrentPollStatus.InDistribution = true;
+                await PollControl.UpdatePollStatus(CurrentPollStatus);
                 if (ThereWinningButtonsInArray(PollRequest.PollButtons)) {
-                    PollC.OnDistributionsEnd = async (StatisticsOfDistribution) => {
+                    PollControl.OnDistributionsEnd = async (StatisticsOfDistribution) => {
                         CurrentPollStatus.DistributionCompleted = true;
-                        CurrentPollStatus.StatisticsOfDistributionJson = JSON.stringify(StatisticsOfDistribution);
-                        PollC.UpdatePollStatus(CurrentPollStatus);
-
+                        CurrentPollStatus.DistributionStatisticsJson = JSON.stringify(StatisticsOfDistribution);
+                        await PollControl.UpdatePollStatus(CurrentPollStatus);
                         let SocketsOfStreamer = getSocketOfStreamer(StreamerID);
                         if (SocketsOfStreamer) {
                             SocketsOfStreamer.forEach(socket => {
@@ -79,7 +79,7 @@ APP.post(PollManagerRoute, async function (req, res: express.Response) {
                             });
                         }
                     }
-                    StartDistributionResult = await PollC.startDistributions(PollRequest.PollButtons);
+                    StartDistributionResult = await PollControl.startDistributions(PollRequest.PollButtons);
                 } else {
                     return res.status(400).send({ RequestError: 'There is no winning button' });
                 }
