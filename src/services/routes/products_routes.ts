@@ -26,7 +26,6 @@ APP.post(UpdateTransitionsByUser, async function (req, res: express.Response) {
         return res.status(401).send({ ErrorList });
     }
 
-
     let Result: AuthenticateResult
     try { Result = <AuthenticateResult>await Authenticate(Request.Token) }
     catch (error) { return res.status(401).send(error) }

@@ -1,3 +1,3 @@
 export default {
-    URL: 'https://dealerextension-ddns-net.umbler.net'//'http://localhost:7777'//
+    URL: 'http://localhost:7778'//'https://dealerextension-ddns-net.umbler.net'//
 }

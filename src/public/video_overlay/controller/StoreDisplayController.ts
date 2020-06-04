@@ -66,6 +66,7 @@ export default class StoreDisplayController {
 
         this.ViewWalletDisplay.onWalletSkinSelected = (ViewWalletSkins) => {
             if (ViewWalletSkins.IsLock) {
+                //window.Twitch.ext.bits.setUseLoopback(true);
                 window.Twitch.ext.bits.useBits(ViewWalletSkins.WalletSkin.sku);
                 window.Twitch.ext.bits.onTransactionComplete(async (Transaction) => {
                     await updateTransitionsByUser(new UpdateTransitionsByUserRequest(this.Token, Transaction))

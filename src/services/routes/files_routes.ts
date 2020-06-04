@@ -55,6 +55,9 @@ APP.post(UploadFileRoute, async function (req, res: express.Response) {
 
     let fileSize = Number(req.headers['content-length']);
 
+    if (fileSize > 10 * 1024 * 1024)
+        return res.status(400).send({ RequestError: "The file size is greater than 10mb" });
+
     let file = fs.createWriteStream(`${Dir}/${FileName}`);
 
     req.on('data', chunk => {

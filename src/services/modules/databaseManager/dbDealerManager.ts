@@ -18,8 +18,7 @@ export default class dbDealerManager {
         await this.PreparePromises;
         let dbTransactionsOfUser = await dbPurchasesExtensionProductsTable.findOne({ where: { ID: ID } });
         if (dbTransactionsOfUser) {
-            dbTransactionsOfUser.TransactionsArray = JSON.parse(dbTransactionsOfUser.TransactionsArrayJson);
-            delete dbTransactionsOfUser.TransactionsArrayJson;
+            dbTransactionsOfUser.TransactionsArray = JSON.parse(dbTransactionsOfUser.TransactionsArray);
         }
         return dbTransactionsOfUser;
     }
@@ -29,12 +28,11 @@ export default class dbDealerManager {
         if (dbTransactionOfUser) {
             let newTransactionsOfUser = new TransactionsOfUser(this.ID, dbTransactionOfUser.TransactionsArray);
             newTransactionsOfUser.TransactionsArray.push(TransactionOfUser);
-            newTransactionsOfUser.TransactionsArrayJson = JSON.stringify(newTransactionsOfUser.TransactionsArray);
-            newTransactionsOfUser.TransactionsArray = undefined;
+            newTransactionsOfUser.TransactionsArray = JSON.stringify(newTransactionsOfUser.TransactionsArray);
             return dbTransactionOfUser.update(newTransactionsOfUser);
         } else {
             let productsPurchasedByUser = new TransactionsOfUser(this.ID, [TransactionOfUser]);
-            productsPurchasedByUser.TransactionsArrayJson = JSON.stringify(productsPurchasedByUser.TransactionsArray);
+            productsPurchasedByUser.TransactionsArray = JSON.stringify(productsPurchasedByUser.TransactionsArray);            
             return dbPurchasesExtensionProductsTable.create(productsPurchasedByUser);
         }
     }

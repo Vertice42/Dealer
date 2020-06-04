@@ -85,7 +85,6 @@ export default class PollController {
                 }
             })
             .then(async () => {
-                await sleep(3000);
                 this.OnDistributionsEnd(new StatisticsOfDistribution(
                     DistributionCalculationResult, 'Destruction done successfully', StartTime));
             })

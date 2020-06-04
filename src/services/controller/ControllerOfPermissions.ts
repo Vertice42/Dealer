@@ -8,24 +8,43 @@ import { sleep } from "../utils/functions";
 import dbDealerManager from "../modules/databaseManager/dbDealerManager";
 
 var OAuth = undefined;
+var OAuthUsed = false;
 
-async function getOAuth() {
-    if (OAuth) {
-        return OAuth
-    } else {        
-        OAuth = await (await fetch(`https://id.twitch.tv/oauth2/token?client_id=${process.env.ClientID}&client_secret=${process.env.ClientSecret}&grant_type=client_credentials`, {
-            method: 'POST'
-        })).json();
-        await sleep(OAuth.expires_in);
+async function getOAuthOfTwitch() {
+    return (await fetch(`https://id.twitch.tv/oauth2/token?client_id=${process.env.ClientID}&client_secret=${process.env.ClientSecret}&grant_type=client_credentials`, {
+        method: 'POST'
+    })).json();
+}
+async function resetOauthOnTimeOut() {
+    await sleep(OAuth.expires_in * 0.6);
+    if (OAuthUsed) {
+        OAuth = await getOAuthOfTwitch();
+        resetOauthOnTimeOut();
+    } else {
         OAuth = undefined;
     }
-
+    OAuthUsed = false;
+}
+async function getOAuth() {
+    OAuthUsed = true;
+    if (OAuth) {
+        return OAuth
+    } else {
+        OAuth = await getOAuthOfTwitch();
+        resetOauthOnTimeOut();
+        return OAuth;
+    }
 }
 
-async function GetExtensionTransactions(id?: string, pagination = '') {    
+async function GetExtensionTransactions(id?: string, pagination = '') {
+    console.log(process.env.ClientID);
+    console.log(await getOAuth());
+
+
     return (await fetch(`https://api.twitch.tv/helix/extensions/transactions?extension_id=${process.env.ClientID}${(id) ? '&id=' + id : ''}${pagination}`, {
         method: 'GET',
         headers: {
+            'client-id': process.env.ClientID,
             Authorization: 'Bearer ' + (await getOAuth()).access_token
         }
     })).json()
@@ -33,12 +52,14 @@ async function GetExtensionTransactions(id?: string, pagination = '') {
 
 export async function VerifyOwnershipOfProduct(SkuOfProduct: string, id?: string, pagination = ''): Promise<boolean> {
     return GetExtensionTransactions(id, pagination).then((response) => {
+
         if (response.data.length < 1) return resolve(false);
-        
-        if ((!response.data.every(product => {
-            return product.data.product_data.sku !== SkuOfProduct
-        }))) {
-        } else if (response.pagination) {
+
+        for (const product of response.data) {
+            if (product.product_data.sku === SkuOfProduct)
+                return resolve(true);
+        }
+        if (response.pagination) {
             return VerifyOwnershipOfProduct(SkuOfProduct, response.pagination);
         } else return resolve(false);
     })

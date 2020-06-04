@@ -1,7 +1,6 @@
 export default class TransactionsOfUser {
     ID: string;
-    TransactionsArray: TwitchExtBitsTransaction[];
-    TransactionsArrayJson: string;
+    TransactionsArray: any;
 
     constructor(ID: string, TransactionsOfUser: TwitchExtBitsTransaction[]) {
         this.ID = ID;
