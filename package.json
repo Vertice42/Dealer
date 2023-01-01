@@ -59,10 +59,10 @@
     "mocha": "^7.2.0",
     "nodemon": "^1.19.4",
     "sequelize-typescript": "^1.1.0",
-    "ts-loader": "^6.2.2",
+    "ts-loader": "^9.4.2",
     "ts-mocha": "^6.0.0",
     "typescript": "^3.9.3",
-    "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.11"
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
   }
 }
